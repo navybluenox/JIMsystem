@@ -30,3 +30,26 @@
     fileId変数
         instance of DriveFileId
 */
+
+var DriveFileId = function(){
+    this.data = {
+        test:"#0123456789abcdef"
+    };
+    this.script = {
+        
+    };
+    this.spreadsheet = {
+        
+    };
+    this.document = {
+        
+    };
+    this.form = {
+        
+    };
+    this.apikey = {
+        
+    }
+}
+
+var fileId = new DriveFileId();
