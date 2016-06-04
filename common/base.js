@@ -30,6 +30,46 @@
             keys
                 まとめるオブジェクトのキー。一つのキーでまとめるならString、複数のキーでまとめるなら[String1,String2, ...]
                 複数のキーを指定した場合には、全てのキーの値が一致するものでgroupする
+
+    ungroupArray(array,keys)
+        説明
+            データが入ったオブジェクトの配列を、オブジェクトの一つのキーにある配列についてばらしてデータを増やす
+            //見れば分かるが、keysについて一つずつ処理している（再起関数）
+        引数
+            array
+                オブジェクトが入ったデータ。Arrayであることが必要
+                （別にそうでなくても良いが）配列にあるデータはほぼ同型である想定で動作する
+            keys
+                ばらばらにする配列が含まれるオブジェクトのキー。一つのキーでばらすならString、複数のキーでばらすなら[String1,String2, ...]
+                複数のキーを指定した場合には、全てのキーについてungroupする
+
+    dateToValue(date)
+        説明
+            Date型の値を使用しやすい値に変換して出力します
+            出力は以下の通りです
+                result = {year:年, month:月, day:日付, date:日, hour:時間, minute:分, second:秒, str:2016/2/3 12:34:56形式, str1:2/3 12:34:56形式}
+                year,month,date,hour,minute,second -> Number型, the others -> String型
+        引数
+            date
+                入力したいDate型の値
+
+    makeRandomStr(length,option)
+        説明
+            ランダムな文字列を作成します
+        引数
+            length
+                作成する文字列の長さをできる
+                省略可。省略した場合、10になる
+            option
+                オプションを指定できる
+                    number(Boolean型、デフォルトはtrue)
+                        数字を使用する
+                    alphaLower(Boolean型、デフォルトはtrue)
+                        英小文字を使用する
+                    alphaUpper(Boolean型、デフォルトはtrue)
+                        英大文字を使用する
+                    otherLetters(String型、デフォルトはなし)
+                        他に使用したい文字列を追加できる
 */
 
 Number.isNaN = Number.isNaN || function(value) {
@@ -147,29 +187,7 @@ function ungroupArray(array,keys){
     }
 }
 
-//TODO
-function makeRegExpSelectOneOfThem(array){
-    return new RegExp("^(?:" + array.join("|") + ")?$");
-}
-
-function UrlShortenerService(longUrl) {
-  var apiKey  = idlist().apikey.main;
-  var apiUrl  = 'https://www.googleapis.com/urlshortener/v1/url?key='+apiKey;
-  var options = {
-        method: 'POST',
-        contentType: 'application/json',
-        payload: JSON.stringify({longUrl:longUrl}),
-        muteHttpExceptions: true
-      };
-  var response = UrlFetchApp.fetch(apiUrl, options);
-  if (response.getResponseCode() !== 200) {
-    return longUrl;
-  } else {
-    return JSON.parse(response).id;
-  }
-}
-
-function DateToString(date){
+function dateToValue(date){
     //result = {
     //    str:2016/2/3 12:34:56, str1:2/3 12:34:56,
     //    year:2016, month:1,date:2,day:水, hour:12, minute:34, second:56
@@ -190,47 +208,49 @@ function DateToString(date){
 	ret.hour = date.getHours();
 	ret.minute = date.getMinutes();
 	ret.second = date.getSeconds();
-	
-	switch(date.getDay()){
-		case 0:
-			ret.day = "日";
-			break;
-		case 1:
-			ret.day = "月";
-			break;
-		case 2:
-			ret.day = "火";
-			break;
-		case 3:
-			ret.day = "水";
-			break;
-		case 4:
-			ret.day = "木";
-			break;
-		case 5:
-			ret.day = "金";
-			break;
-		case 6:
-			ret.day = "土";
-			break;
-
-	}
+    ret.day = ["日","月","火","水","木","金","土"][date.getDay()];
 	ret.str  = "" + [ret.year,add_zero(ret.month),add_zero(ret.date)].join("/") + " " + [add_zero(ret.hour),add_zero(ret.minute),add_zero(ret.second)].join(":");
 	ret.str1 = "" + [add_zero(ret.month),add_zero(ret.date)].join("/") + "（" + ret.day + "）" + " " + [add_zero(ret.hour),add_zero(ret.minute)].join(":");
+    return ret;
 
-	function min_ten(num){
-		return num < 10;
-	}
 	function add_zero(num){
-		if(min_ten(num)){
+		if(num < 10){
 			return "0" + num;
 		}else{
 			return "" + num;
 		}
 	}
-	return ret;
 }
 
+function makeRandomStr(length,option){
+    if(length == null)  length = 10;
+    if(option == null)  option = {};
+    
+    var availableLetters = [];
+    ["number","alphaLower","alphaUpper"].forEach(function(key,index){
+        if(option[key] == null || option[key]){
+            availableLetters = availableLetters.concat([
+                "0123456789",
+                "abcdefghijklmnopqrstuvwxyz",
+                "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            ][index].split(""));
+        }
+    });
+    if(typeof option.otherLetters == "string"){
+        availableLetters = availableLetters.concat(option.otherLetters.split(""));
+    }
+    
+    var lettersNum = availableLetters.length;
+    var result = "";
+    while(length){
+        result += availableLetters[Math.floor(Math.random() * lettersNum)];
+        length--;
+    }
+    return result;
+    
+}
+
+//TODO
 function makeIdForData(data,column){
     //data = [ObjectA, ObjectB, ... ,ObjectZ];
     if(typeof column == "undefined")  column = "id";
@@ -243,58 +263,4 @@ function makeIdForData(data,column){
     return result;    
 }
 
-function getAuthority(){
-    //非常に適当
-    UrlFetchApp.fetch();
-    SpreadsheetApp.openById(idlist().spreadsheet.user);
-    DocumentApp.openById(idlist().log.error);
-    GmailApp.search("azusa");
-    DriveApp.getFileById(idlist().jsondata.user);
-    FormApp.openById(idlist().form.人割調査_for担当_修正用);
-}
 
-function sendAZUSA(sendName,subject,message,noLog,label){
-    var startTime = new Date();
-    if(typeof sendAZUSA == "undefined" || typeof message == "undefined"){
-        Logger.log("Error : Some of requiered argument are missing (sendAZUSA)");
-        throw new Error();
-    }
-    if(typeof subject == "undefined" || subject === ""){
-        Logger.log("Attention : Argument(subject) is empty (sendAZUSA)");        
-    }
-    if(!Array.isArray(sendName)){
-        sendName = [sendName];
-    }
-    if(typeof noLog == "undefined"){
-        noLog = false;
-    }
-    GmailApp.sendEmail(
-        noLog ? "azusa-nolog@a103.net" : "azusa@a103.net",
-        subject,
-        [
-            "→" + sendName.join("、") + "さん",
-            "",
-            message,
-            "",
-            "※このAZUSAは自動送信です。",
-            ""
-        ].join("\n"),
-        {
-            name:"89JIM"
-        }
-    );
-    if(typeof label != "undefined"){
-        Utilities.sleep(100);
-        var endTime = new Date();
-        var labelObj = GmailApp.getUserLabelByName(label);
-        var mails = GmailApp.search("in:sent has:nouserlabels newer_than:1d (to:azusa@a103.net OR to:azusa-nolog@a103.net)")
-        .filter(function(mailThread){
-        return (
-            startTime.getTime() <= mailThread.getLastMessageDate().getTime() &&
-            endTime.getTime() >= mailThread.getLastMessageDate().getTime()
-        );
-        }).forEach(function(mailThread){
-            mailThread.addLabel(labelObj);
-        });
-    }
-}
