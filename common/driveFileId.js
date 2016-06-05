@@ -13,7 +13,6 @@
 
 定義一覧
     DriveFileIdクラス
-        //TODO
         DriveFileId.data
             JIMシステムで使用するデータ群です。
             ファイル名は「__.json」
@@ -39,7 +38,12 @@ var DriveFileId = function(){
         test:"#0123456789abcdef"
     };
     this.script = {
-        
+        base:"",
+        baseClient:"",
+        baseServer:"",
+        driveFileId:"",
+        editDatabase:"",
+        include:""
     };
     this.spreadsheet = {
         

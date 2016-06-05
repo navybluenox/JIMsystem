@@ -54,6 +54,7 @@
                 //ラベルが関係のない送信メールにまで付加される可能性がある（GmailAppクラスの仕様）
                 //    直接送信したメールにラベルをつけているのではなく、ある時間内に送信したメールを対象としているため
                 //「ある時間内」とは、関数を実行し始めて、途中100msをはさんで、送信を実行するまでのこと（変数startTimeと変数endTimeの宣言した時間）
+
 */
 
 function UrlShortenerService(longUrl,avoidLong) {
@@ -134,3 +135,4 @@ function sendAZUSA(sendName,subject,message,noLog,label){
         });
     }
 }
+
