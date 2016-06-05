@@ -3,10 +3,13 @@
 名前
     driveFileId.js
 
+依存ファイル
+    なし
+
 このファイルについて
     GoogleDriveにあるファイルのfileIdなどのID群をまとめて管理しています
     DriveFileIdクラスを定義し、ファイルの種類ごとにidを直に書いています
-    なお、このファイルをincludeすると、自動で「fileId」という名前でDriveFileIdのインスタンス
+    なお、このファイルをincludeすると、自動で「fileId」という名前でDriveFileIdのインスタンスが作成されます
 
 定義一覧
     DriveFileIdクラス
@@ -48,8 +51,8 @@ var DriveFileId = function(){
         
     };
     this.apikey = {
-        
+        main:"AIzaSyBVnsFJvU7N4PUVxFbKZwGy7V71uRZIgDQ"
     }
 }
 
-var fileId = new DriveFileId();
+const fileId = new DriveFileId();

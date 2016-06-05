@@ -3,6 +3,9 @@
 名前
     base.js
 
+依存ファイル
+    driveFileId.js
+
 このファイルについて
     汎用的な関数を集めたファイルです
     javascript,GASの両方で動作します
@@ -70,6 +73,19 @@
                         英大文字を使用する
                     otherLetters(String型、デフォルトはなし)
                         他に使用したい文字列を追加できる
+
+    makeIdForTable(data,column,length,option)
+        説明
+            データが入ったオブジェクトの配列に対して、idをランダムにつける
+        引数
+            data
+                オブジェクトが入ったデータ。Arrayであることが必要
+            column
+                idをつけるキー（カラム名）を指定する
+                省略可。省略した場合、"id"になる
+            length,option
+                内部で使用しているmakeRandomStr関数のオプション
+                    詳細は該当関数にて
 */
 
 Number.isNaN = Number.isNaN || function(value) {
@@ -247,20 +263,21 @@ function makeRandomStr(length,option){
         length--;
     }
     return result;
-    
 }
 
-//TODO
-function makeIdForData(data,column){
+function makeIdForTable(data,column,length,option){
     //data = [ObjectA, ObjectB, ... ,ObjectZ];
     if(typeof column == "undefined")  column = "id";
     if(typeof data == "undefined") data = [];
-    var ids = data.map(function(v){return v[column]}).filter(function(v){return v != null && v !== ""});
-    var result = Math.random().toString(36).slice(-10);
-    while(ids.indexOf(result) != -1){
-        result = Math.random().toString(36).slice(-10);
-    }
-    return result;    
+    
+    return data.map(function(obj){
+        if(obj[column] == null || obj[column] === ""){
+            do{
+                obj[column] = makeRandomStr(length,option);
+            }while(data.map(function(obj1){return obj1[column]}).inArray(obj[column]))
+        }
+        return obj;
+    });
 }
 
 
