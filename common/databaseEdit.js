@@ -101,8 +101,8 @@ htmlService.js
                     datapieceInsts
                         idのみが設定されてれば良い
                         ※詳細はchangeメソッドと同様
-                            
-    
+
+
     Datapieceクラス
         説明
             各種データの一つのデータを格納するクラスです
@@ -133,7 +133,7 @@ htmlService.js
                     deepcopy
                         trueなら、deep-copyで返します
                         省略可。省略した場合、false（shallow-copy）となる
-    
+
     loadDataFromDrive
         説明
             GoogleDriveからJSON形式で保存されたデータを取得します
@@ -153,13 +153,13 @@ htmlService.js
                 省略可。省略した場合、dataとなる
 */
 
-function loadDataFromDrive(fileIdStr,mode){
+function loadDataFromDrive(fileIdStr, mode) {
     var result;
-    if(mode == null)  mode = "data";
-    
+    if (mode == null) mode = "data";
+
     var rawData = JSON.parse(loadFileFromDrive(fileIdStr));
-    
-    switch(mode){
+
+    switch (mode) {
         case "all":
             result = rawData;
             break;
@@ -176,7 +176,7 @@ function loadDataFromDrive(fileIdStr,mode){
     return result;
 }
 
-var Database = function(){
+var Database = function () {
     this.dataName = "";
     this.dataFileId = "";
     this.rawData = "";
@@ -187,39 +187,39 @@ var Database = function(){
     this.updating = false;
 }
 
-Database.prototype.getData = function(dataName){
-    
+Database.prototype.getData = function (dataName) {
+
 }
 
-Database.prototype.toJSONData = function(){
-    
+Database.prototype.toJSONData = function () {
+
 }
 
-Database.prototype.getValues = function(deepcopy){
-    
+Database.prototype.getValues = function (deepcopy) {
+
 }
 
-Database.prototype.reloadData = function(){
-    
+Database.prototype.reloadData = function () {
+
 }
 
-Database.prototype.runUpdate = function(){
-    
+Database.prototype.runUpdate = function () {
+
 }
 
-Database.prototype.change = function(datapieceInsts){
-    
+Database.prototype.change = function (datapieceInsts) {
+
 }
 
-Database.prototype.add = function(datapieceInsts){
-    
+Database.prototype.add = function (datapieceInsts) {
+
 }
 
-Database.prototype.remove = function(datapieceInsts){
-    
+Database.prototype.remove = function (datapieceInsts) {
+
 }
 
-var Datapiece = function(datapieceObj,disableCheck){
+var Datapiece = function (datapieceObj, disableCheck) {
     this.data = {};
     this.dataName = "";
 }

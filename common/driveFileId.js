@@ -36,32 +36,32 @@
         instance of DriveFileId
 */
 
-var DriveFileId = function(){
+var DriveFileId = function () {
     this.data = {
-        test:"#0123456789abcdef"
+        test: "#0123456789abcdef"
     };
     this.script = {
-        base:"",
-        baseClient:"",
-        baseServer:"",
-        driveFileId:"",
-        editDatabase:"",
-        include:""
+        base: "",
+        baseClient: "",
+        baseServer: "",
+        driveFileId: "",
+        editDatabase: "",
+        include: ""
     };
     this.gas = {
-        jims:"13MjautTiWxSccdWEVsBl0yra6qncERgaSItg8xXGkS7E1zxFso2COzkD"
+        jims: "13MjautTiWxSccdWEVsBl0yra6qncERgaSItg8xXGkS7E1zxFso2COzkD"
     };
     this.spreadsheet = {
-        
+
     };
     this.document = {
-        
+
     };
     this.form = {
-        
+
     };
     this.apikey = {
-        main:"AIzaSyBGpG_KNJ4zyZtefN_x_r0KdlxdCmBu7cQ"
+        main: "AIzaSyBGpG_KNJ4zyZtefN_x_r0KdlxdCmBu7cQ"
     }
 }
 

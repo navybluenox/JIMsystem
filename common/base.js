@@ -88,21 +88,21 @@
                     詳細は該当関数にて
 */
 
-Number.isNaN = Number.isNaN || function(value) {
+Number.isNaN = Number.isNaN || function (value) {
     return typeof value === "number" && value !== value;
 }
 
-Array.prototype.inArray = Array.prototype.inArray || function(value){
+Array.prototype.inArray = Array.prototype.inArray || function (value) {
     return this.indexOf(value) !== -1;
 }
 
-function groupArray(array,keys){
+function groupArray(array, keys) {
     //array = [Object, Object, ... Object]
     //keys = "A" or ["A","B","C", ... ,"Z"];
-    if(typeof keys === "string"){
+    if (typeof keys === "string") {
         keys = [keys];
     }
-    if(!Array.isArray(array)){
+    if (!Array.isArray(array)) {
         Logger.log("Error : 1st argument is not array");
         return null;
     }
@@ -111,53 +111,53 @@ function groupArray(array,keys){
     //軽量化のため、出力（result）と検索用（groupValueCombList）を別にする。それぞれのindexは共通
     var result = [];
     var groupValueCombList = [];
-    
-    array.forEach(function(obj){
+
+    array.forEach(function (obj) {
         //objのキーのうちkeysにある値が、groupValueCombListに完全一致するものがあるか否か
-        var fIndex = groupValueCombList.findIndex(function(groupValueComb){
+        var fIndex = groupValueCombList.findIndex(function (groupValueComb) {
             //groupValueCombに、objのキーのうちkeysにある値が完全一致するか
-            return groupValueComb.every(function(value,index){return obj[keys[index]] === value})
+            return groupValueComb.every(function (value, index) { return obj[keys[index]] === value })
         });
-        var insertIndex,insertObj = {};
-        if(fIndex === -1){
+        var insertIndex, insertObj = {};
+        if (fIndex === -1) {
             //完全一致するものは無かった
             //挿入する場所を探す
-            insertIndex = groupValueCombList.findIndex(function(groupValueComb){
-                return groupValueComb.some(function(value,index){
+            insertIndex = groupValueCombList.findIndex(function (groupValueComb) {
+                return groupValueComb.some(function (value, index) {
                     return ("" + obj[keys[index]]).charCodeAt() < ("" + value).charCodeAt();
                 })
             });
             //resultに入れるinsertObjを作成
-            Object.keys(obj).forEach(function(objKey){
-                if(keys.find(function(key){return key === objKey})){
+            Object.keys(obj).forEach(function (objKey) {
+                if (keys.find(function (key) { return key === objKey })) {
                     insertObj[objKey] = obj[objKey];
-                }else{
-                    insertObj[objKey] = [obj[objKey]];                        
+                } else {
+                    insertObj[objKey] = [obj[objKey]];
                 }
             })
-            if(insertIndex === -1){
+            if (insertIndex === -1) {
                 //最後に挿入
-                groupValueCombList.push(keys.map(function(key){return obj[key]}));
+                groupValueCombList.push(keys.map(function (key) { return obj[key] }));
                 result.push(insertObj);
-            }else{
+            } else {
                 //insertIndex番目として挿入
-                groupValueCombList.splice(insertIndex,0,keys.map(function(key){return obj[key]}));
-                result.splice(insertIndex,0,insertObj);
+                groupValueCombList.splice(insertIndex, 0, keys.map(function (key) { return obj[key] }));
+                result.splice(insertIndex, 0, insertObj);
             }
-        }else{
+        } else {
             //完全一致するものがあった
             //最後の順番を探索
             //データによっては存在しないキーもあり、resultが長方形の二次元配列にならない可能性があるため
-            Object.keys(obj).forEach(function(objKey){
-                if(!keys.find(function(key){return key === objKey})){
-                    if(insertIndex == null || insertIndex < result[fIndex][objKey].length){
+            Object.keys(obj).forEach(function (objKey) {
+                if (!keys.find(function (key) { return key === objKey })) {
+                    if (insertIndex == null || insertIndex < result[fIndex][objKey].length) {
                         insertIndex = result[fIndex][objKey].length;
                     }
                 }
             })
             //既存の行にデータを追加
-            Object.keys(obj).forEach(function(objKey){
-                if(!keys.find(function(key){return key === objKey})){
+            Object.keys(obj).forEach(function (objKey) {
+                if (!keys.find(function (key) { return key === objKey })) {
                     result[fIndex][objKey][insertIndex] = obj[objKey];
                 }
             });
@@ -166,85 +166,85 @@ function groupArray(array,keys){
     return result;
 }
 
-function ungroupArray(array,keys){
+function ungroupArray(array, keys) {
     //array = [Object, Object, ... Object]
     //keys = "A" or ["A","B","C", ... ,"Z"];
     //ungroup array with all of the data pairs remained
     //if you want to ungroup array and make all of the considerable combinations,
     //apply this function differently (at keys used at ungrouping)
-    
-    if(typeof keys === "string")  keys = [keys];
-    if(keys.length === 0){
+
+    if (typeof keys === "string") keys = [keys];
+    if (keys.length === 0) {
         return array;
-    }else{
+    } else {
         var ungroupKey = keys.shift();
         //再帰的に実行
         return ungroupArray(
-            array.map(function(obj){
-                if(Array.isArray(obj[ungroupKey])){
-                    if(obj[ungroupKey].length === 0){
+            array.map(function (obj) {
+                if (Array.isArray(obj[ungroupKey])) {
+                    if (obj[ungroupKey].length === 0) {
                         obj[ungroupKey] = [undefined];
                     }
-                    return obj[ungroupKey].map(function(value){
+                    return obj[ungroupKey].map(function (value) {
                         var r = {};
-                        Object.keys(obj).forEach(function(objKey){
+                        Object.keys(obj).forEach(function (objKey) {
                             r[objKey] = (objKey === ungroupKey ? value : obj[objKey]);
                         })
                         return r;
                     });
-                }else{
+                } else {
                     return [obj];
                 }
-            }).reduce(function(prev,curt){
+            }).reduce(function (prev, curt) {
                 return prev.concat(curt)
-            },[]),
+            }, []),
             keys
         );
     }
 }
 
-function dateToValue(date){
+function dateToValue(date) {
     //result = {
     //    str:2016/2/3 12:34:56, str1:2/3 12:34:56,
     //    year:2016, month:1,date:2,day:水, hour:12, minute:34, second:56
     //}
-	if(typeof date === "string"){
-		date = new Date(date);
-		if(date.toString() === "Invalid Date")
-			return {};
-	}
-	if(isNaN(date.getTime())){
-		alert("DateToStringの引数が不正です。");
-		throw new Error("DateToStringの引数が不正です。");
-	}
-	var ret = {};
-	ret.year = date.getFullYear();
-	ret.month = date.getMonth() + 1;
-	ret.date = date.getDate();
-	ret.hour = date.getHours();
-	ret.minute = date.getMinutes();
-	ret.second = date.getSeconds();
-    ret.day = ["日","月","火","水","木","金","土"][date.getDay()];
-	ret.str  = "" + [ret.year,add_zero(ret.month),add_zero(ret.date)].join("/") + " " + [add_zero(ret.hour),add_zero(ret.minute),add_zero(ret.second)].join(":");
-	ret.str1 = "" + [add_zero(ret.month),add_zero(ret.date)].join("/") + "（" + ret.day + "）" + " " + [add_zero(ret.hour),add_zero(ret.minute)].join(":");
+    if (typeof date === "string") {
+        date = new Date(date);
+        if (date.toString() === "Invalid Date")
+            return {};
+    }
+    if (isNaN(date.getTime())) {
+        alert("DateToStringの引数が不正です。");
+        throw new Error("DateToStringの引数が不正です。");
+    }
+    var ret = {};
+    ret.year = date.getFullYear();
+    ret.month = date.getMonth() + 1;
+    ret.date = date.getDate();
+    ret.hour = date.getHours();
+    ret.minute = date.getMinutes();
+    ret.second = date.getSeconds();
+    ret.day = ["日", "月", "火", "水", "木", "金", "土"][date.getDay()];
+    ret.str = "" + [ret.year, add_zero(ret.month), add_zero(ret.date)].join("/") + " " + [add_zero(ret.hour), add_zero(ret.minute), add_zero(ret.second)].join(":");
+    ret.str1 = "" + [add_zero(ret.month), add_zero(ret.date)].join("/") + "（" + ret.day + "）" + " " + [add_zero(ret.hour), add_zero(ret.minute)].join(":");
     return ret;
 
-	function add_zero(num){
-		if(num < 10){
-			return "0" + num;
-		}else{
-			return "" + num;
-		}
-	}
+    function add_zero(num) {
+        if (num < 10) {
+            return "0" + num;
+        } else {
+            return "" + num;
+        }
+    }
 }
 
-function makeRandomStr(length,option){
-    if(length == null)  length = 10;
-    if(option == null)  option = {};
-    
+function makeRandomStr(length, option) {
+    if (length == null) length = 10;
+    if (option == null) option = {};
+
     var availableLetters = [];
-    ["number","alphaLower","alphaUpper"].forEach(function(key,index){
-        if(option[key] == null || option[key]){
+    ["number", "alphaLower", "alphaUpper"].forEach(function (key, index) {
+        if (option[key] == null || option[key]) {
             availableLetters = availableLetters.concat([
                 "0123456789",
                 "abcdefghijklmnopqrstuvwxyz",
@@ -252,29 +252,29 @@ function makeRandomStr(length,option){
             ][index].split(""));
         }
     });
-    if(typeof option.otherLetters == "string"){
+    if (typeof option.otherLetters == "string") {
         availableLetters = availableLetters.concat(option.otherLetters.split(""));
     }
-    
+
     var lettersNum = availableLetters.length;
     var result = "";
-    while(length){
+    while (length) {
         result += availableLetters[Math.floor(Math.random() * lettersNum)];
         length--;
     }
     return result;
 }
 
-function makeIdForTable(data,column,length,option){
+function makeIdForTable(data, column, length, option) {
     //data = [ObjectA, ObjectB, ... ,ObjectZ];
-    if(typeof column == "undefined")  column = "id";
-    if(typeof data == "undefined") data = [];
-    
-    return data.map(function(obj){
-        if(obj[column] == null || obj[column] === ""){
-            do{
-                obj[column] = makeRandomStr(length,option);
-            }while(data.map(function(obj1){return obj1[column]}).inArray(obj[column]))
+    if (typeof column == "undefined") column = "id";
+    if (typeof data == "undefined") data = [];
+
+    return data.map(function (obj) {
+        if (obj[column] == null || obj[column] === "") {
+            do {
+                obj[column] = makeRandomStr(length, option);
+            } while (data.map(function (obj1) { return obj1[column] }).inArray(obj[column]))
         }
         return obj;
     });
