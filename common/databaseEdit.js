@@ -51,6 +51,12 @@ htmlService.js
                 更新中であれば開始時間がDateで入っている
                 更新中で無ければ、空文字列が入っている
         メソッド
+            getData(dataName)
+                説明
+                    GoogleDriveからデータをダウンロードして、データに対応したクラスのインスタンスを返します
+                引数
+                    dataName
+                        ロードするデータ名
             toJSONData()
                 説明
                     this.curtDataをJSON形式の文字列にして返します
@@ -70,15 +76,47 @@ htmlService.js
                     this.pooledQueueにあるキューを元にデータを更新します
                     更新中は実行されません
                     更新後、またthis.pooledQueueにキューが残っていれば更新します
-            change([user-definedClass1, ...])
+            change(datapieceInsts)
                 説明
-                
+                    既存のデータを更新します
+                    変更するデータのキーのみ記入することも可能
+                引数
+                    datapieceInsts
+                        変更する新しいデータ
+                            idキーは必須
+                        Datapieceクラスを継承するデータごとのクラスを用いる
+                            一つのみであればインスタンスを直接代入、複数であればインスタンスの配列を代入
+            add(datapieceInsts)
+                説明
+                    新規にデータを作成します
+                    基本的にデータの全てを設定する必要があります
+                引数
+                    datapieceInsts
+                        ※詳細はchangeメソッドと同様
+            remove(datapieceInsts)
+                説明
+                    新規にデータを作成します
+                    基本的にデータの全てを設定する必要があります
+                引数
+                    datapieceInsts
+                        idのみが設定されてれば良い
+                        ※詳細はchangeメソッドと同様
+                            
     
     Datapieceクラス
         説明
             各種データの一つのデータを格納するクラスです
             Databaseクラスがデータ全体、Datapieceクラスがデータ一つ分
             それぞれのデータベースのデータ一つひとつを表すクラスは、このクラスを継承します
+        引数
+            datapieceObj
+                インスタンスのデータの元となるオブジェクト
+                    細かい定義は継承先のクラスで行う
+            disableCheck
+                必要なカラムが存在するかのチェックを無効にします
+                Database.change()や.delete()などで使用します
+                //それ以外ではtrueにしないほうが良い
+                省略可。省略した場合、false（チェックする）となる
         プロパティ
             data
                 格納されているデータ
@@ -139,6 +177,17 @@ function loadDataFromDrive(fileIdStr,mode){
 }
 
 var Database = function(){
+    this.dataName = "";
+    this.dataFileId = "";
+    this.rawData = "";
+    this.curtData = [];
+    this.loadVersion = null;
+    this.pooledQueue = [];
+    this.updatingQueue = [];
+    this.updating = false;
+}
+
+Database.prototype.getData = function(dataName){
     
 }
 
@@ -146,7 +195,31 @@ Database.prototype.toJSONData = function(){
     
 }
 
-var Datapiece = function(){
+Database.prototype.getValues = function(deepcopy){
+    
+}
+
+Database.prototype.reloadData = function(){
+    
+}
+
+Database.prototype.runUpdate = function(){
+    
+}
+
+Database.prototype.change = function(datapieceInsts){
+    
+}
+
+Database.prototype.add = function(datapieceInsts){
+    
+}
+
+Database.prototype.remove = function(datapieceInsts){
+    
+}
+
+var Datapiece = function(datapieceObj,disableCheck){
     this.data = {};
     this.dataName = "";
 }

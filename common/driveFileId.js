@@ -20,6 +20,9 @@
             JIMシステムで使用するスクリプト群です。
             クライアントjavascript、GASの両方を含みます。
             ファイル名は「__.js」
+        DriveFileId.gas
+            JIMシステムで使用するapp script群です。
+                ウェブアプリの本体を作成しているプロジェクトファイル
         DriveFileId.spreadsheet
             GoogleDriveに保存されているスプレッドシート群です。
         DriveFileId.documemt
@@ -45,6 +48,9 @@ var DriveFileId = function(){
         editDatabase:"",
         include:""
     };
+    this.gas = {
+        jims:"13MjautTiWxSccdWEVsBl0yra6qncERgaSItg8xXGkS7E1zxFso2COzkD"
+    };
     this.spreadsheet = {
         
     };
@@ -55,7 +61,7 @@ var DriveFileId = function(){
         
     };
     this.apikey = {
-        main:"AIzaSyBVnsFJvU7N4PUVxFbKZwGy7V71uRZIgDQ"
+        main:"AIzaSyBGpG_KNJ4zyZtefN_x_r0KdlxdCmBu7cQ"
     }
 }
 
