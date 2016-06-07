@@ -1,5 +1,11 @@
 "use strict";
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
 //  ---About This---
 /*
 名前
@@ -22,6 +28,68 @@
         引数が配列にあるか否かを判定する
             判定は「厳密に等しい(===)」で行われる。（Array.prototype.indexOfの仕様のため）
         //よく使うので作成したが、もしかしたら適切なのがあるかも。ｊQueryにはある
+
+    LocalDate(timeValue)クラス
+        説明
+            0日目0時0分0秒を0とし、ミリ秒を単位とするローカル時間です
+        引数
+            timeValue
+                LocalDateがもつ時間を指定する値。値の入れ方は複数ある
+                    undefined
+                        現在時刻が設定される
+                        引数なしの場合
+                    引数1つ：String型
+                        ISOフォーマット（YYYY-MM-DDTHH:mm:ss.sssZ）などの、Dateクラスの引数に入れて動作する文字列として読む
+                    引数1つ:Date型
+                        代入されたDate型からはdeep-copyする
+                    引数1つ:{day:Number,hour:Number,minute:Number,second:Number,millsecond:Number}型
+                        全て省略可。省略した場合、0として読む
+                    引数1つ：Number型
+                        0日目を0とするローカル時間として読む
+        プロパティ
+            localTime
+                0日目0時0分0秒を0とし、1秒間を1間隔とするローカル時間
+        静的メソッド
+            //インスタンスからは呼べない。LocalDate.getStandardTime()のように使う
+            getStandardTime()
+                0日目0時0分0秒のDateオブジェクトを返します
+            getTimeUnit()
+                人割上の一単位の時間を返します
+        メソッド
+            getAsDateClass()
+                Date型で設定時間を返します
+            getLocalTime()
+                0日目からのローカル時間を返します
+            getLocalTimeObj()
+                0日目からのローカル時間を返します
+                {day:Number,hour:Number,minute:Number,second:Number} の形で返します
+            getLocalDays()
+            getLocalHours()
+            getLocalMinutes()
+            getLocalSeconds()
+            getLocalMillseconds()
+                ローカル時間を返します
+            addTime(localTime)
+                ローカル時間を進めます
+                    引数
+                        localTime
+                            進める時間
+                                {day:Number,hour:Number,minute:Number,second:Number,millsecond:Number}の形
+            addDays(days)
+            addHours(hours)
+            addMinutes(minutes)
+            addSeconds(seconds)
+            addMillseconds(millseconds)
+                ローカル時間を進めます
+                    引数
+                        seconds,minutes,hours,days
+                            進める時間
+            addTimeUnit(timeUnits)
+                ローカル時間を進めます
+                    引数
+                        timeUnits
+                            進める単位時間の数
+                                timeUnitsの時間はconfig.json参照
 
     groupArray(array,keys)
         説明
@@ -97,6 +165,162 @@ Number.isNaN = Number.isNaN || function (value) {
 Array.prototype.inArray = Array.prototype.inArray || function (value) {
     return this.indexOf(value) !== -1;
 };
+
+var LocalDate = function () {
+    function LocalDate(timeValue) {
+        _classCallCheck(this, LocalDate);
+
+        var targetTime;
+        var standardTime = LocalDate.getStandardTime();
+        switch (typeof timeValue === "undefined" ? "undefined" : _typeof(timeValue)) {
+            case "number":
+                this.localTime = timeValue;
+                targetTime = LocalDate.getStandardTime();
+                targetTime.setMilliseconds(targetTime.getMilliseconds() + timeValue);
+                break;
+            case "object":
+                if (timeValue instanceof Date) {
+                    targetTime = new Date(timeValue.toISOString());
+                    this.localTime = targetTime.getTime() - standardTime.getTime();
+                } else if (timeValue != null) {
+                    this.localTime = 0;
+                    targetTime = LocalDate.getStandardTime();
+                    if (timeValue.day != null) this.localTime += timeValue.day * 24 * 60 * 60 * 1000;
+                    if (timeValue.hour != null) this.localTime += timeValue.hour * 60 * 60 * 1000;
+                    if (timeValue.minute != null) this.localTime += timeValue.minute * 60 * 1000;
+                    if (timeValue.second != null) this.localTime += timeValue.second * 1000;
+                    if (timeValue.millsecond != null) this.localTime += timeValue.millsecond;
+                    targetTime.setMilliseconds(targetTime.getMilliseconds() + this.localTime);
+                } else {
+                    targetTime = new Date();
+                    this.localTime = targetTime.getTime() - standardTime.getTime();
+                }
+                break;
+            default:
+                targetTime = new Date(timeValue);
+                this.localTime = targetTime.getTime() - standardTime.getTime();
+        }
+    }
+
+    _createClass(LocalDate, [{
+        key: "getAsDateClass",
+        value: function getAsDateClass() {
+            var targetTime = LocalDate.getStandardTime();
+            return targetTime.setMilliseconds(targetTime.getMilliseconds() + this.localTime);
+        }
+    }, {
+        key: "getLocalTime",
+        value: function getLocalTime() {
+            return this.localTime;
+        }
+    }, {
+        key: "getLocalTimeObj",
+        value: function getLocalTimeObj() {
+            var dayOffset = 0;
+            var localTime = this.localTime;
+            while (localTime < 0) {
+                dayOffset--;
+                localTime += 24 * 60 * 60 * 1000;
+            }
+            return {
+                day: (localTime - localTime % (24 * 60 * 60 * 1000)) / (24 * 60 * 60 * 1000) + dayOffset,
+                hour: (localTime % (24 * 60 * 60 * 1000) - localTime % (60 * 60 * 1000)) / (60 * 60 * 1000),
+                minute: (localTime % (60 * 60 * 1000) - localTime % (60 * 1000)) / (60 * 1000),
+                second: (localTime % (60 * 1000) - localTime % 1000) / 1000,
+                millsecond: localTime % 1000
+            };
+        }
+    }, {
+        key: "getLocalDays",
+        value: function getLocalDays() {
+            return this.getLocalTimeObj().day;
+        }
+    }, {
+        key: "getLocalHours",
+        value: function getLocalHours() {
+            return this.getLocalTimeObj().hour;
+        }
+    }, {
+        key: "getLocalMinutes",
+        value: function getLocalMinutes() {
+            return this.getLocalTimeObj().minute;
+        }
+    }, {
+        key: "getLocalSeconds",
+        value: function getLocalSeconds() {
+            return this.getLocalTimeObj().second;
+        }
+    }, {
+        key: "getLocalMillseconds",
+        value: function getLocalMillseconds() {
+            return this.getLocalTimeObj().millsecond;
+        }
+    }, {
+        key: "addTime",
+        value: function addTime(time) {
+            this.localTime += time;return this;
+        }
+    }, {
+        key: "addDays",
+        value: function addDays(days) {
+            this.addTime(days * 24 * 60 * 60 * 1000);return this;
+        }
+    }, {
+        key: "addHours",
+        value: function addHours(hours) {
+            this.addTime(hours * 60 * 60 * 1000);return this;
+        }
+    }, {
+        key: "addMinutes",
+        value: function addMinutes(minutes) {
+            this.addTime(minutes * 60 * 1000);return this;
+        }
+    }, {
+        key: "addSeconds",
+        value: function addSeconds(seconds) {
+            this.addTime(seconds * 1000);return this;
+        }
+    }, {
+        key: "addMillseconds",
+        value: function addMillseconds(millseconds) {
+            this.addTime(millseconds);return this;
+        }
+    }, {
+        key: "addTimeUnit",
+        value: function addTimeUnit(timeUnits) {
+            this.addTime(timeUnits * LocalDate.getTimeUnit());return this;
+        }
+    }], [{
+        key: "getStandardTime",
+        value: function getStandardTime() {
+            return new Date(_config.base.standardTime);
+        }
+    }, {
+        key: "getTimeUnit",
+        value: function getTimeUnit() {
+            return _config.workAssign.timeUnit;
+        }
+    }, {
+        key: "getOpenTime",
+        value: function getOpenTime(day) {
+            return {
+                "start": new LocalDate(_config.base.openTime[day - 1].start),
+                "end": new LocalDate(_config.base.openTime[day - 1].end)
+            };
+        }
+    }, {
+        key: "getWorkTime",
+        value: function getWorkTime(day) {
+            var startDay = _config.workAssign.workStart;
+            return {
+                "start": new LocalDate(_config.workAssign.workTime[day - startDay].start),
+                "end": new LocalDate(_config.workAssign.workTime[day - startDay].end)
+            };
+        }
+    }]);
+
+    return LocalDate;
+}();
 
 function groupArray(array, keys) {
     //array = [Object, Object, ... Object]
