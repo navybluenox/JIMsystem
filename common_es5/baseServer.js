@@ -1,5 +1,3 @@
-'use strict';
-
 //  ---About This---
 /*
 名前

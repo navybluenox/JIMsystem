@@ -1,5 +1,3 @@
-"use strict";
-
 //  ---About This---
 /*
 名前
@@ -178,7 +176,7 @@ function loadDataFromDrive(fileIdStr, mode) {
     return result;
 }
 
-var Database = function Database() {
+var Database = function () {
     this.dataName = "";
     this.dataFileId = "";
     this.rawData = "";
@@ -205,7 +203,7 @@ Database.prototype.add = function (datapieceInsts) {};
 
 Database.prototype.remove = function (datapieceInsts) {};
 
-var Datapiece = function Datapiece(datapieceObj, disableCheck) {
+var Datapiece = function (datapieceObj, disableCheck) {
     this.data = {};
     this.dataName = "";
 };
