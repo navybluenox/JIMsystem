@@ -1,5 +1,9 @@
 "use strict";
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
 //  ---About This---
 /*
 名前
@@ -7,9 +11,9 @@
 依存ファイル
 driveFileId.js
 include.js
+base.js
 baseClient.js
 baseServer.js
-htmlService.js
 
 このファイルについて
 
@@ -34,8 +38,10 @@ htmlService.js
                 ロードした元データがJSON形式の文字列で入っている
             curtData
                 更新を含む現在のデータがObject型で入っている
-            loadVersion
-                ロードした時点でのversionをDateで返す
+            column
+                データのカラム情報が入っている
+            version
+                ロードした時点でのversionがDate型で入っている
             pooledQueue
                 更新待ちのデータの配列
                 queueObj = {type:"###", content:obj(not user-definedClass)}
@@ -52,14 +58,23 @@ htmlService.js
                 更新中か否か
                 更新中であれば開始時間がDateで入っている
                 更新中で無ければ、空文字列が入っている
-        メソッド
+        静的メソッド
+            getChildList()
+                説明
+                    データベース名（dataName）と対応するクラス（className）のペアのリストを返します
+                    Databaseクラスの子のクラスの全てが含まれます
+                        //手打ちが必要
             getData(dataName)
                 説明
                     GoogleDriveからデータをダウンロードして、データに対応したクラスのインスタンスを返します
                 引数
                     dataName
                         ロードするデータ名
-            toJSONData()
+        メソッド
+            getJSON()
+                説明
+                    this.curtDataをJSON形式の文字列にして返します
+            getRawJSON()
                 説明
                     this.curtDataをJSON形式の文字列にして返します
             getValues(deepcopy)
@@ -69,6 +84,25 @@ htmlService.js
                     deepcopy
                         trueなら、deep-copyで返します
                         省略可。省略した場合、false（shallow-copy）となる
+            getValueById(ids,deepcopy)
+                説明
+                    this.curtDataから、IDリスト（ids）に合致するもののみ返します
+                引数
+                    ids
+                        指定するidの配列
+                        文字列を代入すると、一つだけ返します。
+                    deepcopy
+                        trueなら、deep-copyで返します
+                        省略可。省略した場合、false（shallow-copy）となる
+            getRawValues()
+                説明
+                    this.rawDataをJSON.parseして返します
+            getColumns()
+                説明
+                    columnデータを返します
+            getVersion()
+                説明
+                    versionデータを返します
             reloadData()
                 説明
                     データをGoogleDriveからリロードして、this.rawDataを更新します
@@ -78,29 +112,29 @@ htmlService.js
                     this.pooledQueueにあるキューを元にデータを更新します
                     更新中は実行されません
                     更新後、またthis.pooledQueueにキューが残っていれば更新します
-            change(datapieceInsts)
+            change(datapieces)
                 説明
                     既存のデータを更新します
                     変更するデータのキーのみ記入することも可能
                 引数
-                    datapieceInsts
+                    datapieces
                         変更する新しいデータ
                             idキーは必須
                         Datapieceクラスを継承するデータごとのクラスを用いる
                             一つのみであればインスタンスを直接代入、複数であればインスタンスの配列を代入
-            add(datapieceInsts)
+            add(datapieces)
                 説明
                     新規にデータを作成します
                     基本的にデータの全てを設定する必要があります
                 引数
-                    datapieceInsts
+                    datapieces
                         ※詳細はchangeメソッドと同様
-            remove(datapieceInsts)
+            remove(datapieces)
                 説明
                     新規にデータを作成します
                     基本的にデータの全てを設定する必要があります
                 引数
-                    datapieceInsts
+                    datapieces
                         idのみが設定されてれば良い
                         ※詳細はchangeメソッドと同様
 
@@ -178,32 +212,105 @@ function loadDataFromDrive(fileIdStr, mode) {
     return result;
 }
 
-var Database = function Database() {
-    this.dataName = "";
-    this.dataFileId = "";
-    this.rawData = "";
-    this.curtData = [];
-    this.loadVersion = null;
-    this.pooledQueue = [];
-    this.updatingQueue = [];
-    this.updating = false;
-};
+var Database = function () {
+    function Database(fileId) {
+        _classCallCheck(this, Database);
 
-Database.prototype.getData = function (dataName) {};
+        this.dataName = "";
+        this.dataFileId = "";
+        this.rawData = "";
+        this.curtData = [];
+        this.column = [];
+        this.version = null;
+        this.pooledQueue = [];
+        this.updatingQueue = [];
+        this.updating = false;
+    }
 
-Database.prototype.toJSONData = function () {};
+    _createClass(Database, [{
+        key: "getJSON",
+        value: function getJSON() {
+            return JSON.stringify(this.curtData);
+        }
+    }, {
+        key: "getRawJSON",
+        value: function getRawJSON() {
+            return this.rawData;
+        }
+    }, {
+        key: "getValues",
+        value: function getValues(deepcopy) {
+            if (deepcopy) {
+                return JSON.parse(JSON.stringify(this.curtData));
+            } else {
+                return this.curtData;
+            }
+        }
+    }, {
+        key: "getValueById",
+        value: function getValueById(ids, deepcopy) {
+            if (typeof ids == "string") ids = [ids];
+            return this.getValues(deepcopy).filter(function (datapiece) {
+                return ids.inArray(datapiece.id);
+            });
+        }
+    }, {
+        key: "getRawValues",
+        value: function getRawValues() {
+            return JSON.parse(this.rawData);
+        }
+    }, {
+        key: "getColumns",
+        value: function getColumns() {
+            return this.column;
+        }
+    }, {
+        key: "getVersion",
+        value: function getVersion() {
+            return this.version;
+        }
+    }, {
+        key: "reloadDate",
+        value: function reloadDate() {
+            this.rawData = loadFileFromDrive(this.dataFileId);
+            return this;
+        }
+    }, {
+        key: "runUpdate",
+        value: function runUpdate() {}
+    }, {
+        key: "change",
+        value: function change(datapieces) {
+            if (!Array.isArray(datapieces)) datapieces = [datapieces];
+            //this.curtDataは即時更新
+            //undefinedなキーはそのまま（skip）
+        }
+    }, {
+        key: "add",
+        value: function add(datapieces) {
+            if (!Array.isArray(datapieces)) datapieces = [datapieces];
+        }
+    }, {
+        key: "remove",
+        value: function remove(datapieces) {
+            if (!Array.isArray(datapieces)) datapieces = [datapieces];
+        }
+    }], [{
+        key: "getChildList",
+        value: function getChildList() {
+            return [{ dataName: "name1", className: class1 }];
+        }
+    }, {
+        key: "getData",
+        value: function getData(dataName) {
+            return new Database.getChildList().filter(function (obj) {
+                return obj.dataName == dataName;
+            })[0].className();
+        }
+    }]);
 
-Database.prototype.getValues = function (deepcopy) {};
-
-Database.prototype.reloadData = function () {};
-
-Database.prototype.runUpdate = function () {};
-
-Database.prototype.change = function (datapieceInsts) {};
-
-Database.prototype.add = function (datapieceInsts) {};
-
-Database.prototype.remove = function (datapieceInsts) {};
+    return Database;
+}();
 
 var Datapiece = function Datapiece(datapieceObj, disableCheck) {
     this.data = {};

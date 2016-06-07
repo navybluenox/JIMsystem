@@ -67,5 +67,3 @@ class DrivefileId {
         }
     }
 }
-
-const _fileId = new DrivefileId();

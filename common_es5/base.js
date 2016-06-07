@@ -1,3 +1,11 @@
+"use strict";
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
 //  ---About This---
 /*
 名前
@@ -158,11 +166,13 @@ Array.prototype.inArray = Array.prototype.inArray || function (value) {
     return this.indexOf(value) !== -1;
 };
 
-class LocalDate {
-    constructor(timeValue) {
+var LocalDate = function () {
+    function LocalDate(timeValue) {
+        _classCallCheck(this, LocalDate);
+
         var targetTime;
         var standardTime = LocalDate.getStandardTime();
-        switch (typeof timeValue) {
+        switch (typeof timeValue === "undefined" ? "undefined" : _typeof(timeValue)) {
             case "number":
                 this.localTime = timeValue;
                 targetTime = LocalDate.getStandardTime();
@@ -191,84 +201,126 @@ class LocalDate {
                 this.localTime = targetTime.getTime() - standardTime.getTime();
         }
     }
-    static getStandardTime() {
-        return new Date(_config.base.standardTime);
-    }
-    static getTimeUnit() {
-        return _config.workAssign.timeUnit;
-    }
-    static getOpenTime(day) {
-        return {
-            "start": new LocalDate(_config.base.openTime[day - 1].start),
-            "end": new LocalDate(_config.base.openTime[day - 1].end)
-        };
-    }
-    static getWorkTime(day) {
-        var startDay = _config.workAssign.workStart;
-        return {
-            "start": new LocalDate(_config.workAssign.workTime[day - startDay].start),
-            "end": new LocalDate(_config.workAssign.workTime[day - startDay].end)
-        };
-    }
-    getAsDateClass() {
-        var targetTime = LocalDate.getStandardTime();
-        return targetTime.setMilliseconds(targetTime.getMilliseconds() + this.localTime);
-    }
-    getLocalTime() {
-        return this.localTime;
-    }
-    getLocalTimeObj() {
-        var dayOffset = 0;
-        var localTime = this.localTime;
-        while (localTime < 0) {
-            dayOffset--;
-            localTime += 24 * 60 * 60 * 1000;
+
+    _createClass(LocalDate, [{
+        key: "getAsDateClass",
+        value: function getAsDateClass() {
+            var targetTime = LocalDate.getStandardTime();
+            return targetTime.setMilliseconds(targetTime.getMilliseconds() + this.localTime);
         }
-        return {
-            day: (localTime - localTime % (24 * 60 * 60 * 1000)) / (24 * 60 * 60 * 1000) + dayOffset,
-            hour: (localTime % (24 * 60 * 60 * 1000) - localTime % (60 * 60 * 1000)) / (60 * 60 * 1000),
-            minute: (localTime % (60 * 60 * 1000) - localTime % (60 * 1000)) / (60 * 1000),
-            second: (localTime % (60 * 1000) - localTime % 1000) / 1000,
-            millsecond: localTime % 1000
-        };
-    }
-    getLocalDays() {
-        return this.getLocalTimeObj().day;
-    }
-    getLocalHours() {
-        return this.getLocalTimeObj().hour;
-    }
-    getLocalMinutes() {
-        return this.getLocalTimeObj().minute;
-    }
-    getLocalSeconds() {
-        return this.getLocalTimeObj().second;
-    }
-    getLocalMillseconds() {
-        return this.getLocalTimeObj().millsecond;
-    }
-    addTime(time) {
-        this.localTime += time;return this;
-    }
-    addDays(days) {
-        this.addTime(days * 24 * 60 * 60 * 1000);return this;
-    }
-    addHours(hours) {
-        this.addTime(hours * 60 * 60 * 1000);return this;
-    }
-    addMinutes(minutes) {
-        this.addTime(minutes * 60 * 1000);return this;
-    }
-    addSeconds(seconds) {
-        this.addTime(seconds * 1000);return this;
-    }
-    addMillseconds(millseconds) {
-        this.addTime(millseconds);return this;
-    }
-    addTimeUnit(timeUnits) {
-        this.addTime(timeUnits * LocalDate.getTimeUnit());return this;
-    }
-}
+    }, {
+        key: "getLocalTime",
+        value: function getLocalTime() {
+            return this.localTime;
+        }
+    }, {
+        key: "getLocalTimeObj",
+        value: function getLocalTimeObj() {
+            var dayOffset = 0;
+            var localTime = this.localTime;
+            while (localTime < 0) {
+                dayOffset--;
+                localTime += 24 * 60 * 60 * 1000;
+            }
+            return {
+                day: (localTime - localTime % (24 * 60 * 60 * 1000)) / (24 * 60 * 60 * 1000) + dayOffset,
+                hour: (localTime % (24 * 60 * 60 * 1000) - localTime % (60 * 60 * 1000)) / (60 * 60 * 1000),
+                minute: (localTime % (60 * 60 * 1000) - localTime % (60 * 1000)) / (60 * 1000),
+                second: (localTime % (60 * 1000) - localTime % 1000) / 1000,
+                millsecond: localTime % 1000
+            };
+        }
+    }, {
+        key: "getLocalDays",
+        value: function getLocalDays() {
+            return this.getLocalTimeObj().day;
+        }
+    }, {
+        key: "getLocalHours",
+        value: function getLocalHours() {
+            return this.getLocalTimeObj().hour;
+        }
+    }, {
+        key: "getLocalMinutes",
+        value: function getLocalMinutes() {
+            return this.getLocalTimeObj().minute;
+        }
+    }, {
+        key: "getLocalSeconds",
+        value: function getLocalSeconds() {
+            return this.getLocalTimeObj().second;
+        }
+    }, {
+        key: "getLocalMillseconds",
+        value: function getLocalMillseconds() {
+            return this.getLocalTimeObj().millsecond;
+        }
+    }, {
+        key: "addTime",
+        value: function addTime(time) {
+            this.localTime += time;return this;
+        }
+    }, {
+        key: "addDays",
+        value: function addDays(days) {
+            this.addTime(days * 24 * 60 * 60 * 1000);return this;
+        }
+    }, {
+        key: "addHours",
+        value: function addHours(hours) {
+            this.addTime(hours * 60 * 60 * 1000);return this;
+        }
+    }, {
+        key: "addMinutes",
+        value: function addMinutes(minutes) {
+            this.addTime(minutes * 60 * 1000);return this;
+        }
+    }, {
+        key: "addSeconds",
+        value: function addSeconds(seconds) {
+            this.addTime(seconds * 1000);return this;
+        }
+    }, {
+        key: "addMillseconds",
+        value: function addMillseconds(millseconds) {
+            this.addTime(millseconds);return this;
+        }
+    }, {
+        key: "addTimeUnit",
+        value: function addTimeUnit(timeUnits) {
+            this.addTime(timeUnits * LocalDate.getTimeUnit());return this;
+        }
+    }], [{
+        key: "getStandardTime",
+        value: function getStandardTime() {
+            return new Date(_config.base.standardTime);
+        }
+    }, {
+        key: "getTimeUnit",
+        value: function getTimeUnit() {
+            return _config.workAssign.timeUnit;
+        }
+    }, {
+        key: "getOpenTime",
+        value: function getOpenTime(day) {
+            return {
+                "start": new LocalDate(_config.base.openTime[day - 1].start),
+                "end": new LocalDate(_config.base.openTime[day - 1].end)
+            };
+        }
+    }, {
+        key: "getWorkTime",
+        value: function getWorkTime(day) {
+            var startDay = _config.workAssign.workStart;
+            return {
+                "start": new LocalDate(_config.workAssign.workTime[day - startDay].start),
+                "end": new LocalDate(_config.workAssign.workTime[day - startDay].end)
+            };
+        }
+    }]);
+
+    return LocalDate;
+}();
 
 function groupArray(array, keys) {
     //array = [Object, Object, ... Object]

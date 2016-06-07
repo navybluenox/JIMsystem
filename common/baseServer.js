@@ -4,7 +4,9 @@
     baseServer.js
 
 依存ファイル
-    なし
+    include.js
+    base.js
+    driveFileId.js
 
 このファイルについて
     汎用的な関数を集めたファイルです
@@ -58,7 +60,7 @@
 */
 
 function UrlShortenerService(longUrl,avoidLong) {
-  var apiKey  = fileId.apikey.main;
+  var apiKey  = _fileId.apikey.main;
   var apiUrl  = 'https://www.googleapis.com/urlshortener/v1/url?key='+apiKey;
   var options = {
         method: 'POST',

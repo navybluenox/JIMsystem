@@ -1,3 +1,7 @@
+"use strict";
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
 //  ---About This---
 /*
 名前
@@ -36,30 +40,28 @@
         instance of DrivefileId
 */
 
-class DrivefileId {
-    constructor() {
-        this.data = {
-            test: "#0123456789abcdef"
-        };
-        this.script = {
-            base: "",
-            baseClient: "",
-            baseServer: "",
-            DrivefileId: "",
-            editDatabase: "",
-            include: ""
-        };
-        this.config = "";
-        this.gas = {
-            jims: "13MjautTiWxSccdWEVsBl0yra6qncERgaSItg8xXGkS7E1zxFso2COzkD"
-        };
-        this.spreadsheet = {};
-        this.document = {};
-        this.form = {};
-        this.apikey = {
-            main: "AIzaSyBGpG_KNJ4zyZtefN_x_r0KdlxdCmBu7cQ"
-        };
-    }
-}
+var DrivefileId = function DrivefileId() {
+    _classCallCheck(this, DrivefileId);
 
-const _fileId = new DrivefileId();
+    this.data = {
+        test: "#0123456789abcdef"
+    };
+    this.script = {
+        base: "",
+        baseClient: "",
+        baseServer: "",
+        DrivefileId: "",
+        editDatabase: "",
+        include: ""
+    };
+    this.config = "";
+    this.gas = {
+        jims: "13MjautTiWxSccdWEVsBl0yra6qncERgaSItg8xXGkS7E1zxFso2COzkD"
+    };
+    this.spreadsheet = {};
+    this.document = {};
+    this.form = {};
+    this.apikey = {
+        main: "AIzaSyBGpG_KNJ4zyZtefN_x_r0KdlxdCmBu7cQ"
+    };
+};
