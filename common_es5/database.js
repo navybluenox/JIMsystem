@@ -2,6 +2,10 @@
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 //  ---About This---
@@ -18,7 +22,7 @@ baseServer.js
 このファイルについて
 
 定義一覧
-    Databaseクラス
+    Database()クラス
         説明
             GoogleDriveに保存されている各種データをまとめるクラスです
             それぞれのデータベースから生成されたデータオブジェクトのクラスは、このクラスを継承します
@@ -26,93 +30,71 @@ baseServer.js
             生データはdataキーとcolumnキーで構成される
             rawData = {
                 data:[datapiece1, datapiece2, ... ],
-                column:[{name:columnName1,type:columnType1}, ... ],
                 version:Date.ISOString
             }
+        引数
         プロパティ
-            dataName
-                データ名
-            dataFileId
-                データのあるファイルのID
-            rawData
-                ロードした元データがJSON形式の文字列で入っている
-            curtData
-                更新を含む現在のデータがObject型で入っている
-            column
-                データのカラム情報が入っている
-            version
-                ロードした時点でのversionがDate型で入っている
-            pooledQueue
+            cache
+                GoogleDriveからダウンロードしたデータ
+            pendingQueue
                 更新待ちのデータの配列
-                queueObj = {type:"###", content:obj(not user-definedClass)}
+                queueObj = {type:"updateType", dataName:"name1", contents:datapieces}
                     type
-                        create
+                        add
                             データを追加
                         change
                             データを変更
-                        delete
+                        remove
                             データを削除
             updatingQueue
                 更新中のデータの配列
             updating
                 更新中か否か
                 更新中であれば開始時間がDateで入っている
-                更新中で無ければ、空文字列が入っている
+                更新中で無ければ、nullが入っている
+            loading
         静的メソッド
-            getChildList()
+            getDatabaseInfo()
                 説明
-                    データベース名（dataName）と対応するクラス（className）のペアのリストを返します
+                    データ名（dataName）と対応する情報のリストを返します
                     Databaseクラスの子のクラスの全てが含まれます
                         //手打ちが必要
-            getData(dataName)
+        メソッド
+            loadData(dataName)
+            loadDataAll()
+            reloadData(dataName)
+                説明
+                    データをGoogleDriveからリロードして、キャッシュを新しくします
+                    //キャッシュをリフレッシュする際には、ポインタの保存のために.setValue()を使用する
+            getData(dataName,newCopy)
                 説明
                     GoogleDriveからデータをダウンロードして、データに対応したクラスのインスタンスを返します
                 引数
                     dataName
                         ロードするデータ名
-        メソッド
-            getJSON()
-                説明
-                    this.curtDataをJSON形式の文字列にして返します
-            getRawJSON()
-                説明
-                    this.curtDataをJSON形式の文字列にして返します
-            getValues(deepcopy)
-                説明
-                    this.curtDataを返します
-                引数
-                    deepcopy
-                        trueなら、deep-copyで返します
-                        省略可。省略した場合、false（shallow-copy）となる
-            getValueById(ids,deepcopy)
+                    newCopy
+                        常にキャッシュからはロードせず、クラスを作成しなおします
+                        省略可。省略した場合、キャッシュにあるインスタンスのポインタのコピーとなる
+            getDataById(ids,newCopy)
                 説明
                     this.curtDataから、IDリスト（ids）に合致するもののみ返します
                 引数
                     ids
                         指定するidの配列
                         文字列を代入すると、一つだけ返します。
-                    deepcopy
-                        trueなら、deep-copyで返します
-                        省略可。省略した場合、false（shallow-copy）となる
-            getRawValues()
+                        省略もしくは、nullを代入すると、全てのデータを返します
+                    newCopy
+                        常にキャッシュからはロードせず、クラスを作成しなおします
+            getVersion(dataName)
                 説明
-                    this.rawDataをJSON.parseして返します
-            getColumns()
-                説明
-                    columnデータを返します
-            getVersion()
-                説明
-                    versionデータを返します
-            reloadData()
-                説明
-                    データをGoogleDriveからリロードして、this.rawDataを更新します
+                    versionデータをDate型で返します
             //以下はデータの変更関係のメソッド
             runUpdate()
                 説明
                     this.pooledQueueにあるキューを元にデータを更新します
                     更新中は実行されません
                     更新後、またthis.pooledQueueにキューが残っていれば更新します
-            change(datapieces)
+            changeData(datapieces)
                 説明
                     既存のデータを更新します
                     変更するデータのキーのみ記入することも可能
@@ -122,14 +104,14 @@ baseServer.js
                             idキーは必須
                         Datapieceクラスを継承するデータごとのクラスを用いる
                             一つのみであればインスタンスを直接代入、複数であればインスタンスの配列を代入
-            add(datapieces)
+            addData(datapieces)
                 説明
                     新規にデータを作成します
                     基本的にデータの全てを設定する必要があります
                 引数
                     datapieces
                         ※詳細はchangeメソッドと同様
-            remove(datapieces)
+            removeData(datapieces)
                 説明
                     新規にデータを作成します
                     基本的にデータの全てを設定する必要があります
@@ -139,38 +121,31 @@ baseServer.js
                         ※詳細はchangeメソッドと同様
 
 
-    Datapieceクラス
+    Datapiece(dataName,datapieceObj)クラス
         説明
             各種データの一つのデータを格納するクラスです
             Databaseクラスがデータ全体、Datapieceクラスがデータ一つ分
             それぞれのデータベースのデータ一つひとつを表すクラスは、このクラスを継承します
         引数
+            dataName
             datapieceObj
                 インスタンスのデータの元となるオブジェクト
                     細かい定義は継承先のクラスで行う
-            disableCheck
-                必要なカラムが存在するかのチェックを無効にします
-                Database.change()や.delete()などで使用します
-                //それ以外ではtrueにしないほうが良い
-                省略可。省略した場合、false（チェックする）となる
         プロパティ
             data
                 格納されているデータ
             dataName
                 このデータの由来となるデータの名称
         メソッド
-            toJSONData()
-                説明
-                    this.dataをJSON形式の文字列にして返します
-            getValue(deepcopy)
+            setValues(datapieceObj)
+            setValue(columnName,value)
+            getValues()
                 説明
                     this.dataを返します
-                引数
-                    deepcopy
-                        trueなら、deep-copyで返します
-                        省略可。省略した場合、false（shallow-copy）となる
+            getValue(columnName)
+            getDatabaseInfo()
 
-    loadDataFromDrive
+    loadDataFromDrive(fileIdStr,mode)
         説明
             GoogleDriveからJSON形式で保存されたデータを取得します
         引数
@@ -180,30 +155,32 @@ baseServer.js
                 返り値のデータの指定
                     all
                         rawDataを返す
+                    raw
+                        rawData（JSON文字列）を返す
                     data
                         データ本体を返す
                     column
                         カラムデータを返す
                     version
                         データの更新日時を返す
-                省略可。省略した場合、dataとなる
+                省略可。省略した場合、allとなる
 */
 
 function loadDataFromDrive(fileIdStr, mode) {
     var result;
-    if (mode == null) mode = "data";
-
-    var rawData = JSON.parse(loadFileFromDrive(fileIdStr));
+    if (mode == null) mode = "all";
+    var raw = loadFileFromDrive(fileIdStr);
+    var rawData = JSON.parse(raw);
 
     switch (mode) {
         case "all":
             result = rawData;
             break;
+        case "raw":
+            result = raw;
+            break;
         case "data":
             result = rawData.data;
-            break;
-        case "column":
-            result = rawData.column;
             break;
         case "version":
             result = rawData.version;
@@ -213,106 +190,157 @@ function loadDataFromDrive(fileIdStr, mode) {
 }
 
 var Database = function () {
-    function Database(fileId) {
+    function Database() {
         _classCallCheck(this, Database);
 
-        this.dataName = "";
-        this.dataFileId = "";
-        this.rawData = "";
-        this.curtData = [];
-        this.column = [];
-        this.version = null;
-        this.pooledQueue = [];
+        this.cache = {};
+        this.pendingQueue = [];
         this.updatingQueue = [];
         this.updating = false;
+        this.loading = [];
     }
 
     _createClass(Database, [{
-        key: "getJSON",
-        value: function getJSON() {
-            return JSON.stringify(this.curtData);
-        }
-    }, {
-        key: "getRawJSON",
-        value: function getRawJSON() {
-            return this.rawData;
-        }
-    }, {
-        key: "getValues",
-        value: function getValues(deepcopy) {
-            if (deepcopy) {
-                return JSON.parse(JSON.stringify(this.curtData));
-            } else {
-                return this.curtData;
-            }
-        }
-    }, {
-        key: "getValueById",
-        value: function getValueById(ids, deepcopy) {
-            if (typeof ids == "string") ids = [ids];
-            return this.getValues(deepcopy).filter(function (datapiece) {
-                return ids.inArray(datapiece.id);
+        key: "loadData",
+        value: function loadData(dataName) {
+            var dbInfo = Database.getDatabaseInfo(dataName);
+            if (dbInfo == null) return null;
+            //TODO this.loadingにpush
+            branchProcessOnSide(function () {
+                //client
+                //JSON形式でサーバーから送信してもらうためrawモード
+                google.script.run.withSuccessHandler(function (v) {
+                    this.cache[dataName] = JSON.parse(v);
+                    this.cache[dataName].data = this.cache[dataName].data.map(function (obj) {
+                        return dbInfo.classObj(obj);
+                    });
+                }).loadDataFromDrive(dbInfo.fileId, "raw");
+            }, function () {
+                //server
+                this.cache[dataName] = loadDataFromDrive(dbInfo.fileId);
+                this.cache[dataName].data = this.cache[dataName].data.map(function (obj) {
+                    return dbInfo.classObj(obj);
+                });
             });
         }
     }, {
-        key: "getRawValues",
-        value: function getRawValues() {
-            return JSON.parse(this.rawData);
+        key: "loadDataAll",
+        value: function loadDataAll() {
+            return Database.getDatabaseInfo().map(function (info) {
+                return this.loadData(info.dataName);
+            });
         }
     }, {
-        key: "getColumns",
-        value: function getColumns() {
-            return this.column;
-        }
+        key: "reloadData",
+        value: function reloadData(dataName) {}
+    }, {
+        key: "getData",
+        value: function getData(dataName, newCopy) {}
+    }, {
+        key: "getDataById",
+        value: function getDataById(ids, newCopy) {}
     }, {
         key: "getVersion",
-        value: function getVersion() {
-            return this.version;
-        }
-    }, {
-        key: "reloadDate",
-        value: function reloadDate() {
-            this.rawData = loadFileFromDrive(this.dataFileId);
-            return this;
-        }
+        value: function getVersion(dataName) {}
     }, {
         key: "runUpdate",
         value: function runUpdate() {}
     }, {
-        key: "change",
-        value: function change(datapieces) {
+        key: "changeData",
+        value: function changeData(datapieces) {
             if (!Array.isArray(datapieces)) datapieces = [datapieces];
-            //this.curtDataは即時更新
             //undefinedなキーはそのまま（skip）
         }
     }, {
-        key: "add",
-        value: function add(datapieces) {
+        key: "addData",
+        value: function addData(datapieces) {
             if (!Array.isArray(datapieces)) datapieces = [datapieces];
         }
     }, {
-        key: "remove",
-        value: function remove(datapieces) {
+        key: "removeData",
+        value: function removeData(datapieces) {
             if (!Array.isArray(datapieces)) datapieces = [datapieces];
         }
     }], [{
-        key: "getChildList",
-        value: function getChildList() {
-            return [{ dataName: "name1", className: class1 }];
-        }
-    }, {
-        key: "getData",
-        value: function getData(dataName) {
-            return new Database.getChildList().filter(function (obj) {
-                return obj.dataName == dataName;
-            })[0].className();
+        key: "getDatabaseInfo",
+        value: function getDatabaseInfo(dataName) {
+            var list = [{ dataName: "name1", classObj: class1, fileId: "fileId1", column: [{ name: "cName1", type: "cType1", defaultValue: "" }] }];
+            if (typeof dataName == "string") {
+                return list.find(function (v) {
+                    return v.dataName == dataName;
+                });
+            } else {
+                return list;
+            }
         }
     }]);
 
     return Database;
 }();
 
-var Datapiece = function Datapiece(datapieceObj, disableCheck) {
-    this.data = {};
-    this.dataName = "";
-};
+var Datapiece = function () {
+    function Datapiece(dataName, datapieceObj) {
+        _classCallCheck(this, Datapiece);
+
+        this.dataName = dataName;
+        this.data = {};
+        this.getColumns().forEach(function (column) {
+            if (typeof datapieceObj[column.name] != "undefined") {
+                this.data[column] = datapieceObj[column];
+            } else if (typeof column.defaultValue != null) {
+                this.data[column] = column.defaultValue;
+            }
+        });
+    }
+
+    _createClass(Datapiece, [{
+        key: "setValues",
+        value: function setValues(datapieceObj) {
+            this.getDatabaseInfo().column.forEach(function (column) {
+                if (typeof datapieceObj[column.name] != "undefined") {
+                    this.data[column] = datapieceObj[column];
+                }
+            });
+            return this;
+        }
+    }, {
+        key: "setValue",
+        value: function setValue(columnName, value) {
+            if (this.getDatabaseInfo().column.map(function (v) {
+                return v.name;
+            }).inArray(columnName)) {
+                this.data[columnName] = value;
+            }
+            return this;
+        }
+    }, {
+        key: "getValues",
+        value: function getValues() {
+            return this.data;
+        }
+    }, {
+        key: "getValue",
+        value: function getValue(columnName) {
+            return this.data[columnName];
+        }
+    }, {
+        key: "getDatabaseInfo",
+        value: function getDatabaseInfo() {
+            return Database.getDatabaseInfo(this.dataName);
+        }
+    }]);
+
+    return Datapiece;
+}();
+
+var User = function (_Datapiece) {
+    _inherits(User, _Datapiece);
+
+    function User(datapieceObj) {
+        _classCallCheck(this, User);
+
+        return _possibleConstructorReturn(this, Object.getPrototypeOf(User).call(this, "user", datapieceObj));
+    }
+
+    return User;
+}(Datapiece);

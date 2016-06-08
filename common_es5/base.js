@@ -91,6 +91,20 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                             進める単位時間の数
                                 timeUnitsの時間はconfig.json参照
 
+    branchProcessOnSide(arguments,funCilent,funServer,thisObj)
+        説明
+            cilent-sideとserver-sideで処理を変えます
+        引数
+            arguments
+                funCilent関数とfunServer関数に代入する引数の配列
+            funCilent
+                cilent-sideで実行する関数
+            funServer
+                server-sideで実行する関数
+            thisObj
+                funCilent,funServerでthisとして扱うオブジェクト
+                省略可。省略した場合、この関数でのthisが代入される
+
     groupArray(array,keys)
         説明
             データが入ったオブジェクトの配列を、オブジェクトのキーごとにまとめる
@@ -321,6 +335,15 @@ var LocalDate = function () {
 
     return LocalDate;
 }();
+
+function branchProcessOnSide(funCilent, funServer, _arguments, thisObj) {
+    if (thisObj == null) thisObj = this;
+    if (_status.whichSide == "cilent") {
+        funCilent.apply(thisObj, _arguments);
+    } else if (_status.whichSide == "server") {
+        funServer.apply(thisObj, _arguments);
+    }
+}
 
 function groupArray(array, keys) {
     //array = [Object, Object, ... Object]

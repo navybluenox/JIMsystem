@@ -258,12 +258,12 @@ class LocalDate {
     addTimeUnit(timeUnits){this.addTime(timeUnits * LocalDate.getTimeUnit()); return this;}
 }
 
-function branchProcessOnSide(funCilent,funServer,arguments,thisObj){
+function branchProcessOnSide(funCilent,funServer,_arguments,thisObj){
     if(thisObj == null)  thisObj = this;
     if(_status.whichSide == "cilent"){
-        funCilent.apply(thisObj,arguments);
+        funCilent.apply(thisObj,_arguments);
     }else if(_status.whichSide == "server"){
-        funServer.apply(thisObj,arguments);
+        funServer.apply(thisObj,_arguments);
     }
 }
 
