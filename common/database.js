@@ -12,7 +12,7 @@ baseServer.js
 このファイルについて
 
 定義一覧
-    Databaseクラス
+    Database(dataName,fileId)クラス
         説明
             GoogleDriveに保存されている各種データをまとめるクラスです
             それぞれのデータベースから生成されたデータオブジェクトのクラスは、このクラスを継承します
@@ -23,10 +23,15 @@ baseServer.js
                 column:[{name:columnName1,type:columnType1}, ... ],
                 version:Date.ISOString
             }
+        引数
+            dataName
+                データ名
+            fileId
+                ファイルID
         プロパティ
             dataName
                 データ名
-            dataFileId
+            ｆileId
                 データのあるファイルのID
             rawData
                 ロードした元データがJSON形式の文字列で入っている
@@ -55,7 +60,7 @@ baseServer.js
         静的メソッド
             getChildList()
                 説明
-                    データベース名（dataName）と対応するクラス（className）のペアのリストを返します
+                    データベース名（dataName）と対応するクラス（dataName）のペアのリストを返します
                     Databaseクラスの子のクラスの全てが含まれます
                         //手打ちが必要
             getData(dataName)
@@ -207,24 +212,36 @@ function loadDataFromDrive(fileIdStr, mode) {
 }
 
 class Database{
-    constructor(fileId){
-        this.dataName = "";
-        this.dataFileId = "";
-        this.rawData = "";
-        this.curtData = [];
-        this.column = [];
-        this.version = null;
-        this.pooledQueue = [];
-        this.updatingQueue = [];
-        this.updating = false;
+    constructor(dataName,fileId){
+        if(dataName != null){
+            this.dataName = dataName;
+            if(fileId != null){
+                this.fileId = fileId;
+            }else{
+                this.fileId = Database.getChildList.find(function(v){return v.dataName == dataName}).fileId;
+            }
+            if(this.fileId != null){
+                //サーバーからデータをダウンロード
+            }
+        }else{
+            this.dataName = "";
+            this.ｆileId = "";
+            this.rawData = "";
+            this.curtData = [];
+            this.column = [];
+            this.version = null;
+            this.pooledQueue = [];
+            this.updatingQueue = [];
+            this.updating = false;
+        }
     }
     static getChildList(){
         return [
-            {dataName:"name1",className:class1}
+            {dataName:"name1",fileId:"fileId1",classObj:class1}
         ]
     }
     static getData(dataName){
-        return new Database.getChildList().filter(function(obj){return obj.dataName==dataName})[0].className();
+        return new Database.getChildList().find(function(obj){return obj.dataName==dataName}).classObj();
     }
     getJSON(){
         return JSON.stringify(this.curtData);
