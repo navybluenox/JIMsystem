@@ -258,7 +258,7 @@ class LocalDate {
     addTimeUnit(timeUnits){this.addTime(timeUnits * LocalDate.getTimeUnit()); return this;}
 }
 
-function branchProcessOnSide(arguments,funCilent,funServer,thisObj){
+function branchProcessOnSide(funCilent,funServer,arguments,thisObj){
     if(thisObj == null)  thisObj = this;
     if(_status.whichSide == "cilent"){
         funCilent.apply(thisObj,arguments);

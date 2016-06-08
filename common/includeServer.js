@@ -25,7 +25,7 @@
         JIMシステムで用いる様々な設定を格納している変数です
         ./config.jsonからロードしています
 
-    fileId変数
+    _fileId変数
         DrivefileIdのインスタンス
 
     geval(evaluateStr)
@@ -76,14 +76,6 @@
 
     var geval = eval;
 
-    const _fileId = new DrivefileId();
-
-    //driveFileId.jsのファイルIDのみ直書きが必要
-    geval(loadFileFromDrive("##fileId of driveFileId.js##"));
-
-    //_configを設定
-    var _config = JSON.parse(loadFileFromDrive(_fileId.config));
-
     //_statusを設定
     try{
         _status;
@@ -101,6 +93,23 @@
         }
     }
 
+    var _fileId,_config;
+    if(_status.whichSide == "server"){
+        //driveFileId.jsのファイルIDのみ直書きが必要
+        geval(loadFileFromDrive("##fileId of driveFileId.js##"));
+        _fileId = new DrivefileId();
+        _config = JSON.parse(loadFileFromDrive(_fileId.config));
+    }else if(_status.whichSide == "client"){
+        _fileId = new DrivefileId();
+        google.script.run.withSuccessHandler(function(v){
+            _config = JSON.parse(v);
+        }).loadFileFromDrive(_fileId.config)
+    }
+
+
+    //_configを設定
+
+
 //include.jsが読み込まれると実行される部分　ここまで
 
 function include(configInclude){
@@ -111,17 +120,6 @@ function include(configInclude){
         includeFileIds = includeFileIds.concat([
 
         ]);
-        //clinetサイドでロードするファイルID
-        if(_status.whichSide == "client"){
-            includeFileIds = includeFileIds.concat([
-
-            ]);
-        //serverサイドでロードするファイルID
-        }else if(_status.whichSide == "server"){
-            includeFileIds = includeFileIds.concat([
-
-            ]);
-        }
     }
     if(configInclude.enable){
         if(typeof configInclude.enable == "string")  configInclude.enable = [configInclude.enable];
