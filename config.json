@@ -17,7 +17,7 @@
             {
                 "start":{"hour":9,"minute":0},
                 "end":{"hour":17,"minute":0}
-            },
+            }
         ]
     },
     //人割で使用する設定

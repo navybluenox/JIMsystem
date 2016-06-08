@@ -12,7 +12,7 @@ baseServer.js
 このファイルについて
 
 定義一覧
-    Database(dataName,fileId)クラス
+    Database()クラス
         説明
             GoogleDriveに保存されている各種データをまとめるクラスです
             それぞれのデータベースから生成されたデータオブジェクトのクラスは、このクラスを継承します
@@ -20,91 +20,66 @@ baseServer.js
             生データはdataキーとcolumnキーで構成される
             rawData = {
                 data:[datapiece1, datapiece2, ... ],
-                column:[{name:columnName1,type:columnType1}, ... ],
                 version:Date.ISOString
             }
         引数
-            dataName
-                データ名
-            fileId
-                ファイルID
         プロパティ
-            dataName
-                データ名
-            ｆileId
-                データのあるファイルのID
-            rawData
-                ロードした元データがJSON形式の文字列で入っている
-            curtData
-                更新を含む現在のデータがObject型で入っている
-            column
-                データのカラム情報が入っている
-            version
-                ロードした時点でのversionがDate型で入っている
+            databaseList
+                全データベースについてのリスト
+            cache
+                GoogleDriveからダウンロードしたデータ
             pooledQueue
                 更新待ちのデータの配列
-                queueObj = {type:"###", content:obj(not user-definedClass)}
+                queueObj = {type:"updateType", dataName:"name1", contents:datapieces}
                     type
-                        create
+                        add
                             データを追加
                         change
                             データを変更
-                        delete
+                        remove
                             データを削除
             updatingQueue
                 更新中のデータの配列
             updating
                 更新中か否か
                 更新中であれば開始時間がDateで入っている
-                更新中で無ければ、空文字列が入っている
+                更新中で無ければ、nullが入っている
         静的メソッド
-            getChildList()
+            getDatabaseInfo()
                 説明
-                    データベース名（dataName）と対応するクラス（dataName）のペアのリストを返します
+                    データ名（dataName）と対応するクラス（dataName）のペアのリストを返します
                     Databaseクラスの子のクラスの全てが含まれます
                         //手打ちが必要
-            getData(dataName)
+        メソッド
+            getData(dataName,newCopy)
                 説明
                     GoogleDriveからデータをダウンロードして、データに対応したクラスのインスタンスを返します
                 引数
                     dataName
                         ロードするデータ名
-        メソッド
-            getJSON()
-                説明
-                    this.curtDataをJSON形式の文字列にして返します
-            getRawJSON()
-                説明
-                    this.curtDataをJSON形式の文字列にして返します
-            getValues(deepcopy)
-                説明
-                    this.curtDataを返します
-                引数
-                    deepcopy
-                        trueなら、deep-copyで返します
-                        省略可。省略した場合、false（shallow-copy）となる
-            getValueById(ids,deepcopy)
+                    newCopy
+                        常にキャッシュからはロードせず、クラスを作成しなおします
+                        省略可。省略した場合、キャッシュにあるインスタンスのポインタのコピーとなる
+            getDataById(ids,newCopy)
                 説明
                     this.curtDataから、IDリスト（ids）に合致するもののみ返します
                 引数
                     ids
                         指定するidの配列
                         文字列を代入すると、一つだけ返します。
-                    deepcopy
-                        trueなら、deep-copyで返します
-                        省略可。省略した場合、false（shallow-copy）となる
-            getRawValues()
-                説明
-                    this.rawDataをJSON.parseして返します
-            getColumns()
+                        省略もしくは、nullを代入すると、全てのデータを返します
+                    newCopy
+                        常にキャッシュからはロードせず、クラスを作成しなおします
+            getColumns(dataName)
                 説明
                     columnデータを返します
-            getVersion()
+            getVersion(dataName)
                 説明
-                    versionデータを返します
+                    versionデータをDate型で返します
             reloadData()
                 説明
-                    データをGoogleDriveからリロードして、this.rawDataを更新します
+                    データをGoogleDriveからリロードして、キャッシュを新しくします
+                    //キャッシュをリフレッシュする際には、ポインタの保存のために.setValue()を使用する
             //以下はデータの変更関係のメソッド
             runUpdate()
                 説明
@@ -138,7 +113,7 @@ baseServer.js
                         ※詳細はchangeメソッドと同様
 
 
-    Datapieceクラス
+    Datapiece(datapieceObj,disableCheck)クラス
         説明
             各種データの一つのデータを格納するクラスです
             Databaseクラスがデータ全体、Datapieceクラスがデータ一つ分
@@ -157,6 +132,10 @@ baseServer.js
                 格納されているデータ
             dataName
                 このデータの由来となるデータの名称
+        静的メソッド
+            //TODO
+            getDataInfo()
+
         メソッド
             toJSONData()
                 説明
@@ -169,7 +148,7 @@ baseServer.js
                         trueなら、deep-copyで返します
                         省略可。省略した場合、false（shallow-copy）となる
 
-    loadDataFromDrive
+    loadDataFromDrive(fileIdStr,mode)
         説明
             GoogleDriveからJSON形式で保存されたデータを取得します
         引数
@@ -179,24 +158,29 @@ baseServer.js
                 返り値のデータの指定
                     all
                         rawDataを返す
+                    raw
+                        rawData（JSON文字列）を返す
                     data
                         データ本体を返す
                     column
                         カラムデータを返す
                     version
                         データの更新日時を返す
-                省略可。省略した場合、dataとなる
+                省略可。省略した場合、allとなる
 */
 
 function loadDataFromDrive(fileIdStr, mode) {
     var result;
-    if (mode == null) mode = "data";
-
-    var rawData = JSON.parse(loadFileFromDrive(fileIdStr));
+    if (mode == null) mode = "all";
+    var raw = loadFileFromDrive(fileIdStr);
+    var rawData = JSON.parse(raw);
 
     switch (mode) {
         case "all":
             result = rawData;
+            break;
+        case "raw":
+            result = raw;
             break;
         case "data":
             result = rawData.data;
@@ -212,6 +196,10 @@ function loadDataFromDrive(fileIdStr, mode) {
 }
 
 class Database{
+    constructor(){
+        this.
+
+    }
     constructor(dataName,fileId){
         if(dataName != null){
             this.dataName = dataName;
@@ -222,26 +210,33 @@ class Database{
             }
             if(this.fileId != null){
                 //サーバーからデータをダウンロード
+                this.rawData = loadDataFromDrive(this.fileId,"raw");
+                this.curtData = JSON.parse(this.rawData);
+                this.column = this.curtData.column;
+                this.version = new Date(this.curtData.version);
             }
         }else{
             this.dataName = "";
-            this.ｆileId = "";
+            this.fileId = "";
             this.rawData = "";
             this.curtData = [];
             this.column = [];
             this.version = null;
-            this.pooledQueue = [];
-            this.updatingQueue = [];
-            this.updating = false;
         }
+        this.pooledQueue = [];
+        this.updatingQueue = [];
+        this.updating = false;
     }
     static getChildList(){
         return [
-            {dataName:"name1",fileId:"fileId1",classObj:class1}
+            {dataName:"name1",classObj:class1,fileId:"fileId1"}
         ]
     }
-    static getData(dataName){
-        return new Database.getChildList().find(function(obj){return obj.dataName==dataName}).classObj();
+    static getChildInfoByName(dataName){
+        return Database.getChildList().find(function(obj){return obj.dataName==dataName});
+    }
+    static getDatabase(dataName){
+        return new Database.getChildInfoByName(dataName).classObj();
     }
     getJSON(){
         return JSON.stringify(this.curtData);
@@ -291,9 +286,27 @@ class Database{
     }
 }
 
+class Datapiece{
+    constructor(datapieceObj, columnList, disableCheck){
+        this.data = datapieceObj;
+        this.dataName = {};
+        if(disableCheck){
+            if(needColumns == null)  needColumns = [];
+            //TODO
+            needColumns = needColumns.concat(["id"]);
+            var noColumnList = needColumns
 
-var Datapiece = function (datapieceObj, disableCheck) {
-    this.data = {};
-    this.dataName = "";
+        }
+    }
+    static getChildList(){
+        return [
+            {dataName:"name1",classObj:class1,}
+        ]
+    }
+    static getChildInfoByName(dataName){
+        return Datapiece.getChildList().find(function(obj){return obj.dataName==dataName});
+    }
 }
+
+
 
