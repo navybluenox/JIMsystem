@@ -1,13 +1,3 @@
-"use strict";
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
 //  ---About This---
 /*
 名前
@@ -189,158 +179,168 @@ function loadDataFromDrive(fileIdStr, mode) {
     return result;
 }
 
-var Database = function () {
-    function Database() {
-        _classCallCheck(this, Database);
-
+class Database{
+    constructor(){
         this.cache = {};
         this.pendingQueue = [];
         this.updatingQueue = [];
         this.updating = false;
         this.loading = [];
     }
-
-    _createClass(Database, [{
-        key: "loadData",
-        value: function loadData(dataName) {
-            var dbInfo = Database.getDatabaseInfo(dataName);
-            if (dbInfo == null) return null;
-            //TODO this.loadingにpush
-            branchProcessOnSide(function () {
-                //client
-                //JSON形式でサーバーから送信してもらうためrawモード
-                google.script.run.withSuccessHandler(function (v) {
-                    this.cache[dataName] = JSON.parse(v);
-                    this.cache[dataName].data = this.cache[dataName].data.map(function (obj) {
-                        return dbInfo.classObj(obj);
-                    });
-                }).loadDataFromDrive(dbInfo.fileId, "raw");
-            }, function () {
-                //server
-                this.cache[dataName] = loadDataFromDrive(dbInfo.fileId);
-                this.cache[dataName].data = this.cache[dataName].data.map(function (obj) {
-                    return dbInfo.classObj(obj);
-                });
-            });
+    static getDatabaseInfo(dataName){
+        var list =  [
+            {dataName:"name1", classObj:class1, fileId:"fileId1", column:[
+                {name:"cName1", type:"cType1", defaultValue:""}
+            ]}
+        ];
+        if(typeof dataName == "string"){
+            return list.find(function(v){return v.dataName == dataName});
+        }else{
+            return list;
         }
-    }, {
-        key: "loadDataAll",
-        value: function loadDataAll() {
-            return Database.getDatabaseInfo().map(function (info) {
-                return this.loadData(info.dataName);
-            });
+    }
+    loadData(dataName){
+        var dbInfo = Database.getDatabaseInfo(dataName);
+        if(dbInfo == null)  return null;
+        //TODO this.loadingにpush
+        this.loading.push(dataName);
+        this.cache[dataName] = loadDataFromDrive(dbInfo.fileId);
+        this.cache[dataName].data = this.cache[dataName].data.map(function(obj){
+            return new dbInfo.classObj(obj);
+        });
+        this.loading.filter(function(v){return v != dataName});
+        return this.cache[dataName].data;
+    }
+    loadDataAll(){
+        return Database.getDatabaseInfo().map(function(info){return this.loadData(info.dataName)});
+    }
+    reloadData(dataName){
+        if(this.cache[dataName] == null){
+            this.loadData(dataName);
+            return this.cache[dataName].data;
         }
-    }, {
-        key: "reloadData",
-        value: function reloadData(dataName) {}
-    }, {
-        key: "getData",
-        value: function getData(dataName, newCopy) {}
-    }, {
-        key: "getDataById",
-        value: function getDataById(ids, newCopy) {}
-    }, {
-        key: "getVersion",
-        value: function getVersion(dataName) {}
-    }, {
-        key: "runUpdate",
-        value: function runUpdate() {}
-    }, {
-        key: "changeData",
-        value: function changeData(datapieces) {
-            if (!Array.isArray(datapieces)) datapieces = [datapieces];
-            //undefinedなキーはそのまま（skip）
-        }
-    }, {
-        key: "addData",
-        value: function addData(datapieces) {
-            if (!Array.isArray(datapieces)) datapieces = [datapieces];
-        }
-    }, {
-        key: "removeData",
-        value: function removeData(datapieces) {
-            if (!Array.isArray(datapieces)) datapieces = [datapieces];
-        }
-    }], [{
-        key: "getDatabaseInfo",
-        value: function getDatabaseInfo(dataName) {
-            var list = [{ dataName: "name1", classObj: class1, fileId: "fileId1", column: [{ name: "cName1", type: "cType1", defaultValue: "" }] }];
-            if (typeof dataName == "string") {
-                return list.find(function (v) {
-                    return v.dataName == dataName;
-                });
-            } else {
-                return list;
+        var dbInfo = Database.getDatabaseInfo(dataName);
+        var dataNow = [].concat(this.cache[dataName].data);
+        var dataNew = loadDataFromDrive(dbInfo.fileId).data.map(function(obj){
+            return new dbInfo.classObj(obj);
+        });
+        var datapiece,dataAdded=[],index;
+        while(dataNew.length){
+            datapiece = dataNew.shift();
+            index = dataNow.findIndex(function(p){return p.getValue("id") == datapiece.getValue("id")});
+            if(index != -1){
+                dataNow[index].setValues(datapiece.getValues());
+                dataNow.splice(index,1);
+            }else{
+                this.cache[dataName].data.push(datapiece);
             }
         }
-    }]);
+        //delete
+        dataNow.forEach(function(p){
+            var deletePiece = this.cache[dataName].data.find(function(p1){return p1.getValue("id") == p.getValue("id")});
+            deletePiece.deleteValues();
+        });
+        this.cache[dataName].data = this.cache[dataName].data.filter(function(obj){return !!obj.getValues()});
+    }
+    getData(dataName,newCopy){
+        var result;
+        if(newCopy == null) newCopy = true;
+        if(this.cache[dataName] != null){
+            //キャッシュがある
+            result = this.cache[dataName].data;
+        }else{
+            result = this.loadData(dataName);
+        }
+        if(newCopy){
+            return [].concat(result);
+        }else{
+            return result;
+        }
+    }
+    getDataById(ids){
+        if(!Array.isArray(ids))  ids = [ids];
+        return this.getData(dataName).filter(function(datapiece){
+            return ids.inArray(datapiece.getValue("id"));
+        });
+    }
+    getVersion(dataName){
+        return new Date(this.cache[dataName].version);
+    }
+    runUpdate(){
 
-    return Database;
-}();
+    }
+    changeData(datapieces){
+        if(!Array.isArray(datapieces))  datapieces = [datapieces];
+        //undefinedなキーはそのまま（skip）
+    }
+    addData(datapieces){
+        if(!Array.isArray(datapieces))  datapieces = [datapieces];
 
-var Datapiece = function () {
-    function Datapiece(dataName, datapieceObj) {
-        _classCallCheck(this, Datapiece);
+    }
+    removeData(datapieces){
+        if(!Array.isArray(datapieces))  datapieces = [datapieces];
 
+    }
+}
+
+class Datapiece{
+    constructor(dataName,datapieceObj){
         this.dataName = dataName;
         this.data = {};
-        this.getColumns().forEach(function (column) {
-            if (typeof datapieceObj[column.name] != "undefined") {
+        this.getColumns().forEach(function(column){
+            if(typeof datapieceObj[column.name] != "undefined"){
                 this.data[column] = datapieceObj[column];
-            } else if (typeof column.defaultValue != null) {
+            }else if(typeof column.defaultValue != null){
                 this.data[column] = column.defaultValue;
             }
         });
     }
-
-    _createClass(Datapiece, [{
-        key: "setValues",
-        value: function setValues(datapieceObj) {
-            this.getDatabaseInfo().column.forEach(function (column) {
-                if (typeof datapieceObj[column.name] != "undefined") {
-                    this.data[column] = datapieceObj[column];
-                }
-            });
-            return this;
-        }
-    }, {
-        key: "setValue",
-        value: function setValue(columnName, value) {
-            if (this.getDatabaseInfo().column.map(function (v) {
-                return v.name;
-            }).inArray(columnName)) {
-                this.data[columnName] = value;
+    setValues(datapieceObj){
+        this.getDatabaseInfo().column.forEach(function(column){
+            if(typeof datapieceObj[column.name] != "undefined"){
+                this.data[column] = datapieceObj[column];
             }
-            return this;
-        }
-    }, {
-        key: "getValues",
-        value: function getValues() {
-            return this.data;
-        }
-    }, {
-        key: "getValue",
-        value: function getValue(columnName) {
-            return this.data[columnName];
-        }
-    }, {
-        key: "getDatabaseInfo",
-        value: function getDatabaseInfo() {
-            return Database.getDatabaseInfo(this.dataName);
-        }
-    }]);
-
-    return Datapiece;
-}();
-
-var User = function (_Datapiece) {
-    _inherits(User, _Datapiece);
-
-    function User(datapieceObj) {
-        _classCallCheck(this, User);
-
-        return _possibleConstructorReturn(this, Object.getPrototypeOf(User).call(this, "user", datapieceObj));
+        });
+        return this;
     }
+    setValue(columnName,value){
+        if(this.getDatabaseInfo().column.map(function(v){return v.name}).inArray(columnName)){
+            this.data[columnName] = value;
+        }
+        return this;
+    }
+    deleteValues(){
+        delete this.data;
+    }
+    deleteValue(columnName,setDefault){
+        if(setDefault == null || setDefault){
+            var dv = this.getColumns().find(function(v){return v.name = columnName}).defaultValue;
+            if(dv){
+                this.data[columnName] = dv;
+            }else{
+                delete this.data[columnName];
+            }
+        }else{
+            delete this.data[columnName];
+        }
+    }
+    getValues(){
+        return this.data;
+    }
+    getValue(columnName){
+        return this.data[columnName];
+    }
+    getColumns(){
+        return this.getDatabaseInfo().column;
+    }
+    getDatabaseInfo(){
+        return Database.getDatabaseInfo(this.dataName);
+    }
+}
 
-    return User;
-}(Datapiece);
+class User extends Datapiece{
+    constructor(datapieceObj){
+        super("user",datapieceObj);
+    }
+}
+

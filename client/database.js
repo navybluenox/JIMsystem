@@ -203,25 +203,15 @@ class Database{
         var dbInfo = Database.getDatabaseInfo(dataName);
         if(dbInfo == null)  return null;
         //TODO this.loadingにpush
-        branchProcessOnSide(function(){
-            //client
-            //JSON形式でサーバーから送信してもらうためrawモード
-            google.script.run.withSuccessHandler(function(v){
-                this.cache[dataName] = JSON.parse(v);
-                this.cache[dataName].data = this.cache[dataName].data.map(function(obj){
-                    return dbInfo.classObj(obj);
-                });
-            }).loadDataFromDrive(dbInfo.fileId,"raw");
-        },function(){
-            //server
-            this.cache[dataName] = loadDataFromDrive(dbInfo.fileId);
+        google.script.run.withSuccessHandler(function(v){
+            this.cache[dataName] = JSON.parse(v);
             this.cache[dataName].data = this.cache[dataName].data.map(function(obj){
                 return dbInfo.classObj(obj);
             });
-        })
+        }).loadDataFromDrive(dbInfo.fileId,"raw");
     }
     loadDataAll(){
-        return Database.getDatabaseInfo().map(function(info){return this.loadData(info.dataName)});
+        Database.getDatabaseInfo().map(function(info){return this.loadData(info.dataName)});
     }
     reloadData(dataName){
 

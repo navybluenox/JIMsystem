@@ -1,9 +1,7 @@
-"use strict";
-
 //  ---About This---
 /*
 名前
-    include.js
+    start.js
 
 依存ファイル
     driveFileId.js
@@ -39,41 +37,16 @@
 
 */
 
-//include.jsが読み込まれると実行される部分　ここから
+//start.jsが読み込まれると実行される部分　ここから
 //汎用的なオブジェクトなどはここで作成
 
-var geval = eval;
-
-//_statusを設定
-try {
-    _status;
-} catch (e) {
-    _status = {};
-}
-
-if (_status.whichSide == null) {
-    try {
-        console.log("All the scripts work as client-side");
-        _status.whichSide = "client";
-    } catch (e) {
-        Logger.log("All the scripts work as server-side");
-        _status.whichSide = "server";
+    var geval = eval;
+    var _status = {
+        whichSide:"client"
     }
-}
+    var _config,_fileId = new DrivefileId();
+    runServerFun("loadFileFromDrive",_fileId.config,function(v){
+        _config = v;
+    })
 
-var _fileId, _config;
-if (_status.whichSide == "server") {
-    //driveFileId.jsのファイルIDのみ直書きが必要
-    geval(loadFileFromDrive("##fileId of driveFileId.js##"));
-    _fileId = new DrivefileId();
-    _config = JSON.parse(loadFileFromDrive(_fileId.config));
-} else if (_status.whichSide == "client") {
-    _fileId = new DrivefileId();
-    google.script.run.withSuccessHandler(function (v) {
-        _config = JSON.parse(v);
-    }).loadFileFromDrive(_fileId.config);
-}
-
-//_configを設定
-
-//include.jsが読み込まれると実行される部分　ここまで
+//start.jsが読み込まれると実行される部分　ここまで

@@ -23,13 +23,3 @@
     */
 
 
-function loadfun(funName,argument){
-    var fun;
-    eval("fun = " + funName + ";");
-    if(typeof argument == "undefined"){
-        return JSON.stringify(fun.apply(this));
-    }else{
-        if(!Array.isArray(argument))  argument = [argument];
-        return JSON.stringify(fun.apply(this,argument));
-    }
-}

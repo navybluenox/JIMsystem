@@ -84,29 +84,11 @@ try {
 } catch (e) {
     _status = {};
 }
+_status.whichSide = "server";
 
-if (_status.whichSide == null) {
-    try {
-        console.log("All the scripts work as client-side");
-        _status.whichSide = "client";
-    } catch (e) {
-        Logger.log("All the scripts work as server-side");
-        _status.whichSide = "server";
-    }
-}
-
-var _fileId, _config;
-if (_status.whichSide == "server") {
-    //driveFileId.jsのファイルIDのみ直書きが必要
-    geval(loadFileFromDrive("##fileId of driveFileId.js##"));
-    _fileId = new DrivefileId();
-    _config = JSON.parse(loadFileFromDrive(_fileId.config));
-} else if (_status.whichSide == "client") {
-    _fileId = new DrivefileId();
-    google.script.run.withSuccessHandler(function (v) {
-        _config = JSON.parse(v);
-    }).loadFileFromDrive(_fileId.config);
-}
+geval(loadFileFromDrive("##fileId of driveFileId.js##"));
+var _fileId = new DrivefileId();
+var _config = JSON.parse(loadFileFromDrive(_fileId.config));
 
 //_configを設定
 

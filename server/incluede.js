@@ -1,5 +1,3 @@
-"use strict";
-
 //  ---About This---
 /*
 名前
@@ -27,7 +25,7 @@
         JIMシステムで用いる様々な設定を格納している変数です
         ./config.jsonからロードしています
 
-    fileId変数
+    _fileId変数
         DrivefileIdのインスタンス
 
     geval(evaluateStr)
@@ -76,68 +74,50 @@
 //include.jsが読み込まれると実行される部分　ここから
 //汎用的なオブジェクトなどはここで作成
 
-var geval = eval;
+    var geval = eval;
 
-var _fileId = new DrivefileId();
-
-//driveFileId.jsのファイルIDのみ直書きが必要
-geval(loadFileFromDrive("##fileId of driveFileId.js##"));
-
-//_configを設定
-var _config = JSON.parse(loadFileFromDrive(_fileId.config));
-
-//_statusを設定
-try {
-    _status;
-} catch (e) {
-    _status = {};
-}
-
-if (_status.whichSide == null) {
-    try {
-        console.log("All the scripts work as client-side");
-        _status.whichSide = "client";
-    } catch (e) {
-        Logger.log("All the scripts work as server-side");
-        _status.whichSide = "server";
+    //_statusを設定
+    try{
+        _status;
+    }catch(e){
+        _status = {};
     }
-}
+    _status.whichSide = "server";
+
+    geval(loadFileFromDrive("##fileId of driveFileId.js##"));
+    var _fileId = new DrivefileId();
+    var _config = JSON.parse(loadFileFromDrive(_fileId.config));
+
+
+    //_configを設定
+
 
 //include.jsが読み込まれると実行される部分　ここまで
 
-function include(configInclude) {
-    if (configInclude == null) configInclude = {};
+function include(configInclude){
+    if(configInclude == null)  configInclude = {};
     var includeFileIds = [];
-    if (!configInclude.disableDefault) {
+    if(!configInclude.disableDefault){
         //デフォルトでロードするファイルID
-        includeFileIds = includeFileIds.concat([]);
-        //clinetサイドでロードするファイルID
-        if (_status.whichSide == "client") {
-            includeFileIds = includeFileIds.concat([]);
-            //serverサイドでロードするファイルID
-        } else if (_status.whichSide == "server") {
-                includeFileIds = includeFileIds.concat([]);
-            }
+        includeFileIds = includeFileIds.concat([
+
+        ]);
     }
-    if (configInclude.enable) {
-        if (typeof configInclude.enable == "string") configInclude.enable = [configInclude.enable];
+    if(configInclude.enable){
+        if(typeof configInclude.enable == "string")  configInclude.enable = [configInclude.enable];
         includeFileIds = includeFileIds.concat(configInclude.enable);
     }
-    if (configInclude.disable) {
-        if (typeof configInclude.disable == "string") configInclude.disable = [configInclude.disable];
-        includeFileIds = includeFileIds.filter(function (id) {
-            return configInclude.disable.indexOf(id) == -1;
-        });
+    if(configInclude.disable){
+        if(typeof configInclude.disable == "string")  configInclude.disable = [configInclude.disable];
+        includeFileIds = includeFileIds.filter(function(id){return configInclude.disable.indexOf(id) == -1});
     }
-    includeFileIds = includeFileIds.filter(function (v, i, s) {
-        return s.indexOf(v) === i;
-    });
-    includeFileIds.forEach(function (fileId) {
+    includeFileIds = includeFileIds.filter(function(v,i,s){return s.indexOf(v) === i});
+    includeFileIds.forEach(function(fileId){
         geval(loadFileFromDrive(fileId));
-    });
+    })
 }
 
-function loadFileFromDrive(fileIdStr, charEnc) {
-    if (charEnc == null) charEnc = "UTF-8";
+function loadFileFromDrive(fileIdStr,charEnc){
+    if(charEnc == null)  charEnc = "UTF-8";
     return DriveApp.getFileById(fileIdStr).getBlob().getDataAsString(charEnc);
 }
