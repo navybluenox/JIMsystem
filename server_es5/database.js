@@ -38,7 +38,7 @@ baseServer.js
                 GoogleDriveからダウンロードしたデータ
             pendingQueue
                 更新待ちのデータの配列
-                queueObj = {type:"updateType", dataName:"name1", contents:datapieces}
+                queueObj = {type:"updateType", contents:datapieces}
                     type
                         add
                             データを追加
@@ -189,6 +189,47 @@ function loadDataFromDrive(fileIdStr, mode) {
     return result;
 }
 
+function updateDatabase(queues, versions) {
+    var task = {};
+    queues.forEach(function (queue) {
+        if (task[queue.dataName] == null) {
+            task[queue.dataName] = { add: [], change: [], remove: [] };
+        }
+        task[queue.dataName][queue.type].push(queue.content);
+    });
+    versions.forEach(function (versionObj) {
+        task[versionObj.dataName].version = versionObj.version;
+    });
+    Object.keys(task).forEach(function (dataName) {
+        var dbInfo = Database.getDatabaseInfo(dataName);
+        var db = loadDataFromDrive(dbInfo.fileId);
+        task[dataName].add.forEach(function (content) {
+            var ids = db.data.map(function (d) {
+                return d.id;
+            });
+            if (!ids.inArray(content.id)) {
+                db.data.push(content);
+            }
+        });
+        //TODO
+        task[dataName].change.forEach(function (content) {
+            var target = db.data.find(function (d) {
+                return d.id == content.id;
+            });
+            Object.keys(content).forEach(function (column) {
+                target[column] = content[column];
+            });
+        });
+        task[dataName].remove.forEach(function (content) {
+            db.data = db.data.filter(function (d) {
+                return d.id != content.id;
+            });
+        });
+        db.version = new Date().toISOString();
+        updateFileToDrive(dbInfo.fileId, JSON.stringify(db));
+    });
+}
+
 var Database = function () {
     function Database() {
         _classCallCheck(this, Database);
@@ -280,7 +321,7 @@ var Database = function () {
         }
     }, {
         key: "getDataById",
-        value: function getDataById(ids) {
+        value: function getDataById(dataName, ids) {
             if (!Array.isArray(ids)) ids = [ids];
             return this.getData(dataName).filter(function (datapiece) {
                 return ids.inArray(datapiece.getValue("id"));
@@ -292,23 +333,88 @@ var Database = function () {
             return new Date(this.cache[dataName].version);
         }
     }, {
+        key: "getVersions",
+        value: function getVersions() {
+            return Object.keys(this.cache).map(function (dataName) {
+                return { dataName: dataName, version: this.cache[dataName].version };
+            });
+        }
+    }, {
         key: "runUpdate",
-        value: function runUpdate() {}
+        value: function runUpdate() {
+            if (this.loading) return false;
+            this.loading = true;
+            sendRequest();
+            this.loading = false;
+
+            function sendRequest() {
+                this.updatingQueue = this.updatingQueue.concat(this.pendingQueue);
+                this.pendingQueue = [];
+                var sendQueue = [];
+                this.updatingQueue.forEach(function (queue) {
+                    queue.contents.forEach(function (content) {
+                        sendQueue.push({ type: queue.type, dataName: content.getDataName(), content: content.getValues() });
+                    });
+                });
+                updateDatabase(sendQueue, this.getVersions());
+                this.updatingQueue = [];
+                if (this.pendingQueue.length > 0) {
+                    sendRequest();
+                }
+            }
+        }
     }, {
         key: "changeData",
         value: function changeData(datapieces) {
             if (!Array.isArray(datapieces)) datapieces = [datapieces];
-            //undefinedなキーはそのまま（skip）
+            datapieces = datapieces.filter(function (datapiece) {
+                return datapiece instanceof Datapiece;
+            });
+            datapieces.forEach(function (datapiece) {
+                var targetDP = this.getDataById(datapiece.getDataName(), datapiece.getValue("id"))[0];
+                if (targetDP) {
+                    targetDP.setValues(datapiece.getValues());
+                }
+            });
+            this.pendingQueue.push({ type: "change", contents: datapieces });
+            this.runUpdate();
         }
     }, {
         key: "addData",
         value: function addData(datapieces) {
             if (!Array.isArray(datapieces)) datapieces = [datapieces];
+            datapieces = datapieces.filter(function (datapiece) {
+                return datapiece instanceof Datapiece;
+            });
+            datapieces.forEach(function (datapiece) {
+                datapiece.setValue("id", makeRandomStr(null, { doubleCheck: this.getData(datapiece.getDataName().map(function (dp) {
+                        return dp.getValue("id");
+                    }))
+                }));
+                this.cache[datapiece.getDataName()].push(datapiece);
+            });
+            this.pendingQueue.push({ type: "add", contents: datapieces });
+            this.runUpdate();
         }
     }, {
         key: "removeData",
         value: function removeData(datapieces) {
             if (!Array.isArray(datapieces)) datapieces = [datapieces];
+            datapieces = datapieces.filter(function (datapiece) {
+                return datapiece instanceof Datapiece;
+            });
+            datapieces.forEach(function (datapiece) {
+                var id = datapiece.getValue("id");
+                var targetDP = this.getDataById(datapiece.getDataName(), id)[0];
+                this.cache[datapiece.getDataName()] = this.cache[datapiece.getDataName()].filter(function (dp) {
+                    return dp.getValue("id") != id;
+                });
+                if (targetDP) {
+                    targetDP.deleteValues();
+                }
+            });
+            this.pendingQueue.push({ type: "remove", contents: datapieces });
+            this.runUpdate();
         }
     }], [{
         key: "getDatabaseInfo",
@@ -397,6 +503,11 @@ var Datapiece = function () {
         key: "getColumns",
         value: function getColumns() {
             return this.getDatabaseInfo().column;
+        }
+    }, {
+        key: "getDataName",
+        value: function getDataName() {
+            return this.dataName();
         }
     }, {
         key: "getDatabaseInfo",

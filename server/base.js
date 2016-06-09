@@ -439,6 +439,7 @@ function dateToValue(date) {
 function makeRandomStr(length, option) {
     if (length == null) length = 10;
     if (option == null) option = {};
+    var _length = length;
 
     var availableLetters = [];
     ["number", "alphaLower", "alphaUpper"].forEach(function (key, index) {
@@ -459,6 +460,11 @@ function makeRandomStr(length, option) {
     while (length) {
         result += availableLetters[Math.floor(Math.random() * lettersNum)];
         length--;
+    }
+    if(option.doubleCheck){
+        while(option.doubleCheck.inArray(result)){
+            result = makeRandomStr(_length, option);
+        }
     }
     return result;
 }
@@ -569,3 +575,7 @@ function sendAZUSA(sendName,subject,message,noLog,label){
     }
 }
 
+//TODO
+function updateFileToDrive(fileIdStr, content){
+    
+}
