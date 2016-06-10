@@ -80,3 +80,9 @@ function setValuesInRange(setData,column,range){
     range.setValues(result);
     return range;
 }
+
+function clearValuesOfSheet(ss,sheet){
+    var sheetName = sheet.getName();
+    ss.deleteSheet(sheet);
+    return ss.insertSheet(sheetName);
+}

@@ -224,9 +224,21 @@ class Database{
         this.loading = [];
     }
     static getDatabaseInfo(dataName){
-        var list =  [
-            {dataName:"name1", classObj:class1, fileId:"fileId1", column:[
-                {name:"cName1", type:"cType1", defaultValue:""}
+        //TODO
+        var list = [
+            {dataName:"user", classObj:User, fileId:_fileId.database.user, column:[
+                {name:"id", type:"string", defaultValue:""},
+                {name:"sort", type:"number", defaultValue:0},
+                {name:"name_last", type:"string", defaultValue:""},
+                {name:"name_first", type:"string", defaultValue:""},
+                {name:"name_last_phonetic", type:"string", defaultValue:""},
+                {name:"", type:"", defaultValue:},
+                {name:"", type:"", defaultValue:},
+                {name:"", type:"", defaultValue:},
+                {name:"", type:"", defaultValue:},
+                {name:"", type:"", defaultValue:},
+                {name:"", type:"", defaultValue:},
+                
             ]}
         ];
         if(typeof dataName == "string"){
@@ -299,6 +311,9 @@ class Database{
         return this.getData(dataName).filter(function(datapiece){
             return ids.inArray(datapiece.getValue("id"));
         });
+    }
+    getColumn(dataName){
+        return this.cache[dataName].column;
     }
     getVersion(dataName){
         return new Date(this.cache[dataName].version);
@@ -381,7 +396,7 @@ class Datapiece{
     constructor(dataName,datapieceObj){
         this.dataName = dataName;
         this.data = {};
-        this.getColumns().forEach(function(column){
+        this.getColumn().forEach(function(column){
             if(typeof datapieceObj[column.name] != "undefined"){
                 this.data[column] = datapieceObj[column];
             }else if(typeof column.defaultValue != null){
@@ -390,7 +405,7 @@ class Datapiece{
         });
     }
     setValues(datapieceObj){
-        this.getDatabaseInfo().column.forEach(function(column){
+        this.getColumn().forEach(function(column){
             if(typeof datapieceObj[column.name] != "undefined"){
                 this.data[column] = datapieceObj[column];
             }
@@ -398,7 +413,7 @@ class Datapiece{
         return this;
     }
     setValue(columnName,value){
-        if(this.getDatabaseInfo().column.map(function(v){return v.name}).inArray(columnName)){
+        if(this.getColumn().map(function(v){return v.name}).inArray(columnName)){
             this.data[columnName] = value;
         }
         return this;
@@ -408,7 +423,7 @@ class Datapiece{
     }
     deleteValue(columnName,setDefault){
         if(setDefault == null || setDefault){
-            var dv = this.getColumns().find(function(v){return v.name = columnName}).defaultValue;
+            var dv = this.getColumn().find(function(v){return v.name = columnName}).defaultValue;
             if(dv){
                 this.data[columnName] = dv;
             }else{
@@ -424,7 +439,7 @@ class Datapiece{
     getValue(columnName){
         return this.data[columnName];
     }
-    getColumns(){
+    getColumn(){
         return this.getDatabaseInfo().column;
     }
     getDataName(){

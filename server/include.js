@@ -84,7 +84,7 @@
     }
     _status.whichSide = "server";
 
-    geval(loadFileFromDrive("##fileId of driveFileId.js##"));
+    geval(loadFileFromDrive("0B88bKUOZP4-AYTZJTTZkVG5DX2s"));
     var _fileId = new DrivefileId();
     var _config = JSON.parse(loadFileFromDrive(_fileId.config));
 
@@ -100,7 +100,9 @@ function include(configInclude){
     if(!configInclude.disableDefault){
         //デフォルトでロードするファイルID
         includeFileIds = includeFileIds.concat([
-
+            _fileId.script.base,
+            _fileId.script.database,
+            _fileId.script.spreadsheet
         ]);
     }
     if(configInclude.enable){

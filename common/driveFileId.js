@@ -1,7 +1,3 @@
-"use strict";
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
 //  ---About This---
 /*
 名前
@@ -40,28 +36,38 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         instance of DrivefileId
 */
 
-var DrivefileId = function DrivefileId() {
-    _classCallCheck(this, DrivefileId);
+class DrivefileId {
+    constructor(){
+        this.database = {
+            user: "0B88bKUOZP4-AVHpNNXdDZVV2YzA",
+            userGroup:"0B88bKUOZP4-AQ01mUnoyTmZIUUk",
+            workSpec:"0B88bKUOZP4-AUHR5T1AwWkdVTXc",
+            workDetail:"0B88bKUOZP4-AVE9PcGYtbm00SDA",
+            workGroup:"0B88bKUOZP4-ARFFxdGRCeEJlQnc"
+        };
+        this.script = {
+            base: "0B88bKUOZP4-AMXAybWM1TTJ5eVk",
+            drivefileId: "0B88bKUOZP4-AYTZJTTZkVG5DX2s",
+            database: "0B88bKUOZP4-AV1dIazdGaWJNZU0",
+            include: "0B88bKUOZP4-AMzZJdGdvbkZPSU0",
+            spreadsheet:"0B88bKUOZP4-AcGtrdjhia1Y5OWs"
+        };
+        this.config = "0B88bKUOZP4-AdUw1WEJWVkkwTzA";
+        this.gas = {
+            jimsystem: "13MjautTiWxSccdWEVsBl0yra6qncERgaSItg8xXGkS7E1zxFso2COzkD",
+            uploadScript: "1vj5zpa9zJsEtrgE5hZAUYSCJlxFIOQMO42oenoMQVH1RvuQyZmqcM87U"
+        };
+        this.spreadsheet = {
+            editDatabase:"1ipZi1rAJ6IyxqrFrvXiDJkYbFa5DDjXweonBblcOLpI"
+        };
+        this.document = {
 
-    this.data = {
-        test: "#0123456789abcdef"
-    };
-    this.script = {
-        base: "",
-        baseClient: "",
-        baseServer: "",
-        DrivefileId: "",
-        editDatabase: "",
-        include: ""
-    };
-    this.config = "";
-    this.gas = {
-        jims: "13MjautTiWxSccdWEVsBl0yra6qncERgaSItg8xXGkS7E1zxFso2COzkD"
-    };
-    this.spreadsheet = {};
-    this.document = {};
-    this.form = {};
-    this.apikey = {
-        main: "AIzaSyBGpG_KNJ4zyZtefN_x_r0KdlxdCmBu7cQ"
-    };
-};
+        };
+        this.form = {
+
+        };
+        this.apikey = {
+            main: "AIzaSyBGpG_KNJ4zyZtefN_x_r0KdlxdCmBu7cQ"
+        }
+    }
+}
