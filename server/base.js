@@ -577,5 +577,5 @@ function sendAZUSA(sendName,subject,message,noLog,label){
 
 //TODO
 function updateFileToDrive(fileIdStr, content){
-    
+    DriveApp.getFileById(fileIdStr).setContent(content);
 }

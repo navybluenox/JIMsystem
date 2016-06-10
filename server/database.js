@@ -200,7 +200,6 @@ function updateDatabase(queues,versions){
                 db.data.push(content);
             }
         });
-        //TODO
         task[dataName].change.forEach(function(content){
             var target = db.data.find(function(d){return d.id == content.id});
             Object.keys(content).forEach(function(column){
@@ -249,7 +248,8 @@ class Database{
         return this.cache[dataName].data;
     }
     loadDataAll(){
-        return Database.getDatabaseInfo().map(function(info){return this.loadData(info.dataName)});
+        Database.getDatabaseInfo().map(function(info){return this.loadData(info.dataName)});
+        return this;
     }
     reloadData(dataName){
         if(this.cache[dataName] == null){

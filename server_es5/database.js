@@ -211,7 +211,6 @@ function updateDatabase(queues, versions) {
                 db.data.push(content);
             }
         });
-        //TODO
         task[dataName].change.forEach(function (content) {
             var target = db.data.find(function (d) {
                 return d.id == content.id;
@@ -260,9 +259,10 @@ var Database = function () {
     }, {
         key: "loadDataAll",
         value: function loadDataAll() {
-            return Database.getDatabaseInfo().map(function (info) {
+            Database.getDatabaseInfo().map(function (info) {
                 return this.loadData(info.dataName);
             });
+            return this;
         }
     }, {
         key: "reloadData",
