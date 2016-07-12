@@ -571,14 +571,14 @@ function makeIdForTable(data, column, length, option) {
 
 /////////////////////////////////////////////////////////////////
 
-function loadfun(funName, argument) {
+function loadfun(funName, _arguments) {
     var fun;
     eval("fun = " + funName + ";");
-    if (typeof argument == "undefined") {
-        return JSON.stringify(fun.apply(this));
+    if (typeof _arguments == "undefined") {
+        return JSON.stringify(fun.apply(null));
     } else {
-        if (!Array.isArray(argument)) argument = [argument];
-        return JSON.stringify(fun.apply(this, argument));
+        if (!Array.isArray(_arguments)) _arguments = [_arguments];
+        return JSON.stringify(fun.apply(null, _arguments));
     }
 }
 function UrlShortenerService(longUrl, avoidLong) {
