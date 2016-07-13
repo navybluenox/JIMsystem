@@ -41,12 +41,15 @@
 //汎用的なオブジェクトなどはここで作成
 
     var geval = eval;
-    var _status = {
-        whichSide:"client"
-    }
-    var _config,_fileId = new DrivefileId();
-    runServerFun("loadFileFromDrive",_fileId.config,function(v){
-        _config = v;
-    })
+    var _val = {};
+    var _tmp = {
+        pageFun:{}
+    };
+    _val.status = {whichSide:"client"};
+    _val.server = new Server();
+    _val.server.loadDataByName("config")
+    .then(function(v){
+        _val.config = v;
+    });
 
 //start.jsが読み込まれると実行される部分　ここまで

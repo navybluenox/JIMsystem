@@ -156,120 +156,79 @@ baseServer.js
                 省略可。省略した場合、allとなる
 */
 
-function loadDataFromDrive(fileIdStr, mode) {
-    if (mode === null) mode = "all";
-    var raw = loadFileFromDrive(fileIdStr);
-
-    switch (mode) {
-        case "all":
-            return JSON.parse(raw);
-        case "raw":
-            return raw;
-    }
-}
-
-class Database{
-    constructor(){
-        this.cache = {};
-        this.pendingQueue = [];
-        this.updatingQueue = [];
-        this.updating = false;
-        this.loading = [];
-    }
-    static getDatabaseInfo(dataName){
-        var list =  [
-            {dataName:"name1", classObj:class1, fileId:"fileId1", column:[
-                {name:"cName1", type:"cType1", defaultValue:""}
-            ]}
-        ];
-        if(typeof dataName == "string"){
-            return list.find(function(v){return v.dataName == dataName});
-        }else{
-            return list;
+var Datapiece = (function(){
+    var data;
+    var collInfo;
+    var server = _val.server;
+    return class Datapiece {
+        constructor(datapieceObj,dataName){
+            data = {};
+            collInfo = server.getCollectionInfoByName(dataName);
+            this.setValues(datapieceObj);
+        }
+        setValues(datapieceObj){
+            if(datapieceObj !== undefined){
+                Object.keys(datapieceObj).forEach(function(key){
+                    this.setValue(key,datapieceObj[key]);
+                });
+            }
+            return this;
+        }
+        setValue(colName,value){
+            var colObj = collInfo.getValue("column").find(function(obj){return obj.name === colName});
+            if(colObj === undefined){
+                console.log("Attention : Collection:" + collInfo.getValue("name") + " does not have column:" + colName + ".");
+                return null;
+            }
+            switch(colObj.type){
+                case "number":
+                    data[colName] = +value;
+                    break;
+                case "boolean":
+                    data[colName] = !!value;
+                    break;
+                case "string":
+                    data[colName] = "" + value;
+                    break;
+                default:
+                    data[colName] = value;
+            }
+            return this;
+        }
+        //消すかも
+        getValues(){
+            return data;
+        }
+        getValue(colName){
+            return data[colName];
+        }
+        static getData(dataName){
+            if(dataName === undefined)  dataname = collInfo.getValue("name");
+            return server.getData(dataName,true);
         }
     }
-    loadData(dataName){
-        var dbInfo = Database.getDatabaseInfo(dataName);
-        if(dbInfo == null)  return null;
-        //TODO this.loadingにpush
-        google.script.run.withSuccessHandler(function(v){
-            this.cache[dataName] = JSON.parse(v);
-            this.cache[dataName].data = this.cache[dataName].data.map(function(obj){
-                return dbInfo.classObj(obj);
-            });
-        }).loadDataFromDrive(dbInfo.fileId,"raw");
-    }
-    loadDataAll(){
-        Database.getDatabaseInfo().map(function(info){return this.loadData(info.dataName)});
-    }
-    reloadData(dataName){
-
-    }
-    getData(dataName,newCopy){
-    }
-    getDataById(ids,newCopy){
-
-    }
-    getVersion(dataName){
-
-    }
-    runUpdate(){
-
-    }
-    changeData(datapieces){
-        if(!Array.isArray(datapieces))  datapieces = [datapieces];
-        //undefinedなキーはそのまま（skip）
-    }
-    addData(datapieces){
-        if(!Array.isArray(datapieces))  datapieces = [datapieces];
-
-    }
-    removeData(datapieces){
-        if(!Array.isArray(datapieces))  datapieces = [datapieces];
-
-    }
-}
-
-class Datapiece{
-    constructor(dataName,datapieceObj){
-        this.dataName = dataName;
-        this.data = {};
-        this.getColumns().forEach(function(column){
-            if(typeof datapieceObj[column.name] != "undefined"){
-                this.data[column] = datapieceObj[column];
-            }else if(typeof column.defaultValue != null){
-                this.data[column] = column.defaultValue;
-            }
-        });
-    }
-    setValues(datapieceObj){
-        this.getDatabaseInfo().column.forEach(function(column){
-            if(typeof datapieceObj[column.name] != "undefined"){
-                this.data[column] = datapieceObj[column];
-            }
-        });
-        return this;
-    }
-    setValue(columnName,value){
-        if(this.getDatabaseInfo().column.map(function(v){return v.name}).inArray(columnName)){
-            this.data[columnName] = value;
-        }
-        return this;
-    }
-    getValues(){
-        return this.data;
-    }
-    getValue(columnName){
-        return this.data[columnName];
-    }
-    getDatabaseInfo(){
-        return Database.getDatabaseInfo(this.dataName);
-    }
-}
+})();
 
 class User extends Datapiece{
     constructor(datapieceObj){
-        super("user",datapieceObj);
+        super(datapieceObj,"user");
     }
 }
+
+class CollectionInfo extends Datapiece{
+    constructor(datapieceObj){
+        super(datapieceObj,"collectionInfo");
+    }
+    getClass(){
+        var classNamePairList = [
+            {name:"collectionInfo",class:CollectionInfo},
+            {name:"user",class:CollectionInfo}
+        ]
+        return classNamePairList.map(function(o){return o.class})[
+            classNamePairList.map(function(o){return o.name}).indexOf(this.getValue("name"))
+        ];
+    }
+}
+
+
 

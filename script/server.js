@@ -40,6 +40,8 @@ var Server = (function(){
                 console.log(collInfo);
                 throw new Error();
             }
+            var loadingId = makeRandomStr();
+            this._loading.push({id:loadingId,coll:collInfo});
             return runServerFun("loadDataFromDrive",[collInfo.fileId,"raw"])
             .then(function(v){
                 cache[collInfo.name] = [];
@@ -48,11 +50,16 @@ var Server = (function(){
                 cache[collInfo.name] = v.map(function(dataObj){
                     return new thisClass(dataObj);
                 });
+                this._loading = this._loading.filter(function(obj){return obj.id !== loadingId});
                 return cache[collInfo.name];
             })
             .catch(function(e){
+                this._loading = this._loading.filter(function(obj){return obj.id !== loadingId});
                 console.log(e);
             });
+        }
+        loadDataByName(dataName){
+            return this.loadData(this.getCollectionInfoByName(dataName));
         }
         loadDataAll(){
             return Promise.all(cache.collectionInfo.map(function(collInfo){
@@ -65,25 +72,28 @@ var Server = (function(){
                 return this.loadData(collInfo);
             }));
         }
-        getData(collName,newCopy){
-            if(newCopy === undefined)  newCopy = false;
-            if(cache[collName] === undefined)  return [];
+        getData(dataName,newCopy){
+            if(newCopy === undefined)  newCopy = true;
+            if(cache[dataName] === undefined)  return [];
             if(newCopy){
-                return Array.prototype.slice(cache[collName]);
+                return Array.prototype.slice(cache[dataName]);
             }else{
-                return cache[collName];
+                return cache[dataName];
             }
         }
-        getDataById(ids,collName,newCopy){
+        getDataById(ids,dataName,newCopy){
             if(!Array.isArray(ids))  ids = [ids];
-            return this.getData(collName,newCopy).filter(function(data){
+            return this.getData(dataName,newCopy).filter(function(data){
                 return ids.inArray(data);
             });
         }
-        getVersion(collName){
-            return cache.collectionInfo.filter(function(collInfo){
-                return collInfo.name === collName;
-            })[0].version;
+        getCollectionInfoByName(dataName){
+            return cache.collectionInfo.find(function(collInfo){
+                return collInfo.name === dataName;
+            });
+        }
+        getVersion(dataName){
+            return this.getCollectionInfoByName(dataName).version;
         }
         sendUpdateQueue(){
 
@@ -101,23 +111,24 @@ var Server = (function(){
 
         }
     };
-    function runServerFun(funName,_arguments,userObj){
-        return new Promise(function (resolve,reject){
-            google.script.run
-            .withSuccessHandler(function(e,o){
-                reject(e,o);
-            })
-            .withFailureHandler(function(v,o){
-                try{
-                    resolve(JSON.parse(v),o);
-                }catch(e){
-                    resolve(v,o);
-                }
-            })
-            .withUserObject(userObj)
-            .loadfun(funName,_arguments);
-        });
-    }
 })();
+
+function runServerFun(funName,_arguments,userObj){
+    return new Promise(function (resolve,reject){
+        google.script.run
+        .withSuccessHandler(function(v,o){
+            try{
+                resolve(JSON.parse(v),o);
+            }catch(e){
+                resolve(v,o);
+            }
+        })
+        .withFailureHandler(function(e,o){
+            reject(e,o);
+        })
+        .withUserObject(userObj)
+        .loadfun(funName,_arguments);
+    });
+}
 
 
