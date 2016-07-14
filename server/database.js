@@ -231,14 +231,7 @@ class Database{
                 {name:"sort", type:"number", defaultValue:0},
                 {name:"name_last", type:"string", defaultValue:""},
                 {name:"name_first", type:"string", defaultValue:""},
-                {name:"name_last_phonetic", type:"string", defaultValue:""},
-                {name:"", type:"", defaultValue:},
-                {name:"", type:"", defaultValue:},
-                {name:"", type:"", defaultValue:},
-                {name:"", type:"", defaultValue:},
-                {name:"", type:"", defaultValue:},
-                {name:"", type:"", defaultValue:},
-                
+                {name:"name_last_phonetic", type:"string", defaultValue:""}
             ]}
         ];
         if(typeof dataName == "string"){
