@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ja">
+	<head>
+		<meta charset="utf-8">
+
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+		<title>JIMシステム</title>
+		<meta name="description" content="MFSC89jisによる人割のためのシステムです">
+		<meta name="author" content="MFSC89jis">
+		<meta name="viewport" content="width=device-width; initial-scale=1.0">
+		
+	    <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">  
+  	    <?!= include('css'); ?>
+
+	</head>
+
+	<body>
+		<div>
+			<header>
+				<h1>JIMシステム</h1>
+                <div id="session">
+                    <span id="sessionName"></span>
+                </div>
+                <div id="reloadData">
+                    <input type="button" value="データをリロード" onclick="loadAllData()" style="fload: right">
+                </div>
+				<ul id="menubar">
+					<li><a href="#1" onclick='movePage("makeWorkSpec")'>makeWorkSpec</a></li>
+					<li><a href="#2" onclick='movePage("assignSystem")'>assignSystem</a></li>
+					<li><a href="#3" onclick='movePage("viewWork")'>viewWork</a></li>
+					<li><a href="#4">jump2</a></li>
+					<li><a href="#5" onclick='movePage("forAdmin")'>forAdmin</a></li>
+				</ul>
+            </header>
+            <main>
+                <div id="content"></div>
+                <div id="modalWindow"></div>
+            </main>
+			<footer>
+				<p>
+					&copy; Copyright  by MFSC89JIM
+				</p>
+			</footer>
+		</div>
+	</body>
+</html>
