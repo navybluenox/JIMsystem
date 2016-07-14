@@ -13,7 +13,7 @@ JIMシステムの基本設定をもつ「config.json」を扱うためのConfig
 */
 
 
-(function(){
+var Config = (function(){
     var rawdata;
     return (
         class Config {

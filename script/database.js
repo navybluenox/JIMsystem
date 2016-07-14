@@ -222,11 +222,9 @@ class CollectionInfo extends Datapiece{
     getClass(){
         var classNamePairList = [
             {name:"collectionInfo",class:CollectionInfo},
-            {name:"user",class:CollectionInfo}
-        ]
-        return classNamePairList.map(function(o){return o.class})[
-            classNamePairList.map(function(o){return o.name}).indexOf(this.getValue("name"))
+            {name:"user",class:User}
         ];
+        return classNamePairList.find(function(o){return o.name === this.getValue("name")},this).class;
     }
 }
 
