@@ -40,3 +40,8 @@ function checkPass(key,pass,pageName){
     }
     return JSON.stringify(result);
 }
+
+function include(filename) {
+  return HtmlService.createHtmlOutputFromFile(filename)
+      .getContent();
+}
