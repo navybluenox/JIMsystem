@@ -1,5 +1,3 @@
-"use strict";
-
 //  ---About This---
 /*
 名前
@@ -12,30 +10,38 @@
         引数
 */
 
-function loadFileFromDrive(fileIdStr, charEnc) {
-    if (charEnc == null) charEnc = "UTF-8";
+
+
+function loadFileFromDrive(fileIdStr,charEnc){
+    if(charEnc == null)  charEnc = "UTF-8";
     return DriveApp.getFileById(fileIdStr).getBlob().getDataAsString(charEnc);
 }
 
-function movePage(pageName) {
+function movePage(pageName){
     var htmlName = pageName;
-    return JSON.stringify(HtmlService.createTemplateFromFile(htmlName).evaluate().setSandboxMode(HtmlService.SandboxMode.IFRAME).getContent());
+    return JSON.stringify(
+        HtmlService.createTemplateFromFile(htmlName)
+        .evaluate()
+        .setSandboxMode(HtmlService.SandboxMode.IFRAME)
+        .getContent()
+    );
 }
 
-function checkPass(key, pass, pageName) {
+function checkPass(key,pass,pageName){
     var result;
-    if (pageName === undefined) {
-        result = key === pass;
-    } else {
-        if (key === pass) {
+    if(pageName === undefined){
+        result = (key === pass);
+    }else{
+        if(key === pass){
             result = mogePage(pageName);
-        } else {
-            result = null;
+        }else{
+            result = null
         }
     }
     return JSON.stringify(result);
 }
 
 function include(filename) {
-    return HtmlService.createHtmlOutputFromFile(filename).getContent();
+  return HtmlService.createHtmlOutputFromFile(filename)
+      .getContent();
 }
