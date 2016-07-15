@@ -3,7 +3,7 @@ function myFunction() {
 }
 
 
-var checkPassThis = scripts.checkPass.bind(null,"jimjim");
+var checkPassThis = Script.checkPass.bind(null,"jimjim");
 
 
 function doGet(request) {
