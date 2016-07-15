@@ -3,8 +3,8 @@ function myFunction() {
 }
 
 
-var checkPassThis = Script.checkPass.bind(this,"jimjim");
-
+var this_checkPass = Script.checkPass.bind(this,"jimjim");
+var this_include = Script.include(this);
 
 function doGet(request) {
   return HtmlService.createTemplateFromFile('html_login')

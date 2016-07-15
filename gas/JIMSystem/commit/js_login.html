@@ -21,7 +21,7 @@ _tmp.pageFun.login = {
     },
     sendPass: function sendPass() {
         var pass = $("#pass").val();
-        runServerFun("checkPassThis", [pass, "main"]).then(function (innerHtml) {
+        runServerFun("this_checkPass", [pass, "main"]).then(function (innerHtml) {
             if (innerHtml === null) {
                 var el = document.createElement("p");
                 el.textContent = "パスワードが間違っています";
