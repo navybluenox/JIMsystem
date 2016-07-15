@@ -4,7 +4,7 @@ function myFunction() {
 
 
 var this_checkPass = Script.checkPass.bind(this,"jimjim");
-var this_include = Script.include(this);
+var this_include = Script.include.bind(this);
 
 function doGet(request) {
   return HtmlService.createTemplateFromFile('html_login')
