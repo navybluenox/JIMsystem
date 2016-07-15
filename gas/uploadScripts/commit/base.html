@@ -1,3 +1,5 @@
+"use strict";
+
 //  ---About This---
 /*
 名前
@@ -200,40 +202,40 @@
 
 */
 
-function loadfun(funName,_arguments){
+function loadfun(funName, _arguments) {
     var fun;
     eval("fun = " + funName + ";");
-    if(typeof _arguments == "undefined"){
+    if (typeof _arguments == "undefined") {
         return JSON.stringify(fun.apply(null));
-    }else{
-        if(!Array.isArray(_arguments))  _arguments = [_arguments];
-        return JSON.stringify(fun.apply(null,_arguments));
+    } else {
+        if (!Array.isArray(_arguments)) _arguments = [_arguments];
+        return JSON.stringify(fun.apply(null, _arguments));
     }
 }
-function UrlShortenerService(longUrl,avoidLong) {
-  var apiKey  = _fileId.apikey.main;
-  var apiUrl  = 'https://www.googleapis.com/urlshortener/v1/url?key='+apiKey;
-  var options = {
+function UrlShortenerService(longUrl, avoidLong) {
+    var apiKey = _fileId.apikey.main;
+    var apiUrl = 'https://www.googleapis.com/urlshortener/v1/url?key=' + apiKey;
+    var options = {
         method: 'POST',
         contentType: 'application/json',
-        payload: JSON.stringify({longUrl:longUrl}),
+        payload: JSON.stringify({ longUrl: longUrl }),
         muteHttpExceptions: true
-      };
+    };
     var response = UrlFetchApp.fetch(apiUrl, options);
     if (response.getResponseCode() !== 200) {
-          return longUrl;
+        return longUrl;
     } else {
-          if(avoidLong){
-              //時間をおいて成功するまで実行する
-              Utilities.sleep(100);
-              UrlShortenerService(longUrl,callback);
-          }else{
-              return JSON.parse(response).id;
-          }
+        if (avoidLong) {
+            //時間をおいて成功するまで実行する
+            Utilities.sleep(100);
+            UrlShortenerService(longUrl, callback);
+        } else {
+            return JSON.parse(response).id;
+        }
     }
 }
 
-function getAuthority(){
+function getAuthority() {
     //非常に適当
     UrlFetchApp.fetch();
     SpreadsheetApp.openById("##idString##");
@@ -243,53 +245,37 @@ function getAuthority(){
     FormApp.openById("##idString##");
 }
 
-function sendAZUSA(sendName,subject,message,noLog,label){
+function sendAZUSA(sendName, subject, message, noLog, label) {
     var startTime = new Date();
-    if(sendAZUSA == null || message == null){
+    if (sendAZUSA == null || message == null) {
         Logger.log("Error : Some of requiered argument are missing (sendAZUSA)");
         throw new Error();
     }
-    if(subject == null || subject === ""){
-        Logger.log("Attention : Argument(subject) is empty (sendAZUSA)");        
+    if (subject == null || subject === "") {
+        Logger.log("Attention : Argument(subject) is empty (sendAZUSA)");
     }
-    if(!Array.isArray(sendName)){
+    if (!Array.isArray(sendName)) {
         sendName = [sendName];
     }
-    if(noLog == null){
+    if (noLog == null) {
         noLog = false;
     }
-    GmailApp.sendEmail(
-        noLog ? "azusa-nolog@a103.net" : "azusa@a103.net",
-        subject,
-        [
-            "→" + sendName.join("、") + "さん",
-            "",
-            message,
-            "",
-            "※このAZUSAは自動送信です。",
-            ""
-        ].join("\n"),
-        {
-            name:"89JIM"
-        }
-    );
-    if(label != null){
+    GmailApp.sendEmail(noLog ? "azusa-nolog@a103.net" : "azusa@a103.net", subject, ["→" + sendName.join("、") + "さん", "", message, "", "※このAZUSAは自動送信です。", ""].join("\n"), {
+        name: "89JIM"
+    });
+    if (label != null) {
         Utilities.sleep(100);
         var endTime = new Date();
         var labelObj = GmailApp.getUserLabelByName(label);
-        var mails = GmailApp.search("in:sent has:nouserlabels newer_than:1d (to:azusa@a103.net OR to:azusa-nolog@a103.net)")
-        .filter(function(mailThread){
-            return (
-                startTime.getTime() <= mailThread.getLastMessageDate().getTime() &&
-                endTime.getTime() >= mailThread.getLastMessageDate().getTime()
-            );
-        }).forEach(function(mailThread){
+        var mails = GmailApp.search("in:sent has:nouserlabels newer_than:1d (to:azusa@a103.net OR to:azusa-nolog@a103.net)").filter(function (mailThread) {
+            return startTime.getTime() <= mailThread.getLastMessageDate().getTime() && endTime.getTime() >= mailThread.getLastMessageDate().getTime();
+        }).forEach(function (mailThread) {
             mailThread.addLabel(labelObj);
         });
     }
 }
 
 //TODO
-function updateFileToDrive(fileIdStr, content){
+function updateFileToDrive(fileIdStr, content) {
     DriveApp.getFileById(fileIdStr).setContent(content);
 }
