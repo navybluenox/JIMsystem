@@ -13,7 +13,7 @@ gulp.task("cvrt", function () {
         .pipe(babel())
         .pipe(gulp.dest("./jimsystem/gas/" + fName + "/src_babel_es5"));
     })
-    gulp.src("./jimsystem/server/**/*.js")
+    gulp.src("./jimsystem/server/*.js")
         .pipe(babel())
         .pipe(gulp.dest("./jimsystem/server_es5"));
 });
