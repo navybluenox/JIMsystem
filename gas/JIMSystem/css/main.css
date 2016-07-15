@@ -1,0 +1,228 @@
+@charset "UTF-8";
+
+h1, h2, h3, b, strong {
+	color:#093d86;
+}
+a:link {
+	color:#0069A3;
+}
+a:visited {
+	color:#006666;
+}
+h1 {
+	font-size:1.5rem;
+	margin:0;
+}
+h2 {
+	font-size:1.2rem;
+	margin:0;
+}
+h3 {
+	font-size:1.08rem;
+}
+b, strong {
+	font-weight: bold;
+	font-style: normal;
+}
+
+body {
+    background: #ffffff;
+    background-size: 100% 4px;
+}
+
+body > div > header {
+	position:relative;
+	margin:1ex;
+	padding:1.5ex;
+/*	width:100%;  */
+    height: auto;
+	background-color:#b0d7f4;
+}
+
+input {
+    margin: 0;
+    padding: 0;
+}
+
+	#menubar {
+		position:absolute;
+		width:100%;
+		left:0;
+		margin:8ex auto 2ex;
+		padding:0;
+		list-style-type:none;
+	}
+		#menubar li {
+			width:20%;
+			float:left;
+			padding:0;
+			margin:0;
+			height: 5ex;
+			line-height:5ex;
+			text-align:center;
+		}
+			#menubar li a {
+				width:auto;
+				color:#0B1C2D;
+				font-size:1.2rem;
+				font-weight:bold;
+				padding:0.2ex;
+				text-decoration:none;
+				display:block;
+				background:#b0d7f4;				
+			}
+			#menubar li a:hover {
+				background: #44aeea;
+			}
+	
+    #session {
+        margin: 2ex 0 0 0;
+        padding: 0 1ex;
+        font-size: 1.2em;
+        float: right;    
+    }
+    #content div.column-left {
+        margin : 0 1%;
+        padding: 0;
+        width : 48%;
+        float : left;
+    }
+    #content div.column-right {
+        margin : 0 1%;
+        padding: 0;
+        width : 48%;
+        float : left;
+    }
+    #content article {
+         margin: 14ex 0ex 1ex 0ex;
+         padding: 1.5ex 1ex 0.5ex;
+/*         border-width: 1px;
+         border-style: dashed;*/
+    }
+        #content section {
+            margin: 2ex 1ex 1ex;
+            padding: 1ex;
+            background: #e4f0fc;
+        }
+            #content section p {
+                margin: 1ex 0.5em 1ex;
+            }
+            #content section input {
+                padding: 0;
+            }
+            #content section div.form-control input {
+                vertical-align: bottom;                
+            }
+            #content section div.resultField table{
+                border: 0 solid #000000
+            }
+            #content section div.resultField table th, #content section div.resultField table td{
+                border-style: solid;
+                border-color: #000000;
+                border-width: 0 0.3px;
+            }
+            #content section div.resultField table tr:nth-of-type(1) th{
+                background-color: #BDDBF9;
+            }
+            #content section div.resultField table tr td, #content section div.resultField table tr th{
+                padding: 0.3ex 0.3em;
+            }
+            #content section div.resultField table tr td ul{
+                padding: 0;
+                margin: 0;
+                list-style: none;
+            }
+            #content section div.resultField table tr:nth-of-type(2n) td{
+                background-color: #F9F9F9;
+            }
+            #content section div.resultField table tr:nth-of-type(2n+1) td{
+                background-color: #E2E2E2;
+            }
+            #content table.table-form{
+                border: 1px #000000 solid;
+                border-collapse: collapse;
+            }
+                #content table.table-form tr{
+                    height: 4ex;
+                }
+                    /*#content table.table-form tr td input{
+                        
+                    }*/
+                    #content table.table-form tr td textarea{
+                        resize: both;
+                    }
+                    #content table.table-form tr.table-form-concat{
+                        height: 4ex;
+                        background: #a4cff9;
+                    }
+                    /*#content table.table-form thead tr th:nth-of-type(1), #content table.table-form tbody tr td:nth-of-type(1){
+                        width: 6em;
+                    }*/
+                    #content table.table-form td, #content table.table-form th{
+                        padding: 0;
+                        margin: 0;
+                        border: 1px #000000 solid;
+                        border-collapse: collapse;
+                    }
+                    #content table.table-form>tbody>tr:not(.tr-innerTable)>td:nth-of-type(1){
+                        width: 10em;
+                    }
+                    #content table.table-form tr td:nth-of-type(1) table{
+                        width: auto;
+                    }
+#content table.table-form tr td table.timeInputTable{
+    border: 1px #000000 solid;
+    border-collapse: collapse;
+}
+    #content table.table-form tr td table.timeInputTable tr{
+        height: 4ex;
+        font-size: 0.7em;
+    }
+        #content table.table-form tr td table.timeInputTable tr td:nth-of-type(2){
+            width: 6em;
+        }
+        #content table.table-form tr td table.timeInputTable tr td, #content table.table-form tr td table.timeInputTable tr th{
+            padding: 0;
+            margin: 0;
+            border: 1px #000000 solid;
+            border-collapse: collapse;
+            background: transparent;
+            width: 2em;
+            color: #000000;
+        }
+        #content table.table-form tr td table.timeInputTable tr td:not(:nth-of-type(1)):not(:nth-of-type(2)) input, #content table.table-form tr td table.timeInputTable tr:nth-of-type(2) th:not(:nth-of-type(1)):not(:nth-of-type(2)) input{
+            margin: 2px;
+        }
+        #content table.table-form tr td table.timeInputTable tr td:not(:nth-of-type(1)):not(:nth-of-type(2)):nth-of-type(2n), #content table.table-form tr td table.timeInputTable tr:nth-of-type(2) th:not(:nth-of-type(1)):not(:nth-of-type(2)):nth-of-type(2n){
+            border-left: 1px #000000 dashed;
+        }
+        #content table.table-form tr td table.timeInputTable tr td:not(:nth-of-type(1)):not(:nth-of-type(2)):nth-of-type(2n+1), #content table.table-form tr td table.timeInputTable tr:nth-of-type(2) th:not(:nth-of-type(1)):not(:nth-of-type(2)):nth-of-type(2n+1){
+            border-right: 1px #000000 dashed;
+        }
+        #content table.table-form tr td table.timeInputTable tr td:nth-of-type(1){
+            width: 3em;
+        }
+        #content table.table-form tr td table.timeInputTable tr td:nth-of-type(2){
+            width: 6em;
+        }
+            #content table.table-form tr td table.timeInputTable tr td input, #content table.table-form tr td table.timeInputTable tr th input{
+                width: 2em;
+                min-width: inherit;
+                margin: 0;
+                text-align: center;
+            }
+            #content table.table-form tr td table.timeInputTable tr input{
+                color: #f1f1f1;
+            }
+            #content table.table-form tr td table.timeInputTable tr th input, #content table.table-form tr td table.timeInputTable tr:nth-of-type(1) td input{
+                color: #000000;
+            }
+            #content table.table-form tr td table.timeInputTable tr th:nth-of-type(1) input, #content table.table-form tr td table.timeInputTable tr th:nth-of-type(2) input{
+                color: #000000;
+            }
+            #content table.table-form tr td table.timeInputTable tr td:nth-of-type(1) input, #content table.table-form tr td table.timeInputTable tr td:nth-of-type(2) input{
+                color: #000000;
+            }
+            #content table.table-form tr td table.timeInputTable tr td input[type="button"], #content table.table-form tr td table.timeInputTable tr th input[type="button"]{
+                width: 2em;
+            }
