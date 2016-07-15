@@ -1,6 +1,6 @@
-eval(DriveApp.getFileById("0B88bKUOZP4-AMzZJdGdvbkZPSU0").getBlob().getDataAsString("UTF-8"));
+//eval(DriveApp.getFileById("0B88bKUOZP4-AMzZJdGdvbkZPSU0").getBlob().getDataAsString("UTF-8"));
 
-var ss = SpreadsheetApp.openById(_fileId.spreadsheet.editDatabase);
+//var ss = SpreadsheetApp.openById(_fileId.spreadsheet.editDatabase);
 
 var database;
 
