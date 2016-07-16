@@ -298,3 +298,26 @@ function loadFileFromDrive(fileIdStr,charEnc){
     if(charEnc == null)  charEnc = "UTF-8";
     return DriveApp.getFileById(fileIdStr).getBlob().getDataAsString(charEnc);
 }
+
+function loadDataFromDrive(fileIdStr, mode) {
+    var result;
+    if (mode == null) mode = "all";
+    var raw = loadFileFromDrive(fileIdStr);
+    var rawData = JSON.parse(raw);
+
+    switch (mode) {
+        case "all":
+            result = rawData;
+            break;
+        case "raw":
+            result = raw;
+            break;
+        case "data":
+            result = rawData.data;
+            break;
+        case "version":
+            result = rawData.version;
+            break;
+    }
+    return result;
+}
