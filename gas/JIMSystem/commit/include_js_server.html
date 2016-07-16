@@ -25,7 +25,7 @@ var Server = (function(){
             this._updatingQueue = [];
             this._updating = false;
             this._loading = [];
-            runServerFun("Script.loadDataFromDrive",[colTableFileId,"raw"])
+            runServerFun("Script.loadDataFromDrive",[colTableFileId,"all"])
             .then(function(v){
                 //TODO
                 //value v is invalid (datafile is not incomplete)
