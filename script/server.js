@@ -127,7 +127,7 @@ function runServerFun(funName,_arguments,userObj){
             reject(e,o);
         })
         .withUserObject(userObj)
-        .loadfun(funName,_arguments);
+        .Script.loadfun(funName,_arguments);
     });
 }
 
