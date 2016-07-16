@@ -46,11 +46,13 @@
     var _tmp = {
         pageFun:{}
     };
-    _val.status = {whichSide:"client"};
-    _val.server = new Server();
-    _val.server.loadDataByName("config")
-    .then(function(v){
-        _val.config = v;
+    $(function(){
+        _val.status = {whichSide:"client"};
+        _val.server = new Server();
+        _val.server.loadDataByName("config")
+        .then(function(v){
+            _val.config = v;
+        });
     });
 
 //start.jsが読み込まれると実行される部分　ここまで
