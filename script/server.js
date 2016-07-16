@@ -15,6 +15,8 @@ server.js
 
 var Server = (function(){
     var cache = {};
+    //TODO
+    //This is collectionInfo.json
     var colTableFileId = "0B88bKUOZP4-AalctMlZ4MDE0eG8";
     return class Server {
         constructor(){
@@ -24,6 +26,8 @@ var Server = (function(){
             this._loading = [];
             runServerFun("Script.loadDataFromDrive",[colTableFileId,"raw"])
             .then(function(v){
+                //TODO
+                //value v is invalid (datafile is not incomplete)
                 cache.collectionInfo = v.map(function(collObj){
                     return new CollectionInfo(collObj);
                 });
