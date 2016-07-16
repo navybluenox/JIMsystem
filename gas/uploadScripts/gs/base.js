@@ -293,3 +293,8 @@ function sendAZUSA(sendName,subject,message,noLog,label){
 function updateFileToDrive(fileIdStr, content){
     DriveApp.getFileById(fileIdStr).setContent(content);
 }
+
+function loadFileFromDrive(fileIdStr,charEnc){
+    if(charEnc == null)  charEnc = "UTF-8";
+    return DriveApp.getFileById(fileIdStr).getBlob().getDataAsString(charEnc);
+}

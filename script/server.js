@@ -22,7 +22,7 @@ var Server = (function(){
             this._updatingQueue = [];
             this._updating = false;
             this._loading = [];
-            runServerFun("loadDataFromDrive",[colTableFileId,"raw"])
+            runServerFun("Script.loadDataFromDrive",[colTableFileId,"raw"])
             .then(function(v){
                 cache.collectionInfo = v.map(function(collObj){
                     return new CollectionInfo(collObj);
@@ -42,7 +42,7 @@ var Server = (function(){
             }
             var loadingId = makeRandomStr();
             this._loading.push({id:loadingId,coll:collInfo});
-            return runServerFun("loadDataFromDrive",[collInfo.fileId,"raw"])
+            return runServerFun("Script.loadDataFromDrive",[collInfo.fileId,"raw"])
             .then(function(v){
                 cache[collInfo.name] = [];
                 var c = cache[collInfo.name];
