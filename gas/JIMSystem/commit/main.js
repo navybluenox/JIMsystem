@@ -15,3 +15,14 @@ function doGet(request) {
 function include(filename) {
     return HtmlService.createHtmlOutputFromFile(filename).getContent();
 }
+
+function loadfun(funName,_arguments){
+    var fun;
+    eval("fun = " + funName + ";");
+    if(typeof _arguments == "undefined"){
+        return JSON.stringify(fun.apply(null));
+    }else{
+        if(!Array.isArray(_arguments))  _arguments = [_arguments];
+        return JSON.stringify(fun.apply(null,_arguments));
+    }
+}
