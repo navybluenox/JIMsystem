@@ -204,9 +204,9 @@ Number.isNaN = Number.isNaN || function (value) {
     return typeof value === "number" && value !== value;
 }
 
-Array.prototype.inArray = Array.prototype.inArray || function (value) {
+/*Array.prototype.inArray = Array.prototype.inArray || function (value) {
     return this.indexOf(value) !== -1;
-}
+}*/
 
 class LocalDate {
     constructor(timeValue){
@@ -401,6 +401,11 @@ function ungroupArray(array, keys) {
     }
 }
 
+function inArray(array, value){
+    if(!Array.isArray(array))  throw new Error();
+    return array.indexOf(value) !== -1;
+}
+
 function dateToValue(date) {
     //result = {
     //    str:2016/2/3 12:34:56, str1:2/3 12:34:56,
@@ -462,7 +467,7 @@ function makeRandomStr(length, option) {
         length--;
     }
     if(option.doubleCheck){
-        while(option.doubleCheck.inArray(result)){
+        while(inArray(option.doubleCheck,result)){
             result = makeRandomStr(_length, option);
         }
     }
@@ -478,7 +483,7 @@ function makeIdForTable(data, column, length, option) {
         if (obj[column] == null || obj[column] === "") {
             do {
                 obj[column] = makeRandomStr(length, option);
-            } while (data.map(function (obj1) { return obj1[column] }).inArray(obj[column]))
+            } while (inArray(data.map(function (obj1) { return obj1[column] }),obj[column]))
         }
         return obj;
     });

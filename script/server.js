@@ -84,7 +84,7 @@ var Server = (function(){
         getDataById(ids,dataName,newCopy){
             if(!Array.isArray(ids))  ids = [ids];
             return this.getData(dataName,newCopy).filter(function(data){
-                return ids.inArray(data);
+                return inArray(ids,data);
             });
         }
         getCollectionInfoByName(dataName){
