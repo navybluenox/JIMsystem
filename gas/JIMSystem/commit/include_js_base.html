@@ -393,6 +393,7 @@ function dateToValue(date) {
 }
 
 function makeRandomStr(length, option) {
+    //長さ10,英数字小文字大文字
     if (length == null) length = 10;
     if (option == null) option = {};
     var _length = length;
@@ -427,7 +428,7 @@ function makeRandomStr(length, option) {
 
 function makeIdForTable(data, column, length, option) {
     //data = [ObjectA, ObjectB, ... ,ObjectZ];
-    if (typeof column == "undefined") column = "id";
+    if (typeof column == "undefined") column = "_id";
     if (typeof data == "undefined") data = [];
 
     return data.map(function (obj) {

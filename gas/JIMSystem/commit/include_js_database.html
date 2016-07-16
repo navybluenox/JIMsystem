@@ -181,6 +181,7 @@ var Datapiece = (function(){
                 console.log("Attention : Collection:" + collInfo.getValue("name") + " does not have column:" + colName + ".");
                 return null;
             }
+            //TODO case type
             switch(colObj.type){
                 case "number":
                     data[colName] = +value;
