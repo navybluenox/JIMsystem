@@ -1,10 +1,8 @@
-"use strict";
-
 function myFunction() {
     //claim test!!!!!!
 }
 
-var this_checkPass = Script.checkPass.bind(undefined, "jimjim");
+var this_checkPass = Script.checkPass.bind(this, "jimjim");
 
 function doGet(request) {
     return HtmlService.createTemplateFromFile('html_login').evaluate().setSandboxMode(HtmlService.SandboxMode.IFRAME).setTitle("JIMシステム_forJIMs");
