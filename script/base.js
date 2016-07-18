@@ -393,7 +393,7 @@ function dateToValue(date) {
 
 function makeRandomStr(length, option) {
     //長さ10,英数字小文字大文字
-    if (length == null) length = 10;
+    if (length == null) length = 16;
     if (option == null) option = {};
     var _length = length;
 

@@ -15,7 +15,7 @@ server.js
 
 var Server = (function(){
     var cache = {};
-    //TODO
+    //TODO  Get this info from config.json
     //This is collectionInfo.json
     var colTableFileId = "0B88bKUOZP4-AalctMlZ4MDE0eG8";
     return class Server {
@@ -24,6 +24,11 @@ var Server = (function(){
             this._updatingQueue = [];
             this._updating = false;
             this._loading = [];
+            this._loaded = false;
+            this._ready = false;
+            this._eventHandler = {
+                ready:[]
+            };
             runServerFun("Script.loadDataFromDrive",[colTableFileId,"all"])
             .then(function(v){
                 //TODO
@@ -31,9 +36,24 @@ var Server = (function(){
                 cache.collectionInfo = v.map(function(collObj){
                     return new CollectionInfo(collObj);
                 });
+                this._loaded = true;
+                this._ready = true;
+                this._eventHandler.ready.reverse();
+                var fun;
+                while((fun = this._eventHandler.ready.pop()) !== undefined){
+                    fun(this);
+                }
             }).catch(function(e){
                 console.log(e);
             });
+        }
+        onready(handler){
+            if(this._ready){
+                handler(this);
+            }else{
+                this._eventHandler.ready.push(handler);
+            }
+            return this;
         }
         isLoaded(){
             return this._loaded;
