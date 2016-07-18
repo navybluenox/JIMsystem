@@ -160,9 +160,10 @@ baseServer.js
 var Datapiece = (function(){
     var data;
     var collInfo;
-    var server = _val.server;
+    var server;
     return class Datapiece {
         constructor(datapieceObj,dataName){
+            server = _val.server;
             data = {};
             collInfo = server.getCollectionInfoByName(dataName);
             this.setValues(datapieceObj);
