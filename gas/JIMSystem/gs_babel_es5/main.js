@@ -17,10 +17,9 @@ function include(filename) {
 function loadfun(funName, _arguments) {
     var fun;
     eval("fun = " + funName + ";");
-    if (typeof _arguments == "") {
+    if (_arguments === undefined) {
         return JSON.stringify(fun.apply(undefined));
     } else {
-        _arguments = JSON.parse(_arguments);
         if (!Array.isArray(_arguments)) _arguments = [_arguments];
         return JSON.stringify(fun.apply(undefined, _arguments));
     }

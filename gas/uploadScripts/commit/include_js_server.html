@@ -152,7 +152,7 @@ function runServerFun(funName,_arguments,userObj){
             reject(e,o);
         })
         .withUserObject(userObj)
-        .loadfun(funName,JSON.stringify(_arguments));
+        .loadfun(funName,_arguments);
     });
 }
 
