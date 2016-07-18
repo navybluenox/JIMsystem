@@ -18,7 +18,7 @@ function loadFileFromDrive(fileIdStr,charEnc){
 }
 
 function movePage(pageName){
-    var htmlName = pageName;
+    var htmlName = "html_" + pageName;
     return JSON.stringify(
         HtmlService.createTemplateFromFile(htmlName)
         .evaluate()
