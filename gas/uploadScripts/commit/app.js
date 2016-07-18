@@ -33,7 +33,7 @@ function checkPass(key,pass,pageName){
         result = (key === pass);
     }else{
         if(key === pass){
-            result = mogePage(pageName);
+            result = movePage(pageName);
         }else{
             result = null
         }
