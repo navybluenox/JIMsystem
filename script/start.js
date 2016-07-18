@@ -48,7 +48,7 @@
     $(function(){
         _val.status = {whichSide:"client"};
         _val.server = new Server();
-        _val.server.onready(function(that){
+        _val.server.onReady(function(that){
             that.loadDataByName("config")
             .then(function(v){
                 _val.config = v;

@@ -48,7 +48,7 @@ var Server = (function(){
                 console.log(e);
             });
         }
-        onready(handler){
+        onReady(handler){
             if(this._ready){
                 handler(this);
             }else{
@@ -152,7 +152,7 @@ function runServerFun(funName,_arguments,userObj){
             reject(e,o);
         })
         .withUserObject(userObj)
-        .loadfun(funName,_arguments);
+        .loadfun(funName,JSON.stringify(_arguments));
     });
 }
 
