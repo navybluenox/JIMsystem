@@ -165,14 +165,16 @@ var Datapiece = (function(){
         constructor(datapieceObj,dataName){
             server = _val.server;
             data = {};
-            collInfo = server.getCollectionInfoByName(dataName);
+            server.onReady(function(){
+                collInfo = server.getCollectionInfoByName(dataName);
+            });
             this.setValues(datapieceObj);
         }
         setValues(datapieceObj){
             if(datapieceObj !== undefined){
                 Object.keys(datapieceObj).forEach(function(key){
                     this.setValue(key,datapieceObj[key]);
-                });
+                },this);
             }
             return this;
         }
