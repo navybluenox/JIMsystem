@@ -172,13 +172,14 @@ var Datapiece = (function(){
             if(option.init === true){
                 //executed from start.js
                 if(datapieceObj !== undefined){
-                    Object.keys(datapieceObj).forEach(function(key){
+                    this.setValues(datapieceObj,{overwriteArray:true,setCollectionInfo:option.init_data});
+                    /*Object.keys(datapieceObj).forEach(function(key){
                         var colObj = option.init_data.column.find(function(obj){return obj.name === key});
                         var value = datapieceObj[key];
                         //TODO case type
                         //TODO column指定をオブジェクト形式に書き直す
                         data[colName] = castType(value,colObj.type);
-                    },this);
+                    },this);*/
                 }
                 server.onReady(function(){
                     collInfo = server.getCollectionInfoByName(dataName);
@@ -188,11 +189,62 @@ var Datapiece = (function(){
                 this.setValues(datapieceObj);
             }
         }
-        setValues(datapieceObj){
-            if(datapieceObj !== undefined){
-                Object.keys(datapieceObj).forEach(function(key){
-                    this.setValue(key,datapieceObj[key]);
-                },this);
+        setValues(datapieceObj,option){
+            if(typeof datapieceObj !== "object" || datapieceObj === null){
+                console.log("Attention : argu is not object (Datapiece.prototype.setValues)");
+                return this;
+            }
+            if(option === undefined){
+                //大抵optionは空なので軽量化のためにここに文を設置
+                goDeepLevelValue(datapieceObj,collInfo.getValue("column"),data,null,null,{});
+            }else{
+                //アプリ起動時にデータロードを行う際、CollectionInfoクラスのsetValues()で、まだ値が代入されていないServerのcloser内のcacheにアクセスするのを避ける
+                if(option.setCollectionInfo !== undefined){
+                    goDeepLevelValue(datapieceObj,option.setCollectionInfo.column,data,null,null,option);
+                }else{
+                    goDeepLevelValue(datapieceObj,collInfo.getValue("column"),data,null,null,option);
+                }
+            }
+
+            //オブジェクトの最下層まで掘り進むための再起関数
+            //collInfo.columnにないカラムは追加することが出来ず、型が異なる値も代入することは出来ない
+            //なお、datapieceに不正なキーや値があった場合は、そのキーのみ無視される
+            function goDeepLevelValue(dpObj,colObj,d,dParent,dKey,op){
+                if(classof(dpObj) !== classof(colObj) && classof(dpObj) !== colObj) return undefined;
+                switch(classof(dpObj)){
+                    case "object":
+                        //配列オーバーライトモードの時、もともとのデータ（data of this closer）にない番号のデータを生成する必要があるため、空のオブジェクトを作成
+                        ////上の説明が悪いので、分からなければ下のif文をコメントアウトして実行すれば分かると思う
+                        if(op.overwriteArray === true && d === undefined && Array.isArray(dParent)){
+                            d = {};
+                        }
+                        Object.keys(dpObj).forEach(function(key){
+                            if(colObj[key] !== undefined){
+                                goDeepLevelValue(dpObj[key],colObj[key],d[key],d,key,op);
+                            }
+                        });
+                        return d;
+                    case "array":
+                        //配列オーバーライトモードの時、もともとのデータ（data of this closer）にない番号のデータを生成する必要があるため、空の配列を作成
+                        if(op.overwriteArray === true && d === undefined && Array.isArray(dParent)){
+                            d = [];
+                        }
+                        if(op.overwriteArray === true){
+                            dParent[dKey] = dpObj.map(function(v,i){
+                                return goDeepLevelValue(dpObj[i],colObj[0],d[i],d,i,op)
+                            })
+                        }else{
+                            dpObj.forEach(function(v,i){
+                                if(v === undefined || v === null)  return;
+                                goDeepLevelValue(dpObj[i],colObj[0],d[i],d,i,op);
+                            });
+                        }
+                        return d;
+                    default:
+                        //shallow copyをするため、あえてdではなくdParent[dKey]を使用
+                        dParent[dKey] = castType(dpObj,colObj);
+                        return castType(dpObj,colObj);
+                }
             }
             return this;
         }
@@ -201,7 +253,7 @@ var Datapiece = (function(){
             try{
                 colType = getValueFromObjectByKey(data,colName);
             }catch(e){
-                console.log("Attention : " + "There is no property(" + colName + ") of" + _dataName + " (Datapiece.prototype.setValue)");
+                console.log("Attention : " + "There is no property(" + colName + ") of" + this.getDataName() + " (Datapiece.prototype.setValue)");
                 return null;
             }
             data[colName] = castType(value,colType);
@@ -214,6 +266,9 @@ var Datapiece = (function(){
         getValue(colName){
             if(typeof colName !== "string")  return undefined;
             return getValueFromObjectByKey(data,colName);
+        }
+        getDataName(){
+            return _dataName;
         }
         static getData(dataName){
             if(dataName === undefined)  dataname = collInfo.getValue("name");
@@ -268,6 +323,19 @@ var Datapiece = (function(){
         }
         result[keyArray[i]] = value;
         return obj;
+    }
+    function classof(val){
+        if(typeof val === "object"){
+            if(val === null)  return "null";
+            if(Array.isArray(val))  return "array";
+            if(val instanceof Datapiece)  return val.getDataName();
+            if(val instanceof LocalDate) return "localdate";
+            if(val instanceof Date) return "date";
+            if(val instanceof Server) return "server";
+            return "object";
+        }else{
+            return typeof val;
+        }
     }
 })();
 
