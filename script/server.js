@@ -14,12 +14,14 @@ server.js
 
 
 var Server = (function(){
+    var that;
     var cache = {};
     //TODO  Get this info from config.json
     //This is collectionInfo.json
     var colTableFileId = "0B88bKUOZP4-AalctMlZ4MDE0eG8";
     return class Server {
         constructor(){
+            that = this;
             this._pendingQueue = [];
             this._updatingQueue = [];
             this._updating = false;
@@ -33,15 +35,16 @@ var Server = (function(){
             .then(function(v){
                 //TODO
                 //value v is invalid (datafile is not incomplete)
+                var collInfo_of_collectionInfoColl = v.find(function(collObj){return collObj.name === "collectionInfo"});
                 cache.collectionInfo = v.map(function(collObj){
-                    return new CollectionInfo(collObj);
+                    return new CollectionInfo(collObj,{init:true,init_data:collInfo_of_collectionInfoColl});
                 });
-                this._loaded = true;
-                this._ready = true;
-                this._eventHandler.ready.reverse();
+                that._loaded = true;
+                that._ready = true;
+                that._eventHandler.ready.reverse();
                 var fun;
-                while((fun = this._eventHandler.ready.pop()) !== undefined){
-                    fun(this);
+                while((fun = that._eventHandler.ready.pop()) !== undefined){
+                    fun(that);
                 }
             }).catch(function(e){
                 console.log(e);
@@ -59,7 +62,7 @@ var Server = (function(){
             return this._loaded;
         }
         loadData(collInfo){
-            if(!collInfo instanceof CollectionInfo){
+            if(!(collInfo instanceof CollectionInfo)){
                 console.log("Error : An argument of fun:loadData is not an instance of CollectionInfo");
                 console.log(collInfo);
                 throw new Error();
@@ -113,7 +116,7 @@ var Server = (function(){
         }
         getCollectionInfoByName(dataName){
             return cache.collectionInfo.find(function(collInfo){
-                return collInfo.name === dataName;
+                return collInfo.getValue("name") === dataName;
             });
         }
         getVersion(dataName){

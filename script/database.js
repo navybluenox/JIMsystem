@@ -160,14 +160,33 @@ var Datapiece = (function(){
     var data;
     var collInfo;
     var server;
+    var that;
+    var _dataName;
     return class Datapiece {
-        constructor(datapieceObj,dataName){
+        constructor(datapieceObj,dataName,option){
+            if(option === undefined)  option = {};
+            that = this;
             server = _val.server;
             data = {};
-            server.onReady(function(){
+            _dataName = dataName;
+            if(option.init === true){
+                //executed from start.js
+                if(datapieceObj !== undefined){
+                    Object.keys(datapieceObj).forEach(function(key){
+                        var colObj = option.init_data.column.find(function(obj){return obj.name === key});
+                        var value = datapieceObj[key];
+                        //TODO case type
+                        //TODO column指定をオブジェクト形式に書き直す
+                        data[colName] = castType(value,colObj.type);
+                    },this);
+                }
+                server.onReady(function(){
+                    collInfo = server.getCollectionInfoByName(dataName);
+                })
+            }else{
                 collInfo = server.getCollectionInfoByName(dataName);
-            });
-            this.setValues(datapieceObj);
+                this.setValues(datapieceObj);
+            }
         }
         setValues(datapieceObj){
             if(datapieceObj !== undefined){
@@ -178,25 +197,14 @@ var Datapiece = (function(){
             return this;
         }
         setValue(colName,value){
-            var colObj = collInfo.getValue("column").find(function(obj){return obj.name === colName});
-            if(colObj === undefined){
-                console.log("Attention : Collection:" + collInfo.getValue("name") + " does not have column:" + colName + ".");
+            var colType;
+            try{
+                colType = getValueFromObjectByKey(data,colName);
+            }catch(e){
+                console.log("Attention : " + "There is no property(" + colName + ") of" + _dataName + " (Datapiece.prototype.setValue)");
                 return null;
             }
-            //TODO case type
-            switch(colObj.type){
-                case "number":
-                    data[colName] = +value;
-                    break;
-                case "boolean":
-                    data[colName] = !!value;
-                    break;
-                case "string":
-                    data[colName] = "" + value;
-                    break;
-                default:
-                    data[colName] = value;
-            }
+            data[colName] = castType(value,colType);
             return this;
         }
         //消すかも
@@ -204,12 +212,62 @@ var Datapiece = (function(){
             return data;
         }
         getValue(colName){
-            return data[colName];
+            if(typeof colName !== "string")  return undefined;
+            return getValueFromObjectByKey(data,colName);
         }
         static getData(dataName){
             if(dataName === undefined)  dataname = collInfo.getValue("name");
             return server.getData(dataName,true);
         }
+    }
+    function castType(value,type){
+        switch(type){
+            case "number":
+                return +value;
+            case "boolean":
+                return !!value;
+            case "string":
+                return "" + value;
+            case "date":
+                return new Date(value);
+            case "localDate":
+                return new LocalDate(value);
+            default:
+                return value;
+        }
+    }
+    function getValueFromObjectByKey(obj,key){
+        if(typeof key !== "string")  return undefined;
+        var keyArray = key.split(".");
+        var i,result = obj;
+        try{
+            for(i=0; i<keyArray.length; i++){
+                result = result[keyArray[i]];
+            }
+        }catch(e){
+            keyArray.length = i;
+            console.log("Error : There is no property(" + keyArray.join(".") + ") of a following object (getValueFromObjectByKey which is defined in closer of Datapiece )");
+            console.log(obj);
+            throw new Error(e);
+        }
+        return result;
+    }
+    function setValueFromObjectByKey(obj,key,value){
+        if(typeof key !== "string")  return undefined;
+        var keyArray = key.split(".");
+        var i,result = obj;
+        try{
+            for(i=0; i<keyArray.length-1; i++){
+                result = result[keyArray[i]];
+            }
+        }catch(e){
+            keyArray.length = i;
+            console.log("Error : There is no property(" + keyArray.join(".") + ") of a following object (setValueFromObjectByKey which is defined in closer of Datapiece )");
+            console.log(obj);
+            throw new Error(e);
+        }
+        result[keyArray[i]] = value;
+        return obj;
     }
 })();
 
@@ -220,8 +278,8 @@ class User extends Datapiece{
 }
 
 class CollectionInfo extends Datapiece{
-    constructor(datapieceObj){
-        super(datapieceObj,"collectionInfo");
+    constructor(datapieceObj,option){
+        super(datapieceObj,"collectionInfo",option);
     }
     getClass(){
         var classNamePairList = [
