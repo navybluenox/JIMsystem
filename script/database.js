@@ -157,18 +157,15 @@ baseServer.js
 */
 
 var Datapiece = (function(){
-    var data;
-    var collInfo;
     var server;
     var that;
-    var _dataName;
     return class Datapiece {
         constructor(datapieceObj,dataName,option){
             if(option === undefined)  option = {};
             that = this;
             server = _val.server;
             data = {};
-            _dataName = dataName;
+            this._dataName = dataName;
             //delete!! リリース前に必ず消す
             this._data = data;
             //delete!!!
@@ -185,10 +182,10 @@ var Datapiece = (function(){
                     },this);*/
                 }
                 server.onReady(function(){
-                    collInfo = server.getCollectionInfoByName(dataName);
+                    that._collInfo = server.getCollectionInfoByName(dataName);
                 })
             }else{
-                collInfo = server.getCollectionInfoByName(dataName);
+                this._collInfo = server.getCollectionInfoByName(dataName);
                 this.setValues(datapieceObj);
             }
         }
@@ -199,13 +196,13 @@ var Datapiece = (function(){
             }
             if(option === undefined){
                 //大抵optionは空なので軽量化のためにここに文を設置
-                goDeepLevelValue(datapieceObj,collInfo.getValue("column"),data,null,null,{});
+                goDeepLevelValue(datapieceObj,this._collInfo.getValue("column"),this._data,null,null,{});
             }else{
                 //アプリ起動時にデータロードを行う際、CollectionInfoクラスのsetValues()で、まだ値が代入されていないServerのcloser内のcacheにアクセスするのを避ける
                 if(option.setCollectionInfo !== undefined){
-                    goDeepLevelValue(datapieceObj,option.setCollectionInfo.column,data,null,null,option);
+                    goDeepLevelValue(datapieceObj,option.setCollectionInfo.column,this._data,null,null,option);
                 }else{
-                    goDeepLevelValue(datapieceObj,collInfo.getValue("column"),data,null,null,option);
+                    goDeepLevelValue(datapieceObj,this._collInfo.getValue("column"),this._data,null,null,option);
                 }
             }
 
@@ -213,6 +210,10 @@ var Datapiece = (function(){
             //collInfo.columnにないカラムは追加することが出来ず、型が異なる値も代入することは出来ない
             //なお、datapieceに不正なキーや値があった場合は、そのキーのみ無視される
             function goDeepLevelValue(dpObj,colObj,d,dParent,dKey,op){
+                if(colObj === "other"){
+                    dParent[dKey] = dpObj;
+                    return d;
+                }
                 if(classof(dpObj) !== classof(colObj) && classof(dpObj) !== colObj) return undefined;
                 switch(classof(dpObj)){
                     case "object":
@@ -254,7 +255,7 @@ var Datapiece = (function(){
         setValue(colName,value){
             var colType;
             try{
-                colType = getValueFromObjectByKey(data,colName);
+                colType = getValueFromObjectByKey(this._data,colName);
             }catch(e){
                 console.log("Attention : " + "There is no property(" + colName + ") of" + this.getDataName() + " (Datapiece.prototype.setValue)");
                 return null;
@@ -264,14 +265,14 @@ var Datapiece = (function(){
         }
         //消すかも
         getValues(){
-            return data;
+            return this._data;
         }
         getValue(colName){
             if(typeof colName !== "string")  return undefined;
-            return getValueFromObjectByKey(data,colName);
+            return getValueFromObjectByKey(this._data,colName);
         }
         getDataName(){
-            return _dataName;
+            return this._dataName;
         }
         static getData(dataName){
             if(dataName === undefined)  dataname = collInfo.getValue("name");
