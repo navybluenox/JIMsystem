@@ -76,6 +76,7 @@ var Server = (function(){
                 console.log(collInfo);
                 throw new Error();
             }
+            var that = this;
             var loadingId = makeRandomStr();
             this._loading.push({id:loadingId,coll:collInfo});
             return runServerFun("Script.loadDataFromDrive",[collInfo.fileId,"raw"])
@@ -86,11 +87,11 @@ var Server = (function(){
                 cache[collInfo.name] = v.map(function(dataObj){
                     return new thisClass(dataObj);
                 });
-                this._loading = this._loading.filter(function(obj){return obj.id !== loadingId});
+                that._loading = that._loading.filter(function(obj){return obj.id !== loadingId});
                 return cache[collInfo.name];
             })
             .catch(function(e){
-                this._loading = this._loading.filter(function(obj){return obj.id !== loadingId});
+                that._loading = that._loading.filter(function(obj){return obj.id !== loadingId});
                 console.log(e);
             });
         }
