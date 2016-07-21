@@ -342,12 +342,6 @@ var Datapiece = (function(){
     }
 })();
 
-class User extends Datapiece{
-    constructor(datapieceObj){
-        super(datapieceObj,"user");
-    }
-}
-
 class CollectionInfo extends Datapiece{
     constructor(datapieceObj,option){
         super(datapieceObj,"collectionInfo",option);
@@ -355,9 +349,35 @@ class CollectionInfo extends Datapiece{
     getClass(){
         var classNamePairList = [
             {name:"collectionInfo",class:CollectionInfo},
-            {name:"user",class:User}
+            {name:"config",class:Config},
+            {name:"fileInfo",class:FileInfo},
+            {name:"shiftTableUser",class:ShiftTableUser},
+            {name:"shiftTableWork",class:ShiftTableWork},
+            {name:"user",class:User},
+            {name:"userGroup",class:UserGroup},
+            {name:"workAssign",class:WorkAssign},
+            {name:"workGroup",class:WorkGroup},
+            {name:"workList",class:WorkList},
+            {name:"workNotAssined",class:WorkNotAssigned}
         ];
-        return classNamePairList.find(function(o){return o.name === this.getValue("name")},this).class;
+        var v = classNamePairList.find(function(o){return o.name === this.getValue("name")},this);
+        if(v === undefined){
+            console.log("Error : The class is not found (maybe forget regist the class in val;classNamePairList) (fun:CollectionInfo.prototype.getClass)");
+            throw new Error(e);
+        }
+        return v.class;
+    }
+}
+
+class Config extends Datapiece{
+    constructor(datapieceObj){
+        super(datapieceObj,"config");
+    }
+}
+
+class User extends Datapiece{
+    constructor(datapieceObj){
+        super(datapieceObj,"user");
     }
 }
 
