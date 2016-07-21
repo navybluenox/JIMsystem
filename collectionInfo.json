@@ -8,10 +8,12 @@
         "column":"other"
     }
     },
-    {"_id":"MDTWafLypQHhmgSN","created":"2016-07-18T08:00:00.000Z","updated":"2016-07-18T08:00:00.000Z","name":"config","fileId":"0B88bKUOZP4-AUlcwZFFNYl8zNDg","column":{
+    {"_id":"MDTWafLypQHhmgSN","created":"2016-07-18T08:00:00.000Z","updated":"2016-07-18T08:00:00.000Z","name":"systemConfig","fileId":"0B88bKUOZP4-AUlcwZFFNYl8zNDg","column":{
         "_id":"string",
         "created":"date",
-        "updated":"date"
+        "updated":"date",
+        "modeName":"string",
+        "content":"other"
     }},
     {"_id":"eWy3mSJZ49DxUQTH","created":"2016-07-18T08:00:00.000Z","updated":"2016-07-18T08:00:00.000Z","name":"fileInfo","fileId":"0B88bKUOZP4-Ac01lZHQ5cUo0SGM","column":{
         "_id":"string",

@@ -349,16 +349,16 @@ class CollectionInfo extends Datapiece{
     getClass(){
         var classNamePairList = [
             {name:"collectionInfo",class:CollectionInfo},
-            {name:"config",class:Config},
-            {name:"fileInfo",class:FileInfo},
-            {name:"shiftTableUser",class:ShiftTableUser},
-            {name:"shiftTableWork",class:ShiftTableWork},
+//            {name:"fileInfo",class:FileInfo},
+//            {name:"shiftTableUser",class:ShiftTableUser},
+//            {name:"shiftTableWork",class:ShiftTableWork},
+//            {name:"systemConfig",class:systemConfig},
             {name:"user",class:User},
-            {name:"userGroup",class:UserGroup},
-            {name:"workAssign",class:WorkAssign},
-            {name:"workGroup",class:WorkGroup},
-            {name:"workList",class:WorkList},
-            {name:"workNotAssined",class:WorkNotAssigned}
+//            {name:"userGroup",class:UserGroup},
+//            {name:"workAssign",class:WorkAssign},
+//            {name:"workGroup",class:WorkGroup},
+//            {name:"workList",class:WorkList},
+//            {name:"workNotAssined",class:WorkNotAssigned}
         ];
         var v = classNamePairList.find(function(o){return o.name === this.getValue("name")},this);
         if(v === undefined){
@@ -369,9 +369,9 @@ class CollectionInfo extends Datapiece{
     }
 }
 
-class Config extends Datapiece{
+class SystemConfig extends Datapiece{
     constructor(datapieceObj){
-        super(datapieceObj,"config");
+        super(datapieceObj,"systemConfig");
     }
 }
 

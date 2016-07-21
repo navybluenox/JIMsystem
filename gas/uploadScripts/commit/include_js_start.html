@@ -50,7 +50,7 @@
         _val.status = {whichSide:"client"};
         _val.server = new Server();
         _val.server.onReady(function(that){
-            _val.server.loadDataByName("config")
+            _val.server.loadDataByName("systemConfig")
             .then(function(v){
                 _val.config = v;
             });
