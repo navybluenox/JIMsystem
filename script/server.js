@@ -47,7 +47,9 @@ var Server = (function(){
                 that._eventHandler.ready.reverse();
                 var fun;
 var i=0;
-                while((fun = that._eventHandler.ready.pop()) !== undefined){
+                while((fun = that._eventHandler.ready.pop()
+ && i<5
+                ) !== undefined){
                     try{
                         fun(that);
                     }catch(e){
