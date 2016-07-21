@@ -5,7 +5,7 @@
         "updated":"date",
         "name":"string",
         "fileId":"string",
-        "column":{"_id":"string","created":"date","updated":"date","name":"string","fileId":"string","column":"other"}
+        "column":"other"
     }
     },
     {"_id":"MDTWafLypQHhmgSN","created":"2016-07-18T08:00:00.000Z","updated":"2016-07-18T08:00:00.000Z","name":"config","fileId":"0B88bKUOZP4-AUlcwZFFNYl8zNDg","column":{

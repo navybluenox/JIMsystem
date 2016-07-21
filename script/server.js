@@ -31,6 +31,9 @@ var Server = (function(){
             this._eventHandler = {
                 ready:[]
             };
+            //delete!! リリース前に必ず消す
+            this._cache = cache;
+            //delete!!!
             runServerFun("Script.loadDataFromDrive",[colTableFileId,"all"])
             .then(function(v){
                 //TODO
@@ -43,8 +46,14 @@ var Server = (function(){
                 that._ready = true;
                 that._eventHandler.ready.reverse();
                 var fun;
+var i=0;
                 while((fun = that._eventHandler.ready.pop()) !== undefined){
-                    fun(that);
+                    try{
+                        fun(that);
+                    }catch(e){
+                        that._eventHandler.ready.unshift(fun);
+i++
+                    }
                 }
             }).catch(function(e){
                 console.log(e);
