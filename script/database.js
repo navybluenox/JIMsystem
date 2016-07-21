@@ -158,11 +158,10 @@ baseServer.js
 
 var Datapiece = (function(){
     var server;
-    var that;
     return class Datapiece {
         constructor(datapieceObj,dataName,option){
             if(option === undefined)  option = {};
-            that = this;
+            var that = this;
             server = _val.server;
             this._data = {};
             this._dataName = dataName;
