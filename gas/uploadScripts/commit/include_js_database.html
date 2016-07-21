@@ -165,10 +165,9 @@ var Datapiece = (function(){
             if(option === undefined)  option = {};
             that = this;
             server = _val.server;
-            data = {};
+            this._data = {};
             this._dataName = dataName;
             //delete!! リリース前に必ず消す
-            this._data = data;
             //delete!!!
             if(option.init === true){
                 //executed from start.js
