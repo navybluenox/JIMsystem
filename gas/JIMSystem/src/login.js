@@ -18,7 +18,7 @@ _tmp.pageFun.login = {
     },
     sendPass:function(){
         var pass = $("#pass").val();
-        runServerFun("this_checkPass",[pass,"main"])
+        runServerFun("checkPass",[pass,"main"])
         .then(function(innerHtml){
             if(innerHtml === null){
                 var el = document.createElement("p");

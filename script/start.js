@@ -59,11 +59,11 @@
             .then(function(v){
                 _val.baseConfig = v[1];
                 _val.config = v[0].find(function(v1){
-                    return v1.modeName === _val.baseConfig.mode;
+                    return v1.getValue("modeName") === _val.baseConfig.mode;
                 });
                 if(_val.config === undefined){
                     _val.config = v[0].find(function(v1){
-                        return v1.modeName === _val.baseConfig.defaultMode;
+                        return v1.getValue("modeName") === _val.baseConfig.defaultMode;
                     });
                 }
                 console.log("_val",_val);

@@ -24,3 +24,18 @@ function loadfun(funName, _arguments) {
         return JSON.stringify(fun.apply(undefined, _arguments));
     }
 }
+
+function checkPass(pass, pageName) {
+    var key = "jimjim";
+    var result;
+    if (pageName === undefined) {
+        result = key === pass;
+    } else {
+        if (key === pass) {
+            result = movePage(pageName);
+        } else {
+            result = null;
+        }
+    }
+    return JSON.stringify(result);
+}

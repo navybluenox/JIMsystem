@@ -81,14 +81,15 @@ var Server = (function(){
             this._loading.push({id:loadingId,coll:collInfo});
             return runServerFun("Script.loadDataFromDrive",collInfo.getValue("fileId"))
             .then(function(v){
-                cache[collInfo.name] = [];
-                var c = cache[collInfo.name];
+                var collName = collInfo.getValue("name");
+                cache[collName] = [];
+                var c = cache[collName];
                 var thisClass = collInfo.getClass();
-                cache[collInfo.name] = v.map(function(dataObj){
+                cache[collName] = v.map(function(dataObj){
                     return new thisClass(dataObj);
                 });
                 that._loading = that._loading.filter(function(obj){return obj.id !== loadingId});
-                return cache[collInfo.name];
+                return cache[collName];
             })
             .catch(function(e){
                 that._loading = that._loading.filter(function(obj){return obj.id !== loadingId});
