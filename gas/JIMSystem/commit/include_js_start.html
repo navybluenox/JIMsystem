@@ -51,20 +51,19 @@
     };
     $(function(){
         _val.status = {whichSide:"client"};
-        runServerFun("Script.loadDataFromDrive",_val.baseConfigFileId)
-        .then(function(v){
-            _val.baseConfig = v;
-        }).then(function(){
-            _val.server = new Server();
-        });
+        _val.server = new Server();
         _val.server.onReady(function(that){
-            _val.server.loadDataByName("systemConfig")
+            Promise.all([
+                _val.server.loadDataByName("systemConfig"),
+                runServerFun("Script.loadDataFromDrive",_val.baseConfigFileId)
+            ])
             .then(function(v){
-                _val.config = v.find(function(v1){
+                _val.baseConfig = v[1];
+                _val.config = v[0].find(function(v1){
                     return v1.getValue("modeName") === _val.baseConfig.mode;
                 });
                 if(_val.config === undefined){
-                    _val.config = v.find(function(v1){
+                    _val.config = v[0].find(function(v1){
                         return v1.getValue("modeName") === _val.baseConfig.defaultMode;
                     });
                 }
