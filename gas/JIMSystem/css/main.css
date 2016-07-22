@@ -226,3 +226,31 @@ input {
             #content table.table-form tr td table.timeInputTable tr td input[type="button"], #content table.table-form tr td table.timeInputTable tr th input[type="button"]{
                 width: 2em;
             }
+
+#passdiv{
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+    height: 300px;
+    margin: 0 auto;
+    padding: 5ex;
+    border-style: dashed;
+    border-width: 0.1ex;
+    background: #e4f0fc;
+    font-size: 1.5em;
+    text-align: center;
+}
+
+#passdiv>div{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    margin: -3em 0 0 -50%;
+}
+
+#passdiv input{
+    font-size: 0.75em;
+    height: 4em;
+    margin: auto;
+}
