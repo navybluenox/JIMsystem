@@ -1,4 +1,3 @@
-<script>
 "use strict";
 
 //  ---About This---
@@ -71,4 +70,3 @@ $(function () {
 });
 
 //start.jsが読み込まれると実行される部分　ここまで
-</script>
