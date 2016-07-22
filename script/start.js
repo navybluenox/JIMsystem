@@ -41,7 +41,10 @@
 //汎用的なオブジェクトなどはここで作成
 
     var geval = eval;
-    var _val = {};
+    var _val = {
+        //baseConfig.jsonのfileId
+        baseConfigFileId:"0B88bKUOZP4-AdUw1WEJWVkkwTzA"
+    };
     var _tmp = {
         pageFun:{}
     };
@@ -49,9 +52,21 @@
         _val.status = {whichSide:"client"};
         _val.server = new Server();
         _val.server.onReady(function(that){
-            _val.server.loadDataByName("systemConfig")
+            Promise.all([
+                _val.server.loadDataByName("systemConfig"),
+                runServerFun("Script.loadDataFromDrive",_val.baseConfigFileId)
+            ])
             .then(function(v){
-                _val.config = v;
+                _val.baseConfig = v[1];
+                _val.config = v[0].find(function(v1){
+                    return v1.modeName === _val.baseConfig.mode;
+                });
+                if(_val.config === undefined){
+                    _val.config = v[0].find(function(v1){
+                        return v1.modeName === _val.baseConfig.defaultMode;
+                    });
+                }
+                console.log("_val",_val);
             });
         })
     });

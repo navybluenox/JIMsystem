@@ -1,16 +1,25 @@
 [
     {
+        //モード名　baseConfigで使用
         "modeName":"MF89",
         "content":{
+            //KFかMFか
             "kind":"MF",
+            //何回目か
             "nth":89,
+            //基本情報
             "base":{
+                //1日目の0時0分0秒のDate.prototype.toISOString表記
                 "standardTime":"2016-05-13T15:00:00.000Z",
+                //企画公開時間。KFなら3日目も追加する
+                //date.setMinutes(date.getMinutes()+_config.base.open.hour*60+_config.base.open.minute)する前提
                 "openTime":[
+                    //1日目
                     {
                         "start":{"hour":9,"minute":0},
                         "end":{"hour":17,"minute":0}
                     },
+                    //2日目
                     {
                         "start":{"hour":9,"minute":0},
                         "end":{"hour":17,"minute":0}
@@ -18,26 +27,36 @@
                 ],
                 "collectionInfoFileID":"0B88bKUOZP4-AalctMlZ4MDE0eG8"
             },
+            //人割で使用する設定        
             "workAssign":{
+                //人割の一単位の時間。ミリ秒が一単位。将来、15,20分単位になりうることを想定。
                 "timeUnit":1800000,
+                //人割が開始する日（n日目）
                 "workStart":-1,
+                //人割が主に入る時間
+                //人割表の表示時間などに影響する
                 "workTime":[
+                    //-1日目
                     {
                         "start":{"hour":8,"minute":0},
                         "end":{"hour":22,"minute":0}
                     },
+                    //0日目
                     {
                         "start":{"hour":6,"minute":0},
                         "end":{"hour":23,"minute":0}
                     },
+                    //1日目
                     {
                         "start":{"hour":6,"minute":0},
                         "end":{"hour":23,"minute":0}
                     },
+                    //2日目
                     {
                         "start":{"hour":6,"minute":0},
                         "end":{"hour":26,"minute":0}
                     },
+                    //3日目
                     {
                         "start":{"hour":0,"minute":0},
                         "end":{"hour":12,"minute":0}
@@ -47,3 +66,4 @@
         }
     }
 ]
+

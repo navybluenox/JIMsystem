@@ -79,7 +79,7 @@ var Server = (function(){
             var that = this;
             var loadingId = makeRandomStr();
             this._loading.push({id:loadingId,coll:collInfo});
-            return runServerFun("Script.loadDataFromDrive",[collInfo.getValue("fileId"),"all"])
+            return runServerFun("Script.loadDataFromDrive",collInfo.getValue("fileId"))
             .then(function(v){
                 cache[collInfo.name] = [];
                 var c = cache[collInfo.name];

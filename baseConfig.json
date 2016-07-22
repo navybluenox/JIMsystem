@@ -1,5 +1,4 @@
-//JIMシステムの基本設定
-//年度ごとの設定はconfigコレクションに保存
 {
+    "mode":"MF89",
     "defaultMode":"MF89"
 }

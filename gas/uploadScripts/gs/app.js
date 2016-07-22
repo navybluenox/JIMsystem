@@ -11,12 +11,6 @@
 */
 
 
-
-function loadFileFromDrive(fileIdStr,charEnc){
-    if(charEnc == null)  charEnc = "UTF-8";
-    return DriveApp.getFileById(fileIdStr).getBlob().getDataAsString(charEnc);
-}
-
 function movePage(pageName){
     var htmlName = "html_" + pageName;
     return JSON.stringify(

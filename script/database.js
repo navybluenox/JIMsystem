@@ -351,7 +351,7 @@ class CollectionInfo extends Datapiece{
 //            {name:"fileInfo",class:FileInfo},
 //            {name:"shiftTableUser",class:ShiftTableUser},
 //            {name:"shiftTableWork",class:ShiftTableWork},
-//            {name:"systemConfig",class:systemConfig},
+            {name:"systemConfig",class:SystemConfig},
             {name:"user",class:User},
 //            {name:"userGroup",class:UserGroup},
 //            {name:"workAssign",class:WorkAssign},
