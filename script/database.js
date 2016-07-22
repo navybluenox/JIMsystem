@@ -348,7 +348,7 @@ class CollectionInfo extends Datapiece{
             {name:"workAssign",class:WorkAssign},
             {name:"workGroup",class:WorkGroup},
             {name:"workList",class:WorkList},
-            {name:"workNotAssined",class:WorkNotAssigned}
+            {name:"workNotAssigned",class:WorkNotAssigned}
         ];
         var v = classNamePairList.find(function(o){return o.name === this.getValue("name")},this);
         if(v === undefined){
@@ -413,8 +413,8 @@ class WorkList extends Datapiece{
     }
 }
 
-class WorkNotAssined extends Datapiece{
+class WorkNotAssigned extends Datapiece{
     constructor(datapieceObj){
-        super(datapieceObj,"workNotAssined");
+        super(datapieceObj,"workNotAssigned");
     }
 }
