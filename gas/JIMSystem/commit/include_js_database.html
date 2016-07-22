@@ -166,19 +166,10 @@ var Datapiece = (function(){
             server = _val.server;
             this._data = {};
             this._dataName = dataName;
-            //delete!! リリース前に必ず消す
-            //delete!!!
             if(option.init === true){
                 //executed from start.js
                 if(datapieceObj !== undefined){
                     this.setValues(datapieceObj,{overwrite:true,setCollectionInfo:option.init_data});
-                    /*Object.keys(datapieceObj).forEach(function(key){
-                        var colObj = option.init_data.column.find(function(obj){return obj.name === key});
-                        var value = datapieceObj[key];
-                        //TODO case type
-                        //TODO column指定をオブジェクト形式に書き直す
-                        data[colName] = castType(value,colObj.type);
-                    },this);*/
                 }
                 server.onReady(function(){
                     that._collInfo = server.getCollectionInfoByName(dataName);
@@ -368,6 +359,8 @@ class CollectionInfo extends Datapiece{
         return v.class;
     }
 }
+
+class fileInfo
 
 class SystemConfig extends Datapiece{
     constructor(datapieceObj){
