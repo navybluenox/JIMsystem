@@ -17,7 +17,6 @@ var Server = (function(){
     var cache = {};
     //TODO  Get this info from config.json
     //This is collectionInfo.json
-    var colTableFileId = _val.baseConfig.collectionInfoFileId;
     return class Server {
         constructor(){
             var that = this;
@@ -33,7 +32,7 @@ var Server = (function(){
             //delete!! リリース前に必ず消す
             this._cache = cache;
             //delete!!!
-            runServerFun("Script.loadDataFromDrive",[colTableFileId,"all"])
+            runServerFun("Script.loadDataFromDrive",[_val.baseConfig.collectionInfoFileId,"all"])
             .then(function(v){
                 //TODO
                 //value v is invalid (datafile is not incomplete)
