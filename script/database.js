@@ -339,16 +339,16 @@ class CollectionInfo extends Datapiece{
     getClass(){
         var classNamePairList = [
             {name:"collectionInfo",class:CollectionInfo},
-//            {name:"fileInfo",class:FileInfo},
-//            {name:"shiftTableUser",class:ShiftTableUser},
-//            {name:"shiftTableWork",class:ShiftTableWork},
+            {name:"fileInfo",class:FileInfo},
+            {name:"shiftTableUser",class:ShiftTableUser},
+            {name:"shiftTableWork",class:ShiftTableWork},
             {name:"systemConfig",class:SystemConfig},
             {name:"user",class:User},
-//            {name:"userGroup",class:UserGroup},
-//            {name:"workAssign",class:WorkAssign},
-//            {name:"workGroup",class:WorkGroup},
-//            {name:"workList",class:WorkList},
-//            {name:"workNotAssined",class:WorkNotAssigned}
+            {name:"userGroup",class:UserGroup},
+            {name:"workAssign",class:WorkAssign},
+            {name:"workGroup",class:WorkGroup},
+            {name:"workList",class:WorkList},
+            {name:"workNotAssined",class:WorkNotAssigned}
         ];
         var v = classNamePairList.find(function(o){return o.name === this.getValue("name")},this);
         if(v === undefined){
@@ -359,7 +359,23 @@ class CollectionInfo extends Datapiece{
     }
 }
 
-class fileInfo
+class FileInfo extends Datapiece{
+    constructor(datapieceObj){
+        super(datapieceObj,"fileInfo");
+    }
+}
+
+class ShiftTableUser extends Datapiece{
+    constructor(datapieceObj){
+        super(datapieceObj,"shiftTableUser");
+    }
+}
+
+class ShiftTableWork extends Datapiece{
+    constructor(datapieceObj){
+        super(datapieceObj,"shiftTableWork");
+    }
+}
 
 class SystemConfig extends Datapiece{
     constructor(datapieceObj){
@@ -373,5 +389,32 @@ class User extends Datapiece{
     }
 }
 
+class UserGroup extends Datapiece{
+    constructor(datapieceObj){
+        super(datapieceObj,"userGroup");
+    }
+}
 
+class WorkAssign extends Datapiece{
+    constructor(datapieceObj){
+        super(datapieceObj,"workAssign");
+    }
+}
 
+class WorkGroup extends Datapiece{
+    constructor(datapieceObj){
+        super(datapieceObj,"workGroup");
+    }
+}
+
+class WorkList extends Datapiece{
+    constructor(datapieceObj){
+        super(datapieceObj,"workList");
+    }
+}
+
+class WorkNotAssined extends Datapiece{
+    constructor(datapieceObj){
+        super(datapieceObj,"workNotAssined");
+    }
+}
