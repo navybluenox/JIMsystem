@@ -15,6 +15,8 @@
         引数
 */
 
+//NEWWWWWW
+
 function getRangeWithContents(sheet, row, column, rowNumber, columnName) {
     if (row == null) {
         row = 1;
