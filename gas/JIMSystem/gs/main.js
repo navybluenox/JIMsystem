@@ -28,23 +28,21 @@ function checkPass(pass,pageName){
     var key = "jimjim";
     var result;
     if(pageName === undefined){
-        result = (key === pass);
+        result = key === pass;
     }else{
         if(key === pass){
             result = movePage(pageName);
         }else{
-            result = null
+            result = null;
         }
     }
-    return JSON.stringify(result);
+    return result;
 }
 
 function movePage(pageName){
     var htmlName = "html_" + pageName;
-    return JSON.stringify(
-        HtmlService.createTemplateFromFile(htmlName)
+    return  HtmlService.createTemplateFromFile(htmlName)
         .evaluate()
         .setSandboxMode(HtmlService.SandboxMode.IFRAME)
-        .getContent()
-    );
+        .getContent();
 }

@@ -35,10 +35,10 @@ function checkPass(pass, pageName) {
             result = null;
         }
     }
-    return JSON.stringify(result);
+    return result;
 }
 
 function movePage(pageName) {
     var htmlName = "html_" + pageName;
-    return JSON.stringify(HtmlService.createTemplateFromFile(htmlName).evaluate().setSandboxMode(HtmlService.SandboxMode.IFRAME).getContent());
+    return HtmlService.createTemplateFromFile(htmlName).evaluate().setSandboxMode(HtmlService.SandboxMode.IFRAME).getContent();
 }
