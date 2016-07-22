@@ -31,7 +31,7 @@ function checkPass(pass,pageName){
         result = key === pass;
     }else{
         if(key === pass){
-            result = movePage(pageName);
+            result = getPage(pageName);
         }else{
             result = null;
         }
@@ -39,7 +39,7 @@ function checkPass(pass,pageName){
     return result;
 }
 
-function movePage(pageName){
+function getPage(pageName){
     var htmlName = "html_" + pageName;
     return  HtmlService.createTemplateFromFile(htmlName)
         .evaluate()

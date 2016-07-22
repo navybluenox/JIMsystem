@@ -71,6 +71,9 @@ var Server = (function(){
         isLoaded(){
             return this._loaded;
         }
+        isReady(){
+            return this._ready;
+        }
         loadData(collInfo){
             if(!(collInfo instanceof CollectionInfo)){
                 console.log("Error : An argument of fun:loadData is not an instance of CollectionInfo");
