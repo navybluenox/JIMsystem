@@ -19,7 +19,7 @@ _tmp.pageFun.login = {
         createModalWindow(ObjToTag({tag:"p",textContent:"loading ... "}).el,function(tag,mvConfig){
             (new Promise(function(resolve){
                 var s = setTimeout(function(){
-                    if(_val && _val.server && _val.server instanceof server && _val.server.isReady()){
+                    if(_val && _val.server && _val.server instanceof Server && _val.server.isReady()){
                         clearTimeout(s);
                         resolve();
                         return;
