@@ -17,15 +17,15 @@ _tmp.pageFun.login = {
         });
         createModalWindow(ObjToTag({tag:"p",textContent:"loading ... "}).el,function(tag,mvConfig){
             (new Promise(function(resolve){
-                var s = setTimeout(function(){
+                var s = setInterval(function(){
                     if(_val && _val.server && _val.server instanceof Server && _val.server.isReady()){
-                        clearTimeout(s);
+                        clearInterval(s);
                         resolve();
                         return;
                     }
                 },100);
             })).then(function(){
-                createModalWindow(mvConfig);
+                removeModalWindow(mvConfig);
             });
         },true);
     },
