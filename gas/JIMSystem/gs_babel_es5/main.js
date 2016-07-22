@@ -39,3 +39,8 @@ function checkPass(pass, pageName) {
     }
     return JSON.stringify(result);
 }
+
+function movePage(pageName) {
+    var htmlName = "html_" + pageName;
+    return JSON.stringify(HtmlService.createTemplateFromFile(htmlName).evaluate().setSandboxMode(HtmlService.SandboxMode.IFRAME).getContent());
+}
