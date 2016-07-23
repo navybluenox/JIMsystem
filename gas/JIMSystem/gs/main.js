@@ -25,7 +25,7 @@ function loadfun(funName,_arguments){
 }
 
 function checkPass(pass,pageName){
-    var key = "jimjim";
+    var key = "";
     var result;
     if(pageName === undefined){
         result = key === pass;

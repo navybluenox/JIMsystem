@@ -32,31 +32,37 @@ var Server = (function(){
             //delete!! リリース前に必ず消す
             this._cache = cache;
             //delete!!!
-            runServerFun("Script.loadDataFromDrive",[_val.baseConfig.collectionInfoFileId,"all"])
-            .then(function(v){
-                //TODO
-                //value v is invalid (datafile is not incomplete)
-                var collInfo_of_collectionInfoColl = v.find(function(collObj){return collObj.name === "collectionInfo"});
-                cache.collectionInfo = v.map(function(collObj){
-                    return new CollectionInfo(collObj,{init:true,init_data:collInfo_of_collectionInfoColl});
+            if(cache === undefined){
+                runServerFun("Script.loadDataFromDrive",[_val.baseConfig.collectionInfoFileId,"all"])
+                .then(function(v){
+                    //TODO
+                    //value v is invalid (datafile is not incomplete)
+                    var collInfo_of_collectionInfoColl = v.find(function(collObj){return collObj.name === "collectionInfo"});
+                    cache.collectionInfo = v.map(function(collObj){
+                        return new CollectionInfo(collObj,{init:true,init_data:collInfo_of_collectionInfoColl});
+                    });
+                    that._loaded = true;
+                    that._ready = true;
+                    that._eventHandler.ready.reverse();
+                    var fun;
+                    var i=0;
+                    while((fun = that._eventHandler.ready.pop()) !== undefined && i<5){
+                        try{
+                            fun(that);
+                        }catch(e){
+                            that._eventHandler.ready.unshift(fun);
+                            i++;
+                        }
+                    }
+                    console.log(that);
+                }).catch(function(e){
+                    console.log(e);
                 });
+            }else{
                 that._loaded = true;
                 that._ready = true;
-                that._eventHandler.ready.reverse();
-                var fun;
-                var i=0;
-                while((fun = that._eventHandler.ready.pop()) !== undefined && i<5){
-                    try{
-                        fun(that);
-                    }catch(e){
-                        that._eventHandler.ready.unshift(fun);
-                        i++;
-                    }
-                }
-                console.log(that);
-            }).catch(function(e){
-                console.log(e);
-            });
+            }
+            return this;
         }
         onReady(handler){
             if(this._ready){
@@ -116,7 +122,7 @@ var Server = (function(){
             if(newCopy === undefined)  newCopy = true;
             if(cache[dataName] === undefined)  return [];
             if(newCopy){
-                return Array.prototype.slice(cache[dataName]);
+                return cache[dataName].slice();
             }else{
                 return cache[dataName];
             }
