@@ -32,7 +32,7 @@ var Server = (function(){
             //delete!! リリース前に必ず消す
             this._cache = cache;
             //delete!!!
-            if(cache === undefined){
+            if(Object.keys(cache).length === 0){
                 runServerFun("Script.loadDataFromDrive",[_val.baseConfig.collectionInfoFileId,"all"])
                 .then(function(v){
                     //TODO
