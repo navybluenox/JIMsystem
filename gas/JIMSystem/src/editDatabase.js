@@ -3,7 +3,7 @@ $(function(){
         onload:function(){
             _val.server.getData("collectionInfo")
             .filter(function(collObj){
-                return !inArray(["shiftTableUser","shiftTableWork","workAssign","workNotAssigned"],collObj.getValue("name"));
+                return !inArray(["shiftTableUser","shiftTableWork","workAssign","workNotAssigned","systemConfig","collectionInfo"],collObj.getValue("name"));
             })
             .sort(function(a,b){
                 return a.getValue("name").charCodeAt() - b.getValue("name").charCodeAt();

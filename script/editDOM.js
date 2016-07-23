@@ -151,18 +151,22 @@ function removeModalWindow(configObj){
 function createTable(data,parent,callback,option){
     if(option === undefined)  option = {};                                                                 
     $(parent).append("<table><thead></thead><tbody></tbody></table>");
-    
+
     //make header
     var columnSample = (option.columnSample === undefined ? data[0] : option.columnSample);
     var nowColIndex = 0;
     var nowLevel = 0;
+    var headerPatternObj;
     var headerPattern = [];
-    makeHeaderPattern_2(makeHeaderPattern_1(columnSample,-1).value);
+
+    headerPatternObj = makeHeaderPattern_1(columnSample,-1);
+    makeHeaderPattern_2(headerPatternObj.value);
+    
     $(parent).find("table thead").append(headerPattern.map(function(arr){
         return "<tr>" + arr.map(function(obj){
             var r = "<th";
             if(obj.colSpan !== undefined) r += " colSpan = '" + obj.colSpan + "'";
-            if(obj.rowSpan !== undefined) r += " colSpan = '" + obj.rowSpan + "'";
+            if(obj.rowSpan !== undefined) r += " rowSpan = '" + obj.rowSpan + "'";
             r += ">" + obj.key + "</th>";
             return r;
         }).join("") + "</tr>";
@@ -210,12 +214,13 @@ function createTable(data,parent,callback,option){
             return headParObj[a].start - headParObj[b].start;
         })
         .forEach(function(key){
-            if(headerPattern[headParObj[key].level] === undefined)  headerPattern[headParObj[key].level] = [];
-            obj = {key:key};
-            if(headParObj[key].level !== nowLevel && headParObj[key].value === undefined)  obj.rowSpan = nowLevel - headParObj[key].level + 1;
-            if(headParObj[key].start !== headParObj[key].end)  obj.colSpan = headParObj[key].end - headParObj[key].start + 1;
-            headerPattern[headParObj[key].level].push(obj);
-            if(headParObj[key].value !== undefined)  makeHeaderPattern_2(headParObj[key].value);
+            var obj = headParObj[key];
+            var r = {key:key};
+            if(headerPattern[obj.level] === undefined)  headerPattern[obj.level] = [];
+            if(obj.level !== nowLevel && obj.value === undefined)  r.rowSpan = nowLevel - obj.level + 1;
+            if(obj.start !== obj.end)  r.colSpan = obj.end - obj.start + 1;
+            headerPattern[obj.level].push(r);
+            if(obj.value !== undefined)  makeHeaderPattern_2(obj.value);
         });
     }
 
