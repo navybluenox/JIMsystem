@@ -313,19 +313,6 @@ var Datapiece = (function(){
         result[keyArray[i]] = value;
         return obj;
     }
-    function classof(val){
-        if(typeof val === "object"){
-            if(val === null)  return "null";
-            if(Array.isArray(val))  return "array";
-            if(val instanceof Datapiece)  return val.getDataName();
-            if(val instanceof LocalDate) return "localdate";
-            if(val instanceof Date) return "date";
-            if(val instanceof Server) return "server";
-            return "object";
-        }else{
-            return typeof val;
-        }
-    }
 })();
 
 class CollectionInfo extends Datapiece{

@@ -148,5 +148,89 @@ function removeModalWindow(configObj){
     removeAllChildren(configObj.parent);
 }
 
+function createTable(data,parent,callback,option){
+    if(option === undefined)  option = {};                                                                 
+    $(parent).append("<table><thead></thead><tbody></tbody></table>");
+    
+    //make header
+    var columnSample = (option.columnSample === undefined ? data[0] : option.columnSample);
+    var nowColIndex = 0;
+    var nowLevel = 0;
+    var headerPattern = [];
+    makeHeaderPattern_2(makeHeaderPattern_1(columnSample,-1).value);
+    $(parent).find("table thead").append(headerPattern.map(function(arr){
+        return "<tr>" + arr.map(function(obj){
+            var r = "<th";
+            if(obj.colSpan !== undefined) r += " colSpan = '" + obj.colSpan + "'";
+            if(obj.rowSpan !== undefined) r += " colSpan = '" + obj.rowSpan + "'";
+            r += ">" + obj.key + "</th>";
+            return r;
+        }).join("") + "</tr>";
+    }).join(""));
 
+    function makeHeaderPattern_1(colSamObj,level){
+        var result;
+        if(level > nowLevel)  nowLevel = level;
+        switch(classof(colSamObj)){
+            case "object":
+                result = {value:{},start:-1,end:-1,level:level};
+                level++;
+                Object.keys(colSamObj).forEach(function(key){
+                    result.value[key] = makeHeaderPattern_1(colSamObj[key],level);
+                    if(result.start == -1 || result.start > result.value[key].start)  result.start = result.value[key].start;
+                    if(result.end == -1 || result.end < result.value[key].end)  result.end = result.value[key].end;                  
+                });
+                break;
+            case "array":
+                result = {value:{},start:-1,end:-1,level:level};
+                level++;
+                colSamObj.forEach(function(v,key){
+                    result.value[key] = makeHeaderPattern_1(v,level);
+                    if(result.start == -1 || result.start > result.value[key].start)  result.start = result.value[key].start;
+                    if(result.end == -1 || result.end < result.value[key].end)  result.end = result.value[key].end;                  
+                })
+                break;
+            case "date":
+            case "localdate":
+            case "number":
+            case "string":
+            case "boolean":
+                result = {start:nowColIndex,end:nowColIndex,level:level};
+                nowColIndex++;
+                break;
+            default:
+                throw new Error();
+        }
+        return result;
+    }
+
+    function makeHeaderPattern_2(headParObj){
+        Object.keys(headParObj)
+        .sort(function(a,b){
+            return headParObj[a].start - headParObj[b].start;
+        })
+        .forEach(function(key){
+            if(headerPattern[headParObj[key].level] === undefined)  headerPattern[headParObj[key].level] = [];
+            obj = {key:key};
+            if(headParObj[key].level !== nowLevel && headParObj[key].value === undefined)  obj.rowSpan = nowLevel - headParObj[key].level + 1;
+            if(headParObj[key].start !== headParObj[key].end)  obj.colSpan = headParObj[key].end - headParObj[key].start + 1;
+            headerPattern[headParObj[key].level].push(obj);
+            if(headParObj[key].value !== undefined)  makeHeaderPattern_2(headParObj[key].value);
+        });
+    }
+
+}
+
+
+var a ={
+    "_id":0,
+    "res":{
+        "startColIndex":1,
+        "endColIndex":2,
+        "deepLevel":{
+            "0":1,
+            "1":2
+        }
+    }
+}
 
