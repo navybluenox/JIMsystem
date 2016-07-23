@@ -263,10 +263,6 @@ var Datapiece = (function(){
         getDataName(){
             return this._dataName;
         }
-        static getData(dataName,newCopy){
-            if(dataName === undefined)  dataname = collInfo.getValue("name");
-            return server.getData(dataName,newCopy);
-        }
     }
     function castType(value,type){
         switch(type){
