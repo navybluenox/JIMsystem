@@ -33,8 +33,8 @@ function movePage(pageName,insertTag){
         }
         return v;
     }).then(function(v){
-        if(_tmp.pageFun && _tmp.pageFun[pageName] && _tmp.pageFun[pageName].onload){
-            _tmp.pageFun[pageName].onload();
+        if(_val.pageFun && _val.pageFun[pageName] && _val.pageFun[pageName].onload){
+            _val.pageFun[pageName].onload();
         }
     });
 }
