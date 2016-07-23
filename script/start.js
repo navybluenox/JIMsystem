@@ -43,11 +43,10 @@
     var geval = eval;
     var _val = {
         //baseConfig.jsonのfileId
-        baseConfigFileId:"0B88bKUOZP4-AdUw1WEJWVkkwTzA"
-    };
-    var _tmp = {
+        baseConfigFileId:"0B88bKUOZP4-AdUw1WEJWVkkwTzA",
         pageFun:{}
     };
+    var _tmp = {};
     $(function(){
         _val.status = {whichSide:"client"};
         runServerFun("Script.loadDataFromDrive",_val.baseConfigFileId)
