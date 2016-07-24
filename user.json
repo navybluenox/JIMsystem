@@ -1,0 +1,20 @@
+[
+    {
+        "_id":"bfTYAessca4KmmJh",
+        "created":"2016-07-24T09:12:34.331Z",
+        "updated":"2016-07-24T09:12:34.331Z",
+        "sortId":1,
+        "azusaId":350,
+        "azusaSendName":"いのうえこう",
+        "grade":13,
+        "name_last":"井上",
+        "name_first":"洸",
+        "name_last_phonetic":"いのうえ",
+        "name_first_phonetic":"こう",
+        "incharge":["事務局長補佐","サポート担当"],
+        "inchargeCode":["jis","spt"],
+        "oldInchargeCode":["KF64_fire","KF65_SOM","MF88_Tent","MF88_si"],
+        "isRojin":false,
+        "isAvailable":true
+    }
+]

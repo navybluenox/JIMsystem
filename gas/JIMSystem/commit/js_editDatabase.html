@@ -16,19 +16,27 @@ $(function(){
         showTable:function(){
             var form = document.getElementById("formEditDatabase");
             var result = document.getElementById("formEditDatabase_result");
+            var promise;
+            var dataName = $("#formEditDatabase [name='databaseName']").val();
 
-            createTable(
-                _val.server.getData($("#formEditDatabase [name='databaseName']").val())
-                .filter(function(v){return true})
-                .sort(function(a,b){return 1})
-                .map(function(v){return v.getValues()}),
-                result,
-                function(el,datapiece,key){
-                    console.log(el,datapiece,key);
-                }
-            );
-
-
+            if(!_val.server.isLoadedData(dataName)){
+                promise = _val.server.loadDataByName(dataName);
+            }else{
+                promise = Promise.resolve();;
+            }
+            
+            promise.then(function(){
+                createTable(
+                    _val.server.getData(dataName)
+                    .filter(function(v){return true})
+                    .sort(function(a,b){return 1})
+                    .map(function(v){return v.getValues()}),
+                    result,
+                    function(el,datapiece,key){
+                        console.log(el,datapiece,key);
+                    }
+                );
+            });
         }
     };
 });

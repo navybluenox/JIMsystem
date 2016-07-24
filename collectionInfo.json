@@ -33,7 +33,22 @@
     {"_id":"JJUwBcLNunQ9YXXB","created":"2016-07-18T08:00:00.000Z","updated":"2016-07-18T08:00:00.000Z","name":"user","fileId":"0B88bKUOZP4-AVHpNNXdDZVV2YzA","column":{
         "_id":"string",
         "created":"date",
-        "updated":"date"
+        "updated":"date",
+        "sortId":"number",
+        "azusaId":"number",
+        "azusaSendName":"string",
+        "grade":"number",
+        "name_last":"string",
+        "name_first":"string",
+        "name_last_phonetic":"string",
+        "name_first_phonetic":"string",
+        "incharge":["string"],
+        "inchargeCode":["string"],
+        "oldInchargeCode":["string"],
+        "isRojin":"boolean",
+        "isAvailable":"boolean"
+
+
     }},
     {"_id":"fZBpdfgWyMZdAp3W","created":"2016-07-18T08:00:00.000Z","updated":"2016-07-18T08:00:00.000Z","name":"userGroup","fileId":"0B88bKUOZP4-AQ01mUnoyTmZIUUk","column":{
         "_id":"string",
