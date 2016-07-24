@@ -154,8 +154,16 @@ function createTable(data,parent,callback,option){
     if(typeof callback !== "function")  callback = function(){};
     $(parent).append("<table><thead></thead><tbody></tbody></table>");
 
+    var _data = data.map(function(v){
+        if(v instanceof Datapiece){
+            return v.getValues();
+        }else{
+            return v;
+        }
+    })
+
     //make header
-    var columnSample = (option.columnSample === undefined ? data[0] : option.columnSample);
+    var columnSample = (option.columnSample === undefined ? _data[0] : option.columnSample);
     var nowColIndex = 0;
     var nowLevel = 0;
     var headerPatternObj;
@@ -175,10 +183,10 @@ function createTable(data,parent,callback,option){
     }).join(""));
 
     $(parent).find("table tbody").append(
-        (new Array(data.length+1)).join("<tr>" + (new Array(nowColIndex+1)).join("<td></td>") + "</tr>")
+        (new Array(_data.length+1)).join("<tr>" + (new Array(nowColIndex+1)).join("<td></td>") + "</tr>")
     );
 
-    data.forEach(function(dp,index){
+    _data.forEach(function(dp,index){
         var pJqObj = $(parent).find("table tbody tr").eq(index);
         fun(headerPatternObj,dp,[]);
 
@@ -195,7 +203,7 @@ function createTable(data,parent,callback,option){
                     text = dpo;
                 }
                 jqObj.text(text);
-                callback({datapiece:dp,el:jqObj[0],value:dpo,key:keyArray});
+                callback({datapiece:data[index],el:jqObj[0],value:dpo,key:keyArray});
             }else{
                 Object.keys(hpo.value).forEach(function(key){
                     var arr = keyArray.slice();
