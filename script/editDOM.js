@@ -172,6 +172,15 @@ function createTable(data,parent,callback,option){
         }).join("") + "</tr>";
     }).join(""));
 
+    $(parent).find("table tbody").append(
+        (new Array(data.length)).join("<tr>" + (new Array(nowColIndex)).join("<td></td>") + "</tr>")
+    );
+
+    data.forEach(function(dp){
+
+    })
+
+
     function makeHeaderPattern_1(colSamObj,level){
         var result;
         if(level > nowLevel)  nowLevel = level;
