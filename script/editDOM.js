@@ -178,14 +178,14 @@ function createTable(data,parent,callback,option){
     );
 
     data.forEach(function(dp,index){
-        var pJqObj = $(parent).find("table tbody tr:eq("+ index +")");
-        fun(headerPatternObj.value,dp,[]);
+        var pJqObj = $(parent).find("table tbody tr").eq(index);
+        fun(headerPatternObj,dp,[]);
 
         function fun(hpo,dpo,keyArray){
             var jqObj;
             var text;
             if(hpo.value === undefined){
-                jqObj = pJqObj.find("td:eq(" + hpo.start + ")");
+                jqObj = pJqObj.children("td").eq(hpo.start);
                 if(dpo instanceof Date){
                     text = dateToValue(dpo).str;
                 }else if(dpo instanceof LocalDate){
@@ -194,10 +194,12 @@ function createTable(data,parent,callback,option){
                     text = dpo;
                 }
                 jqObj.text(text);
-                callback({datapiece:dp,el:jqObj,value:dpo,key:keyArray});
+                callback({datapiece:dp,el:jqObj[0],value:dpo,key:keyArray});
             }else{
                 Object.keys(hpo.value).forEach(function(key){
-                    fun(hpo.value[key],dpo[key],keyArray.slice().push(key));
+                    var arr = keyArray.slice();
+                    arr.push(key);
+                    fun(hpo.value[key],dpo[key],arr);
                 })
             }
         }
