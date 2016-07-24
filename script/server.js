@@ -81,11 +81,17 @@ var Server = (function(){
         isLoadedData(dataName){
             return cache[dataName] !== undefined;
         }
-        loadData(collInfo){
+        loadData(collInfo,option){
             if(!(collInfo instanceof CollectionInfo)){
                 console.log("Error : An argument of fun:loadData is not an instance of CollectionInfo");
                 console.log(collInfo);
                 throw new Error();
+            }
+            console.log("loadData : " + collInfo.getValue("name"));
+            if(option === undefined || classof(option) === "object"){
+                option = {overwrite:true};
+            }else{
+                option.overwrite = true;
             }
             var that = this;
             var loadingId = makeRandomStr();
@@ -97,9 +103,10 @@ var Server = (function(){
                 var c = cache[collName];
                 var thisClass = collInfo.getClass();
                 cache[collName] = v.map(function(dataObj){
-                    return new thisClass(dataObj);
+                    return new thisClass(dataObj,option);
                 });
                 that._loading = that._loading.filter(function(obj){return obj.id !== loadingId});
+                console.log(cache[collName]);
                 return cache[collName];
             })
             .catch(function(e){
@@ -107,7 +114,7 @@ var Server = (function(){
                 console.log(e);
             });
         }
-        loadDataByName(dataName){
+        loadDataByName(dataName,option){
             return this.loadData(this.getCollectionInfoByName(dataName));
         }
         loadDataAll(){

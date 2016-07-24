@@ -176,7 +176,7 @@ var Datapiece = (function(){
                 })
             }else{
                 this._collInfo = server.getCollectionInfoByName(dataName);
-                this.setValues(datapieceObj);
+                this.setValues(datapieceObj,option);
             }
         }
         setValues(datapieceObj,option){
@@ -250,7 +250,7 @@ var Datapiece = (function(){
                 console.log("Attention : " + "There is no property(" + colName + ") of" + this.getDataName() + " (Datapiece.prototype.setValue)");
                 return null;
             }
-            data[colName] = castType(value,colType);
+            this._data[colName] = castType(value,colType);
             return this;
         }
         //消すかも
@@ -344,62 +344,62 @@ class CollectionInfo extends Datapiece{
 }
 
 class FileInfo extends Datapiece{
-    constructor(datapieceObj){
-        super(datapieceObj,"fileInfo");
+    constructor(datapieceObj,option){
+        super(datapieceObj,"fileInfo",option);
     }
 }
 
 class ShiftTableUser extends Datapiece{
-    constructor(datapieceObj){
-        super(datapieceObj,"shiftTableUser");
+    constructor(datapieceObj,option){
+        super(datapieceObj,"shiftTableUser",option);
     }
 }
 
 class ShiftTableWork extends Datapiece{
-    constructor(datapieceObj){
-        super(datapieceObj,"shiftTableWork");
+    constructor(datapieceObj,option){
+        super(datapieceObj,"shiftTableWork",option);
     }
 }
 
 class SystemConfig extends Datapiece{
-    constructor(datapieceObj){
-        super(datapieceObj,"systemConfig");
+    constructor(datapieceObj,option){
+        super(datapieceObj,"systemConfig",option);
     }
 }
 
 class User extends Datapiece{
-    constructor(datapieceObj){
-        super(datapieceObj,"user");
+    constructor(datapieceObj,option){
+        super(datapieceObj,"user",option);
     }
 }
 
 class UserGroup extends Datapiece{
-    constructor(datapieceObj){
-        super(datapieceObj,"userGroup");
+    constructor(datapieceObj,option){
+        super(datapieceObj,"userGroup",option);
     }
 }
 
 class WorkAssign extends Datapiece{
-    constructor(datapieceObj){
-        super(datapieceObj,"workAssign");
+    constructor(datapieceObj,option){
+        super(datapieceObj,"workAssign",option);
     }
 }
 
 class WorkGroup extends Datapiece{
-    constructor(datapieceObj){
-        super(datapieceObj,"workGroup");
+    constructor(datapieceObj,option){
+        super(datapieceObj,"workGroup",option);
     }
 }
 
 class WorkList extends Datapiece{
-    constructor(datapieceObj){
-        super(datapieceObj,"workList");
+    constructor(datapieceObj,option){
+        super(datapieceObj,"workList",option);
     }
 }
 
 class WorkNotAssigned extends Datapiece{
-    constructor(datapieceObj){
-        super(datapieceObj,"workNotAssigned");
+    constructor(datapieceObj,option){
+        super(datapieceObj,"workNotAssigned",option);
     }
 }
 
