@@ -31,8 +31,8 @@ $(function(){
                     .sort(function(a,b){return 1})
                     .map(function(v){return v.getValues()}),
                     result,
-                    function(el,datapiece,key){
-                        console.log(el,datapiece,key);
+                    function(cellObj){
+                        console.log(cellObj);
                     }
                 );
             });

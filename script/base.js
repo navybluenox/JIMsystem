@@ -166,31 +166,42 @@ var LocalDate = (function(){
             var standardTime = LocalDate.getStandardTime();
             switch(typeof timeValue){
                 case "number":
-                    this.localTime = timeValue;
-                    targetTime = LocalDate.getStandardTime();
-                    targetTime.setMilliseconds(targetTime.getMilliseconds() + timeValue);
+                    this._localTime = timeValue;
+                    //targetTime = LocalDate.getStandardTime();
+                    //targetTime.setMilliseconds(targetTime.getMilliseconds() + timeValue);
                     break;
                 case "object":
                     if(timeValue instanceof Date){
                         targetTime = new Date(timeValue.toISOString());
-                        this.localTime = targetTime.getTime() - standardTime.getTime();
+                        this._localTime = targetTime.getTime() - standardTime.getTime();
                     }else if(timeValue != null){
-                        this.localTime = 0;
+                        this._localTime = 0;
                         targetTime = LocalDate.getStandardTime()
-                        if(timeValue.day != null)  this.localTime += timeValue.day * 24 * 60 * 60 * 1000;
-                        if(timeValue.hour != null)  this.localTime += timeValue.hour * 60 * 60 * 1000;
-                        if(timeValue.minute != null)  this.localTime += timeValue.minute * 60 * 1000;
-                        if(timeValue.second != null)  this.localTime += timeValue.second * 1000;
-                        if(timeValue.millsecond != null)  this.localTime += timeValue.millsecond;
-                        targetTime.setMilliseconds(targetTime.getMilliseconds() + this.localTime);
+                        if(timeValue.day != null)  this._localTime += timeValue.day * 24 * 60 * 60 * 1000;
+                        if(timeValue.hour != null)  this._localTime += timeValue.hour * 60 * 60 * 1000;
+                        if(timeValue.minute != null)  this._localTime += timeValue.minute * 60 * 1000;
+                        if(timeValue.second != null)  this._localTime += timeValue.second * 1000;
+                        if(timeValue.millsecond != null)  this._localTime += timeValue.millsecond;
+                        //targetTime.setMilliseconds(targetTime.getMilliseconds() + this._localTime);
                     }else{
                         targetTime = new Date();
-                        this.localTime = targetTime.getTime() - standardTime.getTime();
+                        this._localTime = targetTime.getTime() - standardTime.getTime();
+                    }
+                    break;
+                case "string":
+                    if(
+                        /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2})?(?:\.\d{1,3})?(?:Z|[\+\-]\d{2}:\d{2})$/.test(timeValue) ||
+                        /^local_\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2})?(?:\.\d{1,3})?(?:Z|[\+\-]\d{2}:\d{2})$/.test(timeValue)
+                    ){
+                        this._localTime = (new Date(timeValue.replace(/local_/,""))).getTime() - standardTime.getTime();
+                    }else{
+                        targetTime = new Date(timeValue);
+                        this._localTime = targetTime.getTime() - standardTime.getTime();
                     }
                     break;
                 default:
                     targetTime = new Date(timeValue);
-                    this.localTime = targetTime.getTime() - standardTime.getTime();
+                    this._localTime = targetTime.getTime() - standardTime.getTime();
             }
         }
         static getStandardTime(){
@@ -216,12 +227,12 @@ var LocalDate = (function(){
         }
         getAsDateClass(){
             var targetTime = LocalDate.getStandardTime();
-            return targetTime.setMilliseconds(targetTime.getMilliseconds() + this.localTime);
+            return targetTime.setMilliseconds(targetTime.getMilliseconds() + this._localTime);
         };
-        getLocalTime(){return this.localTime};
+        getLocalTime(){return this._localTime};
         getLocalTimeObj(){
             var dayOffset = 0;
-            var localTime = this.localTime;
+            var localTime = this._localTime;
             while(localTime < 0){
                 dayOffset--;
                 localTime += 24*60*60*1000;
@@ -239,13 +250,22 @@ var LocalDate = (function(){
         getLocalMinutes(){return this.getLocalTimeObj().minute};
         getLocalSeconds(){return this.getLocalTimeObj().second};
         getLocalMillseconds(){return this.getLocalTimeObj().millsecond};
-        addTime(time){this.localTime += time; return this;}
+        addTime(time){this._localTime += time; return this;}
         addDays(days){this.addTime(days * 24*60*60*1000); return this;};
         addHours(hours){this.addTime(hours * 60*60*1000); return this;};
         addMinutes(minutes){this.addTime(minutes * 60*1000); return this;};
         addSeconds(seconds){this.addTime(seconds * 1000); return this;};
         addMillseconds(millseconds){this.addTime(millseconds); return this;};
-        addTimeUnit(timeUnits){this.addTime(timeUnits * LocalDate.getTimeUnit()); return this;}
+        addTimeUnit(timeUnits){this.addTime(timeUnits * LocalDate.getTimeUnit()); return this;};
+        getAsDate(){
+            return new Date(LocalDate.getStandardTime().getTime() + this._localTime);
+        }
+        toJSON(){
+            return this.toJSON();
+        }
+        toISOString(){
+            return "local_" + this.getAsDate().toISOString();
+        }
     }
 })();
 
