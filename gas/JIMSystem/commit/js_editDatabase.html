@@ -29,8 +29,7 @@ $(function(){
                 createTable(
                     _val.server.getData(dataName)
                     .filter(function(v){return true})
-                    .sort(function(a,b){return 1})
-                    .map(function(v){return v.getValues()}),
+                    .sort(function(a,b){return 1}),
                     result,
                     function(cellObj){
                         console.log(cellObj);

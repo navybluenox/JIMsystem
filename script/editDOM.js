@@ -202,7 +202,7 @@ function createTable(data,parent,callback,option){
                     text = dpo;
                 }
                 jqObj.text(text);
-                callback({datapiece:data[index],el:jqObj[0],value:dpo,key:keyArray});
+                callback({rowData:data[index],el:jqObj[0],value:dpo,key:keyArray});
             }else{
                 Object.keys(hpo.value).forEach(function(key){
                     var arr = keyArray.slice();
