@@ -167,6 +167,7 @@ function createTable(data,parent,callback,option){
     var nowLevel = 0;
     var headerPatternObj;
     var headerPattern = [];
+    var colList = [];
 
     headerPatternObj = makeHeaderPattern_1(columnSample,-1);
     makeHeaderPattern_2(headerPatternObj.value);
