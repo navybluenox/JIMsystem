@@ -69,7 +69,8 @@ $(function(){
                                         "<input type='hidden' name='" + [cellObj.rowData._id,"_","raw"].join("") + "' value='" + cellObj.value + "'>"
                                     ].join(""));
                                 $(cellObj.el).find("input[type='button']").on("click",function(e){
-                                    $(cellObj.el.parentNode).
+                                    //TODO
+                                    console.log($(cellObj.el.parentNode)[0]);
                                 })
                             }
                         }
