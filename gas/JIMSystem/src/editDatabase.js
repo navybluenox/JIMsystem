@@ -28,7 +28,7 @@ $(function(){
                 var dataArr = _val.server.getData(dataName)
                     .filter(function(v){return true})
                     .sort(function(a,b){return 1});
-                dataArr.push(new Datapiece.getClassByName(dataName)({"_id":"dummy"}));
+                dataArr.push(new (Datapiece.getClassByName(dataName))({"_id":"dummy"}));
                 dataArr = dataArr.map(function(v){
                     var r = {};
                     r._button_ = "";

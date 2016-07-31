@@ -265,7 +265,7 @@ var Datapiece = (function(){
             return this._dataName;
         }
         static getClassByName(dataName){
-            var collInfo = server.getData(dataName,true).find(function(collInfo1){return collInfo1.getValue("name") === dataName});
+            var collInfo = server.getCollectionInfoByName(dataName);
             if(collInfo === undefined)  return undefined;
             return collInfo.getClass();
         }
