@@ -28,14 +28,14 @@ $(function(){
                 var dataArr = _val.server.getData(dataName)
                     .filter(function(v){return true})
                     .sort(function(a,b){return 1});
-                dataArr.push(new (Datapiece.getClassByName(dataName))({"_id":"dummy"}));
-                dataArr = dataArr.map(function(v){
+                //dataArr.push(new (Datapiece.getClassByName(dataName))({"_id":"dummy"}));
+                /*dataArr = dataArr.map(function(v){
                     var r = {};
                     var v1 = v.getValues();
                     r._button_ = "";
                     Object.keys(v1).forEach(function(key){r[key] = v1[key];});
                     return r;
-                });
+                });*/
                 createTable(
                     dataArr,
                     result,

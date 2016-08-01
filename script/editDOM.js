@@ -150,19 +150,11 @@ function removeModalWindow(configObj){
 
 function createTable(data,parent,callback,option){
     if(option === undefined)  option = {};
-    if(typeof callback !== "function")  callback = function(){};
+    if(typeof callback !== "function")  callback = function(obj){obj.el.textContent = obj.value};
     $(parent).append("<table><thead></thead><tbody></tbody></table>");
 
-    var _data = data.map(function(v){
-        if(v instanceof Datapiece){
-            return v.getValues();
-        }else{
-            return v;
-        }
-    })
-
     //make header
-    var columnSample = (option.columnSample === undefined ? _data[0] : option.columnSample);
+    var columnSample = (option.columnSample === undefined ? data[0] : option.columnSample);
     var nowColIndex = 0;
     var nowLevel = 0;
     var headerPatternObj;
@@ -183,12 +175,24 @@ function createTable(data,parent,callback,option){
     }).join(""));
 
     $(parent).find("table tbody").append(
-        (new Array(_data.length+1)).join("<tr>" + (new Array(nowColIndex+1)).join("<td></td>") + "</tr>")
+        (new Array(data.length+1)).join("<tr>" + (new Array(nowColIndex+1)).join("<td></td>") + "</tr>")
     );
 
-    _data.forEach(function(dp,index){
-        var pJqObj = $(parent).find("table tbody tr").eq(index);
-        fun(headerPatternObj,dp,[]);
+    data.forEach(function(dp,rowIndex){
+        var pJqObj = $(parent).find("table tbody tr").eq(rowIndex);
+
+        colList.forEach(function(col,colIndex){
+            var value = dp;
+            col.find(function(key){
+                value = value[key]
+                return (value === undefined);
+            });
+            callback({rowData:data[rowIndex],el:pJqObj.children("td").eq(colIndex)[0],value:value,key:col});
+        })
+
+
+
+        /*fun(headerPatternObj,dp,[]);
 
         function fun(hpo,dpo,keyArray){
             var jqObj;
@@ -211,7 +215,7 @@ function createTable(data,parent,callback,option){
                     fun(hpo.value[key],dpo[key],arr);
                 })
             }
-        }
+        }*/
     })
 
 
@@ -263,6 +267,10 @@ function createTable(data,parent,callback,option){
             if(obj.level !== nowLevel && obj.value === undefined)  r.rowSpan = nowLevel - obj.level + 1;
             if(obj.start !== obj.end)  r.colSpan = obj.end - obj.start + 1;
             headerPattern[obj.level].push(r);
+            for(var i=obj.start; i<=obj.end; i++){
+                if(colList[i] === undefined) colList[i] = [];
+                colList[i][obj.level] = key;
+            }
             if(obj.value !== undefined)  makeHeaderPattern_2(obj.value);
         });
     }
