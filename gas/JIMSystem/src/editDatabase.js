@@ -31,8 +31,9 @@ $(function(){
                 dataArr.push(new (Datapiece.getClassByName(dataName))({"_id":"dummy"}));
                 dataArr = dataArr.map(function(v){
                     var r = {};
+                    var v1 = v.getValues();
                     r._button_ = "";
-                    Object.keys(v).forEach(function(key){r[key] = v[key];});
+                    Object.keys(v1).forEach(function(key){r[key] = v1[key];});
                     return r;
                 });
                 createTable(
