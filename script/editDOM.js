@@ -207,7 +207,7 @@ function createTable(data,parent,callback,option){
 
         data.forEach(function(dp,rowIndex){
             for(var i=0; i<addedRowNum; i++){
-                callback({
+                option.leftColumn.callback[i]({
                     rowData:dp,el:$(parent).children("table thead tr").eq(0).children("td").eq(i)[0],
                     key:option.leftColumn.key[i]
                 });
