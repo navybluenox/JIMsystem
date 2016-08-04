@@ -165,7 +165,8 @@ function createTable(data,parent,callback,option){
     headerPatternObj = makeHeaderPattern_1(columnSample,-1);
     makeHeaderPattern_2(headerPatternObj.value);
     
-    $(parent).children("table thead").append(headerPattern.map(function(arr){
+    //create tags
+    $(parent).find("table thead").append(headerPattern.map(function(arr){
         return "<tr>" + arr.map(function(obj){
             var r = "<th";
             if(obj.colSpan !== undefined) r += " colSpan = '" + obj.colSpan + "'";
@@ -175,14 +176,13 @@ function createTable(data,parent,callback,option){
         }).join("") + "</tr>";
     }).join(""));
 
-    //create tags
-    $(parent).children("table tbody").append(
+    $(parent).find("table tbody").append(
         (new Array(data.length+1)).join("<tr>" + (new Array(nowColIndex+1)).join("<td></td>") + "</tr>")
     );
 
     //run callback
     data.forEach(function(dp,rowIndex){
-        var pJqObj = $(parent).children("table tbody tr").eq(rowIndex);
+        var pJqObj = $(parent).find("table tbody tr").eq(rowIndex);
 
         colList.forEach(function(col,colIndex){
             var value = dp;
@@ -190,7 +190,7 @@ function createTable(data,parent,callback,option){
                 value = value[key]
                 return (value === undefined);
             });
-            callback({rowData:dp,el:pJqObj.children("td").eq(colIndex)[0],value:value,key:col});
+            callback({rowData:dp,el:pJqObj.find("td").eq(colIndex)[0],value:value,key:col});
         })
     })
 
@@ -203,13 +203,13 @@ function createTable(data,parent,callback,option){
         if(!Array.isArray(option.leftColumn.callback))  option.leftColumn.callback = [option.leftColumn.callback];
         var addedRowNum = option.leftColumn.key.length;
 
-        $(parent).children("table thead tr").eq(0).prepend((new Array(addedRowNum+1)).join("<td rowSpan='0'></td>"));
-        $(parent).children("table tbody tr").prepend((new Array(addedRowNum+1)).join("<td></td>"));
+        $(parent).find("table thead tr").eq(0).prepend((new Array(addedRowNum+1)).join("<td rowSpan='0'></td>"));
+        $(parent).find("table tbody tr").prepend((new Array(addedRowNum+1)).join("<td></td>"));
 
         data.forEach(function(dp,rowIndex){
             for(var i=0; i<addedRowNum; i++){
                 option.leftColumn.callback[i]({
-                    rowData:dp,el:$(parent).children("table thead tr").eq(0).children("td").eq(i)[0],
+                    rowData:dp,el:$(parent).find("table thead tr").eq(0).find("td").eq(i)[0],
                     key:option.leftColumn.key[i]
                 });
             }
