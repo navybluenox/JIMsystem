@@ -30,14 +30,6 @@ $(function(){
                     .filter(function(v){return true})
                     .sort(function(a,b){return 1})
                     .map(function(v){return v.getValues()});
-                //dataArr.push(new (Datapiece.getClassByName(dataName))({"_id":"dummy"}));
-                /*dataArr = dataArr.map(function(v){
-                    var r = {};
-                    var v1 = v.getValues();
-                    r._button_ = "";
-                    Object.keys(v1).forEach(function(key){r[key] = v1[key];});
-                    return r;
-                });*/
                 createTable(
                     dataArr,
                     result,
@@ -76,6 +68,16 @@ $(function(){
                                 })
                             }
                         }
+                    },
+                    {
+                        leftColumn:{key:["test1","test2"],callback:[
+                            function(cellObj){console.log(cellObj)},
+                            function(cellObj){console.log(cellObj)}
+                        ]},
+                        rightColumn:{key:["test11","test12"],callback:[
+                            function(cellObj){console.log(cellObj)},
+                            function(cellObj){console.log(cellObj)}
+                        ]}
                     }
                 );
             });

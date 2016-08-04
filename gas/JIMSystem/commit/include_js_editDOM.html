@@ -165,7 +165,7 @@ function createTable(data,parent,callback,option){
     headerPatternObj = makeHeaderPattern_1(columnSample,-1);
     makeHeaderPattern_2(headerPatternObj.value);
     
-    $(parent).find("table thead").append(headerPattern.map(function(arr){
+    $(parent).children("table thead").append(headerPattern.map(function(arr){
         return "<tr>" + arr.map(function(obj){
             var r = "<th";
             if(obj.colSpan !== undefined) r += " colSpan = '" + obj.colSpan + "'";
@@ -176,17 +176,13 @@ function createTable(data,parent,callback,option){
     }).join(""));
 
     //create tags
-    $(parent).find("table tbody").append(
+    $(parent).children("table tbody").append(
         (new Array(data.length+1)).join("<tr>" + (new Array(nowColIndex+1)).join("<td></td>") + "</tr>")
     );
 
-    //TODO
-    //add header,footer,leftColumn,rightColumn
-    //need callback,number(of rows/columns)
-
     //run callback
     data.forEach(function(dp,rowIndex){
-        var pJqObj = $(parent).find("table tbody tr").eq(rowIndex);
+        var pJqObj = $(parent).children("table tbody tr").eq(rowIndex);
 
         colList.forEach(function(col,colIndex){
             var value = dp;
@@ -194,36 +190,33 @@ function createTable(data,parent,callback,option){
                 value = value[key]
                 return (value === undefined);
             });
-            callback({rowData:data[rowIndex],el:pJqObj.children("td").eq(colIndex)[0],value:value,key:col});
+            callback({rowData:dp,el:pJqObj.children("td").eq(colIndex)[0],value:value,key:col});
+        })
+    })
+
+    //TODO
+    //add header,footer,leftColumn,rightColumn
+    //need callback,number(of rows/columns)
+
+    if(option.leftColumn !== undefined){
+        if(!Array.isArray(option.leftColumn.key))  option.leftColumn.key = [option.leftColumn.key];
+        if(!Array.isArray(option.leftColumn.callback))  option.leftColumn.callback = [option.leftColumn.callback];
+        var addedRowNum = option.leftColumn.key.length;
+
+        $(parent).children("table thead tr").eq(0).prepend((new Array(addedRowNum+1)).join("<td rowSpan='0'></td>"));
+        $(parent).children("table tbody tr").prepend((new Array(addedRowNum+1)).join("<td></td>"));
+
+        data.forEach(function(dp,rowIndex){
+            for(var i=0; i<addedRowNum; i++){
+                callback({
+                    rowData:dp,el:$(parent).children("table thead tr").eq(0).children("td").eq(i)[0],
+                    key:option.leftColumn.key[i]
+                });
+            }
         })
 
 
-
-        /*fun(headerPatternObj,dp,[]);
-
-        function fun(hpo,dpo,keyArray){
-            var jqObj;
-            var text;
-            if(hpo.value === undefined){
-                jqObj = pJqObj.children("td").eq(hpo.start);
-                if(dpo instanceof Date){
-                    text = dateToValue(dpo).str;
-                }else if(dpo instanceof LocalDate){
-                    text = dateToValue(dpo.getAsDate()).str;
-                }else{
-                    text = dpo;
-                }
-                jqObj.text(text);
-                callback({rowData:data[index],el:jqObj[0],value:dpo,key:keyArray});
-            }else{
-                Object.keys(hpo.value).forEach(function(key){
-                    var arr = keyArray.slice();
-                    arr.push(key);
-                    fun(hpo.value[key],dpo[key],arr);
-                })
-            }
-        }*/
-    })
+    }
 
 
     function makeHeaderPattern_1(colSamObj,level){
