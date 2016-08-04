@@ -154,13 +154,14 @@ function createTable(data,parent,callback,option){
     $(parent).append("<table><thead></thead><tbody></tbody></table>");
 
     //make header
-    var columnSample = (option.columnSample === undefined ? data[0] : option.columnSample);
+    var columnSample = JSON.parse(JSON.stringify(option.columnSample === undefined ? data[0] : option.columnSample));
     var nowColIndex = 0;
     var nowLevel = 0;
     var headerPatternObj;
     var headerPattern = [];
     var colList = [];
 
+    editColumnSample(option.columnSample,data);
     headerPatternObj = makeHeaderPattern_1(columnSample,-1);
     makeHeaderPattern_2(headerPatternObj.value);
     
@@ -242,6 +243,28 @@ function createTable(data,parent,callback,option){
 
     }
 
+    //TODO
+    function editColumnSample(cs,d){
+        switch(classof(cs)){
+            case "object":
+                Object.keys(cs).forEach(function(key){
+                    editColumnSample(cs[key],d.map(function(v){return v[key] === undefined ? "" : v[key]}));
+                });
+                break;
+            case "array":
+                d.forEach(function(dp){
+                });
+                break;
+            case "date":
+            case "localdate":
+            case "number":
+            case "string":
+            case "boolean":
+                break;
+            default:
+                throw new Error();
+        }
+    }
 
 
     function makeHeaderPattern_1(colSamObj,level){
