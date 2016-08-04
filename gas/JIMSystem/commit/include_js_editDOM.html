@@ -203,13 +203,14 @@ function createTable(data,parent,callback,option){
         if(!Array.isArray(option.leftColumn.callback))  option.leftColumn.callback = [option.leftColumn.callback];
         var addedRowNum = option.leftColumn.key.length;
 
-        $(parent).find("table thead tr").eq(0).prepend((new Array(addedRowNum+1)).join("<td rowSpan='0'></td>"));
+        $(parent).find("table thead tr").eq(0).prepend((new Array(addedRowNum+1)).join("<th rowSpan='" + headerPattern.length + "'></th>"));
         $(parent).find("table tbody tr").prepend((new Array(addedRowNum+1)).join("<td></td>"));
 
         data.forEach(function(dp,rowIndex){
             for(var i=0; i<addedRowNum; i++){
+                $(parent).find("table thead tr").eq(0).find("th").eq(i).text(option.leftColumn.key[i]);
                 option.leftColumn.callback[i]({
-                    rowData:dp,el:$(parent).find("table thead tr").eq(0).find("td").eq(i)[0],
+                    rowData:dp,el:$(parent).find("table tbody tr").eq(rowIndex).find("td").eq(i)[0],
                     key:option.leftColumn.key[i]
                 });
             }
