@@ -174,10 +174,16 @@ function createTable(data,parent,callback,option){
         }).join("") + "</tr>";
     }).join(""));
 
+    //create tags
     $(parent).find("table tbody").append(
         (new Array(data.length+1)).join("<tr>" + (new Array(nowColIndex+1)).join("<td></td>") + "</tr>")
     );
 
+    //TODO
+    //add header,footer,leftColumn,rightColumn
+    //need callback,number(of rows/columns)
+
+    //run callback
     data.forEach(function(dp,rowIndex){
         var pJqObj = $(parent).find("table tbody tr").eq(rowIndex);
 
