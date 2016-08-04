@@ -210,7 +210,8 @@ function createTable(data,parent,callback,option){
             for(var i=0; i<addedRowNum; i++){
                 $(parent).find("table thead tr").eq(0).find("th").eq(i).text(option.leftColumn.key[i]);
                 option.leftColumn.callback[i]({
-                    rowData:dp,el:$(parent).find("table tbody tr").eq(rowIndex).find("td").eq(i)[0],
+                    rowData:dp,
+                    el:$(parent).find("table tbody tr").eq(rowIndex).find("td").eq(i)[0],
                     key:option.leftColumn.key[i]
                 });
             }
@@ -218,6 +219,30 @@ function createTable(data,parent,callback,option){
 
 
     }
+
+
+    if(option.rightColumn !== undefined){
+        if(!Array.isArray(option.rightColumn.key))  option.rightColumn.key = [option.rightColumn.key];
+        if(!Array.isArray(option.rightColumn.callback))  option.rightColumn.callback = [option.rightColumn.callback];
+        var addedRowNum = option.rightColumn.key.length;
+
+        $(parent).find("table thead tr").eq(0).append((new Array(addedRowNum+1)).join("<th rowSpan='" + headerPattern.length + "'></th>"));
+        $(parent).find("table tbody tr").append((new Array(addedRowNum+1)).join("<td></td>"));
+
+        data.forEach(function(dp,rowIndex){
+            for(var i=0; i<addedRowNum; i++){
+                $(parent).find("table thead tr").eq(0).find("th").eq(-addedRowNum+i).text(option.rightColumn.key[i]);
+                option.rightColumn.callback[i]({
+                    rowData:dp,
+                    el:$(parent).find("table tbody tr").eq(rowIndex).find("td").eq(-addedRowNum+i)[0],
+                    key:option.rightColumn.key[i]
+                });
+            }
+        })
+
+
+    }
+
 
 
     function makeHeaderPattern_1(colSamObj,level){
