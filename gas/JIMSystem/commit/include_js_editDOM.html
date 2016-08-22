@@ -155,14 +155,18 @@ function createTable(data,parent,callback,option){
     $(parent).append("<table><thead></thead><tbody></tbody></table>");
 
     //make header
-    var columnSample = JSON.parse(JSON.stringify(option.columnSample === undefined ? data[0] : option.columnSample));
+    var columnSample;
     var nowColIndex = 0;
     var nowLevel = 0;
     var headerPatternObj;
     var headerPattern = [];
     var colList = [];
 
-    editColumnSample(option.columnSample,data);
+    if(option.columnSample === undefined){
+        option.columnSample = editColumnSample(data);
+    }else{
+        columnSample = option.columnSample;
+    }
     headerPatternObj = makeHeaderPattern_1(columnSample,-1);
     makeHeaderPattern_2(headerPatternObj.value);
     
@@ -221,7 +225,6 @@ function createTable(data,parent,callback,option){
 
     }
 
-
     if(option.rightColumn !== undefined){
         if(!Array.isArray(option.rightColumn.key))  option.rightColumn.key = [option.rightColumn.key];
         if(!Array.isArray(option.rightColumn.callback))  option.rightColumn.callback = [option.rightColumn.callback];
@@ -245,26 +248,49 @@ function createTable(data,parent,callback,option){
     }
 
     //TODO
-    function editColumnSample(cs,d){
-        switch(classof(cs)){
-            case "object":
-                Object.keys(cs).forEach(function(key){
-                    editColumnSample(cs[key],d.map(function(v){return v[key] === undefined ? "" : v[key]}));
-                });
-                break;
-            case "array":
-                d.forEach(function(dp){
-                });
-                break;
-            case "date":
-            case "localdate":
-            case "number":
-            case "string":
-            case "boolean":
-                break;
-            default:
-                throw new Error();
+    function editColumnSample(_d){
+        var ret = {};
+        _d.forEach(function(d){
+            fun(ret,d);
+        })
+
+        function fun(r,d){
+            var classOf_d = classof(d);
+            switch(classOf_d){
+                case "object":
+                    if(r === undefined) r = {};
+                    Object.keys(d).forEach(function(key){
+                        if(d[key] !== undefined){
+                            fun(r[key],d[key]);
+                        }
+                    });
+                    break;
+                case "array":
+                    if(r === undefined) r = [];
+                    d.forEach(function(dp){
+                        if(dp !== undefined){
+                            fun(r[0],dp);
+                        }
+                    });
+                    break;
+                case "date":
+                case "localdate":
+                case "number":
+                case "string":
+                case "boolean":
+                    if(r === undefined){
+                        r = classOf_d;
+                    }else if(r !== "other" && r !== classOf_d){
+                        r = "other";
+                    }
+                    break;
+                default:
+                    throw new Error();
+            }
+            return r;
         }
+        
+        return ret;
     }
 
 
