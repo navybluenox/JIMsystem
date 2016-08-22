@@ -163,7 +163,7 @@ function createTable(data,parent,callback,option){
     var colList = [];
 
     if(option.columnSample === undefined){
-        option.columnSample = editColumnSample(data);
+        columnSample = editColumnSample(data);
     }else{
         columnSample = option.columnSample;
     }
@@ -214,6 +214,9 @@ function createTable(data,parent,callback,option){
         data.forEach(function(dp,rowIndex){
             for(var i=0; i<addedRowNum; i++){
                 $(parent).find("table thead tr").eq(0).find("th").eq(i).text(option.leftColumn.key[i]);
+                headerPattern[0] = option.leftColumn.key.map(function(v){
+                    return {key:v,rowSpan:headerPattern.length};
+                }).concat(headerPattern[0]);
                 option.leftColumn.callback[i]({
                     rowData:dp,
                     el:$(parent).find("table tbody tr").eq(rowIndex).find("td").eq(i)[0],
@@ -260,16 +263,20 @@ function createTable(data,parent,callback,option){
                 case "object":
                     if(r === undefined) r = {};
                     Object.keys(d).forEach(function(key){
+                        var v;
                         if(d[key] !== undefined){
-                            fun(r[key],d[key]);
+                            v = fun(r[key],d[key]);
+                            if(r[key] === undefined)  r[key] = v;
                         }
                     });
                     break;
                 case "array":
                     if(r === undefined) r = [];
-                    d.forEach(function(dp){
+                    d.forEach(function(dp,i){
+                        var v;
                         if(dp !== undefined){
-                            fun(r[0],dp);
+                            v = fun(r[i],dp);
+                            if(r[i] === undefined)  r[i] = v;
                         }
                     });
                     break;
