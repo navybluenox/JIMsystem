@@ -214,15 +214,15 @@ function createTable(data,parent,callback,option){
         data.forEach(function(dp,rowIndex){
             for(var i=0; i<addedRowNum; i++){
                 $(parent).find("table thead tr").eq(0).find("th").eq(i).text(option.leftColumn.key[i]);
-                headerPattern[0] = option.leftColumn.key.map(function(v){
-                    return {key:v,rowSpan:headerPattern.length};
-                }).concat(headerPattern[0]);
                 option.leftColumn.callback[i]({
                     rowData:dp,
                     el:$(parent).find("table tbody tr").eq(rowIndex).find("td").eq(i)[0],
                     key:option.leftColumn.key[i]
                 });
             }
+            headerPattern[0] = option.leftColumn.key.map(function(v){
+                return {key:v,rowSpan:headerPattern.length};
+            }).concat(headerPattern[0]);
         })
 
 
@@ -245,6 +245,9 @@ function createTable(data,parent,callback,option){
                     key:option.rightColumn.key[i]
                 });
             }
+            headerPattern[0] = headerPattern[0].concat(option.rightColumn.key.map(function(v){
+                return {key:v,rowSpan:headerPattern.length};
+            }));
         })
 
 
