@@ -198,7 +198,21 @@ function createTable(data,parent,tableLevel,callback,option){
                 value = value[key]
                 return (value === undefined);
             });
-            callback({rowData:dp,el:pJqObj.find("td").eq(colIndex)[0],value:value,key:col});
+            var funArgu = {rowData:dp,el:pJqObj.find("td").eq(colIndex)[0],value:value,key:col};
+            if(classof(value) === "array"){
+                funArgu.isArray = true;
+                funArgu.isHashInArray = value.every(function(v){
+                    return classof(v) === "object";
+                });
+                if(funArgu.isHashInArray){
+                    funArgu.keysOfHashInArray = value.map(function(v){
+                        return Object.keys(v);
+                    }).reduce(function(a,b){
+                        return a.concat(b);
+                    }).filter(function(v,i,s){return i === s.indexOf(v)});
+                }
+            }
+            callback(funArgu);
         })
     })
 
@@ -353,17 +367,6 @@ function createTable(data,parent,tableLevel,callback,option){
                 if(option.foldArray){
                     result = {start:nowColIndex,end:nowColIndex,level:hashLevel};
                     nowColIndex++;
-                    result.isArray = true;
-                    result.isHashInArray = colSamObj.every(function(v){
-                        return classof(v) === "object";
-                    });
-                    if(result.isHashInArray){
-                        result.keysOfHashInArray = colSamObj.map(function(v){
-                            return Object.keys(v);
-                        }).reduce(function(a,b){
-                            return a.concat(b);
-                        }).filter(function(v,i,s){return i === s.indexOf(v)});
-                    }
                 }else{
                     result = {value:{},start:-1,end:-1,level:hashLevel};
                     hashLevel++;
