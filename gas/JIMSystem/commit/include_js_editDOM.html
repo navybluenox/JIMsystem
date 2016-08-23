@@ -186,7 +186,10 @@ function createTable(data,parent,tableLevel,callback,option){
     }).join(""));
 
     $(parent).find(tableSelector + "tbody").append(
-        (new Array(data.length+1)).join("<tr>" + (new Array(nowColIndex+1)).join("<td></td>") + "</tr>")
+        repeatString(
+            "<tr>" + repeatString("<td></td>",nowColIndex) + "</tr>",
+            data.length
+        )
     );
 
     //run callback
@@ -199,9 +202,8 @@ function createTable(data,parent,tableLevel,callback,option){
                 value = value[key]
                 return (value === undefined);
             });
-            var funArgu = {rowData:dp,el:pJqObj.find("td").eq(colIndex)[0],value:value,key:col};
-            if(classof(value) === "array"){
-                funArgu.isArray = true;
+            var funArgu = {rowData:dp,el:pJqObj.find("td").eq(colIndex)[0],value:value,key:col,isArray:(classof(value) === "array")};
+            if(funArgu.isArray){
                 funArgu.isHashInArray = value.every(function(v){
                     return classof(v) === "object";
                 });
@@ -217,17 +219,17 @@ function createTable(data,parent,tableLevel,callback,option){
         })
     })
 
-    //TODO
-    //add header,footer,leftColumn,rightColumn
-    //need callback,number(of rows/columns)
-
     if(option.leftColumn !== undefined){
         if(!Array.isArray(option.leftColumn.key))  option.leftColumn.key = [option.leftColumn.key];
         if(!Array.isArray(option.leftColumn.callback))  option.leftColumn.callback = [option.leftColumn.callback];
         var addedColumnNum = option.leftColumn.key.length;
 
-        $(parent).find(tableSelector + "thead tr").eq(0).prepend((new Array(addedColumnNum+1)).join("<th rowSpan='" + headerPattern.length + "'></th>"));
-        $(parent).find(tableSelector + "tbody tr").prepend((new Array(addedColumnNum+1)).join("<td></td>"));
+        $(parent).find(tableSelector + "thead tr").eq(0).prepend(
+            repeatString("<th rowSpan='" + headerPattern.length + "'></th>",addedColumnNum)
+        );
+        $(parent).find(tableSelector + "tbody tr").prepend(
+            repeatString("<td></td>",addedColumnNum)
+        );
 
         data.forEach(function(dp,rowIndex){
             for(var i=0; i<addedColumnNum; i++){
@@ -252,8 +254,12 @@ function createTable(data,parent,tableLevel,callback,option){
         if(!Array.isArray(option.rightColumn.callback))  option.rightColumn.callback = [option.rightColumn.callback];
         var addedColumnNum = option.rightColumn.key.length;
 
-        $(parent).find(tableSelector + "thead tr").eq(0).append((new Array(addedColumnNum+1)).join("<th rowSpan='" + headerPattern.length + "'></th>"));
-        $(parent).find(tableSelector + "tbody tr").append((new Array(addedColumnNum+1)).join("<td></td>"));
+        $(parent).find(tableSelector + "thead tr").eq(0).append(
+            repeatString("<th rowSpan='" + headerPattern.length + "'></th>",addedColumnNum)
+        );
+        $(parent).find(tableSelector + "tbody tr").append(
+            repeatString("<td></td>",addedColumnNum)
+        );
 
         data.forEach(function(dp,rowIndex){
             for(var i=0; i<addedColumnNum; i++){
@@ -278,12 +284,16 @@ function createTable(data,parent,tableLevel,callback,option){
         if(!Array.isArray(option.bottomRow.callback))  option.bottomRow.callback = [option.bottomRow.callback];
         var addedRowNum = option.bottomRow.key.length;
 
-        $(parent).find(tableSelector + "tbody").append((new Array(addedRowNum+1)).join("<tr></tr>"));
+        $(parent).find(tableSelector + "tbody").append(
+            repeatString("<tr></tr>",addedRowNum)
+        );
 
         option.bottomRow.createCell.forEach(function(flag,i){
             var thisRowJqo = $(parent).find(tableSelector + "tbody tr").eq(-addedRowNum+i);
             if(flag){
-                thisRowJqo.append((new Array(colList.length+1)).join("<td></td>"));
+                thisRowJqo.append(
+                    repeatString("<td></td>",colList.length)
+                );
                 colList.forEach(function(col,colIndex){
                     option.bottomRow.callback[i]({
                         el:thisRowJqo.find("td").eq(colIndex)[0],
@@ -300,7 +310,6 @@ function createTable(data,parent,tableLevel,callback,option){
 
     }
 
-    //TODO
     function editColumnSample(_d){
         var ret = {};
         _d.forEach(function(d){

@@ -36,38 +36,50 @@ $(function(){
                     0,
                     function(cellObj){
                         console.log(cellObj);
-                        if(cellObj.rowData._id === "dummy"){
-                            if($(cellObj.el.parentNode).find("td").length !== 1){
-                                var el = cellObj.el.parentNode;
-                                $(el).find("td").remove();
-                                $(el).append([
-                                    "<td colSpan='0'>",
-                                        "<input type='button' value='追加'>",
-                                        "<input type='hidden' value='0'>",
-                                    "</td>"
-                                ].join("")).find("td input[type='button']").css("margin","0 auto");
-
+                        if(cellObj.key[0] === "_id"){
+                        }else if(cellObj.isArray){
+                            $(cellObj.el).append("<table><thead></thead><tbody></tbody></table>");
+                            if(cellObj.isHashInArray){
+                                $(cellObj.el).find("table thead").append([
+                                    "<tr>",
+                                    ["del","index"].concat(cellObj.keysOfHashInArray).map(function(v){
+                                        return "<th>" + v + "</th>";
+                                    }).join(""),
+                                    "</tr>"
+                                ].join(""));
+                                $(cellObj.el).find("table tbody").append(repeatString("<tr></tr>",cellObj.value.length));
+                                cellObj.value.forEach(function(v,index){
+                                    var jqo = $(cellObj.el).find("table tbody tr").eq(index);
+                                    jqo.append("<td><input type='checkbox' class='del_array'></td><td>" + index +"</td>");
+                                    cellObj.keysOfHashInArray.forEach(function(key){
+                                        var str = "";
+                                        if(inArray(["number","string","boolean"],classof(v[key]))){
+                                            str = "" + v[key];
+                                        }else if(!inArray(["null","undefined"],classof(v[key]))){
+                                            str = JSON.stringify(v[key]);
+                                        }
+                                        jqo.append("<td><input type='button'>" + str + "</td>");
+                                        jqo.find("tr td input[type='button']").on("click",function(e){
+                                            console.log(e.target);
+                                        });
+                                    });
+                                });
+                            }else{
+                                $(cellObj.el).find("table thead").append([
+                                    "<tr>",
+                                    "<th>del</th>",
+                                    "<th>index</th>",
+                                    "<th>value</th>",
+                                    "</tr>"
+                                ].join(""));
+                                //TODO NOW!!
                             }
                         }else{
-                            if(cellObj.key.join(".") === "_id"){
-                            }else if(cellObj.key.join(".") === "_button_"){
-                                $(cellObj.el).addClass("_button_");
-                                $(cellObj.el).append([
-                                        "<input type='button' name='" + [cellObj.rowData._id,"_","change"].join("") + "' value='change'>",
-                                        "<input type='button' name='" + [cellObj.rowData._id,"_","remove"].join("") + "' value='remove'>"
-                                ].join(""))
-                            }else{
-                                cellObj.el.textContent = "";
-                                $(cellObj.el)
-                                    .append([
-                                        "<input type='button' name='" + [cellObj.rowData._id,"_","input"].join("") + "' value='" + cellObj.value + "'>",
-                                        "<input type='hidden' name='" + [cellObj.rowData._id,"_","raw"].join("") + "' value='" + cellObj.value + "'>"
-                                    ].join(""));
-                                $(cellObj.el).find("input[type='button']").on("click",function(e){
-                                    //TODO
-                                    console.log($(cellObj.el.parentNode)[0]);
-                                })
-                            }
+                            cellObj.el.textContent = "";
+                            $(cellObj.el).append("<input type='button' value='" + cellObj.value + "'>");
+                            $(cellObj.el).find("input[type='button']").on("click",function(e){
+                                console.log($(cellObj.el.parentNode)[0]);
+                            });
                         }
                     },
                     {
