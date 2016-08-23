@@ -32,6 +32,7 @@ $(function(){
                 createTable(
                     dataArr,
                     result,
+                    0,
                     function(cellObj){
                         console.log(cellObj);
                         if(cellObj.rowData._id === "dummy"){

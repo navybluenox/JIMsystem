@@ -148,10 +148,11 @@ function removeModalWindow(configObj){
     removeAllChildren(configObj.parent);
 }
 
-function createTable(data,parent,callback,option){
+function createTable(data,parent,level,callback,option){
     if(option === undefined)  option = {};
     if(typeof callback !== "function")  callback = function(obj){obj.el.textContent = obj.value};
-    $(parent).append("<table><thead></thead><tbody></tbody></table>");
+    if(level === undefined)  level = 0;
+    $(parent).append("<table class='tableLevel_'"+ level + "><thead></thead><tbody></tbody></table>");
 
     //make header
     var columnSample;
@@ -160,6 +161,7 @@ function createTable(data,parent,callback,option){
     var headerPatternObj;
     var headerPattern = [];
     var colList = [];
+    var tableSelector = "table.tableLevel_" + level + " ";
 
     if(option.columnSample === undefined){
         columnSample = editColumnSample(data);
@@ -170,7 +172,7 @@ function createTable(data,parent,callback,option){
     makeHeaderPattern_2(headerPatternObj.value);
     
     //create tags
-    $(parent).find("table thead").append(headerPattern.map(function(arr){
+    $(parent).find(tableSelector + "thead").append(headerPattern.map(function(arr){
         return "<tr>" + arr.map(function(obj){
             var r = "<th";
             if(obj.colSpan !== undefined) r += " colSpan = '" + obj.colSpan + "'";
@@ -180,13 +182,13 @@ function createTable(data,parent,callback,option){
         }).join("") + "</tr>";
     }).join(""));
 
-    $(parent).find("table tbody").append(
+    $(parent).find(tableSelector + "tbody").append(
         (new Array(data.length+1)).join("<tr>" + (new Array(nowColIndex+1)).join("<td></td>") + "</tr>")
     );
 
     //run callback
     data.forEach(function(dp,rowIndex){
-        var pJqObj = $(parent).find("table tbody tr").eq(rowIndex);
+        var pJqObj = $(parent).find(tableSelector + "tbody tr").eq(rowIndex);
 
         colList.forEach(function(col,colIndex){
             var value = dp;
@@ -207,15 +209,15 @@ function createTable(data,parent,callback,option){
         if(!Array.isArray(option.leftColumn.callback))  option.leftColumn.callback = [option.leftColumn.callback];
         var addedColumnNum = option.leftColumn.key.length;
 
-        $(parent).find("table thead tr").eq(0).prepend((new Array(addedColumnNum+1)).join("<th rowSpan='" + headerPattern.length + "'></th>"));
-        $(parent).find("table tbody tr").prepend((new Array(addedColumnNum+1)).join("<td></td>"));
+        $(parent).find(tableSelector + "thead tr").eq(0).prepend((new Array(addedColumnNum+1)).join("<th rowSpan='" + headerPattern.length + "'></th>"));
+        $(parent).find(tableSelector + "tbody tr").prepend((new Array(addedColumnNum+1)).join("<td></td>"));
 
         data.forEach(function(dp,rowIndex){
             for(var i=0; i<addedColumnNum; i++){
-                $(parent).find("table thead tr").eq(0).find("th").eq(i).text(option.leftColumn.key[i]);
+                $(parent).find(tableSelector + "thead tr").eq(0).find("th").eq(i).text(option.leftColumn.key[i]);
                 option.leftColumn.callback[i]({
                     rowData:dp,
-                    el:$(parent).find("table tbody tr").eq(rowIndex).find("td").eq(i)[0],
+                    el:$(parent).find(tableSelector + "tbody tr").eq(rowIndex).find("td").eq(i)[0],
                     key:option.leftColumn.key[i]
                 });
             }
@@ -233,15 +235,15 @@ function createTable(data,parent,callback,option){
         if(!Array.isArray(option.rightColumn.callback))  option.rightColumn.callback = [option.rightColumn.callback];
         var addedColumnNum = option.rightColumn.key.length;
 
-        $(parent).find("table thead tr").eq(0).append((new Array(addedColumnNum+1)).join("<th rowSpan='" + headerPattern.length + "'></th>"));
-        $(parent).find("table tbody tr").append((new Array(addedColumnNum+1)).join("<td></td>"));
+        $(parent).find(tableSelector + "thead tr").eq(0).append((new Array(addedColumnNum+1)).join("<th rowSpan='" + headerPattern.length + "'></th>"));
+        $(parent).find(tableSelector + "tbody tr").append((new Array(addedColumnNum+1)).join("<td></td>"));
 
         data.forEach(function(dp,rowIndex){
             for(var i=0; i<addedColumnNum; i++){
-                $(parent).find("table thead tr").eq(0).find("th").eq(-addedColumnNum+i).text(option.rightColumn.key[i]);
+                $(parent).find(tableSelector + "thead tr").eq(0).find("th").eq(-addedColumnNum+i).text(option.rightColumn.key[i]);
                 option.rightColumn.callback[i]({
                     rowData:dp,
-                    el:$(parent).find("table tbody tr").eq(rowIndex).find("td").eq(-addedColumnNum+i)[0],
+                    el:$(parent).find(tableSelector + "tbody tr").eq(rowIndex).find("td").eq(-addedColumnNum+i)[0],
                     key:option.rightColumn.key[i]
                 });
             }
@@ -259,16 +261,16 @@ function createTable(data,parent,callback,option){
         if(!Array.isArray(option.bottomRow.callback))  option.bottomRow.callback = [option.bottomRow.callback];
         var addedRowNum = option.bottomRow.key.length;
 
-        $(parent).find("table tbody").append((new Array(addedRowNum+1)).join("<tr></tr>"));
+        $(parent).find(tableSelector + "tbody").append((new Array(addedRowNum+1)).join("<tr></tr>"));
 
         option.bottomRow.createCell.forEach(function(flag,i){
-            var thisRowJqo = $(parent).find("table tbody tr").eq(-addedRowNum+i);
+            var thisRowJqo = $(parent).find(tableSelector + "tbody tr").eq(-addedRowNum+i);
             if(flag){
                 thisRowJqo.append((new Array(colList.length+1)).join("<td></td>"));
-                colList.forEach(function(cl,j){
+                colList.forEach(function(col,colIndex){
                     option.bottomRow.callback[i]({
-                        el:thisRowJqo.find("td").eq(j)[0],
-                        key:cl
+                        el:thisRowJqo.find("td").eq(colIndex)[0],
+                        key:col
                     });
                 });
             }else{
