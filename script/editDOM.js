@@ -219,12 +219,13 @@ function createTable(data,parent,callback,option){
                     key:option.leftColumn.key[i]
                 });
             }
-            headerPattern[0] = option.leftColumn.key.map(function(v){
-                return {key:v,rowSpan:headerPattern.length};
-            }).concat(headerPattern[0]);
         })
-
-
+        headerPattern[0] = option.leftColumn.key.map(function(v){
+            return {key:v,rowSpan:headerPattern.length};
+        }).concat(headerPattern[0]);
+        colList = option.leftColumn.key.map(function(v){
+            return [v];
+        }).concat(colList);
     }
 
     if(option.rightColumn !== undefined){
@@ -244,12 +245,13 @@ function createTable(data,parent,callback,option){
                     key:option.rightColumn.key[i]
                 });
             }
-            headerPattern[0] = headerPattern[0].concat(option.rightColumn.key.map(function(v){
-                return {key:v,rowSpan:headerPattern.length};
-            }));
-        })
-
-
+        });
+        headerPattern[0] = headerPattern[0].concat(option.rightColumn.key.map(function(v){
+            return {key:v,rowSpan:headerPattern.length};
+        }));
+        colList = colList.concat(option.rightColumn.key.map(function(v){
+            return [v];
+        }));
     }
 
     //TODO
