@@ -77,6 +77,13 @@ $(function(){
                         rightColumn:{key:["test11","test12"],callback:[
                             function(cellObj){console.log(cellObj)},
                             function(cellObj){console.log(cellObj)}
+                        ]},
+                        bottomRow:{key:["test111","test112","test113"],
+                        createCell:[true,true,false],
+                        callback:[
+                            function(cellObj){console.log(cellObj)},
+                            function(cellObj){console.log(cellObj)},
+                            function(rowObj){console.log(rowObj)}                            
                         ]}
                     }
                 );

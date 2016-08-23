@@ -205,13 +205,13 @@ function createTable(data,parent,callback,option){
     if(option.leftColumn !== undefined){
         if(!Array.isArray(option.leftColumn.key))  option.leftColumn.key = [option.leftColumn.key];
         if(!Array.isArray(option.leftColumn.callback))  option.leftColumn.callback = [option.leftColumn.callback];
-        var addedRowNum = option.leftColumn.key.length;
+        var addedColumnNum = option.leftColumn.key.length;
 
-        $(parent).find("table thead tr").eq(0).prepend((new Array(addedRowNum+1)).join("<th rowSpan='" + headerPattern.length + "'></th>"));
-        $(parent).find("table tbody tr").prepend((new Array(addedRowNum+1)).join("<td></td>"));
+        $(parent).find("table thead tr").eq(0).prepend((new Array(addedColumnNum+1)).join("<th rowSpan='" + headerPattern.length + "'></th>"));
+        $(parent).find("table tbody tr").prepend((new Array(addedColumnNum+1)).join("<td></td>"));
 
         data.forEach(function(dp,rowIndex){
-            for(var i=0; i<addedRowNum; i++){
+            for(var i=0; i<addedColumnNum; i++){
                 $(parent).find("table thead tr").eq(0).find("th").eq(i).text(option.leftColumn.key[i]);
                 option.leftColumn.callback[i]({
                     rowData:dp,
@@ -231,17 +231,17 @@ function createTable(data,parent,callback,option){
     if(option.rightColumn !== undefined){
         if(!Array.isArray(option.rightColumn.key))  option.rightColumn.key = [option.rightColumn.key];
         if(!Array.isArray(option.rightColumn.callback))  option.rightColumn.callback = [option.rightColumn.callback];
-        var addedRowNum = option.rightColumn.key.length;
+        var addedColumnNum = option.rightColumn.key.length;
 
-        $(parent).find("table thead tr").eq(0).append((new Array(addedRowNum+1)).join("<th rowSpan='" + headerPattern.length + "'></th>"));
-        $(parent).find("table tbody tr").append((new Array(addedRowNum+1)).join("<td></td>"));
+        $(parent).find("table thead tr").eq(0).append((new Array(addedColumnNum+1)).join("<th rowSpan='" + headerPattern.length + "'></th>"));
+        $(parent).find("table tbody tr").append((new Array(addedColumnNum+1)).join("<td></td>"));
 
         data.forEach(function(dp,rowIndex){
-            for(var i=0; i<addedRowNum; i++){
-                $(parent).find("table thead tr").eq(0).find("th").eq(-addedRowNum+i).text(option.rightColumn.key[i]);
+            for(var i=0; i<addedColumnNum; i++){
+                $(parent).find("table thead tr").eq(0).find("th").eq(-addedColumnNum+i).text(option.rightColumn.key[i]);
                 option.rightColumn.callback[i]({
                     rowData:dp,
-                    el:$(parent).find("table tbody tr").eq(rowIndex).find("td").eq(-addedRowNum+i)[0],
+                    el:$(parent).find("table tbody tr").eq(rowIndex).find("td").eq(-addedColumnNum+i)[0],
                     key:option.rightColumn.key[i]
                 });
             }
@@ -252,6 +252,33 @@ function createTable(data,parent,callback,option){
         colList = colList.concat(option.rightColumn.key.map(function(v){
             return [v];
         }));
+    }
+
+    if(option.bottomRow !== undefined){
+        if(!Array.isArray(option.bottomRow.key))  option.bottomRow.key = [option.bottomRow.key];
+        if(!Array.isArray(option.bottomRow.callback))  option.bottomRow.callback = [option.bottomRow.callback];
+        var addedRowNum = option.bottomRow.key.length;
+
+        $(parent).find("table tbody").append((new Array(addedRowNum+1)).join("<tr></tr>"));
+
+        option.bottomRow.createCell.forEach(function(flag,i){
+            var thisRowJqo = $(parent).find("table tbody tr").eq(-addedRowNum+i);
+            if(flag){
+                thisRowJqo.append((new Array(colList.length+1)).join("<td></td>"));
+                colList.forEach(function(cl,j){
+                    option.bottomRow.callback[i]({
+                        el:thisRowJqo.find("td").eq(j)[0],
+                        key:cl
+                    });
+                });
+            }else{
+                option.bottomRow.callback[i]({
+                    el:thisRowJqo[0],
+                    colList:colList
+                })
+            }
+        })
+
     }
 
     //TODO
