@@ -84,7 +84,8 @@ $(function(){
                             function(cellObj){console.log(cellObj)},
                             function(cellObj){console.log(cellObj)},
                             function(rowObj){console.log(rowObj)}                            
-                        ]}
+                        ]},
+                        foldArray:true
                     }
                 );
             });

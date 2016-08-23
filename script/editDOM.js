@@ -148,20 +148,22 @@ function removeModalWindow(configObj){
     removeAllChildren(configObj.parent);
 }
 
-function createTable(data,parent,level,callback,option){
+function createTable(data,parent,tableLevel,callback,option){
     if(option === undefined)  option = {};
     if(typeof callback !== "function")  callback = function(obj){obj.el.textContent = obj.value};
-    if(level === undefined)  level = 0;
-    $(parent).append("<table class='tableLevel_'"+ level + "><thead></thead><tbody></tbody></table>");
+    if(tableLevel === undefined)  tableLevel = 0;
+    if(option.foldArray === undefined)  option.foldArray = false;
+
+    $(parent).append("<table class='tableLevel_"+ tableLevel + "'><thead></thead><tbody></tbody></table>");
 
     //make header
     var columnSample;
     var nowColIndex = 0;
-    var nowLevel = 0;
+    var nowHashLevel = 0;
     var headerPatternObj;
     var headerPattern = [];
     var colList = [];
-    var tableSelector = "table.tableLevel_" + level + " ";
+    var tableSelector = "table.tableLevel_" + tableLevel + " ";
 
     if(option.columnSample === undefined){
         columnSample = editColumnSample(data);
@@ -334,34 +336,50 @@ function createTable(data,parent,level,callback,option){
     }
 
 
-    function makeHeaderPattern_1(colSamObj,level){
+    function makeHeaderPattern_1(colSamObj,hashLevel){
         var result;
-        if(level > nowLevel)  nowLevel = level;
+        if(hashLevel > nowHashLevel)  nowHashLevel = hashLevel;
         switch(classof(colSamObj)){
             case "object":
-                result = {value:{},start:-1,end:-1,level:level};
-                level++;
+                result = {value:{},start:-1,end:-1,level:hashLevel};
+                hashLevel++;
                 Object.keys(colSamObj).forEach(function(key){
-                    result.value[key] = makeHeaderPattern_1(colSamObj[key],level);
+                    result.value[key] = makeHeaderPattern_1(colSamObj[key],hashLevel);
                     if(result.start == -1 || result.start > result.value[key].start)  result.start = result.value[key].start;
                     if(result.end == -1 || result.end < result.value[key].end)  result.end = result.value[key].end;                  
                 });
                 break;
             case "array":
-                result = {value:{},start:-1,end:-1,level:level};
-                level++;
-                colSamObj.forEach(function(v,key){
-                    result.value[key] = makeHeaderPattern_1(v,level);
-                    if(result.start == -1 || result.start > result.value[key].start)  result.start = result.value[key].start;
-                    if(result.end == -1 || result.end < result.value[key].end)  result.end = result.value[key].end;                  
-                })
+                if(option.foldArray){
+                    result = {start:nowColIndex,end:nowColIndex,level:hashLevel};
+                    nowColIndex++;
+                    result.isArray = true;
+                    result.isHashInArray = colSamObj.every(function(v){
+                        return classof(v) === "object";
+                    });
+                    if(result.isHashInArray){
+                        result.keysOfHashInArray = colSamObj.map(function(v){
+                            return Object.keys(v);
+                        }).reduce(function(a,b){
+                            return a.concat(b);
+                        }).filter(function(v,i,s){return i === s.indexOf(v)});
+                    }
+                }else{
+                    result = {value:{},start:-1,end:-1,level:hashLevel};
+                    hashLevel++;
+                    colSamObj.forEach(function(v,key){
+                        result.value[key] = makeHeaderPattern_1(v,hashLevel);
+                        if(result.start == -1 || result.start > result.value[key].start)  result.start = result.value[key].start;
+                        if(result.end == -1 || result.end < result.value[key].end)  result.end = result.value[key].end;                  
+                    });
+                }
                 break;
             case "date":
             case "localdate":
             case "number":
             case "string":
             case "boolean":
-                result = {start:nowColIndex,end:nowColIndex,level:level};
+                result = {start:nowColIndex,end:nowColIndex,level:hashLevel};
                 nowColIndex++;
                 break;
             default:
@@ -379,7 +397,7 @@ function createTable(data,parent,level,callback,option){
             var obj = headParObj[key];
             var r = {key:key};
             if(headerPattern[obj.level] === undefined)  headerPattern[obj.level] = [];
-            if(obj.level !== nowLevel && obj.value === undefined)  r.rowSpan = nowLevel - obj.level + 1;
+            if(obj.level !== nowHashLevel && obj.value === undefined)  r.rowSpan = nowHashLevel - obj.level + 1;
             if(obj.start !== obj.end)  r.colSpan = obj.end - obj.start + 1;
             headerPattern[obj.level].push(r);
             for(var i=obj.start; i<=obj.end; i++){
