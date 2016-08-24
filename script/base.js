@@ -261,10 +261,26 @@ var LocalDate = (function(){
             return new Date(LocalDate.getStandardTime().getTime() + this._localTime);
         }
         toJSON(){
-            return this.toJSON();
+            return this.toISOString();
         }
         toISOString(){
             return "local_" + this.getAsDate().toISOString();
+        }
+        toString(option){
+            if(option === undefined)  option = {};
+            ["hideDay","hideHour","hideMinute"].forEach(function(v){
+                if(option[v] === undefined)  option[v] = false;
+            });
+            ["hideSecond","hideMillsecond"].forEach(function(v){
+                if(option[v] === undefined)  option[v] = true;
+            });
+            return [
+                option.hideDay ? "" : this.getLocalDays() + "日目",
+                option.hideHour ? "" : this.getLocalHours() + "時",
+                option.hideMinute ? "" : this.getLocalMinutes() + "分",
+                option.hideSecond ? "" : this.getLocalSeconds() + "秒",
+                option.hideMillsecond ? "" : this.getLocalMillseconds() + "ミリ秒"                
+            ].join("");
         }
     }
 })();

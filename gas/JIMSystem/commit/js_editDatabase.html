@@ -53,10 +53,24 @@ $(function(){
                                     jqo.append("<td><input type='checkbox' class='del_array'></td><td>" + index +"</td>");
                                     cellObj.keysOfHashInArray.forEach(function(key){
                                         var str = "";
-                                        if(inArray(["number","string","boolean"],classof(v[key]))){
-                                            str = "" + v[key];
-                                        }else if(!inArray(["null","undefined"],classof(v[key]))){
-                                            str = JSON.stringify(v[key]);
+                                        switch(classof(v[key])){
+                                            case "number":
+                                            case "string":
+                                            case "boolean":
+                                                str = "" + v[key];
+                                                break;
+                                            case "null":
+                                            case "undefined":
+                                                str = JSON.stringify(v[key]);
+                                                break;
+                                            case "date":
+                                                str = dateToValue(v[key]).str;
+                                                break;
+                                            case "localdate":
+                                                str = v[key].toString();
+                                                break;
+                                            default:
+                                                break;
                                         }
                                         jqo.append("<td><input type='button'>" + str + "</td>");
                                         jqo.find("tr td input[type='button']").on("click",function(e){
@@ -72,6 +86,8 @@ $(function(){
                                     "<th>value</th>",
                                     "</tr>"
                                 ].join(""));
+
+
                                 //TODO NOW!!
                             }
                         }else{
