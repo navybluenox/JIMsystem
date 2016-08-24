@@ -163,7 +163,7 @@ function createTable(data,parent,tableLevel,callback,option){
     var headerPatternObj;
     var headerPattern = [];
     var colList = [];
-    var tableSelector = "table.tableLevel_" + tableLevel + " ";
+    var tableSelector = "table.tableLevel_" + tableLevel + " > ";
 
     if(option.columnSample === undefined){
         columnSample = editColumnSample(data);
@@ -193,7 +193,7 @@ function createTable(data,parent,tableLevel,callback,option){
 
     //run callback
     data.forEach(function(dp,rowIndex){
-        var pJqObj = $(parent).find(tableSelector + "tbody tr").eq(rowIndex);
+        var pJqObj = $(parent).find(tableSelector + "tbody > tr").eq(rowIndex);
 
         colList.forEach(function(col,colIndex){
             var value = dp;
@@ -201,7 +201,7 @@ function createTable(data,parent,tableLevel,callback,option){
                 value = value[key]
                 return (value === undefined);
             });
-            var funArgu = {rowData:dp,el:pJqObj.find("td").eq(colIndex)[0],value:value,key:col,isArray:(classof(value) === "array")};
+            var funArgu = {rowData:dp,el:pJqObj.children("td").eq(colIndex)[0],value:value,key:col,isArray:(classof(value) === "array")};
             if(funArgu.isArray){
                 funArgu.isHashInArray = value.every(function(v){
                     return classof(v) === "object";
@@ -223,19 +223,19 @@ function createTable(data,parent,tableLevel,callback,option){
         if(!Array.isArray(option.leftColumn.callback))  option.leftColumn.callback = [option.leftColumn.callback];
         var addedColumnNum = option.leftColumn.key.length;
 
-        $(parent).find(tableSelector + "thead tr").eq(0).prepend(
+        $(parent).find(tableSelector + "thead > tr").eq(0).prepend(
             repeatString("<th rowSpan='" + headerPattern.length + "'></th>",addedColumnNum)
         );
-        $(parent).find(tableSelector + "tbody tr").prepend(
+        $(parent).find(tableSelector + "tbody > tr").prepend(
             repeatString("<td></td>",addedColumnNum)
         );
 
         data.forEach(function(dp,rowIndex){
             for(var i=0; i<addedColumnNum; i++){
-                $(parent).find(tableSelector + "thead tr").eq(0).find("th").eq(i).text(option.leftColumn.key[i]);
+                $(parent).find(tableSelector + "thead > tr").eq(0).children("th").eq(i).text(option.leftColumn.key[i]);
                 option.leftColumn.callback[i]({
                     rowData:dp,
-                    el:$(parent).find(tableSelector + "tbody tr").eq(rowIndex).find("td").eq(i)[0],
+                    el:$(parent).find(tableSelector + "tbody > tr").eq(rowIndex).children("td").eq(i)[0],
                     key:option.leftColumn.key[i]
                 });
             }
@@ -253,19 +253,19 @@ function createTable(data,parent,tableLevel,callback,option){
         if(!Array.isArray(option.rightColumn.callback))  option.rightColumn.callback = [option.rightColumn.callback];
         var addedColumnNum = option.rightColumn.key.length;
 
-        $(parent).find(tableSelector + "thead tr").eq(0).append(
+        $(parent).find(tableSelector + "thead > tr").eq(0).append(
             repeatString("<th rowSpan='" + headerPattern.length + "'></th>",addedColumnNum)
         );
-        $(parent).find(tableSelector + "tbody tr").append(
+        $(parent).find(tableSelector + "tbody > tr").append(
             repeatString("<td></td>",addedColumnNum)
         );
 
         data.forEach(function(dp,rowIndex){
             for(var i=0; i<addedColumnNum; i++){
-                $(parent).find(tableSelector + "thead tr").eq(0).find("th").eq(-addedColumnNum+i).text(option.rightColumn.key[i]);
+                $(parent).find(tableSelector + "thead > tr").eq(0).children("th").eq(-addedColumnNum+i).text(option.rightColumn.key[i]);
                 option.rightColumn.callback[i]({
                     rowData:dp,
-                    el:$(parent).find(tableSelector + "tbody tr").eq(rowIndex).find("td").eq(-addedColumnNum+i)[0],
+                    el:$(parent).find(tableSelector + "tbody > tr").eq(rowIndex).children("td").eq(-addedColumnNum+i)[0],
                     key:option.rightColumn.key[i]
                 });
             }
@@ -288,14 +288,14 @@ function createTable(data,parent,tableLevel,callback,option){
         );
 
         option.bottomRow.createCell.forEach(function(flag,i){
-            var thisRowJqo = $(parent).find(tableSelector + "tbody tr").eq(-addedRowNum+i);
+            var thisRowJqo = $(parent).find(tableSelector + "tbody > tr").eq(-addedRowNum+i);
             if(flag){
                 thisRowJqo.append(
                     repeatString("<td></td>",colList.length)
                 );
                 colList.forEach(function(col,colIndex){
                     option.bottomRow.callback[i]({
-                        el:thisRowJqo.find("td").eq(colIndex)[0],
+                        el:thisRowJqo.children("td").eq(colIndex)[0],
                         key:col
                     });
                 });
