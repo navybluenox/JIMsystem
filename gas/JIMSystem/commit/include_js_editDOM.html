@@ -154,6 +154,8 @@ function createTable(data,parent,tableLevel,callback,option){
     if(typeof callback !== "function")  callback = function(obj){obj.el.textContent = obj.value};
     if(tableLevel === undefined)  tableLevel = 0;
     if(option.foldArray === undefined)  option.foldArray = false;
+    if(option.addKey === undefined)  option.addKey = [];
+    if(option.skipKey === undefined)  option.skipKey = [];
 
     $(parent).append("<table class='tableLevel_"+ tableLevel + "'><thead></thead><tbody></tbody></table>");
 
@@ -320,19 +322,36 @@ function createTable(data,parent,tableLevel,callback,option){
 
     function editColumnSample(_d){
         var ret = {};
+        option.addKey.forEach(function(key){
+            ret[key] = "";
+        })
+        option.skipKey = option.skipKey.map(function(v){
+            return v.split(".");
+        });
+
         _d.forEach(function(d){
             fun(ret,d);
         })
 
-        function fun(r,d){
+        function fun(r,d,skip){
             var classOf_d = classof(d);
             switch(classOf_d){
                 case "object":
                     if(r === undefined) r = {};
                     Object.keys(d).forEach(function(key){
+                        if(!skip.every(function(v){
+                            return v.length !== 1 || v[0] !== key
+                        })){
+                            return null;
+                        }
                         var v;
                         if(d[key] !== undefined){
-                            v = fun(r[key],d[key]);
+                            v = fun(r[key],d[key],skip.filter(function(v1){
+                                return v1[0] === key
+                            }).map(function(v1){
+                                v1.shift();
+                                return v1;
+                            }));
                             if(r[key] === undefined)  r[key] = v;
                         }
                     });
@@ -340,9 +359,19 @@ function createTable(data,parent,tableLevel,callback,option){
                 case "array":
                     if(r === undefined) r = [];
                     d.forEach(function(dp,i){
+                        if(!skip.every(function(v){
+                            return v.length !== 1 || +v[0] !== +i
+                        })){
+                            return null;
+                        }
                         var v;
                         if(dp !== undefined){
-                            v = fun(r[i],dp);
+                            v = fun(r[i],dp,skip.filter(function(v1){
+                                return +v1[0] === +i
+                            }).map(function(v1){
+                                v1.shift();
+                                return v1;
+                            }));
                             if(r[i] === undefined)  r[i] = v;
                         }
                     });

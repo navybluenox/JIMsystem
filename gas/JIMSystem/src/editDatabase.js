@@ -36,7 +36,7 @@ $(function(){
                     0,
                     function(cellObj){
                         var jqoCell = $(cellObj.el);
-                        if(cellObj.key[0] === "_id"){
+                        if(cellObj.key[0] === "baseInfo"){
                             jqoCell.append([
                                 "<table><tbody>",
                                 "<tr><td>_id</td><td>" + cellObj.rowData._id + "</td></tr>",
@@ -179,6 +179,8 @@ console.log({
                             //function(cellObj){console.log(cellObj)},
                             //function(rowObj){console.log(rowObj)}                            
                         ]},
+                        skipKey:["_id","created","updated"],
+                        addKey:["baseInfo"],
                         foldArray:true
                     }
                 );
