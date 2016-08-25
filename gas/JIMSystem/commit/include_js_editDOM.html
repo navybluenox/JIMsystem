@@ -330,7 +330,7 @@ function createTable(data,parent,tableLevel,callback,option){
         });
 
         _d.forEach(function(d){
-            fun(ret,d);
+            fun(ret,d,option.skipKey);
         })
 
         function fun(r,d,skip){
@@ -349,8 +349,9 @@ function createTable(data,parent,tableLevel,callback,option){
                             v = fun(r[key],d[key],skip.filter(function(v1){
                                 return v1[0] === key
                             }).map(function(v1){
-                                v1.shift();
-                                return v1;
+                                var v2 = v1.slice();
+                                v2.shift();
+                                return v2;
                             }));
                             if(r[key] === undefined)  r[key] = v;
                         }
@@ -359,18 +360,14 @@ function createTable(data,parent,tableLevel,callback,option){
                 case "array":
                     if(r === undefined) r = [];
                     d.forEach(function(dp,i){
-                        if(!skip.every(function(v){
-                            return v.length !== 1 || +v[0] !== +i
-                        })){
-                            return null;
-                        }
                         var v;
                         if(dp !== undefined){
                             v = fun(r[i],dp,skip.filter(function(v1){
                                 return +v1[0] === +i
                             }).map(function(v1){
-                                v1.shift();
-                                return v1;
+                                var v2 = v1.slice();
+                                v2.shift();
+                                return v2;
                             }));
                             if(r[i] === undefined)  r[i] = v;
                         }
