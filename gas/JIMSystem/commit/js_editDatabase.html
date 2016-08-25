@@ -45,7 +45,7 @@ $(function(){
                                 "<tr><td>updated</td><td>" + convertValueToStr(cellObj.rowData.updated) + "</td></tr>",
                                 "</tbody></table>"
                             ].join(""));
-                            jqoCell.find("table tr td").css("padding","0 1em");
+                            jqoCell.find("table tr td").css("padding","0 0.25em");
                         }else if(cellObj.key[0] === "created" || cellObj.key[0] === "updated"){
                         }else if(cellObj.isArray){
                             jqoCell.append("<table><thead></thead><tbody></tbody></table>");
@@ -66,6 +66,7 @@ $(function(){
                                         jqoTableRowInCell.append("<td><input type='button' value='" + convertValueToStr(v[key]) + "'></td>");
                                         jqoTableRowInCell.find("td").css("padding","0");
                                         jqoTableRowInCell.find("td input[type='button']").on("click",function(e){
+                                            if($(e.target).attr("type") !== "button") return;
                                             var width = $(e.target).outerWidth();
                                             _tmp.changedDataQue.push({
                                                 "data_id":cellObj.rowData._id,
@@ -101,6 +102,7 @@ console.log({
                                     jqoTableRowInCell.append("<td><input type='button' value='" + convertValueToStr(v) + "'></td>");
                                     jqoTableRowInCell.find("td").css("padding","0");
                                     jqoTableRowInCell.find("td input[type='button']").on("click",function(e){
+                                        if($(e.target).attr("type") !== "button") return;
                                         var width = $(e.target).outerWidth();
                                         _tmp.changedDataQue.push({
                                             "data_id":cellObj.rowData._id,
@@ -126,6 +128,7 @@ console.log({
                             cellObj.el.textContent = "";
                             jqoCell.append("<input type='button' value='" + convertValueToStr(cellObj.value) + "'>");
                             jqoCell.find("input[type='button']").on("click",function(e){
+                                if($(e.target).attr("type") !== "button") return;
                                 var width = $(e.target).outerWidth();
                                 _tmp.changedDataQue.push({
                                     "data_id":cellObj.rowData._id,
