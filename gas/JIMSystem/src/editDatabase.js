@@ -71,7 +71,7 @@ $(function(){
                                                 str = JSON.stringify(v[key]);
                                                 break;
                                         }
-                                        jqo.append("<td><input type='button'>" + str + "</td>");
+                                        jqo.append("<td><input type='button' value='" + str + "'></td>");
                                         jqo.find("tr td input[type='button']").on("click",function(e){
                                             console.log(e.target);
                                         });
@@ -108,7 +108,7 @@ $(function(){
                                             str = JSON.stringify(v);
                                             break;
                                     }
-                                    jqo.append("<td><input type='button'>" + str + "</td>");
+                                    jqo.append("<td><input type='button' value='" + str + "'></td>");
                                     jqo.find("tr td input[type='button']").on("click",function(e){
                                         console.log(e.target);
                                     });
