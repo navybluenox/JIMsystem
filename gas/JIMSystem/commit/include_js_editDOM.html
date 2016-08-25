@@ -237,7 +237,7 @@ function createTable(data,parent,tableLevel,callback,option){
         data.forEach(function(dp,rowIndex){
             for(var i=0; i<addedColumnNum; i++){
                 $(parent).find(tableSelector + "thead > tr").eq(0).children("th").eq(i).text(option.leftColumn.key[i]);
-                if(typeof option.leftColumn.callback === "function"){
+                if(typeof option.leftColumn.callback[i] === "function"){
                     option.leftColumn.callback[i]({
                         rowData:dp,
                         el:$(parent).find(tableSelector + "tbody > tr").eq(rowIndex).children("td").eq(i)[0],
