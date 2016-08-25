@@ -166,13 +166,18 @@ console.log({
                     },
                     {
                         leftColumn:{key:["remove"],callback:[function(cellObj){
+console.log(cellObj);
                             var jqoCell = $(cellObj.el);
                             jqoCell.append("<input type='checkbox'>");
                         }]},
                         bottomRow:{key:["add"],createCell:[false],callback:[function(cellObj){
-                            console.log(cellObj);
+console.log(cellObj);
                             var jqoCell = $(cellObj.el);
-                            jqoCell.append("<td colSpan='" + "" + "'>");
+                            jqoCell.append([
+                                "<td colSpan='" + cellObj.colList.length + "'>",
+                                    "<input type='button value='--add--'>",
+                                "</td>"
+                            ].join(""));
                         }]},
                         skipKey:["_id","created","updated"],
                         addKey:["baseInfo"],
