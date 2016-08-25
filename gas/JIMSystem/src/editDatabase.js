@@ -51,7 +51,7 @@ $(function(){
                             if(cellObj.isHashInArray){
                                 /*jqoCell.find("table thead").append([
                                     "<tr>",
-                                    ["del","index"].concat(cellObj.keysOfHashInArray).map(function(v){
+                                    ["rm","index"].concat(cellObj.keysOfHashInArray).map(function(v){
                                         return "<th>" + v + "</th>";
                                     }).join(""),
                                     "</tr>"
@@ -59,7 +59,7 @@ $(function(){
                                 jqoCell.find("table tbody").append(repeatString("<tr></tr>",cellObj.value.length));
                                 cellObj.value.forEach(function(v,index){
                                     var jqoTableRowInCell = jqoCell.find("table tbody tr").eq(index);
-                                    //jqoTableRowInCell.append("<td><input type='checkbox' class='del_array'></td><td>" + index +"</td>");
+                                    //jqoTableRowInCell.append("<td><input type='checkbox' class='rm_array'></td><td>" + index +"</td>");
                                     cellObj.keysOfHashInArray.forEach(function(key){
                                         var str = "";
                                         jqoTableRowInCell.append("<td><input type='button' value='" + convertValueToStr(v[key]) + "'></td>");
@@ -89,7 +89,7 @@ console.log({
                             }else{
                                 /*jqoCell.find("table thead").append([
                                     "<tr>",
-                                    "<th>del</th>",
+                                    "<th>rm</th>",
                                     "<th>index</th>",
                                     "<th>value</th>",
                                     "</tr>"
@@ -97,7 +97,7 @@ console.log({
                                 jqoCell.find("table tbody").append(repeatString("<tr></tr>",cellObj.value.length));
                                 cellObj.value.forEach(function(v,index){
                                     var jqoTableRowInCell = jqoCell.find("table tbody tr").eq(index);
-                                    //jqoTableRowInCell.append("<td><input type='checkbox' class='del_array'></td><td>" + index +"</td>");
+                                    //jqoTableRowInCell.append("<td><input type='checkbox' class='rm_array'></td><td>" + index +"</td>");
                                     jqoTableRowInCell.append("<td><input type='button' value='" + convertValueToStr(v) + "'></td>");
                                     jqoTableRowInCell.find("td").css("padding","0");
                                     jqoTableRowInCell.find("td input[type='button']").on("click",function(e){
@@ -164,21 +164,15 @@ console.log({
                         }
                     },
                     {
-                        leftColumn:{key:["test1","test2"],callback:[
-                            //function(cellObj){console.log(cellObj)},
-                            //function(cellObj){console.log(cellObj)}
-                        ]},
-                        rightColumn:{key:["test11","test12"],callback:[
-                            //function(cellObj){console.log(cellObj)},
-                            //function(cellObj){console.log(cellObj)}
-                        ]},
-                        bottomRow:{key:["test111","test112","test113"],
-                        createCell:[true,true,false],
-                        callback:[
-                            //function(cellObj){console.log(cellObj)},
-                            //function(cellObj){console.log(cellObj)},
-                            //function(rowObj){console.log(rowObj)}                            
-                        ]},
+                        leftColumn:{key:["remove"],callback:[function(cellObj){
+                            var jqoCell = $(cellObj.el);
+                            jqoCell.append("<input type='checkbox'>");
+                        }]},
+                        bottomRow:{key:["add"],createCell:[false],callback:[function(cellObj){
+                            console.log(cellObj);
+                            var jqoCell = $(cellObj.el);
+                            jqoCell.append("<td colSpan='" + "" + "'>");
+                        }]},
                         skipKey:["_id","created","updated"],
                         addKey:["baseInfo"],
                         foldArray:true

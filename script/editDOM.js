@@ -167,6 +167,7 @@ function createTable(data,parent,tableLevel,callback,option){
     var colList = [];
     var tableSelector = "table.tableLevel_" + tableLevel + " > ";
 
+    //create sample of columns
     if(option.columnSample === undefined){
         columnSample = editColumnSample(data);
     }else{
