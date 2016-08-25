@@ -234,11 +234,13 @@ function createTable(data,parent,tableLevel,callback,option){
         data.forEach(function(dp,rowIndex){
             for(var i=0; i<addedColumnNum; i++){
                 $(parent).find(tableSelector + "thead > tr").eq(0).children("th").eq(i).text(option.leftColumn.key[i]);
-                option.leftColumn.callback[i]({
-                    rowData:dp,
-                    el:$(parent).find(tableSelector + "tbody > tr").eq(rowIndex).children("td").eq(i)[0],
-                    key:option.leftColumn.key[i]
-                });
+                if(typeof option.leftColumn.callback === "function"){
+                    option.leftColumn.callback[i]({
+                        rowData:dp,
+                        el:$(parent).find(tableSelector + "tbody > tr").eq(rowIndex).children("td").eq(i)[0],
+                        key:option.leftColumn.key[i]
+                    });
+                }
             }
         })
         headerPattern[0] = option.leftColumn.key.map(function(v){
@@ -264,11 +266,13 @@ function createTable(data,parent,tableLevel,callback,option){
         data.forEach(function(dp,rowIndex){
             for(var i=0; i<addedColumnNum; i++){
                 $(parent).find(tableSelector + "thead > tr").eq(0).children("th").eq(-addedColumnNum+i).text(option.rightColumn.key[i]);
-                option.rightColumn.callback[i]({
-                    rowData:dp,
-                    el:$(parent).find(tableSelector + "tbody > tr").eq(rowIndex).children("td").eq(-addedColumnNum+i)[0],
-                    key:option.rightColumn.key[i]
-                });
+                if(typeof option.rightColumn.callback[i] === "function"){
+                    option.rightColumn.callback[i]({
+                        rowData:dp,
+                        el:$(parent).find(tableSelector + "tbody > tr").eq(rowIndex).children("td").eq(-addedColumnNum+i)[0],
+                        key:option.rightColumn.key[i]
+                    });
+                }
             }
         });
         headerPattern[0] = headerPattern[0].concat(option.rightColumn.key.map(function(v){
