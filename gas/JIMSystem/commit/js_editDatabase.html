@@ -12,6 +12,7 @@ $(function(){
             .forEach(function(collInfo){
                 $("#formEditDatabase select[name='databaseName']").append("<option name='" + collInfo.getValue("name") + "'>" + collInfo.getValue("name") + "</option>");
             });
+            _tmp.changedDataQue = [];
         },
         showTable:function(){
             var form = document.getElementById("formEditDatabase");
@@ -35,22 +36,22 @@ $(function(){
                     result,
                     0,
                     function(cellObj){
-                        console.log(cellObj);
+                        var jqoCell = $(cellObj.el);
                         if(cellObj.key[0] === "_id"){
                         }else if(cellObj.isArray){
-                            $(cellObj.el).append("<table><thead></thead><tbody></tbody></table>");
+                            jqoCell.append("<table><thead></thead><tbody></tbody></table>");
                             if(cellObj.isHashInArray){
-                                /*$(cellObj.el).find("table thead").append([
+                                /*jqoCell.find("table thead").append([
                                     "<tr>",
                                     ["del","index"].concat(cellObj.keysOfHashInArray).map(function(v){
                                         return "<th>" + v + "</th>";
                                     }).join(""),
                                     "</tr>"
                                 ].join(""));*/
-                                $(cellObj.el).find("table tbody").append(repeatString("<tr></tr>",cellObj.value.length));
+                                jqoCell.find("table tbody").append(repeatString("<tr></tr>",cellObj.value.length));
                                 cellObj.value.forEach(function(v,index){
-                                    var jqo = $(cellObj.el).find("table tbody tr").eq(index);
-                                    //jqo.append("<td><input type='checkbox' class='del_array'></td><td>" + index +"</td>");
+                                    var jqoTableRowInCell = jqoCell.find("table tbody tr").eq(index);
+                                    //jqoTableRowInCell.append("<td><input type='checkbox' class='del_array'></td><td>" + index +"</td>");
                                     cellObj.keysOfHashInArray.forEach(function(key){
                                         var str = "";
                                         switch(classof(v[key])){
@@ -72,24 +73,37 @@ $(function(){
                                                 str = JSON.stringify(v[key]);
                                                 break;
                                         }
-                                        jqo.append("<td><input type='button' value='" + str + "'></td>");
-                                        jqo.find("tr td input[type='button']").on("click",function(e){
-                                            console.log(e.target);
+                                        jqoTableRowInCell.append("<td><input type='button' value='" + str + "'></td>");
+                                        jqoTableRowInCell.find("td").css("padding","0");
+                                        jqoTableRowInCell.find("td input[type='button']").on("click",function(e){
+                                            _tmp.changedDataQue.push({
+                                                "data_id":cellObj.rowData._id,
+                                                "key":cellObj.key,
+                                                "index":index,
+                                                "el":e.target
+                                            });
+console.log({
+    "data_id":cellObj.rowData._id,
+    "key":cellObj.key,
+    "index":index,
+    "el":e.target
+});
+                                            $(e.target).attr("type","text")
                                         });
                                     });
                                 });
                             }else{
-                                /*$(cellObj.el).find("table thead").append([
+                                /*jqoCell.find("table thead").append([
                                     "<tr>",
                                     "<th>del</th>",
                                     "<th>index</th>",
                                     "<th>value</th>",
                                     "</tr>"
                                 ].join(""));*/
-                                $(cellObj.el).find("table tbody").append(repeatString("<tr></tr>",cellObj.value.length));
+                                jqoCell.find("table tbody").append(repeatString("<tr></tr>",cellObj.value.length));
                                 cellObj.value.forEach(function(v,index){
-                                    var jqo = $(cellObj.el).find("table tbody tr").eq(index);
-                                    //jqo.append("<td><input type='checkbox' class='del_array'></td><td>" + index +"</td>");
+                                    var jqoTableRowInCell = jqoCell.find("table tbody tr").eq(index);
+                                    //jqoTableRowInCell.append("<td><input type='checkbox' class='del_array'></td><td>" + index +"</td>");
                                     switch(classof(v)){
                                         case "number":
                                         case "string":
@@ -109,18 +123,41 @@ $(function(){
                                             str = JSON.stringify(v);
                                             break;
                                     }
-                                    jqo.append("<td><input type='button' value='" + str + "'></td>");
-                                    jqo.find("tr td input[type='button']").on("click",function(e){
-                                        console.log(e.target);
+                                    jqoTableRowInCell.append("<td><input type='button' value='" + str + "'></td>");
+                                    jqoTableRowInCell.find("td").css("padding","0");
+                                    jqoTableRowInCell.find("td input[type='button']").on("click",function(e){
+                                        _tmp.changedDataQue.push({
+                                            "data_id":cellObj.rowData._id,
+                                            "key":cellObj.key,
+                                            "index":index,
+                                            "el":e.target
+                                        });
+console.log({
+    "data_id":cellObj.rowData._id,
+    "key":cellObj.key,
+    "index":index,
+    "el":e.target
+});
+                                        $(e.target).attr("type","text")
                                     });
                                     
                                 })
                             }
                         }else{
                             cellObj.el.textContent = "";
-                            $(cellObj.el).append("<input type='button' value='" + cellObj.value + "'>");
-                            $(cellObj.el).find("input[type='button']").on("click",function(e){
-                                console.log($(cellObj.el.parentNode)[0]);
+                            jqoCell.append("<input type='button' value='" + cellObj.value + "'>");
+                            jqoCell.find("input[type='button']").on("click",function(e){
+                                _tmp.changedDataQue.push({
+                                    "data_id":cellObj.rowData._id,
+                                    "key":cellObj.key,
+                                    "el":e.target
+                                });
+console.log({
+    "data_id":cellObj.rowData._id,
+    "key":cellObj.key,
+    "el":e.target
+});
+                                $(e.target).attr("type","text")
                             });
                         }
                     },
