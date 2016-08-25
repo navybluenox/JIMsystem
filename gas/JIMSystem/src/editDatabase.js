@@ -39,17 +39,17 @@ $(function(){
                         }else if(cellObj.isArray){
                             $(cellObj.el).append("<table><thead></thead><tbody></tbody></table>");
                             if(cellObj.isHashInArray){
-                                $(cellObj.el).find("table thead").append([
+                                /*$(cellObj.el).find("table thead").append([
                                     "<tr>",
                                     ["del","index"].concat(cellObj.keysOfHashInArray).map(function(v){
                                         return "<th>" + v + "</th>";
                                     }).join(""),
                                     "</tr>"
-                                ].join(""));
+                                ].join(""));*/
                                 $(cellObj.el).find("table tbody").append(repeatString("<tr></tr>",cellObj.value.length));
                                 cellObj.value.forEach(function(v,index){
                                     var jqo = $(cellObj.el).find("table tbody tr").eq(index);
-                                    jqo.append("<td><input type='checkbox' class='del_array'></td><td>" + index +"</td>");
+                                    //jqo.append("<td><input type='checkbox' class='del_array'></td><td>" + index +"</td>");
                                     cellObj.keysOfHashInArray.forEach(function(key){
                                         var str = "";
                                         switch(classof(v[key])){
@@ -78,17 +78,17 @@ $(function(){
                                     });
                                 });
                             }else{
-                                $(cellObj.el).find("table thead").append([
+                                /*$(cellObj.el).find("table thead").append([
                                     "<tr>",
                                     "<th>del</th>",
                                     "<th>index</th>",
                                     "<th>value</th>",
                                     "</tr>"
-                                ].join(""));
+                                ].join(""));*/
                                 $(cellObj.el).find("table tbody").append(repeatString("<tr></tr>",cellObj.value.length));
                                 cellObj.value.forEach(function(v,index){
                                     var jqo = $(cellObj.el).find("table tbody tr").eq(index);
-                                    jqo.append("<td><input type='checkbox' class='del_array'></td><td>" + index +"</td>");
+                                    //jqo.append("<td><input type='checkbox' class='del_array'></td><td>" + index +"</td>");
                                     switch(classof(v)){
                                         case "number":
                                         case "string":
@@ -125,19 +125,19 @@ $(function(){
                     },
                     {
                         leftColumn:{key:["test1","test2"],callback:[
-                            function(cellObj){console.log(cellObj)},
-                            function(cellObj){console.log(cellObj)}
+                            //function(cellObj){console.log(cellObj)},
+                            //function(cellObj){console.log(cellObj)}
                         ]},
                         rightColumn:{key:["test11","test12"],callback:[
-                            function(cellObj){console.log(cellObj)},
-                            function(cellObj){console.log(cellObj)}
+                            //function(cellObj){console.log(cellObj)},
+                            //function(cellObj){console.log(cellObj)}
                         ]},
                         bottomRow:{key:["test111","test112","test113"],
                         createCell:[true,true,false],
                         callback:[
-                            function(cellObj){console.log(cellObj)},
-                            function(cellObj){console.log(cellObj)},
-                            function(rowObj){console.log(rowObj)}                            
+                            //function(cellObj){console.log(cellObj)},
+                            //function(cellObj){console.log(cellObj)},
+                            //function(rowObj){console.log(rowObj)}                            
                         ]},
                         foldArray:true
                     }
