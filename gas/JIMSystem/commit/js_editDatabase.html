@@ -38,6 +38,15 @@ $(function(){
                     function(cellObj){
                         var jqoCell = $(cellObj.el);
                         if(cellObj.key[0] === "_id"){
+                            jqoCell.append([
+                                "<table><tbody>",
+                                "<tr><td>_id</td><td>" + cellObj.rowData._id + "</td></tr>",
+                                "<tr><td>created</td><td>" + cellObj.rowData.created + "</td></tr>",
+                                "<tr><td>updated</td><td>" + cellObj.rowData.updated + "</td></tr>",
+                                "</tbody></table>"
+                            ].join(""));
+                            jqoCell.find("table tr td").css("padding","0 1em");
+                        }else if(cellObj.key[0] === "created" || cellObj.key[0] === "updated"){
                         }else if(cellObj.isArray){
                             jqoCell.append("<table><thead></thead><tbody></tbody></table>");
                             if(cellObj.isHashInArray){
