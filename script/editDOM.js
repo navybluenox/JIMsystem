@@ -298,16 +298,20 @@ function createTable(data,parent,tableLevel,callback,option){
                     repeatString("<td></td>",colList.length)
                 );
                 colList.forEach(function(col,colIndex){
-                    option.bottomRow.callback[i]({
-                        el:thisRowJqo.children("td").eq(colIndex)[0],
-                        key:col
-                    });
+                    if(typeof option.bottomRow.callback[i] === "function"){
+                        option.bottomRow.callback[i]({
+                            el:thisRowJqo.children("td").eq(colIndex)[0],
+                            key:col
+                        });
+                    }
                 });
             }else{
-                option.bottomRow.callback[i]({
-                    el:thisRowJqo[0],
-                    colList:colList
-                })
+                if(typeof option.bottomRow.callback[i] === "function"){
+                    option.bottomRow.callback[i]({
+                        el:thisRowJqo[0],
+                        colList:colList
+                    })
+                }
             }
         })
 
