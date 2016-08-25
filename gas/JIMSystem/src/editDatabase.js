@@ -60,7 +60,6 @@ $(function(){
                                                 break;
                                             case "null":
                                             case "undefined":
-                                                str = JSON.stringify(v[key]);
                                                 break;
                                             case "date":
                                                 str = dateToValue(v[key]).str;
@@ -69,6 +68,7 @@ $(function(){
                                                 str = v[key].toString();
                                                 break;
                                             default:
+                                                str = JSON.stringify(v[key]);
                                                 break;
                                         }
                                         jqo.append("<td><input type='button'>" + str + "</td>");
@@ -85,9 +85,35 @@ $(function(){
                                     "<th>value</th>",
                                     "</tr>"
                                 ].join(""));
-
-
-                                //TODO NOW!!
+                                $(cellObj.el).find("table tbody").append(repeatString("<tr></tr>",cellObj.value.length));
+                                cellObj.value.forEach(function(v,index){
+                                    var jqo = $(cellObj.el).find("table tbody tr").eq(index);
+                                    jqo.append("<td><input type='checkbox' class='del_array'></td><td>" + index +"</td>");
+                                    switch(classof(v)){
+                                        case "number":
+                                        case "string":
+                                        case "boolean":
+                                            str = "" + v;
+                                            break;
+                                        case "null":
+                                        case "undefined":
+                                            break;
+                                        case "date":
+                                            str = dateToValue(v).str;
+                                            break;
+                                        case "localdate":
+                                            str = v.toString();
+                                            break;
+                                        default:
+                                            str = JSON.stringify(v);
+                                            break;
+                                    }
+                                    jqo.append("<td><input type='button'>" + str + "</td>");
+                                    jqo.find("tr td input[type='button']").on("click",function(e){
+                                        console.log(e.target);
+                                    });
+                                    
+                                })
                             }
                         }else{
                             cellObj.el.textContent = "";
