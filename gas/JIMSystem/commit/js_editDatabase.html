@@ -54,26 +54,7 @@ $(function(){
                                     //jqoTableRowInCell.append("<td><input type='checkbox' class='del_array'></td><td>" + index +"</td>");
                                     cellObj.keysOfHashInArray.forEach(function(key){
                                         var str = "";
-                                        switch(classof(v[key])){
-                                            case "number":
-                                            case "string":
-                                            case "boolean":
-                                                str = "" + v[key];
-                                                break;
-                                            case "null":
-                                            case "undefined":
-                                                break;
-                                            case "date":
-                                                str = dateToValue(v[key]).str;
-                                                break;
-                                            case "localdate":
-                                                str = v[key].toString();
-                                                break;
-                                            default:
-                                                str = JSON.stringify(v[key]);
-                                                break;
-                                        }
-                                        jqoTableRowInCell.append("<td><input type='button' value='" + str + "'></td>");
+                                        jqoTableRowInCell.append("<td><input type='button' value='" + convertValueToStr(v[key]) + "'></td>");
                                         jqoTableRowInCell.find("td").css("padding","0");
                                         jqoTableRowInCell.find("td input[type='button']").on("click",function(e){
                                             _tmp.changedDataQue.push({
@@ -104,26 +85,7 @@ console.log({
                                 cellObj.value.forEach(function(v,index){
                                     var jqoTableRowInCell = jqoCell.find("table tbody tr").eq(index);
                                     //jqoTableRowInCell.append("<td><input type='checkbox' class='del_array'></td><td>" + index +"</td>");
-                                    switch(classof(v)){
-                                        case "number":
-                                        case "string":
-                                        case "boolean":
-                                            str = "" + v;
-                                            break;
-                                        case "null":
-                                        case "undefined":
-                                            break;
-                                        case "date":
-                                            str = dateToValue(v).str;
-                                            break;
-                                        case "localdate":
-                                            str = v.toString();
-                                            break;
-                                        default:
-                                            str = JSON.stringify(v);
-                                            break;
-                                    }
-                                    jqoTableRowInCell.append("<td><input type='button' value='" + str + "'></td>");
+                                    jqoTableRowInCell.append("<td><input type='button' value='" + convertValueToStr(v) + "'></td>");
                                     jqoTableRowInCell.find("td").css("padding","0");
                                     jqoTableRowInCell.find("td input[type='button']").on("click",function(e){
                                         _tmp.changedDataQue.push({
@@ -145,7 +107,7 @@ console.log({
                             }
                         }else{
                             cellObj.el.textContent = "";
-                            jqoCell.append("<input type='button' value='" + cellObj.value + "'>");
+                            jqoCell.append("<input type='button' value='" + convertValueToStr(cellObj.value) + "'>");
                             jqoCell.find("input[type='button']").on("click",function(e){
                                 _tmp.changedDataQue.push({
                                     "data_id":cellObj.rowData._id,
@@ -159,6 +121,23 @@ console.log({
 });
                                 $(e.target).attr("type","text")
                             });
+                        }
+                        function convertValueToStr(v){
+                            switch(classof(v)){
+                                case "number":
+                                case "string":
+                                case "boolean":
+                                    return "" + v;
+                                case "null":
+                                case "undefined":
+                                    return "";
+                                case "date":
+                                    return dateToValue(v).str;
+                                case "localdate":
+                                    return v.toString();
+                                default:
+                                    return JSON.stringify(v);
+                            }
                         }
                     },
                     {
