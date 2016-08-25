@@ -56,7 +56,7 @@ $(function(){
                                         jqoTableRowInCell.append("<td><input type='button' value='" + convertValueToStr(v[key]) + "'></td>");
                                         jqoTableRowInCell.find("td").css("padding","0");
                                         jqoTableRowInCell.find("td input[type='button']").on("click",function(e){
-                                            var width = $(e.target).width();
+                                            var width = $(e.target).outerWidth();
                                             _tmp.changedDataQue.push({
                                                 "data_id":cellObj.rowData._id,
                                                 "key":cellObj.key,
@@ -69,7 +69,10 @@ console.log({
     "index":index,
     "el":e.target
 });
-                                            $(e.target).attr("type","text").css("width",width+"px");
+                                            $(e.target).attr("type","text").css({
+                                                "width":width+"px",
+                                                "font-size":"11px"
+                                            });
                                         });
                                     });
                                 });
@@ -88,7 +91,7 @@ console.log({
                                     jqoTableRowInCell.append("<td><input type='button' value='" + convertValueToStr(v) + "'></td>");
                                     jqoTableRowInCell.find("td").css("padding","0");
                                     jqoTableRowInCell.find("td input[type='button']").on("click",function(e){
-                                        var width = $(e.target).width();
+                                        var width = $(e.target).outerWidth();
                                         _tmp.changedDataQue.push({
                                             "data_id":cellObj.rowData._id,
                                             "key":cellObj.key,
@@ -101,7 +104,10 @@ console.log({
     "index":index,
     "el":e.target
 });
-                                        $(e.target).attr("type","text").css("width",width+"px");
+                                        $(e.target).attr("type","text").css({
+                                            "width":width+"px",
+                                            "font-size":"11px"
+                                        });
                                     });
                                     
                                 })
@@ -110,7 +116,7 @@ console.log({
                             cellObj.el.textContent = "";
                             jqoCell.append("<input type='button' value='" + convertValueToStr(cellObj.value) + "'>");
                             jqoCell.find("input[type='button']").on("click",function(e){
-                                var width = $(e.target).width();
+                                var width = $(e.target).outerWidth();
                                 _tmp.changedDataQue.push({
                                     "data_id":cellObj.rowData._id,
                                     "key":cellObj.key,
@@ -121,7 +127,10 @@ console.log({
     "key":cellObj.key,
     "el":e.target
 });
-                                $(e.target).attr("type","text").css("width",width+"px");
+                                $(e.target).attr("type","text").css({
+                                    "width":width+"px",
+                                    "font-size":"11px"
+                                });
                             });
                         }
                         function convertValueToStr(v){
