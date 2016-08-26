@@ -232,7 +232,8 @@ $(function(){
                                 _tmp.changedDataQue.push({
                                     "new":true,
                                     "el":jqo[0].parentNode,
-                                    "columnSample":cellObj.columnSample
+                                    "columnSample":cellObj.columnSample,
+                                    "colList":cellObj.colList
                                 })
                             });
                         }]},
