@@ -123,7 +123,7 @@ console.log({
                                     });
                                     
                                 })
-                                $("<tr><td colSpan='0'><input type='button' value='add'></td></tr>")
+                                $("<tr><td colSpan='0' style='padding: 0; backgroud: #ddddff;'><input type='button' value='add'></td></tr>")
                                 .appendTo(jqoCell.find("table tbody"))
                                 .find("td input:button")
                                 .on("click",function(e){
