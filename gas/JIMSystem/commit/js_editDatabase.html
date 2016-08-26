@@ -20,6 +20,8 @@ $(function(){
             var promise;
             var dataName = $("#formEditDatabase [name='databaseName']").val();
 
+            $(result).children().remove();
+
             if(!_val.server.isLoadedData(dataName)){
                 promise = _val.server.loadDataByName(dataName);
             }else{
