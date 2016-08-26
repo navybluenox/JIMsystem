@@ -169,6 +169,16 @@ console.log({
 console.log(cellObj);
                             var jqoCell = $(cellObj.el);
                             jqoCell.append("<input type='checkbox'>");
+                            jqoCell.find("input").on("cilck",function(e){
+                                if($(e.target).attr("checked")){
+console.log(cellObj);
+                                    _tmp.changedDataQue.push({
+                                        //"data_id":cellObj.rowData._id,
+                                        "remove":true,
+                                        "el":e.target
+                                    });
+                                }
+                            });
                         }]},
                         bottomRow:{key:["add"],createCell:[false],callback:[function(cellObj){
 console.log(cellObj);
@@ -178,6 +188,7 @@ console.log(cellObj);
                                     "<input type='button' value='--add--'>",
                                 "</td>"
                             ].join(""));
+                            //TODO event
                         }]},
                         skipKey:["_id","created","updated"],
                         addKey:["baseInfo"],
