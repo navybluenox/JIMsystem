@@ -3,7 +3,7 @@
     <section>
          <form id="formEditDatabase">
              <div id="formEditDatabase_cond">
-                 <select name="databaseName" onchange="_val.pageFun.editDatabase.showTable()"><option value="blank"></option></select>
+                 <select name="databaseName" onchange="_val.pageFun.editDatabase.showTable()"><option value="blank"></option></select><input type="button" value="更新" onclick="_val.pageFun.editDatabase.updateData()">
                  <p>※systemConfigとcollectionInfoはJSONを直接いじってください。</p>
              </div>
              <div id="formEditDatabase_result"></div>

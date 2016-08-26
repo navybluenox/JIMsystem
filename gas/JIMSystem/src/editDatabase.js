@@ -214,7 +214,7 @@ $(function(){
                                         if(Array.isArray(sample)){
                                             $("<table><thead></thead><tbody><tr><td colSpan='0' style='padding: 0;'><input type='button' value='add' class='exclude'></td></tr></tbody></table>")
                                                 .appendTo(jqoCell)
-                                                .find("table tbody tr td input:button")
+                                                .find("tbody tr td input:button")
                                                 .css("background","#ddddff")
                                                 .on("click",function(e){
                                                     var thisTr = e.target.parentNode.parentNode;
@@ -234,7 +234,6 @@ $(function(){
                                     "el":jqo[0].parentNode,
                                     "columnSample":cellObj.columnSample
                                 })
-console.log(cellObj);
                             });
                         }]},
                         skipKey:["_id","created","updated"],
@@ -243,6 +242,10 @@ console.log(cellObj);
                     }
                 );
             });
+        },
+        updateData:function(){
+            var que = _tmp.changedDataQue;
+            console.log(que);
         }
     };
 });
