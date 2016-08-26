@@ -75,17 +75,28 @@ $(function(){
                                                 "index":index,
                                                 "el":e.target
                                             });
-console.log({
-    "data_id":cellObj.rowData._id,
-    "key":cellObj.key,
-    "index":index,
-    "el":e.target
-});
                                             $(e.target).attr("type","text").css({
                                                 "width":width+"px",
                                                 "font-size":fontSize + "px"
                                             });
                                         });
+                                    });
+                                });
+                                $("<tr><td colSpan='0' style='padding: 0;'><input type='button' value='add' class='exclude'></td></tr>")
+                                .appendTo(jqoCell.find("table tbody"))
+                                .find("td input:button")
+                                .css("background","#ddddff")
+                                .on("click",function(e){
+                                    var thisTr = e.target.parentNode.parentNode;
+                                    var jqo = $("<tr>" +  + repeatString("<td style='padding: 0px;'><input type='text'></td>",cellObj.value.length) + "</tr>")
+                                        .insertBefore(thisTr)
+                                        .find("td input:text")
+                                        .css({"width":"72px","font-size":fontSize + "px"});
+                                    _tmp.changedDataQue.push({
+                                        "data_id":cellObj.rowData._id,
+                                        "key":cellObj.key,
+                                        "index":$(thisTr.parentNode).find("tr").length - 2,
+                                        "el":jqo[0]
                                     });
                                 });
                             }else{
@@ -111,12 +122,6 @@ console.log({
                                             "index":index,
                                             "el":e.target
                                         });
-console.log({
-    "data_id":cellObj.rowData._id,
-    "key":cellObj.key,
-    "index":index,
-    "el":e.target
-});
                                         $(e.target).attr("type","text").css({
                                             "width":width + "px",
                                             "font-size":fontSize + "px"
@@ -124,13 +129,13 @@ console.log({
                                     });
                                     
                                 })
-                                $("<tr><td colSpan='0' style='padding: 0;'><input type='button' value='add'></td></tr>")
+                                $("<tr><td colSpan='0' style='padding: 0;'><input type='button' value='add' class='exclude'></td></tr>")
                                 .appendTo(jqoCell.find("table tbody"))
                                 .find("td input:button")
                                 .css("background","#ddddff")
                                 .on("click",function(e){
                                     var thisTr = e.target.parentNode.parentNode;
-                                    var jqo = $("<tr><td style='padding: 0px;'><input type='text' class='exclude'></td></tr>")
+                                    var jqo = $("<tr><td style='padding: 0px;'><input type='text'></td></tr>")
                                         .insertBefore(thisTr)
                                         .find("td input:text")
                                         .css({"width":"72px","font-size":fontSize + "px"});
@@ -140,12 +145,6 @@ console.log({
                                         "index":$(thisTr.parentNode).find("tr").length - 2,
                                         "el":jqo[0]
                                     });
-console.log({
-    "data_id":cellObj.rowData._id,
-    "key":cellObj.key,
-    "index":$(thisTr.parentNode).find("tr").length - 2,
-    "el":jqo[0]
-});
                                 });
                             }
                         }else{
@@ -159,11 +158,6 @@ console.log({
                                     "key":cellObj.key,
                                     "el":e.target
                                 });
-console.log({
-    "data_id":cellObj.rowData._id,
-    "key":cellObj.key,
-    "el":e.target
-});
                                 $(e.target).attr("type","text").css({
                                     "width":width + "px",
                                     "font-size":fontSize + "px"
@@ -203,7 +197,6 @@ console.log({
                             });
                         }]},
                         bottomRow:{key:["add"],createCell:[false],callback:[function(cellObj){
-console.log(cellObj);
                             var jqoCell = $(cellObj.el);
                             jqoCell.append([
                                 "<td colSpan='" + cellObj.colList.length + "'>",
@@ -211,7 +204,9 @@ console.log(cellObj);
                                 "</td>"
                             ].join(""));
                             jqoCell.find("td input:button").on("click",function(e){
-
+                                var jqo = $("<tr>" + repeatString("<td></td>",cellObj.colList.length) + "</tr>")
+                                .insertBefore(jqoCell).find("td");
+console.log(cellObj);
                             });
                         }]},
                         skipKey:["_id","created","updated"],
