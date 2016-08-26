@@ -123,9 +123,10 @@ console.log({
                                     });
                                     
                                 })
-                                $("<tr><td colSpan='0' style='padding: 0; backgroud: #ddddff;'><input type='button' value='add'></td></tr>")
+                                $("<tr><td colSpan='0' style='padding: 0;'><input type='button' value='add'></td></tr>")
                                 .appendTo(jqoCell.find("table tbody"))
                                 .find("td input:button")
+                                .css("backgroud","#ddddff")
                                 .on("click",function(e){
                                     var thisTr = e.target.parentNode.parentNode;
                                     var jqo = $("<tr><td style='padding: 0px;'><input type='text'></td></tr>")
@@ -135,7 +136,7 @@ console.log({
                                     _tmp.changedDataQue.push({
                                         "data_id":cellObj.rowData._id,
                                         "key":cellObj.key,
-                                        "index":$(thisTr.parentNode).find("tr").length - 1,
+                                        "index":$(thisTr.parentNode).find("tr").length - 2,
                                         "el":jqo[0]
                                     });
 console.log({
