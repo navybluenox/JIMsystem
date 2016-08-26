@@ -176,7 +176,9 @@ function createTable(data,parent,tableLevel,callback,option){
     }
     headerPatternObj = makeHeaderPattern_1(columnSample,-1);
     makeHeaderPattern_2(headerPatternObj.value);
-    
+
+console.log(columnSample)
+
     //create tags
     $(parent).find(tableSelector + "thead").append(headerPattern.map(function(arr){
         return "<tr>" + arr.map(function(obj){
