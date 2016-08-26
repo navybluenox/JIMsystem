@@ -22,7 +22,7 @@ $(function(){
             if(!_val.server.isLoadedData(dataName)){
                 promise = _val.server.loadDataByName(dataName);
             }else{
-                promise = Promise.resolve();;
+                promise = Promise.resolve();
             }
             
             promise.then(function(){
@@ -62,7 +62,6 @@ $(function(){
                                     var jqoTableRowInCell = jqoCell.find("table tbody tr").eq(index);
                                     //jqoTableRowInCell.append("<td><input type='checkbox' class='rm_array'></td><td>" + index +"</td>");
                                     cellObj.keysOfHashInArray.forEach(function(key){
-                                        var str = "";
                                         jqoTableRowInCell.append("<td><input type='button' value='" + convertValueToStr(v[key]) + "'></td>");
                                         jqoTableRowInCell.find("td").css("padding","0");
                                         jqoTableRowInCell.find("td input:button").on("click",function(e){
@@ -87,7 +86,7 @@ $(function(){
                                 .css("background","#ddddff")
                                 .on("click",function(e){
                                     var thisTr = e.target.parentNode.parentNode;
-                                    var jqo = $("<tr>" +  + repeatString("<td style='padding: 0px;'><input type='text'></td>",cellObj.value.length) + "</tr>")
+                                    var jqo = $("<tr>" + repeatString("<td style='padding: 0px;'><input type='text'></td>",cellObj.value.length) + "</tr>")
                                         .insertBefore(thisTr)
                                         .find("td input:text")
                                         .css({"width":"72px","font-size":fontSize + "px"});
@@ -196,15 +195,45 @@ $(function(){
                             });
                         }]},
                         bottomRow:{key:["add"],createCell:[false],callback:[function(cellObj){
-                            var jqoCell = $(cellObj.el);
-                            jqoCell.append([
+                            var jqoRow = $(cellObj.el);
+                            var fontSize = 11;
+                            jqoRow.append([
                                 "<td colSpan='" + cellObj.colList.length + "'>",
                                     "<input type='button' value='--add--'>",
                                 "</td>"
                             ].join(""));
-                            jqoCell.find("td input:button").on("click",function(e){
+                            jqoRow.find("td input:button").on("click",function(e){
                                 var jqo = $("<tr>" + repeatString("<td></td>",cellObj.colList.length) + "</tr>")
-                                .insertBefore(jqoCell).find("td");
+                                .insertBefore(jqoRow).find("td");
+                                cellObj.colList.forEach(function(col,colIndex){
+                                    var jqoCell = jqo.eq(colIndex);
+                                    if(inArray(["remove","baseInfo"],col[0])){
+                                    }else{
+                                        var sample = cellObj.columnSample;
+                                        col.forEach(function(key){sample = sample[key]});
+                                        if(Array.isArray(sample)){
+                                            $("<table><thead></thead><tbody><tr><td colSpan='0' style='padding: 0;'><input type='button' value='add' class='exclude'></td></tr></tbody></table>")
+                                                .appendTo(jqoCell)
+                                                .find("table tbody tr td input:button")
+                                                .css("background","#ddddff")
+                                                .on("click",function(e){
+                                                    var thisTr = e.target.parentNode.parentNode;
+                                                    $("<tr>" + (repeatString("<td style='padding: 0px;'><input type='text'></td>",(inArray(["object","array"],classof(sample[0])) ? cellObj.value.length : 1))) + "</tr>")
+                                                    .insertBefore(thisTr)
+                                                    .find("td input:text")
+                                                    .css({"width":"72px","font-size":fontSize + "px"});
+                                                });
+                                        }else{
+                                            $("<input type='text'>").appendTo(jqoCell)
+                                            .css({"width":"72px","font-size":fontSize + "px"});                                         
+                                        }
+                                    }
+                                });
+                                _tmp.changedDataQue.push({
+                                    "new":true,
+                                    "el":jqo[0].parentNode,
+                                    "columnSample":cellObj.columnSample
+                                })
 console.log(cellObj);
                             });
                         }]},

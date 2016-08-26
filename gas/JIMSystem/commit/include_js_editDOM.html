@@ -177,8 +177,6 @@ function createTable(data,parent,tableLevel,callback,option){
     headerPatternObj = makeHeaderPattern_1(columnSample,-1);
     makeHeaderPattern_2(headerPatternObj.value);
 
-console.log(columnSample)
-
     //create tags
     $(parent).find(tableSelector + "thead").append(headerPattern.map(function(arr){
         return "<tr>" + arr.map(function(obj){
@@ -315,7 +313,8 @@ console.log(columnSample)
                 if(typeof option.bottomRow.callback[i] === "function"){
                     option.bottomRow.callback[i]({
                         el:thisRowJqo[0],
-                        colList:colList
+                        colList:colList,
+                        columnSample:columnSample
                     })
                 }
             }
