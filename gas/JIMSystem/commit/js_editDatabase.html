@@ -37,6 +37,7 @@ $(function(){
                     0,
                     function(cellObj){
                         var jqoCell = $(cellObj.el);
+                        var fontSize = 11;
                         if(cellObj.key[0] === "baseInfo"){
                             jqoCell.append([
                                 "<table><tbody>",
@@ -82,7 +83,7 @@ console.log({
 });
                                             $(e.target).attr("type","text").css({
                                                 "width":width+"px",
-                                                "font-size":"11px"
+                                                "font-size":fontSize + "px"
                                             });
                                         });
                                     });
@@ -117,12 +118,34 @@ console.log({
     "el":e.target
 });
                                         $(e.target).attr("type","text").css({
-                                            "width":width+"px",
-                                            "font-size":"11px"
+                                            "width":width + "px",
+                                            "font-size":fontSize + "px"
                                         });
                                     });
                                     
                                 })
+                                $("<tr><td colSpan='0'><input type='text'></td></tr>")
+                                .appendTo(jqoCell.find("table tbody"))
+                                .find("td input:text")
+                                .css({"width":"10em","font-size":fontSize + "px"})
+                                .on("click",function(e){
+                                    var thisTr = e.target.parentNode.parentNode;
+                                    var jqo = $("<tr><td style='padding: 0px;'><input type='text' style='width: 72px; font-size: " + fontSize + "px" +  + "'></td></tr>")
+                                        .insertBefore(thisTr)
+                                        .find("td input:text");
+                                    _tmp.changedDataQue.push({
+                                        "data_id":cellObj.rowData._id,
+                                        "key":cellObj.key,
+                                        "index":$(thisTr.parentNode).find("tr").length - 1,
+                                        "el":jqo[0]
+                                    });
+console.log({
+    "data_id":cellObj.rowData._id,
+    "key":cellObj.key,
+    "index":$(thisTr.parentNode).find("tr").length - 1,
+    "el":jqo[0]
+});
+                                });
                             }
                         }else{
                             cellObj.el.textContent = "";
@@ -141,8 +164,8 @@ console.log({
     "el":e.target
 });
                                 $(e.target).attr("type","text").css({
-                                    "width":width+"px",
-                                    "font-size":"11px"
+                                    "width":width + "px",
+                                    "font-size":fontSize + "px"
                                 });
                             });
                         }
@@ -168,9 +191,8 @@ console.log({
                         leftColumn:{key:["remove"],callback:[function(cellObj){
                             var jqoCell = $(cellObj.el);
                             jqoCell.append("<input type='checkbox'>");
-                            jqoCell.find("input").on("click",function(e){
+                            jqoCell.find("input:checkbox").on("click",function(e){
                                 if($(e.target).prop("checked")){
-console.log(cellObj);
                                     _tmp.changedDataQue.push({
                                         "data_id":cellObj.rowData._id,
                                         "remove":true,
@@ -187,7 +209,9 @@ console.log(cellObj);
                                     "<input type='button' value='--add--'>",
                                 "</td>"
                             ].join(""));
-                            //TODO event
+                            jqoCell.find("td input:button").on("click",function(e){
+
+                            });
                         }]},
                         skipKey:["_id","created","updated"],
                         addKey:["baseInfo"],
