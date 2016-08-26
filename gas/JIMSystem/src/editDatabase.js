@@ -125,13 +125,13 @@ console.log({
                                 })
                                 $("<tr><td colSpan='0'><input type='button' value='add'></td></tr>")
                                 .appendTo(jqoCell.find("table tbody"))
-                                .find("td input:text")
-                                .css({"width":"10em","font-size":fontSize + "px"})
+                                .find("td input:button")
                                 .on("click",function(e){
                                     var thisTr = e.target.parentNode.parentNode;
-                                    var jqo = $("<tr><td style='padding: 0px;'><input type='text' style='width: 72px; font-size: " + fontSize + "px;'></td></tr>")
+                                    var jqo = $("<tr><td style='padding: 0px;'><input type='text'></td></tr>")
                                         .insertBefore(thisTr)
-                                        .find("td input:text");
+                                        .find("td input:text")
+                                        .css({"width":"72px","font-size":fontSize + "px"});
                                     _tmp.changedDataQue.push({
                                         "data_id":cellObj.rowData._id,
                                         "key":cellObj.key,
