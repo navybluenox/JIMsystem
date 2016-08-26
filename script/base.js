@@ -261,7 +261,7 @@ var LocalDate = (function(){
             return new Date(LocalDate.getStandardTime().getTime() + this._localTime);
         }
         toJSON(){
-            return this.toISOString();
+            return JSON.stringify(this.toISOString());
         }
         toISOString(){
             return "local_" + this.getAsDate().toISOString();
@@ -451,7 +451,7 @@ function dateToValue(date) {
 }
 
 function makeRandomStr(length, option) {
-    //長さ10,英数字小文字大文字
+    //長さ16,英数字小文字大文字
     if (length == null) length = 16;
     if (option == null) option = {};
     var _length = length;

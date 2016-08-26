@@ -163,7 +163,9 @@ var Datapiece = (function(){
         constructor(datapieceObj,dataName,option){
             if(option === undefined)  option = {};
             var that = this;
-            server = _val.server;
+            if(server === undefined){
+                server = _val.server;
+            }
             this._data = {};
             this._dataName = dataName;
             if(option.init === true){
@@ -248,9 +250,20 @@ var Datapiece = (function(){
                 colType = getValueFromObjectByKey(this._data,colName);
             }catch(e){
                 console.log("Attention : " + "There is no property(" + colName + ") of" + this.getDataName() + " (Datapiece.prototype.setValue)");
-                return null;
+                return this;
             }
             this._data[colName] = castType(value,colType);
+            return this;
+        }
+        setNewId(overwrite){
+            if(overwrite === undefined) overwrite = false;
+            if(overwrite || this.getValue("_id") !== undefined) return this;
+            var idList = server.getData(this.getDataName()).map(function(data){return data.getValue("_id")});
+            var result;
+            do{
+                result = makeRandomStr(16,{"number":true, "alphaLower":true, "alphaUpper":true});
+            }while(inArray(idList,result))
+            this.setValue("_id",result);
             return this;
         }
         //消すかも
@@ -260,6 +273,9 @@ var Datapiece = (function(){
         getValue(colName){
             if(typeof colName !== "string")  return undefined;
             return getValueFromObjectByKey(this._data,colName);
+        }
+        toJSON(){
+            return JSON.stringify(this._data);
         }
         getDataName(){
             return this._dataName;
@@ -279,9 +295,17 @@ var Datapiece = (function(){
             case "string":
                 return "" + value;
             case "date":
-                return new Date(value);
-            case "localDate":
-                return new LocalDate(value);
+                if(classof(value) === "date"){
+                    return value;
+                }else{
+                    return new Date(value);
+                }
+            case "localdate":
+                if(classof(value) === "localdate"){
+                    return value;
+                }else{
+                    return new LocalDate(value);
+                }
             default:
                 return value;
         }

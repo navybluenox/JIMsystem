@@ -153,19 +153,90 @@ var Server = (function(){
             return this.getCollectionInfoByName(dataName).version;
         }
         sendUpdateQueue(){
+            var that = this;
+            var nowTime;
+            (new Promise(function(resolve,reject){
+                var si = setInterval(function(){
+                    if(!that._updating){
+                        clearInterval(si);
+                        resolve();
+                    }
+                },100)
+            })).then(function(){
+                that._updating = true;
+                nowTime = new Date();
+                that._pendingQueue = that._updatingQueue.slice();
+                that._updatingQueue = [];
+                var queueForSend = {};
 
+                //TODO that._pendingQueueのキューのうちaddとchangeのものの_id・created補完とupdated更新
+                //nowTimeとDatapiece.prototype.setNewId()を利用
+
+                that._updatingQueue.forEach(function(queue){
+                    var dataName = queue.value.getDataName();
+                    if(queueForSend[dataName] === undefined){
+                        queueForSend[dataName] = [];
+                    }
+                    queueForSend[dataName].push(queue);
+                });
+                Promise.all(Object.keys(queueForSend).map(function(dataName){
+                    return runServerFun("Script.updateDatabase",queueForSend[dataName]);
+                }))
+                .then(function(){
+                    var queue,data,dataName,dataIndex,dataId;
+                    var queueList = that._pendingQueue.slice().reverse();
+                    while(queueList.length > 0){
+                        queue = queueList.pop();
+                        dataName = queue.getDataName();
+                        data = that.getData(dataName,false);
+                        switch(queue.kind){
+                            case "change":
+                                dataId = queue.value.getValue("_id");
+                                data.find(function(dp){
+                                    return dp.getValue("_id") === dataId;
+                                }).setValues(queue.value,{overwrite:true});
+                                break;
+                            case "add":
+                                data.push(new (Database.getClassByName(dataName))(queue.value));
+                                break;
+                            case "remove":
+                                dataId = queue.value.getValue("_id");
+                                dataIndex = data.findIndex(function(dp){
+                                    return dp.getValue("_id") === dataId;
+                                });
+                                data.splice(rmIndex,1) = null;
+                                break;
+                        }
+                    }
+                    that._pendingQueue
+                })
+                .then(function(){
+                    that._updating = false;
+                    that._pendingQueue = [];                    
+                });
+            })
         }
         changeData(datapieces){
             if(!Array.isArray(datapieces))  datapieces = [datapieces];
             //undefinedなキーはそのまま（skip）
+            this._pendingQueue.push({
+                "kind":"change",
+                "value":datapieces
+            });
         }
         addData(datapieces){
             if(!Array.isArray(datapieces))  datapieces = [datapieces];
-
+            this._pendingQueue.push({
+                "kind":"add",
+                "value":datapieces
+            });
         }
         removeData(datapieces){
             if(!Array.isArray(datapieces))  datapieces = [datapieces];
-
+            this._pendingQueue.push({
+                "kind":"remove",
+                "value":datapieces
+            });
         }
     };
 })();
