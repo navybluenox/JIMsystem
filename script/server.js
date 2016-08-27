@@ -33,7 +33,7 @@ var Server = (function(){
             this._cache = cache;
             //delete!!!
             if(Object.keys(cache).length === 0){
-                runServerFun("Script.loadDataFromDrive",[_val.baseConfig.collectionInfoFileId,"all"])
+                runServerFun("Script.loadDataFromDrive",[_val.baseConfig.collectionInfoFileId,"data"])
                 .then(function(v){
                     //TODO
                     //value v is invalid (datafile is not incomplete)
@@ -96,7 +96,7 @@ var Server = (function(){
             var that = this;
             var loadingId = makeRandomStr();
             this._loading.push({id:loadingId,coll:collInfo});
-            return runServerFun("Script.loadDataFromDrive",collInfo.getValue("fileId"))
+            return runServerFun("Script.loadDataFromDrive",[collInfo.getValue("fileId"),"data"])
             .then(function(v){
                 var collName = collInfo.getValue("name");
                 cache[collName] = [];
@@ -166,7 +166,6 @@ var Server = (function(){
                 nowTime = new Date();
                 that._pendingQueue = that._updatingQueue.slice();
                 that._updatingQueue = [];
-                var queueForSend = {};
 
                 that._pendingQueue = that._pendingQueue.map(function(queue){
                     switch(queue.kind){
@@ -184,6 +183,7 @@ var Server = (function(){
                     }
                 });
 
+                var queueForSend = {};
                 that._updatingQueue.forEach(function(queue){
                     var dataName = queue.value.getDataName();
                     if(queueForSend[dataName] === undefined){
@@ -192,7 +192,7 @@ var Server = (function(){
                     queueForSend[dataName].push(queue);
                 });
                 return Promise.all(Object.keys(queueForSend).map(function(dataName){
-                    return runServerFun("Script.updateDatabase",[dataName,queueForSend[dataName]]);
+                    return runServerFun("Script.updateDatabase",[that.getCollectionInfoByName(dataName).getValue("fileId"),queueForSend[dataName]]);
                 }));
             })
             .then(function(){

@@ -295,7 +295,6 @@ $(function(){
                     if(classof(type) === "array"){
                         var values = jqoCell.find("table tbody tr input:not(.exclude)")
                             .map(function(i,el){
-console.log(this,i,el);
                                 return $(this).val();
                             }).get();
                         if(classof(type[0]) === "object"){
@@ -325,8 +324,7 @@ console.log(this,i,el);
                     }
                     dp_c[col[col.length-1]] = value;
                 })
-console.log(dp);
-                _val.server.addData(new ThisDataPiece(dp));
+                _val.server.addData(new ThisDataPiece(dp,{overwrite:true}));
             });
 
             queuesRemove.forEach(function(queue){

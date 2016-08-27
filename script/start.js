@@ -49,7 +49,7 @@
     var _tmp = {};
     $(function(){
         _val.status = {whichSide:"client"};
-        runServerFun("Script.loadDataFromDrive",_val.baseConfigFileId)
+        runServerFun("Script.loadDataFromDrive",[_val.baseConfigFileId,"all"])
         .then(function(v){
             _val.baseConfig = v;
         }).then(function(){
