@@ -220,17 +220,18 @@ $(function(){
                                             $([
                                                 "<table><thead>",
                                                 (classof(sample[0]) === "object" ? Object.keys(sample[0]).map(function(key){return "<th>" + key + "</th>"}) : ""),
-                                                "</thead><tbody><tr><td colSpan='0' style='padding: 0;'><input type='button' value='add' class='exclude'></td></tr></tbody></table>"])
-                                                .appendTo(jqoCell)
-                                                .find("tbody tr td input:button")
-                                                .css("background","#ddddff")
-                                                .on("click",function(e){
-                                                    var thisTr = e.target.parentNode.parentNode;
-                                                    $("<tr>" + (repeatString("<td style='padding: 0px;'><input type='text'></td>",(inArray(["object","array"],classof(sample[0])) ? cellObj.value.length : 1))) + "</tr>")
-                                                    .insertBefore(thisTr)
-                                                    .find("td input:text")
-                                                    .css({"width":"72px","font-size":fontSize + "px"});
-                                                });
+                                                "</thead><tbody><tr><td colSpan='0' style='padding: 0;'><input type='button' value='add' class='exclude'></td></tr></tbody></table>"
+                                            ].join(""))
+                                            .appendTo(jqoCell)
+                                            .find("tbody tr td input:button")
+                                            .css("background","#ddddff")
+                                            .on("click",function(e){
+                                                var thisTr = e.target.parentNode.parentNode;
+                                                $("<tr>" + (repeatString("<td style='padding: 0px;'><input type='text'></td>",(inArray(["object","array"],classof(sample[0])) ? cellObj.value.length : 1))) + "</tr>")
+                                                .insertBefore(thisTr)
+                                                .find("td input:text")
+                                                .css({"width":"72px","font-size":fontSize + "px"});
+                                            });
                                         }else{
                                             $("<input type='text'>").appendTo(jqoCell)
                                             .css({"width":"72px","font-size":fontSize + "px"});                                         
@@ -287,7 +288,7 @@ $(function(){
                     col.forEach(function(c,i){
                         type = type[c];
                         if(dp_c[c] === undefined) dp_c[c] = {};
-                        if(/*i < col.length-1*/1){
+                        if(i < col.length-1){
                             dp_c = dp_c[c];
                         }
                     });
@@ -322,13 +323,10 @@ console.log(this,i,el);
                             }
                         }
                     }
-                    //dp_c[col[col.length-1]] = value;
-                    dp_c = value;
-                    
-
+                    dp_c[col[col.length-1]] = value;
                 })
 console.log(dp);
-                _val.server.removeData(new ThisDataPiece(dp));
+                _val.server.addData(new ThisDataPiece(dp));
             });
 
             queuesRemove.forEach(function(queue){
