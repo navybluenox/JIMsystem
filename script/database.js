@@ -246,7 +246,7 @@ var Datapiece = (function(){
         setValue(colName,value){
             var colType;
             try{
-                colType = getValueFromObjectByKey(this._data,colName);
+                colType = getValueFromObjectByKey(this._collInfo.getValue("column"),colName);
             }catch(e){
                 console.log("Attention : " + "There is no property(" + colName + ") of" + this.getDataName() + " (Datapiece.prototype.setValue)");
                 return this;
@@ -256,13 +256,8 @@ var Datapiece = (function(){
         }
         setNewId(overwrite){
             if(overwrite === undefined) overwrite = false;
-            if(overwrite || this.getValue("_id") !== undefined) return this;
-            var idList = server.getData(this.getDataName()).map(function(data){return data.getValue("_id")});
-            var result;
-            do{
-                result = makeRandomStr(16,{"number":true, "alphaLower":true, "alphaUpper":true});
-            }while(inArray(idList,result))
-            this.setValue("_id",result);
+            if(!overwrite && this.getValue("_id") !== undefined) return this;
+            this.setValue("_id",Datapiece.getNewId(this.getDataName()));
             return this;
         }
         //消すかも
@@ -279,10 +274,20 @@ var Datapiece = (function(){
         getDataName(){
             return this._dataName;
         }
+        getCollectionInfo(){
+            return this._collInfo;
+        }
         static getClassByName(dataName){
             var collInfo = server.getCollectionInfoByName(dataName);
             if(collInfo === undefined)  return undefined;
             return collInfo.getClass();
+        }
+        static getNewId(dataName){
+            var idList = server.getData(dataName).map(function(data){return data.getValue("_id")});
+            do{
+                result = makeRandomStr(16,{"number":true, "alphaLower":true, "alphaUpper":true});
+            }while(inArray(idList,result))
+            return result;
         }
     }
     function castType(value,type){

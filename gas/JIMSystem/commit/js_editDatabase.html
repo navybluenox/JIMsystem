@@ -60,6 +60,7 @@ $(function(){
                                     }).join(""),
                                     "</tr>"
                                 ].join(""));*/
+                                jqoCell.find("table thead").append(cellObj.keysOfHashInArray.map(function(key){return "<th>" + key + "</th>";}));                                
                                 jqoCell.find("table tbody").append(repeatString("<tr></tr>",cellObj.value.length));
                                 cellObj.value.forEach(function(v,index){
                                     var jqoTableRowInCell = jqoCell.find("table tbody tr").eq(index);
@@ -73,6 +74,7 @@ $(function(){
                                             _tmp.changedDataQue.push({
                                                 "data_id":cellObj.rowData._id,
                                                 "key":cellObj.key,
+                                                "keyList":cellObj.keysOfHashInArray,
                                                 "index":index,
                                                 "el":e.target
                                             });
@@ -96,6 +98,7 @@ $(function(){
                                     _tmp.changedDataQue.push({
                                         "data_id":cellObj.rowData._id,
                                         "key":cellObj.key,
+                                        "keyList":cellObj.keysOfHashInArray,
                                         "index":$(thisTr.parentNode).find("tr").length - 2,
                                         "el":jqo[0]
                                     });
@@ -215,7 +218,10 @@ $(function(){
                                         var sample = cellObj.columnSample;
                                         col.forEach(function(key){sample = sample[key]});
                                         if(Array.isArray(sample)){
-                                            $("<table><thead></thead><tbody><tr><td colSpan='0' style='padding: 0;'><input type='button' value='add' class='exclude'></td></tr></tbody></table>")
+                                            $([
+                                                "<table><thead>",
+                                                (classof(sample[0]) === "object" ? Object.keys(sample[0]).map(function(key){return "<th>" + key + "</th>"}) : ""),
+                                                "</thead><tbody><tr><td colSpan='0' style='padding: 0;'><input type='button' value='add' class='exclude'></td></tr></tbody></table>"])
                                                 .appendTo(jqoCell)
                                                 .find("tbody tr td input:button")
                                                 .css("background","#ddddff")
@@ -233,10 +239,10 @@ $(function(){
                                     }
                                 });
                                 _tmp.changedDataQue.push({
-                                    "new":true,
+                                    "add":true,
                                     "el":jqo[0].parentNode,
                                     "columnSample":cellObj.columnSample,
-                                    "colList":cellObj.colList
+                                    "columnList":cellObj.colList
                                 })
                             });
                         }]},
@@ -248,8 +254,88 @@ $(function(){
             });
         },
         updateData:function(){
-            var que = _tmp.changedDataQue;
-            console.log(que);
+            var queues = _tmp.changedDataQue;
+            var ThisDataPiece = Datapiece.getClassByName($("#formEditDatabase [name='databaseName']").val());
+            console.log(queues);
+            //TODO update database
+
+            //devide queues into removal, addtion and change
+            //addtion -> change -> removal
+            var queuesAdd = queues.filter(function(queue){
+                return queue.add;
+            });
+            var queuesChange = queues.filter(function(queue){
+                return queue.remove === undefined && queue.add === undefined;
+            });
+            var queuesRemove = queues.filter(function(queue){
+                return queue.remove;
+            }).filter(function(queue){
+                return queue.el.checked
+            });
+
+            //get values from input box
+
+            queuesAdd.forEach(function(queue){
+                var dp = {};
+                var jqo = $(queue.el).children("td");
+
+                queue.columnList.forEach(function(col,colIndex){
+                    if(col[0] === "remove" || col[0] === "baseInfo")  return;
+                    var jqoCell = jqo.eq(colIndex);
+                    var type = queue.columnSample;
+                    var dp_c = dp;
+                    var value;
+                    col.forEach(function(c,i){
+                        type = type[c];
+                        if(dp_c[c] === undefined) dp_c[c] = {};
+                        if(/*i < col.length-1*/1){
+                            dp_c = dp_c[c];
+                        }
+                    });
+                    if(classof(type) === "array"){
+                        var values = jqoCell.find("table tbody tr input:not(.exclude)")
+                            .map(function(i,el){
+console.log(this,i,el);
+                                return $(this).val();
+                            }).get();
+                        if(classof(type[0]) === "object"){
+                            value = [];
+                            var keys = jqoCell.find("table thead tr th").map(function(index,el){return $(this).text()}).get();
+                            for(var i=0,l=jqoCell.find("table tbody tr").length-2; i<l; i++){
+                                value[i] = {};
+                                keys.forEach(function(key,j){
+                                    value[i][key] = values[i*keys.length + j];
+                                })
+                            }
+                        }else{
+                            value = values.filter(function(v){return v !== ""});
+                        }
+                    }else{
+                        value = jqoCell.find("input:text").val();
+                        if(value === ""){
+                            switch(type){
+                                case "date":
+                                    value = new Date();
+                                    break;
+                                case "localdate":
+                                    value = new LocalDate();
+                                    break;
+                            }
+                        }
+                    }
+                    //dp_c[col[col.length-1]] = value;
+                    dp_c = value;
+                    
+
+                })
+console.log(dp);
+                _val.server.removeData(new ThisDataPiece(dp));
+            });
+
+            queuesRemove.forEach(function(queue){
+                _val.server.removeData(new ThisDataPiece({"_id":queue.data_id}));
+            });
+console.log(_val.server._pendingQueue);
         }
     };
 });

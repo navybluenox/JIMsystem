@@ -195,10 +195,15 @@ var LocalDate = (function(){
                         /^local_\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2})?(?:\.\d{1,3})?(?:Z|[\+\-]\d{2}:\d{2})$/.test(timeValue)
                     ){
                         this._localTime = (new Date(timeValue.replace(/local_/,""))).getTime() - standardTime.getTime();
+                    }else if(/^local_-?\d+$/.test(timeValue)){
+                        this._localTime = +(timeValue.replace(/local_/,""));
                     }else{
                         targetTime = new Date(timeValue);
                         this._localTime = targetTime.getTime() - standardTime.getTime();
                     }
+                    break;
+                case "undefined":
+                    this._localTime = 0;
                     break;
                 default:
                     targetTime = new Date(timeValue);
@@ -262,7 +267,7 @@ var LocalDate = (function(){
             return new Date(LocalDate.getStandardTime().getTime() + this._localTime);
         }
         toJSON(){
-            return JSON.stringify(this.toISOString());
+            return JSON.stringify("local_" + this.getLocalTime());
         }
         toISOString(){
             return "local_" + this.getAsDate().toISOString();

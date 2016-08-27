@@ -169,8 +169,21 @@ var Server = (function(){
                 that._updatingQueue = [];
                 var queueForSend = {};
 
-                //TODO that._pendingQueueのキューのうちaddとchangeのものの_id・created補完とupdated更新
-                //nowTimeとDatapiece.prototype.setNewId()を利用
+                that._pendingQueue = that._pendingQueue.map(function(queue){
+                    switch(queue.kind){
+                        case "change":
+                            queue.value.setValue("updated",nowTime);
+                            return queue;
+                        case "add":
+                            queue.value
+                                .setValue("created",nowTime)
+                                .setValue("updated",nowTime)
+                                .setNewId();
+                            return queue;
+                        case "remove":
+                            return queue;
+                    }
+                });
 
                 that._updatingQueue.forEach(function(queue){
                     var dataName = queue.value.getDataName();
@@ -179,42 +192,41 @@ var Server = (function(){
                     }
                     queueForSend[dataName].push(queue);
                 });
-                Promise.all(Object.keys(queueForSend).map(function(dataName){
-                    return runServerFun("Script.updateDatabase",queueForSend[dataName]);
-                }))
-                .then(function(){
-                    var queue,data,dataName,dataIndex,dataId;
-                    var queueList = that._pendingQueue.slice().reverse();
-                    while(queueList.length > 0){
-                        queue = queueList.pop();
-                        dataName = queue.getDataName();
-                        data = that.getData(dataName,false);
-                        switch(queue.kind){
-                            case "change":
-                                dataId = queue.value.getValue("_id");
-                                data.find(function(dp){
-                                    return dp.getValue("_id") === dataId;
-                                }).setValues(queue.value,{overwrite:true});
-                                break;
-                            case "add":
-                                data.push(new (Database.getClassByName(dataName))(queue.value));
-                                break;
-                            case "remove":
-                                dataId = queue.value.getValue("_id");
-                                dataIndex = data.findIndex(function(dp){
-                                    return dp.getValue("_id") === dataId;
-                                });
-                                data.splice(rmIndex,1) = null;
-                                break;
-                        }
-                    }
-                    that._pendingQueue
-                })
-                .then(function(){
-                    that._updating = false;
-                    that._pendingQueue = [];                    
-                });
+                return Promise.all(Object.keys(queueForSend).map(function(dataName){
+                    return runServerFun("Script.updateDatabase",[dataName,queueForSend[dataName]]);
+                }));
             })
+            .then(function(){
+                var queue,data,dataName,dataIndex,dataId;
+                var queueList = that._pendingQueue.slice().reverse();
+                while(queueList.length > 0){
+                    queue = queueList.pop();
+                    dataName = queue.getDataName();
+                    data = that.getData(dataName,false);
+                    switch(queue.kind){
+                        case "change":
+                            dataId = queue.value.getValue("_id");
+                            data.find(function(dp){
+                                return dp.getValue("_id") === dataId;
+                            }).setValues(queue.value,{overwrite:true});
+                            break;
+                        case "add":
+                            data.push(new (Database.getClassByName(dataName))(queue.value));
+                            break;
+                        case "remove":
+                            dataId = queue.value.getValue("_id");
+                            dataIndex = data.findIndex(function(dp){
+                                return dp.getValue("_id") === dataId;
+                            });
+                            data.splice(dataIndex,1) = null;
+                            break;
+                    }
+                }
+            })
+            .then(function(){
+                that._updating = false;
+                that._pendingQueue = [];                    
+            });
         }
         changeData(datapieces){
             if(!Array.isArray(datapieces))  datapieces = [datapieces];
