@@ -53,6 +53,8 @@
         runServerFun("Script.loadDataFromDrive",[_val.baseConfigFileId,"all"])
         .then(function(v){
             _val.baseConfig = v;
+            console.log("run mode : " + _val.baseConfig.mode);
+            console.log("In order to change running mode, edit values, both 'mode' and 'collectionInfoFileId' on 'baseConfig.json'");
         }).then(function(){
             _val.server = new Server();
             _val.server.onReady(function(that){

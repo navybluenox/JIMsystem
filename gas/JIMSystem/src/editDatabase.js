@@ -331,6 +331,10 @@ $(function(){
                 _val.server.removeData(new ThisDataPiece({"_id":queue.data_id}));
             });
 console.log(_val.server._pendingQueue);
+
+            //TODO
+            //Server.prototype.sendUpdateQueue
+            //clear queues
         }
     };
 });
