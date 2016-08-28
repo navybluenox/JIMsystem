@@ -365,5 +365,5 @@ function updateDatabase(fileIdStr, queues) {
     database.updated = new Date();
     database.version = +database.version + 1;
 
-    updateFileToDrive(JSON.stringify(data));
+    updateFileToDrive(fileIdStr, JSON.stringify(database));
 }
