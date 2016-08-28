@@ -283,6 +283,7 @@ var Datapiece = (function(){
             return collInfo.getClass();
         }
         static getNewId(dataName){
+            var result;
             var idList = server.getData(dataName).map(function(data){return data.getValue("_id")});
             do{
                 result = makeRandomStr(16,{"number":true, "alphaLower":true, "alphaUpper":true});
