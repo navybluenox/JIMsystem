@@ -228,9 +228,10 @@ var Server = (function(){
         }
         changeData(datapieces){
             if(!Array.isArray(datapieces))  datapieces = [datapieces];
+            var that = this;
             //undefinedなキーはそのまま（skip）
             datapieces.forEach(function(datapiece){
-                this._pendingQueue.push({
+                that._pendingQueue.push({
                     "kind":"change",
                     "value":datapiece
                 });
@@ -238,8 +239,9 @@ var Server = (function(){
         }
         addData(datapieces){
             if(!Array.isArray(datapieces))  datapieces = [datapieces];
+            var that = this;
             datapieces.forEach(function(datapiece){
-                this._pendingQueue.push({
+                that._pendingQueue.push({
                     "kind":"add",
                     "value":datapiece
                 });
@@ -247,8 +249,9 @@ var Server = (function(){
         }
         removeData(datapieces){
             if(!Array.isArray(datapieces))  datapieces = [datapieces];
+            var that = this;
             datapieces.forEach(function(datapiece){
-                this._pendingQueue.push({
+                that._pendingQueue.push({
                     "kind":"remove",
                     "value":datapiece
                 });
