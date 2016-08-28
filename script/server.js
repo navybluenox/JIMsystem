@@ -190,6 +190,8 @@ var Server = (function(){
                     }
                     queueForSend[dataName].push(queue);
                 });
+                //GAS（サーバー側）へ引数を渡す時、普通は自動でJSON.stringify()を実行するが、何故かDate型のJSON.stringifyに失敗するので、手元で整理
+                queueForSend = JSON.parse(JSON.stringify(queueForSend));
                 return Promise.all(Object.keys(queueForSend).map(function(dataName){
                     return runServerFun("Script.updateDatabase",[that.getCollectionInfoByName(dataName).getValue("fileId"),queueForSend[dataName]]);
                 }));
