@@ -311,6 +311,11 @@ $(function(){
                                     value[i][key] = values[i*keys.length + j];
                                 })
                             }
+                            value = value.filter(function(v){
+                                return !Object.keys(v).every(function(key){
+                                    v[key] === "";
+                                });
+                            });
                         }else{
                             value = values.filter(function(v){return v !== ""});
                         }
