@@ -230,23 +230,29 @@ var Server = (function(){
         changeData(datapieces){
             if(!Array.isArray(datapieces))  datapieces = [datapieces];
             //undefinedなキーはそのまま（skip）
-            this._pendingQueue.push({
-                "kind":"change",
-                "value":datapieces
+            datapieces.forEach(function(datapiece){
+                this._pendingQueue.push({
+                    "kind":"change",
+                    "value":datapiece
+                });
             });
         }
         addData(datapieces){
             if(!Array.isArray(datapieces))  datapieces = [datapieces];
-            this._pendingQueue.push({
-                "kind":"add",
-                "value":datapieces
+            datapieces.forEach(function(datapiece){
+                this._pendingQueue.push({
+                    "kind":"add",
+                    "value":datapiece
+                });
             });
         }
         removeData(datapieces){
             if(!Array.isArray(datapieces))  datapieces = [datapieces];
-            this._pendingQueue.push({
-                "kind":"remove",
-                "value":datapieces
+            datapieces.forEach(function(datapiece){
+                this._pendingQueue.push({
+                    "kind":"remove",
+                    "value":datapiece
+                });
             });
         }
     };

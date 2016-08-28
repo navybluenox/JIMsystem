@@ -265,8 +265,12 @@ $(function(){
             var queuesAdd = queues.filter(function(queue){
                 return queue.add;
             });
-            var queuesChange = queues.filter(function(queue){
+            var queuesChange = {};
+            queues.filter(function(queue){
                 return queue.remove === undefined && queue.add === undefined;
+            }).forEach(function(queue){
+                if(queuesChange[queue.data_id] === undefined)  queuesChange[queue.data_id] = [];
+                queuesChange[queue.data_id].push(queue);
             });
             var queuesRemove = queues.filter(function(queue){
                 return queue.remove;
@@ -326,6 +330,13 @@ $(function(){
                     dp_c[col[col.length-1]] = value;
                 })
                 _val.server.addData(new ThisDataPiece(dp,{overwrite:true}));
+            });
+
+            //TODO queuesChange
+
+            Object.keys(queuesChange).forEach(function(data_id){
+                var queues = queuesChange[data_id];
+
             });
 
             queuesRemove.forEach(function(queue){
