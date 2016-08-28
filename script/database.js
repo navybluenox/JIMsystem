@@ -269,7 +269,7 @@ var Datapiece = (function(){
             return getValueFromObjectByKey(this._data,colName);
         }
         toJSON(){
-            return JSON.stringify(this._data);
+            return this._data;
         }
         getDataName(){
             return this._dataName;
