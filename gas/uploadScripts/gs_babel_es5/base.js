@@ -362,8 +362,8 @@ function updateDatabase(fileIdStr, queues) {
                 break;
         }
     });
-    data.updated = new Date();
-    data.version = +data.version + 1;
+    database.updated = new Date();
+    database.version = +database.version + 1;
 
     updateFileToDrive(JSON.stringify(data));
 }
