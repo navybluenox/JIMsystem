@@ -154,7 +154,7 @@ var Server = (function(){
         sendUpdateQueue(){
             var that = this;
             var nowTime;
-            (new Promise(function(resolve,reject){
+            return (new Promise(function(resolve,reject){
                 var si = setInterval(function(){
                     if(!that._updating){
                         clearInterval(si);
@@ -164,10 +164,11 @@ var Server = (function(){
             })).then(function(){
                 that._updating = true;
                 nowTime = new Date();
-                that._pendingQueue = that._updatingQueue.slice();
-                that._updatingQueue = [];
+                that._updatingQueue = that._pendingQueue.slice();
+                that._pendingQueue = [];
 
-                that._pendingQueue = that._pendingQueue.map(function(queue){
+                var queueForSend = {};
+                that._updatingQueue = that._updatingQueue.map(function(queue){
                     switch(queue.kind){
                         case "change":
                             queue.value.setValue("updated",nowTime);
@@ -182,8 +183,6 @@ var Server = (function(){
                             return queue;
                     }
                 });
-
-                var queueForSend = {};
                 that._updatingQueue.forEach(function(queue){
                     var dataName = queue.value.getDataName();
                     if(queueForSend[dataName] === undefined){
@@ -197,7 +196,7 @@ var Server = (function(){
             })
             .then(function(){
                 var queue,data,dataName,dataIndex,dataId;
-                var queueList = that._pendingQueue.slice().reverse();
+                var queueList = that._updatingQueue.slice().reverse();
                 while(queueList.length > 0){
                     queue = queueList.pop();
                     dataName = queue.getDataName();

@@ -318,13 +318,59 @@ function loadDataFromDrive(fileIdStr, mode) {
         case "version":
             result = rawData.version;
             break;
+        case "updated":
+            result = rawData.updated;
+            break;
     }
     return result;
 }
 
 //TODO
 function updateDatabase(fileIdStr,queues){
-//    var 
-    return true;
+    var database = loadDataFromDrive(fileIdStr);
+
+    queues.forEach(function(queue){
+        var dpIndex;
+        switch(queue.kind){
+            case "add":
+                database.data.push(queue.value);
+                break;
+            case "change":
+                dpIndex = database.data.findIndex(function(datapiece){return datapiece._id === queue.value._id});
+                database.data[dpIndex] = fun(queue.value,database.data[dpIndex]);
+                function fun(dp_queue,dp_data){
+                    if(Array.isArray(dp_queue)){
+                        dp_queue.forEach(function(v,i){
+                            if(v === undefined)  return;
+                            if(dp_data === undefined)  dp_data = [];
+                            dp_data[i] = fun(dp_queue[i],dp_data[i]);
+                        });
+                        return dp_data;
+                    }else if(typeof dp_queue === "object"){
+                        Object.keys(dp_queue).forEach(function(key){
+                            if(dp_queue[key] === undefined) return;
+                            if(dp_data === undefined)  dp_data = {};
+                            dp_data[key] = fun(dp_queue[key],dp_data[key]);
+                        })
+                        return dp_data;
+                    }else{
+                        if(dp_queue === undefined){
+                            return dp_data;
+                        }else{
+                            return dp_queue;
+                        }
+                    }
+                }
+                break;
+            case "remove":
+                dpIndex = database.data.findIndex(function(datapiece){return datapiece._id === queue.value._id});
+                database.data.splice(dpIndex,1);
+                break;
+        }
+    });
+    data.updated = new Date();
+    data.version = (+data.version) + 1;
+
+    updateFileToDrive(JSON.stringify(data));
 }
 

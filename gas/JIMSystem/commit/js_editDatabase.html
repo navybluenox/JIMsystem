@@ -258,7 +258,8 @@ $(function(){
             var queues = _tmp.changedDataQue;
             var ThisDataPiece = Datapiece.getClassByName($("#formEditDatabase [name='databaseName']").val());
             console.log(queues);
-            //TODO update database
+
+            //TODO displayLoadingSign
 
             //devide queues into removal, addtion and change
             //addtion -> change -> removal
@@ -332,6 +333,14 @@ $(function(){
                 _val.server.removeData(new ThisDataPiece({"_id":queue.data_id}));
             });
 console.log(_val.server._pendingQueue);
+
+            _val.server.sendUpdateQueue()
+            .then(function(){
+                _tmp.changedDataQue = [];
+                _val.pageFun.editDatabase.showTable();
+                //removeLoadingSign
+            });
+
 
             //TODO
             //Server.prototype.sendUpdateQueue
