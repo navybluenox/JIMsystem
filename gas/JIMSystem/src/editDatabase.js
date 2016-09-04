@@ -30,9 +30,9 @@ $(function(){
             promise.then(function(){
                 var dataArr = _val.server.getData(dataName)
                     .filter(function(v){return true})
-                    .sort(function(a,b){return 1})
+                    //.sort(function(a,b){return 1})
                     .map(function(v){return v.getValues()});
-                createTable(
+                createTable1(
                     dataArr,
                     result,
                     0,
@@ -186,6 +186,7 @@ $(function(){
                         }
                     },
                     {
+                        columnSample:_val.server.getCollectionInfoByName(dataName).getValue("column"),
                         leftColumn:{key:["remove"],callback:[function(cellObj){
                             var jqoCell = $(cellObj.el);
                             jqoCell.append("<input type='checkbox'>");

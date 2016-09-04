@@ -149,7 +149,13 @@ function removeModalWindow(configObj){
     removeAllChildren(configObj.parent);
 }
 
-function createTable(data,parent,tableLevel,callback,option){
+//TODO あまりにも汚いので書き直す
+//オブジェクトを掘り起こすことはしない
+function createTable(data,columns,parent,tableLevel,callback,option){
+
+}
+
+function createTable1(data,parent,tableLevel,callback,option){
     if(option === undefined)  option = {};
     if(typeof callback !== "function")  callback = function(obj){obj.el.textContent = obj.value};
     if(tableLevel === undefined)  tableLevel = 0;
