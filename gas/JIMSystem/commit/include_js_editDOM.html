@@ -149,10 +149,70 @@ function removeModalWindow(configObj){
     removeAllChildren(configObj.parent);
 }
 
+class Modalwindow{
+    constructor(option){
+        if(option === undefined)  option = {};
+        [
+            {key:"html",value:""},
+            {key:"callback",value:function(){}},
+            {key:"disableClickBackground",value:""},
+            {key:"parent",value:document.getElementById("modalWindow")},
+            //{key:"",value:""},
+        ].forEach(function(obj){
+            if(option[obj.key] === undefined){
+                option[obj.key] = obj.value;
+            }
+        })
+        this.$parent = $(option.parent);
+        this.$el = $('<div class="mw-content"></div>').appendTo(this.$parent);
+        this.$background = $('<div class="mw-background"></div>').appendTo($("body"));
+        
+        this.setBackground();
+    }
+    setBackground(){
+        this.$background.css({
+
+        });
+    }
+}
+
 //TODO あまりにも汚いので書き直す
 //オブジェクトを掘り起こすことはしない
-function createTable(data,columns,parent,tableLevel,callback,option){
+function createTable(parent,data,columns,callback,option){
+    if(callback === undefined)  callback = function(cellObj){cellObj.$el.text(cellObj.value)};
+    if(option === undefined)  option = {};
 
+    [
+            {key:"tableLevel",value:0}
+    ].forEach(function(obj){
+        if(option[obj.key] === undefined){
+            option[obj.key] = obj.value;
+        }
+    })
+
+    var $table = $(parent)
+        .append("<table><thead></thead><tbody></tbody></table>")
+        .children("table")
+        .data("table-level",option.tableLevel);
+
+        $table.children("thead").append("<tr>" + repeatString("<th></th>",columns.length + "</tr>"));
+        $table.children("tbody").append(repeatString("<tr>" + repeatString("<td></td>",columns.length) + "</tr>"),data.length);
+
+        var $rows = $table.children("tbody").find("tr");
+        data.forEach(function(value,rowIndex){
+            var $row = $rows.eq(rowIndex);
+            columns.forEach(function(column,columnIndex){
+                var $cell = $row.find("td").ew(columnIndex);
+                callback({
+                    "$el":$cell,
+                    "value":value[column],
+                    "column":column,
+                    "rowData":value
+                });
+            })
+        })
+
+    return $table;
 }
 
 function createTable1(data,parent,tableLevel,callback,option){
