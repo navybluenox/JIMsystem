@@ -180,7 +180,7 @@ class ModalWindow{
         }
 
         if(typeof option.callback === "function"){
-            option.callback($el,this.$background)
+            option.callback(this.$el,this.$background)
         }
 
         var timer = false;
