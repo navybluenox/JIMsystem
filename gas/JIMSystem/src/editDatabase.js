@@ -39,12 +39,27 @@ $(function(){
 
                 createTable(result,dataArr,columns,function(cellObj){
                     if(cellObj.column === "remove"){
+                        var input = $('<input type="checkbox">').appendTo(cellObj.$el);
+                        input.on("click",function(e){
+                            if(e.currentTarget.prop("checked")){
 
+                            }
+                        })
                     }else if(cellObj.column === "baseInfo"){
-
+                        cellObj.$el.text([
+                            "_id : " + cellObj.rowData._id,
+                            "updated : " + cellObj.rowData.updated,
+                            "created : " + cellObj.rowData.created
+                        ].join("\n"))
                     }else{
-                        console.log(cellObj);
-                        cellObj.$el.text(cellObj.value);
+                        var input = $('<input type="button">').appendTo(cellObj.$el);
+                        input.val(cellObj.value).on("click",function(e){
+                            console.log(cellObj);
+                        });
+                        input.on("click",function(e){
+                            if(input.attr("type") !== "button") return;
+                            input.attr("type","text");
+                        })
                     }
                 });
 

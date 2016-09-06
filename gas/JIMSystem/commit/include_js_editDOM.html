@@ -255,6 +255,7 @@ function createTable(parent,data,columns,callback,option){
         $table.children("tbody").append(repeatString("<tr>" + repeatString("<td></td>",columns.length) + "</tr>",data.length));
 
         var $ths = $table.children("thead").children("tr").children("th");
+        $ths.css("padding","0 10px");
 
         columns.forEach(function(column,columnIndex){
             var $th = $ths.eq(columnIndex);
