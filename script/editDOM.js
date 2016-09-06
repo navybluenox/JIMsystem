@@ -173,13 +173,13 @@ class ModalWindow{
         this.$el.fadeIn("slow");
 
         if(!option.disableClickBackground){
-            $background.unbind().on("click",function(e){
+            this.$background.unbind().on("click",function(e){
                 that.removeWindow()
             })
         }
 
         if(typeof option.callback === "function"){
-            option.callback($el,$background)
+            option.callback($el,this.$background)
         }
 
         var timer = false;
