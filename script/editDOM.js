@@ -166,6 +166,7 @@ class ModalWindow{
         this.$parent = $(option.parent);
         this.$el = $('<div class="mw-content"></div>').css("display","none").appendTo(this.$parent);
         this.$background = $('<div class="mw-background"></div>').css("display","none").appendTo($("body"));
+        this.$el.append($(option.html));
         
         this.setBackgroundStyle();
         this.$background.fadeIn("fast");
