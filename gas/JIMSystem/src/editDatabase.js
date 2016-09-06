@@ -32,6 +32,23 @@ $(function(){
                     .filter(function(v){return true})
                     //.sort(function(a,b){return 1})
                     .map(function(v){return v.getValues()});
+                var columnObj = _val.server.getCollectionInfoByName(dataName).getValues("column");
+                var columns = ["remove","baseInfo"].concat(
+                    Object.keys(columnObj).filter(function(colName){return !inArray(["_id","updated","created"],colName)})
+                );
+
+                createTable(result,dataArr,columns,function(cellObj){
+                    if(cellObj.column === "remove"){
+
+                    }else if(cellObj.column === "baseInfo"){
+
+                    }else{
+                        console.log(cellObj);
+                        cellObj.$el.text(cellObj.value);
+                    }
+                });
+
+                /*
                 createTable1(
                     dataArr,
                     result,
@@ -52,13 +69,6 @@ $(function(){
                         }else if(cellObj.isArray){
                             jqoCell.append("<table><thead></thead><tbody></tbody></table>");
                             if(cellObj.isHashInArray){
-                                /*jqoCell.find("table thead").append([
-                                    "<tr>",
-                                    ["rm","index"].concat(cellObj.keysOfHashInArray).map(function(v){
-                                        return "<th>" + v + "</th>";
-                                    }).join(""),
-                                    "</tr>"
-                                ].join(""));*/
                                 jqoCell.find("table thead").append(cellObj.keysOfHashInArray.map(function(key){return "<th>" + key + "</th>";}));                                
                                 jqoCell.find("table tbody").append(repeatString("<tr></tr>",cellObj.value.length));
                                 cellObj.value.forEach(function(v,index){
@@ -103,13 +113,6 @@ $(function(){
                                     });
                                 });
                             }else{
-                                /*jqoCell.find("table thead").append([
-                                    "<tr>",
-                                    "<th>rm</th>",
-                                    "<th>index</th>",
-                                    "<th>value</th>",
-                                    "</tr>"
-                                ].join(""));*/
                                 jqoCell.find("table tbody").append(repeatString("<tr></tr>",cellObj.value.length));
                                 cellObj.value.forEach(function(v,index){
                                     var jqoTableRowInCell = jqoCell.find("table tbody tr").eq(index);
@@ -252,6 +255,7 @@ $(function(){
                         foldArray:true
                     }
                 );
+                */
             });
         },
         updateData:function(){

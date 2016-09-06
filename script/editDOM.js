@@ -148,7 +148,7 @@ function removeModalWindow(configObj){
     removeAllChildren(configObj.parent);
 }
 
-class Modalwindow{
+class ModalWindow{
     constructor(option){
         var that = this;
         if(option === undefined)  option = {};

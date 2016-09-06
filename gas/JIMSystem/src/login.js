@@ -16,19 +16,18 @@ $(function(){
             $("#pass").bind("keydown",function(e){
                 if(e.keyCode === 13) _val.pageFun.login.sendPass();
             });
-            createModalWindow(ObjToTag({tag:"p",textContent:"loading ... "}).el,function(tag,mvConfig){
-                (new Promise(function(resolve){
-                    var s = setInterval(function(){
-                        if(_val && _val.server && _val.server instanceof Server && _val.server.isReady()){
-                            clearInterval(s);
-                            resolve();
-                            return;
-                        }
-                    },100);
-                })).then(function(){
-                    removeModalWindow(mvConfig);
-                });
-            },true);
+            var mw = new ModalWindow({"html":"<p>loading ... </p>","disableClickBackgrouud":true});
+            new Promise(function(resolve){
+                var s = setInterval(function(){
+                    if(_val && _val.server && _val.server instanceof Server && _val.server.isReady()){
+                        clearInterval(s);
+                        resolve();
+                        return;
+                    }
+                },100);
+            }).then(function(){
+                mw.removeWindow();
+            });
         },
         sendPass:function(){
             var pass = $("#pass").val();
