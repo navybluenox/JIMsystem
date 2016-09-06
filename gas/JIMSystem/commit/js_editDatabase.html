@@ -33,7 +33,7 @@ $(function(){
                     .filter(function(v){return true})
                     //.sort(function(a,b){return 1})
                     .map(function(v){return v.getValues()});
-                var columnObj = _val.server.getCollectionInfoByName(dataName).getValues("column");
+                var columnObj = _val.server.getCollectionInfoByName(dataName).getValue("column");
                 var columns = ["remove","baseInfo"].concat(
                     Object.keys(columnObj).filter(function(colName){return !inArray(["_id","updated","created"],colName)})
                 );

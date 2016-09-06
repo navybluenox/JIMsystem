@@ -250,15 +250,22 @@ function createTable(parent,data,columns,callback,option){
         .children("table")
         .data("table-level",option.tableLevel);
 
-        $table.children("thead").append("<tr>" + repeatString("<th></th>",columns.length + "</tr>"));
-        $table.children("tbody").append(repeatString("<tr>" + repeatString("<td></td>",columns.length) + "</tr>"),data.length);
+        $table.children("thead").append("<tr>" + repeatString("<th></th>",columns.length) + "</tr>");
+        $table.children("tbody").append(repeatString("<tr>" + repeatString("<td></td>",columns.length) + "</tr>",data.length));
+
+        var $ths = $table.children("thead").children("tr").children("th");
+
+        columns.forEach(function(column,columnIndex){
+            var $th = $ths.eq(columnIndex);
+            $th.text(column);
+        })
 
         var $rows = $table.children("tbody").find("tr");
         data.forEach(function(value,rowIndex){
             var $row = $rows.eq(rowIndex);
             columns.forEach(function(column,columnIndex){
                 var v = value;
-                var $cell = $row.find("td").ew(columnIndex);
+                var $cell = $row.find("td").eq(columnIndex);
                 var columnList = column.split(".");
                 columnList.forEach(function(c){
                     v = v[c];
