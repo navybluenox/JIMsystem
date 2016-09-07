@@ -37,7 +37,7 @@ $(function(){
                     Object.keys(columnObj).filter(function(colName){return !inArray(["_id","updated","created"],colName)})
                 );
 
-                createTable(result,dataArr,columns,function(cellObj){
+                var $table = createTable(result,dataArr,columns,function(cellObj){
                     if(cellObj.column === "remove"){
                         var input = $('<input type="checkbox">').appendTo(cellObj.$el);
                         input.on("click",function(e){
@@ -46,22 +46,26 @@ $(function(){
                             }
                         })
                     }else if(cellObj.column === "baseInfo"){
-                        cellObj.$el.text([
-                            "_id : " + cellObj.rowData._id,
-                            "updated : " + cellObj.rowData.updated,
-                            "created : " + cellObj.rowData.created
-                        ].join("\n"))
+                        cellObj.$el.append([
+                            "<p>" + "_id : " + cellObj.rowData._id + "</p>",
+                            "<p>" + "updated : " + dateToValue(cellObj.rowData.updated).str + "</p>",
+                            "<p>" + "created : " + dateToValue(cellObj.rowData.created).str + "</p>"
+                        ].join(""))
                     }else{
                         var input = $('<input type="button">').appendTo(cellObj.$el);
-                        input.val(cellObj.value).on("click",function(e){
-                            console.log(cellObj);
-                        });
-                        input.on("click",function(e){
+                        input.val(cellObj.value).attr("name","table-" + cellObj.rowData._id + "-" + cellObj.column);
+                        /*input.on("click",function(e){
                             if(input.attr("type") !== "button") return;
                             input.attr("type","text");
-                        })
+                        })*/
                     }
                 });
+
+
+                $table.children("tbody").on('tr td input[type="button"][name|="table-"]',"click",function(e){
+                    var target = $(e.currentTarget);
+                    target.attr("type","text").css();
+                })
 
                 /*
                 createTable1(

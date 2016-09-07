@@ -108,7 +108,7 @@ function createModalWindow(html,callback,disableRemoveMWByClick){
         callback(html,configObj,modalOverlay);
     }
     if(disableRemoveMWByClick !== true){
-        $(modalOverlay).unbind().click(function(){
+        $(modalOverlay).off("click").click(function(){
             removeModalWindow(configObj);
         });
     }
@@ -175,7 +175,7 @@ class ModalWindow{
         this.$el.fadeIn("slow");
 
         if(!option.disableClickBackground){
-            this.$background.unbind().on("click",function(e){
+            this.$background.off("click").on("click",function(e){
                 that.removeWindow()
             })
         }
