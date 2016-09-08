@@ -114,8 +114,10 @@ $(function(){
                         });
                     });
                     $(e.currentTarget).data({"num_newdata":dataIndex+1});
+                    //ボタンを自動で押して、全てテキストボックスに変換
+                    tds.find('input[type="button"][name^="table-content-"]').click();
                     //セルの中央揃えのし直し
-                    $table.children("tbody").children("tr").children("td").css({"text-align":"center"}).children().css({"margin":"0 auto"});
+                    tds.css({"text-align":"center"}).children().css({"margin":"0 auto"});
                 });
 
                 //セルの中央揃え
