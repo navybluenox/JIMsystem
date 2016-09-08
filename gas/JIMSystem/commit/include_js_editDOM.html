@@ -236,7 +236,7 @@ class ModalWindow{
 //TODO あまりにも汚いので書き直す
 //オブジェクトを掘り起こすことはしない
 function createTable(parent,data,columns,callback,option){
-    if(callback === undefined)  callback = function(cellObj){cellObj.$el.text(cellObj.value)};
+    if(callback === undefined)  callback = function(cellObj){cellObj.$el.css({"text-align":"center"}).text(cellObj.value)};
     if(option === undefined)  option = {};
 
     [
@@ -256,7 +256,7 @@ function createTable(parent,data,columns,callback,option){
         $table.children("tbody").append(repeatString("<tr>" + repeatString("<td></td>",columns.length) + "</tr>",data.length));
 
         var $ths = $table.children("thead").children("tr").children("th");
-        $ths.css("padding","0 10px");
+        $ths.css({"padding":"0 10px","text-align":"center"});
 
         columns.forEach(function(column,columnIndex){
             var $th = $ths.eq(columnIndex);

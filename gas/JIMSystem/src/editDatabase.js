@@ -71,6 +71,7 @@ $(function(){
                             valueTable.children("tbody").append(repeatString("<tr>" + repeatString("<td></td>",keys.length) + "</tr>",cellObj.value.length));
                             $('<tr><td colSpan="0"><input type="button" value="add" name="table-add-arrayvalue"></td></tr>')
                                 .appendTo(valueTable.children("tbody"))
+                                .find("td input")
                                 .css("background","#ddddff");                            
 
                             valueTable.children("thead").find("th").css({"padding":"0","border-bottom-width":"0"});
@@ -92,6 +93,9 @@ $(function(){
                         }
                     }
                 }
+
+                $table.children("tbody").children("tr").children("td").children().css({"margin":"0 auto"});
+
                 $table.children("tbody").on("click",'tr td input[type="button"][name^="table-content-"]',function(e){
                     var target = $(e.currentTarget);
                     var width = target.outerWidth();
