@@ -69,7 +69,9 @@ $(function(){
                             valueTable.children("tbody").data({"length":cellObj.value.length,"keys":keys,"_id":cellObj.rowData._id,"column":cellObj.column});
                             valueTable.children("thead").append(repeatString("<th></th>",keys.length));
                             valueTable.children("tbody").append(repeatString("<tr>" + repeatString("<td></td>",keys.length) + "</tr>",cellObj.value.length));
-                            valueTable.children("tbody").append('<tr><td colSpan="0"><input type="button" value="add" name="table-add-arrayvalue"></td></tr>').css("background","#ddddff");
+                            $('<tr><td colSpan="0"><input type="button" value="add" name="table-add-arrayvalue"></td></tr>')
+                                .appendTo(valueTable.children("tbody"))
+                                .css("background","#ddddff");                            
 
                             valueTable.children("thead").find("th").css({"padding":"0","border-bottom-width":"0"});
                             valueTable.children("tbody").find("td").css({"padding":"0"});
@@ -84,14 +86,12 @@ $(function(){
                                     input.val(key !== "" ? v[key] : v).attr("name",names.join("-"));
                                 })
                             });
-
                         }else{
                             var input = $('<input type="button">').appendTo(cellObj.$el);
                             input.val(cellObj.value).attr("name",["table","content",cellObj.rowData._id,cellObj.column].join("-"));
                         }
                     }
                 }
-
                 $table.children("tbody").on("click",'tr td input[type="button"][name^="table-content-"]',function(e){
                     var target = $(e.currentTarget);
                     var width = target.outerWidth();
