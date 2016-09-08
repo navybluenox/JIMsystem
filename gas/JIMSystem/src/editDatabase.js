@@ -37,7 +37,9 @@ $(function(){
                     Object.keys(columnObj).filter(function(colName){return !inArray(["_id","updated","created"],colName)})
                 );
 
-                var $table = createTable(result,dataArr,columns,function(cellObj){
+                var $table = createTable(result,dataArr,columns,editCells);
+
+                function editCells(cellObj){
 
                     if(cellObj.column === "remove"){
                         var input = $('<input type="checkbox">').appendTo(cellObj.$el);
@@ -56,18 +58,18 @@ $(function(){
                             "</table></tbody>"
                         ].join(""))
                             .appendTo(cellObj.$el)
-                            .find("table tbody tr td")
+                            .find("tbody tr td")
                             .css("padding","0 0.25em");
                     }else{
                         if(classof(cellObj.value) === "array"){
                             var valueTable = $("<table><thead></thead><tbody></tbody></table>").appendTo(cellObj.$el);
                             var keyInfo = columnObj[cellObj.column][0];
-                            valueTable.children("tbody").data({"length":cellObj.value.length});
 
                             keys = (keyInfo[0] === "object" ? Object.keys(keyInfo[0]) : [""]);
-                            valueTable.children("tbody").data({"keys":keys});
+                            valueTable.children("tbody").data({"length":cellObj.value.length,"keys":keys,"_id":cellObj.rowData._id,"column":cellObj.column});
                             valueTable.children("thead").append(repeatString("<th></th>",keys.length));
-                            valueTable.children("tbody").append(repeatString("<tr>" +  repeatString("<td></td>",keys.length) + "</tr>",cellObj.value.length));
+                            valueTable.children("tbody").append(repeatString("<tr>" + repeatString("<td></td>",keys.length) + "</tr>",cellObj.value.length));
+                            valueTable.children("tbody").append('<tr><td colSpan="0"><input type="button" value="add" name="table-add-arrayvalue"></td></tr>').css("background","#ddddff");
 
                             valueTable.children("thead").find("th").css({"padding":"0","border-bottom-width":"0"});
                             valueTable.children("tbody").find("td").css({"padding":"0"});
@@ -82,24 +84,35 @@ $(function(){
                                     input.val(key !== "" ? v[key] : v).attr("name",names.join("-"));
                                 })
                             });
+
                         }else{
                             var input = $('<input type="button">').appendTo(cellObj.$el);
                             input.val(cellObj.value).attr("name",["table","content",cellObj.rowData._id,cellObj.column].join("-"));
                         }
                     }
-                });
-
+                }
 
                 $table.children("tbody").on("click",'tr td input[type="button"][name^="table-content-"]',function(e){
                     var target = $(e.currentTarget);
                     var width = target.outerWidth();
                     target
                         .attr("type","text")
-                        .css({
-                            "width":width + "px",
-                            "font-size":"11px"
-                        });
+                        .css({"width":width + "px","font-size":"11px"});
                 })
+                $table.children("tbody").on("click",'tr td input[type="button"][name="table-add-arrayvalue"]',function(e){
+                    var trAdd = $(e.currentTarget).parent("td").parent("tr");
+                    var tbody = trAdd.parent("tbody");
+                    var dataTbody = tbody.data();
+                    var tds = $("<tr>" + repeatString("<td></td>",dataTbody.keys.length) +"</tr>").insertBefore(trAdd).find("td").css({"padding":"0"});
+                    dataTbody.keys.forEach(function(key,keyIndex){
+                        var td = tds.eq(keyIndex);
+                        var input = $('<input type="text">').appendTo(td).css({"width":"72px","font-size":"11px"});
+                        var names = ["table","content",dataTbody._id,dataTbody.column,dataTbody.length];
+                        if(key !== "") names.push(key);
+                        input.attr("name",names.join("-"));
+                    })
+                    tbody.data("length",dataTbody.length+1);
+                });
 
                 /*
                 createTable1(
