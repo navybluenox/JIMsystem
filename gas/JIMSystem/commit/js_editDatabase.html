@@ -95,6 +95,24 @@ $(function(){
                     }
                 }
 
+                $('<tr><td colSpan="0"><input type="button" value="add" name="table-add-data"></td></tr>').appendTo($table.children("tbody")).find("td input")
+                .css({"width":"216px","background":"#ddddff"})
+                .data({"num_newdata":0})
+                .on("click",function(e){
+                    var trAdd = $(e.currentTarget).parent("td").parent("tr");
+                    var tr = $("<tr>" + repeatString("<td></td>",columns.length) + "</tr>").insertBefore(trAdd);
+                    var dataIndex = $(e.currentTarget).data("num_newdata");
+                    columns.forEach(function(column,colIndex){
+                        editCells({
+                            "$el":tr.eq(colIndex),
+                            "value":"",
+                            "column":column,
+                            "rowData":{"_id":"new" + dataIndex,"created":"now","updated":"now"}
+                        });
+                    });
+                    $(e.currentTarget).data({"num_newdata":dataIndex+1});
+                });
+
                 $table.children("tbody").children("tr").children("td").css({"text-align":"center"}).children().css({"margin":"0 auto"});
 
                 $table.children("tbody").on("click",'tr td input[type="button"][name^="table-content-"]',function(e){
