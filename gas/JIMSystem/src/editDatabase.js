@@ -69,7 +69,7 @@ $(function(){
                             valueTable.children("tbody").data({"length":cellObj.value.length,"keys":keys,"_id":cellObj.rowData._id,"column":cellObj.column});
                             valueTable.children("thead").append(repeatString("<th></th>",keys.length));
                             valueTable.children("tbody").append(repeatString("<tr>" + repeatString("<td></td>",keys.length) + "</tr>",cellObj.value.length));
-                            $('<tr><td colSpan="0"><input type="button" value="add" name="table-add-arrayvalue"></td></tr>')
+                            $('<tr><td colSpan="' + keys.length + '"><input type="button" value="add" name="table-add-arrayvalue"></td></tr>')
                                 .appendTo(valueTable.children("tbody"))
                                 .find("td input")
                                 .css("background","#ddddff");                            
@@ -97,7 +97,7 @@ $(function(){
                 }
 
                 //行追加ボタンを作成
-                $('<tr><td colSpan="0"><input type="button" value="add" name="table-add-data"></td></tr>').appendTo($table.children("tbody")).find("td input")
+                $('<tr><td colSpan="' + columns.length +'"><input type="button" value="add" name="table-add-data"></td></tr>').appendTo($table.children("tbody")).find("td input")
                 .css({"width":"216px","background":"#ddddff"})
                 .data({"num_newdata":0})
                 .on("click",function(e){
