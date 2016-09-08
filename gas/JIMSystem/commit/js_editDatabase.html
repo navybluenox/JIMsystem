@@ -55,12 +55,12 @@ $(function(){
                             "<tr>" + "<td>created</td><td>" + dateToValue(cellObj.rowData.created).str + "</td></tr>",
                             "</table></tbody>"
                         ].join(""))
-                        .appendTo(cellObj.$el)
-                        .find("table tbody tr td")
-                        .css("padding","0 0.25em");
+                            .appendTo(cellObj.$el)
+                            .find("table tbody tr td")
+                            .css("padding","0 0.25em");
                     }else{
                         if(classof(cellObj.value) === "array"){
-                            var valueTable = $("<table><thead></thead><tbody></tbody></table>").appendTo(cellObj.$el).find("table");
+                            var valueTable = $("<table><thead></thead><tbody></tbody></table>").appendTo(cellObj.$el);
                             var keyInfo = columnObj[cellObj.column][0];
                             valueTable.children("tbody").data({"length":cellObj.value.length});
 
