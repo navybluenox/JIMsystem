@@ -53,8 +53,8 @@ $(function(){
                         $([
                             "<table><tbody>",
                             "<tr>" + "<td>_id</td><td>" + cellObj.rowData._id + "</td></tr>",
-                            "<tr>" + "<td>updated</td><td>" + cellObj.value === "" ? cellObj.rowData.updated : dateToValue(cellObj.rowData.updated).str + "</td></tr>",
-                            "<tr>" + "<td>created</td><td>" + cellObj.value === "" ? cellObj.rowData.created : dateToValue(cellObj.rowData.created).str + "</td></tr>",
+                            "<tr>" + "<td>updated</td><td>" + (cellObj.value === "" ? cellObj.rowData.updated : dateToValue(cellObj.rowData.updated).str) + "</td></tr>",
+                            "<tr>" + "<td>created</td><td>" + (cellObj.value === "" ? cellObj.rowData.created : dateToValue(cellObj.rowData.created).str) + "</td></tr>",
                             "</table></tbody>"
                         ].join(""))
                             .appendTo(cellObj.$el)
