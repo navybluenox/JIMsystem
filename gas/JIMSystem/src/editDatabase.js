@@ -64,8 +64,10 @@ $(function(){
                 });
 
 
-                $table.children("tbody").on("click",'tr td input[type="button"][name|="table-"]',function(e){
+                $table.children("tbody").on("click",'tr td input[type="button"][name|="table"]',function(e){
+                    console.log(e);
                     var target = $(e.currentTarget);
+                
                     target.attr("type","text").css();
                 })
 
