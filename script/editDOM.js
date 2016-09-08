@@ -262,12 +262,12 @@ function createTable(parent,data,columns,callback,option){
             $th.text(column);
         })
 
-        var $rows = $table.children("tbody").find("tr");
+        var $rows = $table.children("tbody").children("tr");
         data.forEach(function(value,rowIndex){
             var $row = $rows.eq(rowIndex);
             columns.forEach(function(column,columnIndex){
                 var v = value;
-                var $cell = $row.find("td").eq(columnIndex);
+                var $cell = $row.children("td").eq(columnIndex);
                 var columnList = column.split(".");
                 columnList.forEach(function(c){
                     v = v[c];
