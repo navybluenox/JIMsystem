@@ -42,6 +42,7 @@ $(function(){
 
                     if(cellObj.column === "remove"){
                         var input = $('<input type="checkbox">').appendTo(cellObj.$el);
+                        input.attr("name",["table","removal",cellObj.rowData._id].join("-"));
                         input.on("click",function(e){
                             if(e.currentTarget.prop("checked")){
 
@@ -69,34 +70,34 @@ $(function(){
                             valueTable.children("thead").append(repeatString("<th></th>",keys.length));
                             valueTable.children("tbody").append(repeatString("<tr>" +  repeatString("<td></td>",keys.length) + "</tr>",cellObj.value.length));
 
-                            valueTable.children("tbody").find("td").css("padding","0");
+                            valueTable.children("thead").find("th").css({"padding":"0","border-bottom-width":"0"});
+                            valueTable.children("tbody").find("td").css({"padding":"0"});
 
                             cellObj.value.forEach(function(v,vIndex){
                                 var thisRow = valueTable.children("tbody").children("tr").eq(vIndex);
                                 keys.forEach(function(key,keyIndex){
                                     var thisCell = thisRow.children("td").eq(keyIndex);
                                     var input = $('<input type="button">').appendTo(thisCell);
-                                    var names = ["table",cellObj.rowData._id,cellObj.column,vIndex];
+                                    var names = ["table","content",cellObj.rowData._id,cellObj.column,vIndex];
                                     if(key !== "") names.push(key);
                                     input.val(key !== "" ? v[key] : v).attr("name",names.join("-"));
                                 })
                             });
                         }else{
                             var input = $('<input type="button">').appendTo(cellObj.$el);
-                            input.val(cellObj.value).attr("name",["table",cellObj.rowData._id,cellObj.column].join("-"));
+                            input.val(cellObj.value).attr("name",["table","content",cellObj.rowData._id,cellObj.column].join("-"));
                         }
                     }
                 });
 
 
-                $table.children("tbody").on("click",'tr td input[type="button"][name|="table"]',function(e){
-                    console.log(e);
+                $table.children("tbody").on("click",'tr td input[type="button"][name^="table-content-"]',function(e){
                     var target = $(e.currentTarget);
-                
+                    var width = target.outerWidth();
                     target
                         .attr("type","text")
                         .css({
-                            "width":target.outerWidth() + "px",
+                            "width":width + "px",
                             "font-size":"11px"
                         });
                 })
