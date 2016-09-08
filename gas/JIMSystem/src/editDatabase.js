@@ -40,7 +40,6 @@ $(function(){
                 var $table = createTable(result,dataArr,columns,editCells);
 
                 function editCells(cellObj){
-
                     if(cellObj.column === "remove"){
                         var input = $('<input type="checkbox">').appendTo(cellObj.$el);
                         input.attr("name",["table","removal",cellObj.rowData._id].join("-"));
@@ -77,6 +76,8 @@ $(function(){
                             valueTable.children("thead").find("th").css({"padding":"0","border-bottom-width":"0"});
                             valueTable.children("tbody").find("td").css({"padding":"0"});
 
+                            //追加した行用（普通は少なくとも配列がある）
+                            if(cellObj.value === undefined)  cellObj.value = [];
                             cellObj.value.forEach(function(v,vIndex){
                                 var thisRow = valueTable.children("tbody").children("tr").eq(vIndex);
                                 keys.forEach(function(key,keyIndex){
