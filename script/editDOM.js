@@ -185,12 +185,12 @@ class ModalWindow{
         }
 
         var timer = false;
-        $(window).on("resize",function(){
+        $(window).on("resize.modalWindow",function(){
             if(timer !== false) clearTimeout(timer);
             timer = setTimeout(function(){
                 that.centerWindow();
                 that.setContentStyle();
-                $(modalContent).css("display","");
+                that.$el.css("display","");
             },200);
         })
     }
@@ -215,6 +215,7 @@ class ModalWindow{
     removeWindow(){
         this.$background.remove();
         this.$el.remove();
+        $(window).off("resize.modalWindow");
         return null;
     }
     setContentStyle(){

@@ -47,9 +47,11 @@ $(function(){
                         })
                     }else if(cellObj.column === "baseInfo"){
                         cellObj.$el.append([
-                            "<p>" + "_id : " + cellObj.rowData._id + "</p>",
-                            "<p>" + "updated : " + dateToValue(cellObj.rowData.updated).str + "</p>",
-                            "<p>" + "created : " + dateToValue(cellObj.rowData.created).str + "</p>"
+                            "<table><tbody>",
+                            "<tr>" + "<td>_id</td><td>" + cellObj.rowData._id + "</td></tr>",
+                            "<tr>" + "<td>updated</td><td>" + dateToValue(cellObj.rowData.updated).str + "</td></tr>",
+                            "<tr>" + "<td>created</td><td>" + dateToValue(cellObj.rowData.created).str + "</td></tr>",
+                            "</table></tbody>"
                         ].join(""))
                     }else{
                         var input = $('<input type="button">').appendTo(cellObj.$el);
@@ -62,7 +64,7 @@ $(function(){
                 });
 
 
-                $table.children("tbody").on('tr td input[type="button"][name|="table-"]',"click",function(e){
+                $table.children("tbody").on("click",'tr td input[type="button"][name|="table-"]',function(e){
                     var target = $(e.currentTarget);
                     target.attr("type","text").css();
                 })
