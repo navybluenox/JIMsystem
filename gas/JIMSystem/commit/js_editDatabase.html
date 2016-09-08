@@ -95,7 +95,7 @@ $(function(){
                     }
                 }
 
-                $table.children("tbody").children("tr").children("td").children().css({"margin":"0 auto"});
+                $table.children("tbody").children("tr").children("td").css({"text-align":"center"}).children().css({"margin":"0 auto"});
 
                 $table.children("tbody").on("click",'tr td input[type="button"][name^="table-content-"]',function(e){
                     var target = $(e.currentTarget);
