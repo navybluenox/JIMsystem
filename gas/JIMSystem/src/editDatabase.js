@@ -38,6 +38,7 @@ $(function(){
                 );
 
                 var $table = createTable(result,dataArr,columns,function(cellObj){
+
                     if(cellObj.column === "remove"){
                         var input = $('<input type="checkbox">').appendTo(cellObj.$el);
                         input.on("click",function(e){
@@ -46,20 +47,43 @@ $(function(){
                             }
                         })
                     }else if(cellObj.column === "baseInfo"){
-                        cellObj.$el.append([
+                        $([
                             "<table><tbody>",
                             "<tr>" + "<td>_id</td><td>" + cellObj.rowData._id + "</td></tr>",
                             "<tr>" + "<td>updated</td><td>" + dateToValue(cellObj.rowData.updated).str + "</td></tr>",
                             "<tr>" + "<td>created</td><td>" + dateToValue(cellObj.rowData.created).str + "</td></tr>",
                             "</table></tbody>"
                         ].join(""))
+                        .appendTo(cellObj.$el)
+                        .find("table tbody tr td")
+                        .css("padding","0 0.25em");
                     }else{
-                        var input = $('<input type="button">').appendTo(cellObj.$el);
-                        input.val(cellObj.value).attr("name","table-" + cellObj.rowData._id + "-" + cellObj.column);
-                        /*input.on("click",function(e){
-                            if(input.attr("type") !== "button") return;
-                            input.attr("type","text");
-                        })*/
+                        if(classof(cellObj.value) === "array"){
+                            var valueTable = $("<table><thead></thead><tbody></tbody></table>").appendTo(cellObj.$el).find("table");
+                            var keyInfo = columnObj[cellObj.column][0];
+                            valueTable.children("tbody").data({"length":cellObj.value.length});
+
+                            keys = (keyInfo[0] === "object" ? Object.keys(keyInfo[0]) : [""]);
+                            valueTable.children("tbody").data({"keys":keys});
+                            valueTable.children("thead").append(repeatString("<th></th>",keys.length));
+                            valueTable.children("tbody").append(repeatString("<tr>" +  repeatString("<td></td>",keys.length) + "</tr>"),cellObj.value.length);
+
+                            valueTable.children("tbody").find("td").css("padding","0");
+
+                            cellObj.value.forEach(function(v,vIndex){
+                                var thisRow = valueTable.children("tbody").children("tr").eq(vIndex);
+                                keys.forEach(function(key,keyIndex){
+                                    var thisCell = thisRow.children("td").eq(keyIndex);
+                                    var input = $('<input type="button">').appendTo(thisCell);
+                                    var names = ["table",cellObj.rowData._id,cellObj.column,vIndex];
+                                    if(key !== "") names.push(key);
+                                    input.val(key !== "" ? v[key] : v).attr("name",names.join("-"));
+                                })
+                            });
+                        }else{
+                            var input = $('<input type="button">').appendTo(cellObj.$el);
+                            input.val(cellObj.value).attr("name",["table",cellObj.rowData._id,cellObj.column].join("-"));
+                        }
                     }
                 });
 
@@ -68,7 +92,12 @@ $(function(){
                     console.log(e);
                     var target = $(e.currentTarget);
                 
-                    target.attr("type","text").css();
+                    target
+                        .attr("type","text")
+                        .css({
+                            "width":target.outerWidth() + "px",
+                            "font-size":"11px"
+                        });
                 })
 
                 /*
