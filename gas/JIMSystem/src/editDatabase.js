@@ -49,11 +49,12 @@ $(function(){
                             }
                         })
                     }else if(cellObj.column === "baseInfo"){
+                        //「cellObj.value === ""」の時、新規追加した行なので、関数dataToValueを通さない
                         $([
                             "<table><tbody>",
                             "<tr>" + "<td>_id</td><td>" + cellObj.rowData._id + "</td></tr>",
-                            "<tr>" + "<td>updated</td><td>" + dateToValue(cellObj.rowData.updated).str + "</td></tr>",
-                            "<tr>" + "<td>created</td><td>" + dateToValue(cellObj.rowData.created).str + "</td></tr>",
+                            "<tr>" + "<td>updated</td><td>" + cellObj.value === "" ? cellObj.rowData.updated : dateToValue(cellObj.rowData.updated).str + "</td></tr>",
+                            "<tr>" + "<td>created</td><td>" + cellObj.value === "" ? cellObj.rowData.created : dateToValue(cellObj.rowData.created).str + "</td></tr>",
                             "</table></tbody>"
                         ].join(""))
                             .appendTo(cellObj.$el)
@@ -77,7 +78,7 @@ $(function(){
                             valueTable.children("tbody").find("td").css({"padding":"0"});
 
                             //追加した行用（普通は少なくとも配列がある）
-                            if(cellObj.value === undefined)  cellObj.value = [];
+                            if(cellObj.value === "")  cellObj.value = [];
                             cellObj.value.forEach(function(v,vIndex){
                                 var thisRow = valueTable.children("tbody").children("tr").eq(vIndex);
                                 keys.forEach(function(key,keyIndex){
@@ -95,6 +96,7 @@ $(function(){
                     }
                 }
 
+                //行追加ボタンを作成
                 $('<tr><td colSpan="0"><input type="button" value="add" name="table-add-data"></td></tr>').appendTo($table.children("tbody")).find("td input")
                 .css({"width":"216px","background":"#ddddff"})
                 .data({"num_newdata":0})
@@ -111,10 +113,14 @@ $(function(){
                         });
                     });
                     $(e.currentTarget).data({"num_newdata":dataIndex+1});
+                    //セルの中央揃えのし直し
+                    $table.children("tbody").children("tr").children("td").css({"text-align":"center"}).children().css({"margin":"0 auto"});
                 });
 
+                //セルの中央揃え
                 $table.children("tbody").children("tr").children("td").css({"text-align":"center"}).children().css({"margin":"0 auto"});
 
+                //値の入ったボタンに、押すとテキストボックスに変化するイベントを設定
                 $table.children("tbody").on("click",'tr td input[type="button"][name^="table-content-"]',function(e){
                     var target = $(e.currentTarget);
                     var width = target.outerWidth();
@@ -122,6 +128,8 @@ $(function(){
                         .attr("type","text")
                         .css({"width":width + "px","font-size":"11px"});
                 })
+
+                //配列のデータを追加するイベントを設定
                 $table.children("tbody").on("click",'tr td input[type="button"][name="table-add-arrayvalue"]',function(e){
                     var trAdd = $(e.currentTarget).parent("td").parent("tr");
                     var tbody = trAdd.parent("tbody");
