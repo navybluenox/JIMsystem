@@ -67,7 +67,7 @@ $(function(){
                             keys = (keyInfo[0] === "object" ? Object.keys(keyInfo[0]) : [""]);
                             valueTable.children("tbody").data({"keys":keys});
                             valueTable.children("thead").append(repeatString("<th></th>",keys.length));
-                            valueTable.children("tbody").append(repeatString("<tr>" +  repeatString("<td></td>",keys.length) + "</tr>"),cellObj.value.length);
+                            valueTable.children("tbody").append(repeatString("<tr>" +  repeatString("<td></td>",keys.length) + "</tr>",cellObj.value.length));
 
                             valueTable.children("tbody").find("td").css("padding","0");
 
