@@ -62,7 +62,7 @@ $(function(){
                             .find("tbody tr td")
                             .css("padding","0 0.25em");
                     }else{
-                        if(classof(cellObj.value) === "array"){
+                        if(classof(columnObj[cellObj.column]) === "array"){
                             var valueTable = $("<table><thead></thead><tbody></tbody></table>").appendTo(cellObj.$el);
                             var keyInfo = columnObj[cellObj.column][0];
 
@@ -100,11 +100,11 @@ $(function(){
                 .data({"num_newdata":0})
                 .on("click",function(e){
                     var trAdd = $(e.currentTarget).parent("td").parent("tr");
-                    var tr = $("<tr>" + repeatString("<td></td>",columns.length) + "</tr>").insertBefore(trAdd);
+                    var tds = $("<tr>" + repeatString("<td></td>",columns.length) + "</tr>").insertBefore(trAdd).children("td");
                     var dataIndex = $(e.currentTarget).data("num_newdata");
                     columns.forEach(function(column,colIndex){
                         editCells({
-                            "$el":tr.eq(colIndex),
+                            "$el":tds.eq(colIndex),
                             "value":"",
                             "column":column,
                             "rowData":{"_id":"new" + dataIndex,"created":"now","updated":"now"}
