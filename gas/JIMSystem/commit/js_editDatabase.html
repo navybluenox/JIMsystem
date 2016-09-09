@@ -261,7 +261,6 @@ $(function(){
                 }).forEach(function(obj){
                     if(queues[obj._id] === undefined)  return;
                     queues[obj._id][obj.key].splice(obj.index,1);
-console.log(queues[obj._id][obj.key]);
                 })
 
                 Object.keys(queues).forEach(function(_id){

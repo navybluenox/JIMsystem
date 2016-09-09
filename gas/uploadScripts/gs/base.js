@@ -344,11 +344,15 @@ function updateDatabase(fileIdStr,queues){
                 //dpIndex = database.data.findIndex(function(datapiece){return datapiece._id === queue.value._id});
                 fun = function(dp_queue,dp_data){
                     if(Array.isArray(dp_queue)){
-                        dp_queue.forEach(function(v,i){
-                            if(v === undefined)  return;
-                            if(dp_data === undefined)  dp_data = [];
-                            dp_data[i] = fun(dp_queue[i],dp_data[i]);
-                        });
+                        if(dp_queue.length === 0){
+                            return dp_queue;
+                        }else{
+                            dp_queue.forEach(function(v,i){
+                                if(v === undefined)  return;
+                                if(dp_data === undefined)  dp_data = [];
+                                dp_data[i] = fun(dp_queue[i],dp_data[i]);
+                            });
+                        }
                         return dp_data;
                     }else if(typeof dp_queue === "object"){
                         Object.keys(dp_queue).forEach(function(key){
