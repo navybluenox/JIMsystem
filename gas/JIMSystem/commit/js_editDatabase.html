@@ -358,13 +358,13 @@ $(function(){
             var ThisDataPiece = Datapiece.getClassByName($("#formEditDatabase [name='databaseName']").val());
             //TODO displayLoadingSign
 
-            var idsCheckedRemove = $table.find('input[type="text"][name^="table-remove-"]').map(function(){
+            var idsCheckedRemove = $table.find('input[type="checkbox"][name^="table-remove-"]').map(function(){
                 var $this = $(this);
                 return {
                     "_id":$this.attr("name").split("-")[2],
                     "checked":$this.prop("checked")
                 }
-            }).get()//.filter(function(obj){return obj.checked}).map(function(obj){return obj._id});
+            }).get().filter(function(obj){return obj.checked}).map(function(obj){return obj._id});
 
             console.log(idsCheckedRemove);
 
