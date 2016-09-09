@@ -157,15 +157,15 @@ $(function(){
                     tbody.data("length",dataTbody.length+1);
                 });
 
-                //配列のデータのチェックボックスに応じて、該当する行のテキストボックスを無効にする
+                //配列のデータのチェックボックスに応じて、該当する行のボタンやテキストボックスを無効にする
                 $table.children("tbody").on("click",'tr td input[type="checkbox"][name^="table-removearrayvalue-"]',function(e){
                     var target = $(e.currentTarget);
                     var names = target.attr("name").split("-");
                     var inputs = $table.find('input[name^="' + ["table","content",names[2],names[3],names[4]].join("-") + '"]');
                     if(target.prop("checked")){
-                        inputs.prop("disabled",true);
+                        inputs.prop("disabled",true).css("background","#E0E0E0");
                     }else{
-                        inputs.prop("disabled",false);
+                        inputs.prop("disabled",false).css("background","inherit");
                     }
                 })
 
