@@ -44,11 +44,6 @@ $(function(){
                     if(cellObj.column === "remove"){
                         var input = $('<input type="checkbox">').appendTo(cellObj.$el);
                         input.attr("name",["table","remove",cellObj.rowData._id].join("-"));
-                        input.on("click",function(e){
-                            if(e.currentTarget.prop("checked")){
-
-                            }
-                        })
                     }else if(cellObj.column === "baseInfo"){
                         //「cellObj.value === ""」の時、新規追加した行なので、関数dataToValueを通さない
                         $([
@@ -369,7 +364,7 @@ $(function(){
                     "_id":$this.attr("name").split("-")[2],
                     "checked":$this.prop("checked")
                 }
-            }).get().filter(function(obj){return obj.checked}).map(function(obj){return obj._id});
+            }).get()//.filter(function(obj){return obj.checked}).map(function(obj){return obj._id});
 
             console.log(idsCheckedRemove);
 
