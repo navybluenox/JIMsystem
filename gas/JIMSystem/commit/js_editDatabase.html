@@ -423,6 +423,25 @@ $(function(){
                         queues[obj._id][obj.key[0]] = obj.value
                     }
                 });
+
+                //arrayから指定された行を削除
+                $table.find('input[name^="table-removearrayvalue-"][checked]').map(function(){
+                    $el = $(this);
+                    var names = $el.attr("name").split("-");
+                    return {
+                        "_id":names[2],
+                        "key":names[3],
+                        "index":names[4]
+                    }
+                }).get().sort(function(a,b){
+                    if(a._id !== b._id)  return a._id.charCodeAt() - b._id.charCodeAt();
+                    if(a.key !== b.key)  return a.key.charCodeAt() - b.key.charCodeAt();
+                    return b.index - a.index;
+                }).forEach(function(obj){
+                    if(queues[obj._id] === undefined)  return;
+                    queues[obj._id][obj.key].splice(index,1);
+                })
+
                 Object.keys(queues).forEach(function(_id){
                     server[method](new ThisDataPiece(queues[_id],{overwrite:true}));
                 });
