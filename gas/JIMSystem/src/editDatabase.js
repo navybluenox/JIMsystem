@@ -127,10 +127,13 @@ $(function(){
 
                     //データが配列タイプのものは、押したボタンと同じカラムに入っているデータが入っているボタンを、テキストボックスに変換する
                     var names = target.attr("name").split("-");
+console.log(names);
                     var _id = names[2];
                     var key = names.slice().splice(3);
+console.log(key);
+console.log($table.find('input[type="button"][name^="' + ["table","content",_id,key[0]].join("-") + '"]'));
                     if(key.length > 2){
-                        $table.find('input[type="button"][name^="table-content-' + _id + '-"]')
+                        $table.find('input[type="button"][name^="' + ["table","content",_id,key[0]].join("-") + '"]')
                             .attr("type","text")
                             .css({"width":width + "px","font-size":"11px"});
                     }
