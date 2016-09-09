@@ -353,25 +353,62 @@ $(function(){
             });
         },
         updateData:function(){
+            var server = _val.server;
             var $table = $("#formEditDatabase_result").children("table"); 
             var ThisDataPiece = Datapiece.getClassByName($("#formEditDatabase [name='databaseName']").val());
             //TODO displayLoadingSign
 
             var idsCheckedRemove = $table.find('input[type="checkbox"][name^="table-remove-"]').map(function(){
-                var $this = $(this);
+                var $el = $(this);
                 return {
-                    "_id":$this.attr("name").split("-")[2],
-                    "checked":$this.prop("checked")
+                    "_id":$el.attr("name").split("-")[2],
+                    "checked":$el.prop("checked")
                 }
             }).get().filter(function(obj){return obj.checked}).map(function(obj){return obj._id});
 
-            console.log(idsCheckedRemove);
-
             //add
-
+            separateAssembleOfQueues('input[type="text"][name^="table-content-new"]');
             //change
+            separateAssembleOfQueues('input[type="text"][name^="table-content-"]:not([name^="table-content-new"])');
+
+            function separateAssembleOfQueues(selector){
+                var queues = {};
+                $table.find(selector).map(function(){
+                    var $el = $(this);
+                    var names = $el.attr("name").split("-");
+                    return {
+                        "_id":names[2],
+                        "column":names.slice().splice(3),
+                        "value":$el.val()
+                    }
+                }).get().filter(function(obj){return !inArray(idsCheckedRemove,obj._id)}).forEach(function(obj){
+                    if(queues[obj._id] === undefined)  queues[obj._id] = {};
+                    if(obj.column.length > 1){
+                        if(queues[obj._id][obj.columns[0]] === undefined)  queues[obj._id][obj.columns[0]] = [];
+                        if(obj.column.length === 2){
+                            queues[obj._id][obj.columns[0]][obj.columns[1]]  = obj.value;
+                        }else{
+                            if(queues[obj._id][obj.columns[0]][obj.columns[1]] === undefined)  queues[obj._id][obj.columns[0]][obj.columns[1]] = {};
+                            queues[obj._id][obj.columns[0]][obj.columns[1]][obj.columns[2]]  = obj.value;
+                        }
+                    }else{
+                        queues[obj._id][obj.column[0]] = obj.value
+                    }
+                });
+                Object.keys(queues).forEach(function(_id){
+                    server.addData(new ThisDataPiece(queues[_id],{overwrite:true}));
+                });
+            }
+
+
 
             //remove
+            idsCheckedRemove.filter(function(_id){ return !(/^new/.test(_id))}).forEach(function(_id){
+                server.removeData(new ThisDataPiece({"_id":_id}));
+            })
+
+            console.log(server._pendingQueue.slice());
+            server._pendingQueue = [];
 
 
 
