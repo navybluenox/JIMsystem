@@ -65,7 +65,7 @@ $(function(){
                             valueTable.children("tbody").data({"length":cellObj.value.length,"keys":keys,"_id":cellObj.rowData._id,"column":cellObj.column});
                             valueTable.children("thead").append(repeatString("<th></th>",keys.length + 1));
                             valueTable.children("tbody").append(repeatString("<tr>" + repeatString("<td></td>",keys.length + 1) + "</tr>",cellObj.value.length));
-                            $('<tr><td colSpan="' + keys.length+1 + '"><input type="button" value="add" name="table-addarrayvalue"></td></tr>')
+                            $('<tr><td colSpan="' + (keys.length+1) + '"><input type="button" value="add" name="table-addarrayvalue"></td></tr>')
                                 .appendTo(valueTable.children("tbody"))
                                 .find("td input")
                                 .css("background","#ddddff");                            
@@ -161,7 +161,7 @@ $(function(){
                 $table.children("tbody").on("click",'tr td input[type="checkbox"][name^="table-removearrayvalue-"]',function(e){
                     var target = $(e.currentTarget);
                     var names = target.attr("name").split("-");
-                    var inputs = $table.find('input[name^="' + ["table","content",names[2],names[3],""].join("-") + '"]');
+                    var inputs = $table.find('input[name^="' + ["table","content",names[2],names[3],names[4],""].join("-") + '"]');
                     if(target.prop("checked")){
                         inputs.prop("disabled",true);
                     }else{
