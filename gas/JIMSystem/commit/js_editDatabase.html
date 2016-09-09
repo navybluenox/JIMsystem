@@ -63,7 +63,7 @@ $(function(){
 
                             keys = (classof(keyInfo) === "object" ? Object.keys(keyInfo) : [""]);
                             valueTable.children("tbody").data({"length":cellObj.value.length,"keys":keys,"_id":cellObj.rowData._id,"column":cellObj.column});
-                            valueTable.children("thead").append(repeatString("<th></th>",keys.length + 1));
+                            valueTable.children("thead").append("<tr>" + repeatString("<th></th>",keys.length + 1) + "</tr>");
                             valueTable.children("tbody").append(repeatString("<tr>" + repeatString("<td></td>",keys.length + 1) + "</tr>",cellObj.value.length));
                             $('<tr><td colSpan="' + (keys.length+1) + '"><input type="button" value="add" name="table-addarrayvalue"></td></tr>')
                                 .appendTo(valueTable.children("tbody"))
