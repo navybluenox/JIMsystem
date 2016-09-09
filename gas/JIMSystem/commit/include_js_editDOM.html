@@ -252,37 +252,51 @@ function createTable(parent,data,columns,callback,option){
         .children("table")
         .data("table-level",option.tableLevel);
 
-        $table.children("thead").append("<tr>" + repeatString("<th></th>",columns.length) + "</tr>");
-        $table.children("tbody").append(repeatString("<tr>" + repeatString("<td></td>",columns.length) + "</tr>",data.length));
+    $table.children("thead").append("<tr>" + repeatString("<th></th>",columns.length) + "</tr>");
+    $table.children("tbody").append(repeatString("<tr>" + repeatString("<td></td>",columns.length) + "</tr>",data.length));
 
-        var $ths = $table.children("thead").children("tr").children("th");
-        $ths.css({"padding":"0 10px","text-align":"center"});
+    var $ths = $table.children("thead").children("tr").children("th");
+    $ths.css({"padding":"0 10px","text-align":"center"});
 
+    columns.forEach(function(column,columnIndex){
+        var $th = $ths.eq(columnIndex);
+        $th.text(column);
+    })
+
+    var $rows = $table.children("tbody").children("tr");
+    data.forEach(function(value,rowIndex){
+        var $row = $rows.eq(rowIndex);
         columns.forEach(function(column,columnIndex){
-            var $th = $ths.eq(columnIndex);
-            $th.text(column);
-        })
-
-        var $rows = $table.children("tbody").children("tr");
-        data.forEach(function(value,rowIndex){
-            var $row = $rows.eq(rowIndex);
-            columns.forEach(function(column,columnIndex){
-                var v = value;
-                var $cell = $row.children("td").eq(columnIndex);
-                var columnList = column.split(".");
-                columnList.forEach(function(c){
-                    v = v[c];
-                })
-                callback({
-                    "$el":$cell,
-                    "value":v,
-                    "column":column,
-                    "rowData":value
-                });
+            var v = value;
+            var $cell = $row.children("td").eq(columnIndex);
+            var columnList = column.split(".");
+            columnList.forEach(function(c){
+                v = v[c];
             })
+            callback({
+                "$el":$cell,
+                "value":v,
+                "column":column,
+                "rowData":value
+            });
         })
+    })
 
-    return $table;
+    function setTableStyle(){
+        //セルの中央揃え
+        $table.children("tbody").children("tr").children("td").css({"text-align":"center"}).children().css({"margin":"0 auto"});
+        $table.children("tbody,thead").children("tr").children("td,th").css({
+            "padding":"0.3ex 0.3em","background":"inherit",
+            "border-style":"solid","border-color":"#000000","border-width":"0 0.3px"
+        });
+        $table.children("thead").children("tr").css({"background":"#BDDBF9"});
+        $table.children("tbody").children("tr:nth-child(2n+1)").css({"background":"#F9F9F9"});
+        $table.children("tbody").children("tr:nth-child(2n)").css({"background":"#E2E2E2"});
+    }
+
+    setTableStyle();
+
+    return {"$table":$table,"styleFun":setTableStyle};
 }
 
 function createTable1(data,parent,tableLevel,callback,option){

@@ -38,7 +38,8 @@ $(function(){
                     Object.keys(columnObj).filter(function(colName){return !inArray(["_id","updated","created"],colName)})
                 );
 
-                var $table = createTable(result,dataArr,columns,editCells);
+                var tableObj = createTable(result,dataArr,columns,editCells);
+                var $table = tableObj.$table;
 
                 function editCells(cellObj){
                     if(cellObj.column === "remove"){
@@ -117,11 +118,11 @@ $(function(){
                     //ボタンを自動で押して、全てテキストボックスに変換
                     tds.find('input[type="button"][name^="table-content-"]').click();
                     //セルの中央揃えのし直し
-                    tds.css({"text-align":"center"}).children().css({"margin":"0 auto"});
+                    tableObj.styleFun();
                 });
 
-                //セルの中央揃え
-                $table.children("tbody").children("tr").children("td").css({"text-align":"center"}).children().css({"margin":"0 auto"});
+                //セルの中央揃え&表のスタイルを設定
+                tableObj.styleFun();
 
                 //値の入ったボタンに、押すとテキストボックスに変化するイベントを設定
                 $table.children("tbody").on("click",'tr td input[type="button"][name^="table-content-"]',function(e){
