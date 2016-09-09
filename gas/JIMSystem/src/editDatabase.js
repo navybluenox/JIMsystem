@@ -14,7 +14,6 @@ $(function(){
             _tmp.changedDataQue = [];
         },
         showTable:function(){
-            var form = document.getElementById("formEditDatabase");
             var result = document.getElementById("formEditDatabase_result");
             var promise;
             var dataName = $("#formEditDatabase [name='databaseName']").val();
@@ -43,7 +42,7 @@ $(function(){
                 function editCells(cellObj){
                     if(cellObj.column === "remove"){
                         var input = $('<input type="checkbox">').appendTo(cellObj.$el);
-                        input.attr("name",["table","removal",cellObj.rowData._id].join("-"));
+                        input.attr("name",["table","remove",cellObj.rowData._id].join("-"));
                         input.on("click",function(e){
                             if(e.currentTarget.prop("checked")){
 
@@ -359,11 +358,37 @@ $(function(){
             });
         },
         updateData:function(){
-            var queues = _tmp.changedDataQue;
+            var $table = $("#formEditDatabase_result").children("table"); 
             var ThisDataPiece = Datapiece.getClassByName($("#formEditDatabase [name='databaseName']").val());
-            console.log(queues);
-
             //TODO displayLoadingSign
+
+            var idsCheckedRemove = $table.find('input[type="text"][name^="table-remove-"]').map(function(){
+                var $this = $(this);
+                return {
+                    "_id":$this.attr("name").split("-")[2],
+                    "checked":$this.prop("checked")
+                }
+            }).get().filter(function(obj){return obj.checked}).map(function(obj){return obj._id});
+
+            console.log(idsCheckedRemove);
+
+            //add
+
+            //change
+
+            //remove
+
+
+
+            /*_val.server.sendUpdateQueue()
+            .then(function(){
+                _val.pageFun.editDatabase.showTable();
+                //removeLoadingSign
+            });*/
+
+
+            /*var queues = _tmp.changedDataQue;
+            console.log(queues);
 
             //devide queues into removal, addtion and change
             //addtion -> change -> removal
@@ -454,17 +479,9 @@ $(function(){
             });
 console.log(_val.server._pendingQueue);
 
-            _val.server.sendUpdateQueue()
-            .then(function(){
-                _tmp.changedDataQue = [];
-                _val.pageFun.editDatabase.showTable();
-                //removeLoadingSign
-            });
+            */
 
 
-            //TODO
-            //Server.prototype.sendUpdateQueue
-            //clear queues
         }
     };
 });
