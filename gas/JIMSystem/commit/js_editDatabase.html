@@ -161,7 +161,7 @@ $(function(){
                 $table.children("tbody").on("click",'tr td input[type="checkbox"][name^="table-removearrayvalue-"]',function(e){
                     var target = $(e.currentTarget);
                     var names = target.attr("name").split("-");
-                    var inputs = $table.find('input[name^="' + ["table","content",names[2],names[3],names[4],""].join("-") + '"]');
+                    var inputs = $table.find('input[name^="' + ["table","content",names[2],names[3],names[4]].join("-") + '"]');
                     if(target.prop("checked")){
                         inputs.prop("disabled",true);
                     }else{
