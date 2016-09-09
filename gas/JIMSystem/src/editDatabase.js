@@ -427,7 +427,7 @@ $(function(){
                 if(mode === "add"){
                     var collInfo = server.getCollectionInfoByName($("#formEditDatabase [name='databaseName']").val());
                     var columns = collInfo.getValue("column");
-                    var keys = Object.keys(columns).filter(function(key){return columns[key] === "array"});
+                    var keys = Object.keys(columns).filter(function(key){return classof(columns[key]) === "array"});
                     Object.keys(queues).forEach(function(_id){
                         keys.forEach(function(key){
                             if(queues[_id][key] === undefined){

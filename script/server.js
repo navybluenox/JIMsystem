@@ -211,14 +211,14 @@ var Server = (function(){
                             }).setValues(queue.value,{overwrite:true});
                             break;
                         case "add":
-                            data.push(new (Datapiece.getClassByName(dataName))(queue.value));
+                            data.push(queue.value);
                             break;
                         case "remove":
                             dataId = queue.value.getValue("_id");
                             dataIndex = data.findIndex(function(dp){
                                 return dp.getValue("_id") === dataId;
                             });
-                            data.splice(dataIndex,1) = null;
+                            data.splice(dataIndex,1);
                             break;
                     }
                 }
