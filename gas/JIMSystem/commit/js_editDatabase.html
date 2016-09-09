@@ -63,9 +63,9 @@ $(function(){
 
                             keys = (keyInfo[0] === "object" ? Object.keys(keyInfo[0]) : [""]);
                             valueTable.children("tbody").data({"length":cellObj.value.length,"keys":keys,"_id":cellObj.rowData._id,"column":cellObj.column});
-                            valueTable.children("thead").append(repeatString("<th></th>",keys.length));
-                            valueTable.children("tbody").append(repeatString("<tr>" + repeatString("<td></td>",keys.length) + "</tr>",cellObj.value.length));
-                            $('<tr><td colSpan="' + keys.length + '"><input type="button" value="add" name="table-add-arrayvalue"></td></tr>')
+                            valueTable.children("thead").append(repeatString("<th></th>",keys.length + 1));
+                            valueTable.children("tbody").append(repeatString("<tr>" + repeatString("<td></td>",keys.length + 1) + "</tr>",cellObj.value.length));
+                            $('<tr><td colSpan="' + keys.length + '"><input type="button" value="add" name="table-addarrayvalue"></td></tr>')
                                 .appendTo(valueTable.children("tbody"))
                                 .find("td input")
                                 .css("background","#ddddff");                            
@@ -77,8 +77,10 @@ $(function(){
                             if(cellObj.value === "")  cellObj.value = [];
                             cellObj.value.forEach(function(v,vIndex){
                                 var thisRow = valueTable.children("tbody").children("tr").eq(vIndex);
+                                $('<input type="checkbox">').appendTo(thisRow.children("td").eq(0))
+                                    .attr("name",["table","removearrayvalue",cellObj.rowData._id,cellObj.column,vIndex].join("-"));
                                 keys.forEach(function(key,keyIndex){
-                                    var thisCell = thisRow.children("td").eq(keyIndex);
+                                    var thisCell = thisRow.children("td").eq(keyIndex + 1);
                                     var input = $('<input type="button">').appendTo(thisCell);
                                     var names = ["table","content",cellObj.rowData._id,cellObj.column,vIndex];
                                     if(key !== "") names.push(key);
@@ -128,20 +130,17 @@ $(function(){
 
                     //データが配列タイプのものは、押したボタンと同じカラムに入っているデータが入っているボタンを、テキストボックスに変換する
                     var names = target.attr("name").split("-");
-console.log(names);
                     var _id = names[2];
                     var key = names.slice().splice(3);
-console.log(key);
-console.log($table.find('input[type="button"][name^="' + ["table","content",_id,key[0]].join("-") + '"]'));
-                    if(key.length > 2){
-                        $table.find('input[type="button"][name^="' + ["table","content",_id,key[0]].join("-") + '"]')
+                    if(key.length > 1){
+                        $table.find('input[type="button"][name^="' + ["table","content",_id,key[0],""].join("-") + '"]')
                             .attr("type","text")
                             .css({"width":width + "px","font-size":"11px"});
                     }
                 })
 
                 //配列のデータを追加するイベントを設定
-                $table.children("tbody").on("click",'tr td input[type="button"][name="table-add-arrayvalue"]',function(e){
+                $table.children("tbody").on("click",'tr td input[type="button"][name="table-addarrayvalue"]',function(e){
                     var trAdd = $(e.currentTarget).parent("td").parent("tr");
                     var tbody = trAdd.parent("tbody");
                     var dataTbody = tbody.data();
@@ -155,6 +154,18 @@ console.log($table.find('input[type="button"][name^="' + ["table","content",_id,
                     })
                     tbody.data("length",dataTbody.length+1);
                 });
+
+                //配列のデータのチェックボックスに応じて、該当する行のテキストボックスを無効にする
+                $table.children("tbody").on("click",'tr td input[type="checkbox"][name^="table-removearrayvalue-"]',function(e){
+                    var target = $(e.currentTarget);
+                    var names = target.attr("name").split("-");
+                    var inputs = $table.find('input[name^="' + ["table","content",names[2],names[3],""].join("-") + '"]');
+                    if(target.prop("checked")){
+                        inputs.prop("disabled",true);
+                    }else{
+                        inputs.prop("disabled",false);
+                    }
+                })
 
                 /*
                 createTable1(
@@ -400,6 +411,7 @@ console.log($table.find('input[type="button"][name^="' + ["table","content",_id,
                     if(obj.key.length > 1){
                         if(queues[obj._id][obj.key[0]] === undefined)  queues[obj._id][obj.key[0]] = [];
                         if(obj.key.length === 2){
+                            if(obj.value === "")  return;
                             queues[obj._id][obj.key[0]][obj.key[1]]  = obj.value;
                         }else{
                             if(queues[obj._id][obj.key[0]][obj.key[1]] === undefined)  queues[obj._id][obj.key[0]][obj.key[1]] = {};
