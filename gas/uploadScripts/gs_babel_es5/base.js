@@ -330,9 +330,17 @@ function updateDatabase(fileIdStr, queues) {
                     }
                 });
                 //dpIndex = database.data.findIndex(function(datapiece){return datapiece._id === queue.value._id});
-                database.data[dpIndex] = fun(queue.value, database.data[dpIndex]);
+                fun = function (_fun) {
+                    function fun(_x, _x2) {
+                        return _fun.apply(this, arguments);
+                    }
 
-                var fun = function fun(dp_queue, dp_data) {
+                    fun.toString = function () {
+                        return _fun.toString();
+                    };
+
+                    return fun;
+                }(function (dp_queue, dp_data) {
                     if (Array.isArray(dp_queue)) {
                         dp_queue.forEach(function (v, i) {
                             if (v === undefined) return;
@@ -354,8 +362,8 @@ function updateDatabase(fileIdStr, queues) {
                             return dp_queue;
                         }
                     }
-                };
-
+                });
+                database.data[dpIndex] = fun(queue.value, database.data[dpIndex]);
                 break;
             case "remove":
                 database.data.forEach(function (datapiece, i) {

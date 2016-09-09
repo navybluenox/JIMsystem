@@ -435,6 +435,11 @@ $(function(){
                             }
                         });
                     })
+                //changeモードの時、_idを設定
+                }else if(mode === "change"){
+                    Object.keys(queues).forEach(function(_id){
+                        queues[_id]._id = _id;
+                    })
                 }
 
                 //arrayから指定された行を削除
