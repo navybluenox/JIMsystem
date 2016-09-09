@@ -64,7 +64,7 @@ $(function(){
                             valueTable.children("tbody").data({"length":cellObj.value.length,"keys":keys,"_id":cellObj.rowData._id,"column":cellObj.column});
                             valueTable.children("thead").append(repeatString("<th></th>",keys.length + 1));
                             valueTable.children("tbody").append(repeatString("<tr>" + repeatString("<td></td>",keys.length + 1) + "</tr>",cellObj.value.length));
-                            $('<tr><td colSpan="' + keys.length + '"><input type="button" value="add" name="table-addarrayvalue"></td></tr>')
+                            $('<tr><td colSpan="' + keys.length+1 + '"><input type="button" value="add" name="table-addarrayvalue"></td></tr>')
                                 .appendTo(valueTable.children("tbody"))
                                 .find("td input")
                                 .css("background","#ddddff");                            
@@ -143,9 +143,11 @@ $(function(){
                     var trAdd = $(e.currentTarget).parent("td").parent("tr");
                     var tbody = trAdd.parent("tbody");
                     var dataTbody = tbody.data();
-                    var tds = $("<tr>" + repeatString("<td></td>",dataTbody.keys.length) +"</tr>").insertBefore(trAdd).find("td").css({"padding":"0"});
+                    var tds = $("<tr>" + repeatString("<td></td>",dataTbody.keys.length+1) +"</tr>").insertBefore(trAdd).find("td").css({"padding":"0"});
+                    $('<input type="checkbox">').appendTo(tds.eq(0))
+                        .attr("name",["table","removearrayvalue",dataTbody._id,dataTbody.column,dataTbody.length].join("-"));
                     dataTbody.keys.forEach(function(key,keyIndex){
-                        var td = tds.eq(keyIndex);
+                        var td = tds.eq(keyIndex+1);
                         var input = $('<input type="text">').appendTo(td).css({"width":"72px","font-size":"11px"});
                         var names = ["table","content",dataTbody._id,dataTbody.column,dataTbody.length];
                         if(key !== "") names.push(key);
