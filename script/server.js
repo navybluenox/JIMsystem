@@ -224,8 +224,13 @@ var Server = (function(){
                 }
             })
             .then(function(){
+                that._updatingQueue = [];
+                if(that._pendingQueue.length > 0){
+                    return that.sendUpdateQueue();
+                }
+            }).then(function(){
                 that._updating = false;
-                that._pendingQueue = [];                    
+
             });
         }
         changeData(datapieces){
@@ -280,4 +285,8 @@ function runServerFun(funName,_arguments,userObj){
     });
 }
 
+function createLoadingAlert(){
+    var mw = new ModalWindow({"disableClickBackground":true,"html":""});
 
+    return mw;
+}
