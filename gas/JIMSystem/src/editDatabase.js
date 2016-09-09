@@ -384,12 +384,12 @@ $(function(){
                 }).get().filter(function(obj){return !inArray(idsCheckedRemove,obj._id)}).forEach(function(obj){
                     if(queues[obj._id] === undefined)  queues[obj._id] = {};
                     if(obj.column.length > 1){
-                        if(queues[obj._id][obj.columns[0]] === undefined)  queues[obj._id][obj.columns[0]] = [];
+                        if(queues[obj._id][obj.column[0]] === undefined)  queues[obj._id][obj.column[0]] = [];
                         if(obj.column.length === 2){
-                            queues[obj._id][obj.columns[0]][obj.columns[1]]  = obj.value;
+                            queues[obj._id][obj.column[0]][obj.column[1]]  = obj.value;
                         }else{
-                            if(queues[obj._id][obj.columns[0]][obj.columns[1]] === undefined)  queues[obj._id][obj.columns[0]][obj.columns[1]] = {};
-                            queues[obj._id][obj.columns[0]][obj.columns[1]][obj.columns[2]]  = obj.value;
+                            if(queues[obj._id][obj.column[0]][obj.column[1]] === undefined)  queues[obj._id][obj.column[0]][obj.column[1]] = {};
+                            queues[obj._id][obj.column[0]][obj.column[1]][obj.column[2]]  = obj.value;
                         }
                     }else{
                         queues[obj._id][obj.column[0]] = obj.value
