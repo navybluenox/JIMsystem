@@ -39,7 +39,8 @@ $(function(){
                     document.getElementById("passdiv").appendChild(el);
                 }else{
                     _val.pageFun.login.loadData();
-                    removeAllChildren(document.documentElement).innerHTML = innerHtml;
+                    $(document.documentElement).children().remove();
+                    document.documentElement.innerHTML = innerHtml;
                 }
             });
         },

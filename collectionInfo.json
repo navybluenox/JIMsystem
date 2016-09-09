@@ -44,7 +44,7 @@
             "name_first_phonetic":"string",
             "incharge":["string"],
             "inchargeCode":["string"],
-            "oldInchargeCode":["string"],
+            "oldInchargeCode":[{"org":"string","nth":"number","incharge":"string"}],
             "isRojin":"boolean",
             "isAvailable":"boolean"
 

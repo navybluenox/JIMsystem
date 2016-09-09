@@ -39,41 +39,6 @@ function movePage(pageName,insertTag){
     });
 }
 
-
-function removeAllChildren(node){
-    while(node.firstChild){
-        node.removeChild(node.firstChild);
-    }
-    return node;
-}
-function ObjToTag(obj,parent){
-    if(typeof obj != "object" || obj == null || Object.keys(obj).length === 0) return;
-    var result = {};
-    var el = document.createElement(obj.tag);
-    Object.keys(obj).forEach(function(key){
-        if(key == "tag" || key == "child" ) return;
-        if(key == "fun"){
-            obj[key].apply(el);
-            return;
-        }
-        el[key] = obj[key];
-    });
-    if(parent != null){
-        parent.appendChild(el);
-    }
-    result = {tag:obj.tag,el:el};
-    if(obj.child != null){
-        result.child = [];
-        obj.child.forEach(function(key){
-            var r = ObjToTag(key,el);
-            if(typeof r != "undefined"){
-                result.child.push(r);
-            }
-        });
-    }
-    return result;
-}
-
 class ModalWindow{
     constructor(option){
         var that = this;
