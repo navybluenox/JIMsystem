@@ -325,7 +325,6 @@ function loadDataFromDrive(fileIdStr, mode) {
     return result;
 }
 
-//TODO
 function updateDatabase(fileIdStr,queues){
     var database = loadDataFromDrive(fileIdStr);
 
