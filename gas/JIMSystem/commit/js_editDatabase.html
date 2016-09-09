@@ -125,6 +125,16 @@ $(function(){
                     target
                         .attr("type","text")
                         .css({"width":width + "px","font-size":"11px"});
+
+                    //データが配列タイプのものは、押したボタンと同じカラムに入っているデータが入っているボタンを、テキストボックスに変換する
+                    var names = target.attr("name").split("-");
+                    var _id = names[2];
+                    var key = names.slice().splice(3);
+                    if(key.length > 2){
+                        $table.find('input[type="button"][name^="table-content-' + _id + '-"]')
+                            .attr("type","text")
+                            .css({"width":width + "px","font-size":"11px"});
+                    }
                 })
 
                 //配列のデータを追加するイベントを設定
@@ -368,36 +378,36 @@ $(function(){
             }).get().filter(function(obj){return obj.checked}).map(function(obj){return obj._id});
 
             //add
-            separateAssembleOfQueues('input[type="text"][name^="table-content-new"]');
+            separateAssembleOfQueues('input[type="text"][name^="table-content-new"]',"addData");
             //change
-            separateAssembleOfQueues('input[type="text"][name^="table-content-"]:not([name^="table-content-new"])');
+            separateAssembleOfQueues('input[type="text"][name^="table-content-"]:not([name^="table-content-new"])',"changeData");
 
-            function separateAssembleOfQueues(selector){
+            function separateAssembleOfQueues(selector,method){
                 var queues = {};
                 $table.find(selector).map(function(){
                     var $el = $(this);
                     var names = $el.attr("name").split("-");
                     return {
                         "_id":names[2],
-                        "column":names.slice().splice(3),
+                        "key":names.slice().splice(3),
                         "value":$el.val()
                     }
                 }).get().filter(function(obj){return !inArray(idsCheckedRemove,obj._id)}).forEach(function(obj){
                     if(queues[obj._id] === undefined)  queues[obj._id] = {};
-                    if(obj.column.length > 1){
-                        if(queues[obj._id][obj.column[0]] === undefined)  queues[obj._id][obj.column[0]] = [];
-                        if(obj.column.length === 2){
-                            queues[obj._id][obj.column[0]][obj.column[1]]  = obj.value;
+                    if(obj.key.length > 1){
+                        if(queues[obj._id][obj.key[0]] === undefined)  queues[obj._id][obj.key[0]] = [];
+                        if(obj.key.length === 2){
+                            queues[obj._id][obj.key[0]][obj.key[1]]  = obj.value;
                         }else{
-                            if(queues[obj._id][obj.column[0]][obj.column[1]] === undefined)  queues[obj._id][obj.column[0]][obj.column[1]] = {};
-                            queues[obj._id][obj.column[0]][obj.column[1]][obj.column[2]]  = obj.value;
+                            if(queues[obj._id][obj.key[0]][obj.key[1]] === undefined)  queues[obj._id][obj.key[0]][obj.key[1]] = {};
+                            queues[obj._id][obj.key[0]][obj.key[1]][obj.key[2]]  = obj.value;
                         }
                     }else{
-                        queues[obj._id][obj.column[0]] = obj.value
+                        queues[obj._id][obj.key[0]] = obj.value
                     }
                 });
                 Object.keys(queues).forEach(function(_id){
-                    server.addData(new ThisDataPiece(queues[_id],{overwrite:true}));
+                    server[method](new ThisDataPiece(queues[_id],{overwrite:true}));
                 });
             }
 
