@@ -193,6 +193,7 @@ class ModalWindow{
                 that.$el.css("display","");
             },200);
         })
+        return this;
     }
     setBackgroundStyle(){
         this.$background.css({
@@ -204,6 +205,7 @@ class ModalWindow{
             "height":"120%",
             "background-color":"rgba(0,0,0,0.75)"
         });
+        return this;
     }
     centerWindow(){
         var $window = $(window);
@@ -211,6 +213,7 @@ class ModalWindow{
             left:(($window.width() - this.$el.outerWidth())/2) + "px",
             top:(($window.height() - this.$el.outerHeight())/2)*(2/3) + "px"
         });
+        return this;
     }
     removeWindow(){
         this.$background.remove();
@@ -229,6 +232,11 @@ class ModalWindow{
             display:"none",
             "z-index":"2"
         });
+        return this;
+    }
+    setStyle(cssObj){
+        this.$el.css(cssObj);
+        return this;
     }
 }
 
