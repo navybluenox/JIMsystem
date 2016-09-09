@@ -153,6 +153,7 @@ $(function(){
                         if(key !== "") names.push(key);
                         input.attr("name",names.join("-"));
                     })
+                    $table.find('input[type="button"][name="t' + ["table","content",dataTbody._id,dataTbody.column].join("-") + '"]').click();
                     tbody.data("length",dataTbody.length+1);
                 });
 
@@ -161,6 +162,7 @@ $(function(){
                     var target = $(e.currentTarget);
                     var names = target.attr("name").split("-");
                     var inputs = $table.find('input[name^="' + ["table","content",names[2],names[3],names[4]].join("-") + '"]');
+                    inputs.click();
                     if(target.prop("checked")){
                         inputs.prop("disabled",true).css("background","#E0E0E0");
                     }else{

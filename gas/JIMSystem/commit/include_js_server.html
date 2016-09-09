@@ -209,7 +209,7 @@ var Server = (function(){
                             dataId = queue.value.getValue("_id");
                             data.find(function(dp){
                                 return dp.getValue("_id") === dataId;
-                            }).setValues(queue.value,{overwrite:true});
+                            }).setValues(queue.value.getValues(),{overwrite:true});
                             break;
                         case "add":
                             data.push(queue.value);
