@@ -60,7 +60,7 @@ $(function(){
                             var valueTable = $("<table><thead></thead><tbody></tbody></table>").appendTo(cellObj.$el);
                             var keyInfo = columnObj[cellObj.column][0];
 
-                            keys = (keyInfo[0] === "object" ? Object.keys(keyInfo[0]) : [""]);
+                            keys = (classof(keyInfo) === "object" ? Object.keys(keyInfo) : [""]);
                             valueTable.children("tbody").data({"length":cellObj.value.length,"keys":keys,"_id":cellObj.rowData._id,"column":cellObj.column});
                             valueTable.children("thead").append(repeatString("<th></th>",keys.length + 1));
                             valueTable.children("tbody").append(repeatString("<tr>" + repeatString("<td></td>",keys.length + 1) + "</tr>",cellObj.value.length));
@@ -71,6 +71,14 @@ $(function(){
 
                             valueTable.children("thead").find("th").css({"padding":"0","border-bottom-width":"0"});
                             valueTable.children("tbody").find("td").css({"padding":"0"});
+
+                            if(classof(keyInfo) === "object"){
+                                var ths = valueTable.children("thead").children("tr").children("th");
+                                keys.forEach(function(key,keyIndex){
+                                    var th = ths.eq(keyIndex+1);
+                                    th.text(key);
+                                });
+                            }
 
                             //追加した行用（普通は少なくとも配列がある）
                             if(cellObj.value === "")  cellObj.value = [];
@@ -252,6 +260,7 @@ $(function(){
                 }).forEach(function(obj){
                     if(queues[obj._id] === undefined)  return;
                     queues[obj._id][obj.key].splice(obj.index,1);
+console.log(queues[obj._id][obj.key]);
                 })
 
                 Object.keys(queues).forEach(function(_id){
