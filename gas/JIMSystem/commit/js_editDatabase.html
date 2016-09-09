@@ -455,16 +455,11 @@ $(function(){
                 server.removeData(new ThisDataPiece({"_id":_id}));
             })
 
-            console.log(server._pendingQueue.slice());
-            server._pendingQueue = [];
-
-
-
-            /*_val.server.sendUpdateQueue()
+            server.sendUpdateQueue()
             .then(function(){
                 _val.pageFun.editDatabase.showTable();
                 //removeLoadingSign
-            });*/
+            });
 
 
             /*var queues = _tmp.changedDataQue;

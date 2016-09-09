@@ -335,7 +335,13 @@ function updateDatabase(fileIdStr,queues){
                 database.data.push(queue.value);
                 break;
             case "change":
-                dpIndex = database.data.findIndex(function(datapiece){return datapiece._id === queue.value._id});
+                database.data.forEach(function(datapiece,i){
+                    if(dpIndex !== undefined)  return;
+                    if(datapiece._id === queue.value._id){
+                        dpIndex = i;
+                    }
+                });
+                //dpIndex = database.data.findIndex(function(datapiece){return datapiece._id === queue.value._id});
                 database.data[dpIndex] = fun(queue.value,database.data[dpIndex]);
                 function fun(dp_queue,dp_data){
                     if(Array.isArray(dp_queue)){
@@ -362,7 +368,13 @@ function updateDatabase(fileIdStr,queues){
                 }
                 break;
             case "remove":
-                dpIndex = database.data.findIndex(function(datapiece){return datapiece._id === queue.value._id});
+                database.data.forEach(function(datapiece,i){
+                    if(dpIndex !== undefined)  return;
+                    if(datapiece._id === queue.value._id){
+                        dpIndex = i;
+                    }
+                });
+                //dpIndex = database.data.findIndex(function(datapiece){return datapiece._id === queue.value._id});
                 database.data.splice(dpIndex,1);
                 break;
         }
