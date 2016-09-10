@@ -59,6 +59,8 @@ class ModalWindow{
         this.$background = $('<div class="mw-background"></div>').css("display","none").appendTo($("body"));
         this.$el.append($(option.html));
 
+        this.$el.css("display","none");
+
         this.contentStyle = {
             width:"60%",
             margin:"0",
@@ -66,7 +68,6 @@ class ModalWindow{
             border:"2px solid #aaa",
             background:"#fff",
             position:"fixed",
-            display:"none",
             "z-index":"2"
         };
         this.backgroundStyle = {
