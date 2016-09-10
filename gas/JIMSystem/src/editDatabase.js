@@ -162,17 +162,16 @@ $(function(){
                         if(key !== "") names.push(key);
                         input.attr("name",names.join("-"));
                     })
-                    $table.find('input[type="button"][name^="' + ["table","content",dataTbody._id,dataTbody.column].join("-") + '"]').click();
+                    $table.find('input[type="button"][name^="' + ["table","content",dataTbody._id,dataTbody.column,""].join("-") + '"]').click();
 
                     //挿入箇所を指定した場合に、その番号を空欄にする
                     //nameを変えるのは面倒なので、とりあえず一番下に新しく挿入している
                     var insertPosition = trAdd.find('input[type="text"][name="table-setinsertposition"]').val();
                     if(insertPosition !== "" && !Number.isNaN(insertPosition)){
                         insertPosition = +insertPosition;
-                        var names;
                         for(var i = dataTbody.length; i > insertPosition; i--){
-                            names = ["table","content",dataTbody._id,dataTbody.column,i];
                             dataTbody.keys.forEach(function(key){
+                                var names = ["table","content",dataTbody._id,dataTbody.column,i];
                                 if(key !== ""){
                                     names.push(key);
                                 }
