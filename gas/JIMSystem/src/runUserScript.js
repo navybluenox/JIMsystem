@@ -9,7 +9,7 @@ $(function(){
         },
         runScript:function(){
             var form = $("#formRunUserScript");
-            var content = form.find("textarea").text();
+            var content = form.find("textarea").val();
             eval(content);
         }
     };
