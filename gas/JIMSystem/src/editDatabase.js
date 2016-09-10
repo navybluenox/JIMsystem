@@ -68,7 +68,7 @@ $(function(){
                             $('<tr><td colSpan="' + (keys.length+1) + '"><input type="button" value="add" name="table-addarrayvalue"><input type="text" name="table-setinsertposition" style="width:2em;"></td></tr>')
                                 .appendTo(valueTable.children("tbody"));
                             trAdd.find('td input[name="table-addarrayvalue"]').css("background","#ddddff");                            
-                            trAdd.find('td input[name="table-table-setinsertposition"]').css({"margin":"0 0.5em","text-align":"center"});                            
+                            trAdd.find('td input[name="table-setinsertposition"]').css({"margin":"0 0.5em","text-align":"center"});                            
 
                             valueTable.children("thead").find("th").css({"padding":"0 0.25em","border-bottom-width":"0","text-align":"center"});
                             valueTable.children("tbody").find("td").css({"padding":"0"});
@@ -166,7 +166,7 @@ $(function(){
 
                     //挿入箇所を指定した場合に、その番号を空欄にする
                     //nameを変えるのは面倒なので、とりあえず一番下に新しく挿入している
-                    var insertPosition = trAdd.children('input[type="text"][name="table-setinsertposition"]').val();
+                    var insertPosition = trAdd.find('input[type="text"][name="table-setinsertposition"]').val();
                     if(insertPosition !== "" && !Number.isNaN(insertPosition)){
                         insertPosition = +insertPosition;
                         var names;
