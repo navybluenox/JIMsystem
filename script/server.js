@@ -127,7 +127,7 @@ var Server = (function(){
             return Promise.all(Object.keys(cache).map(function(dataName){
                 return that.getCollectionInfoByName(dataName)
             }).map(function(collInfo){
-                return this.loadData(collInfo);
+                return that.loadData(collInfo);
             }));
         }
         getData(dataName,newCopy){
