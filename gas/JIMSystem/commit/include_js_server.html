@@ -123,9 +123,11 @@ var Server = (function(){
                 return this.loadData(collInfo);
             }));
         }
-        reloadData(collInfos){
-            if(!Array.isArray(collInfos))  collInfos = [collInfos];
-            return Promise.all(collInfos.map(function(collInfo){
+        reloadDataAll(){
+            var that = this;
+            return Promise.all(Object.keys(cache).map(function(dataName){
+                return that.getCollectionInfoByName(dataName)
+            }).map(function(collInfo){
                 return this.loadData(collInfo);
             }));
         }
