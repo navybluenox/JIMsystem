@@ -132,7 +132,7 @@ class ModalWindow{
         return this;
     }
     keepPosition(){
-        this.positionFun();
+        this.positionFun(this);
         return this;
     }
     setContentStyle(cssObj){

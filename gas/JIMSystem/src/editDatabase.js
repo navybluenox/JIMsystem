@@ -180,10 +180,11 @@ $(function(){
             });
         },
         updateData:function(){
+            var la = createLoadingAlert();
+
             var server = _val.server;
             var $table = $("#formEditDatabase_result").children("table"); 
             var ThisDataPiece = Datapiece.getClassByName($("#formEditDatabase [name='databaseName']").val());
-            //TODO displayLoadingSign
 
             var idsCheckedRemove = $table.find('input[type="checkbox"][name^="table-remove-"]').map(function(){
                 var $el = $(this);
@@ -277,7 +278,7 @@ $(function(){
             server.sendUpdateQueue()
             .then(function(){
                 _val.pageFun.editDatabase.showTable();
-                //removeLoadingSign
+                la.remove();
             });
         }
     };

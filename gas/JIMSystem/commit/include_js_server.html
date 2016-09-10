@@ -287,9 +287,50 @@ function runServerFun(funName,_arguments,userObj){
 }
 
 function createLoadingAlert(){
-    var mw = new ModalWindow({"disableClickBackground":true,"html":""});
+    var div = $("div").appendTo($("#modalWindow"));
+    var img = $('<img src="https://jimsystem-a5629.firebaseapp.com/resource/gif-load.gif alt="now loading...">').appendTo(div);
+    
+    div.css("display","none")
 
-    return mw;
+    setStyle();
+    setPosition();
+
+    div.fadeIn("slow");
+
+    var timer;
+    $(window).on("resize.loadingAlert",function(){
+        if(timer !== undefined) clearTimeout(timer);
+            timer = setTimeout(function(){
+            setPosition();
+            setStyle();
+        },200);
+    })
+
+    function setPosition(){
+        var margin = 10;
+        div.css({
+            "left":"" + margin + "px",
+            "top":"" + ($(window).height() - div.outerWidth() - margin) + "px"
+        })
+    }
+    
+    function setStyle(){
+        img.css({
+            "z-index":2,
+            "position":"fixed",
+            "border":"2px solid #00BFFF",
+            "border-radius":"10px",
+            "margin":"0",
+            "padding":"0"
+        })
+    }
+
+    return {
+        "remove":function(){
+            div.fadeOut("slow");
+            div.remove();
+        }
+    }
 }
 
 </script>
