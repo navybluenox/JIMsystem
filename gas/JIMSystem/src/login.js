@@ -17,6 +17,8 @@ $(function(){
                 if(e.keyCode === 13) _val.pageFun.login.sendPass();
             });
             var mw = new ModalWindow({"html":"<p>loading ... </p>","disableClickBackground":true});
+            mw.$el.find("p").css({"text-align":"center"});
+            mw.setContentStyle({"font-size":"2em","font-weight":"bold"});
             new Promise(function(resolve){
                 var s = setInterval(function(){
                     if(_val && _val.server && _val.server instanceof Server && _val.server.isReady()){
@@ -26,7 +28,7 @@ $(function(){
                     }
                 },100);
             }).then(function(){
-                mw.removeWindow();
+                mw.remove();
             });
         },
         sendPass:function(){

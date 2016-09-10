@@ -286,8 +286,8 @@ function runServerFun(funName,_arguments,userObj){
 }
 
 function createLoadingAlert(){
-    var div = $("div").appendTo($("#modalWindow"));
-    var img = $('<img src="https://jimsystem-a5629.firebaseapp.com/resource/gif-load.gif alt="now loading...">').appendTo(div);
+    var div = $("<div></div>").appendTo($("#modalWindow"));
+    var img = $('<img src="https://jimsystem-a5629.firebaseapp.com/resource/gif-load.gif" alt="now updating...">').appendTo(div);
     
     div.css("display","none")
 

@@ -96,7 +96,7 @@ class ModalWindow{
 
         if(!option.disableClickBackground){
             this.$background.off("click").on("click",function(e){
-                that.removeWindow()
+                that.remove()
             })
         }
 
@@ -115,7 +115,7 @@ class ModalWindow{
         })
         return this;
     }
-    removeWindow(){
+    remove(){
         this.$background.remove();
         this.$el.remove();
         $(window).off("resize.modalWindow");
@@ -141,6 +141,7 @@ class ModalWindow{
         Object.keys(cssObj).forEach(function(key){
             that.contentStyle[key] = cssObj[key];
         });
+        this.applyContentStyle();
         return this;
     }
     setBackgroundStyle(cssObj){
@@ -148,6 +149,7 @@ class ModalWindow{
         Object.keys(cssObj).forEach(function(key){
             that.backgroundStyle[key] = cssObj[key];
         });
+        this.applyBackgroundStyle();
         return this;
     }
     setPosition(fun){
