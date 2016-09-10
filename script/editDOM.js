@@ -142,6 +142,7 @@ class ModalWindow{
             that.contentStyle[key] = cssObj[key];
         });
         this.applyContentStyle();
+        this.keepPosition();
         return this;
     }
     setBackgroundStyle(cssObj){
