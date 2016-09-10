@@ -99,8 +99,6 @@ var Server = (function(){
             return runServerFun("Script.loadDataFromDrive",[collInfo.getValue("fileId"),"data"])
             .then(function(v){
                 var collName = collInfo.getValue("name");
-                cache[collName] = [];
-                var c = cache[collName];
                 var thisClass = collInfo.getClass();
                 cache[collName] = v.map(function(dataObj){
                     return new thisClass(dataObj,option);
