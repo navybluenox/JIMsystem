@@ -3,8 +3,9 @@
     <section>
          <form id="formEditDatabase">
              <div id="formEditDatabase_cond">
-                 <select name="databaseName" onchange="_val.pageFun.editDatabase.showTable()"><option value="blank"></option></select><input type="button" value="更新" onclick="_val.pageFun.editDatabase.updateData()">
-                 <p>※systemConfigとcollectionInfoはJSONを直接いじってください。</p>
+                 <div><select name="databaseName" onchange="_val.pageFun.editDatabase.showTable()"><option value="blank"></option></select></div>
+                 <div><input type="button" value="更新" onclick="_val.pageFun.editDatabase.updateData()" style="backgroud:#DB7093;"></div>
+                 <div><p>※systemConfigとcollectionInfoはJSONを直接いじってください。</p></div>
              </div>
              <div id="formEditDatabase_result"></div>
          </form>

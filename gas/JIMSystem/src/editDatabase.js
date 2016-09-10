@@ -12,6 +12,7 @@ $(function(){
                 $("#formEditDatabase select[name='databaseName']").append("<option name='" + collInfo.getValue("name") + "'>" + collInfo.getValue("name") + "</option>");
             });
             _tmp.changedDataQue = [];
+            $("#formEditDatabase_cond").children("div").css({"padding":"10px"});
         },
         showTable:function(){
             var result = document.getElementById("formEditDatabase_result");
