@@ -65,9 +65,9 @@ $(function(){
                             valueTable.children("tbody").data({"length":cellObj.value.length,"keys":keys,"_id":cellObj.rowData._id,"column":cellObj.column});
                             valueTable.children("thead").append("<tr>" + repeatString("<th></th>",keys.length + 1) + "</tr>");
                             var trAdd = valueTable.children("tbody").append(repeatString("<tr>" + repeatString("<td></td>",keys.length + 1) + "</tr>",cellObj.value.length));
-                            $('<tr><td colSpan="' + (keys.length+1) + '"><input type="button" value="add" name="table-addarrayvalue"><span style="font-size:0.8em">挿入位置</span><input type="text" name="table-setinsertposition" style="width:2em;"></td></tr>')
+                            $('<tr><td colSpan="' + (keys.length+1) + '"><input type="button" value="add" name="table-addarrayvalue"><span style="font-size:0.8em; padding:0 0.25em">挿入位置：</span><input type="text" name="table-setinsertposition" style="width:2em;"></td></tr>')
                                 .appendTo(valueTable.children("tbody"));
-                            trAdd.find('td input[name="table-addarrayvalue"]').css("background","#ddddff");                            
+                            trAdd.find('td input[name="table-addarrayvalue"]').css({"margin":"0 0.5em","background":"#ddddff"});                            
                             trAdd.find('td input[name="table-setinsertposition"]').css({"margin":"0 0.5em","text-align":"center"});                            
 
                             valueTable.children("thead").find("th").css({"padding":"0 0.25em","border-bottom-width":"0","text-align":"center"});
