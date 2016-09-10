@@ -6,10 +6,11 @@ $(function(){
         openSearchWindow:function(){
             var sw = new ModalWindow({"html":[
                 '<table><tbody>',
-                '<tr><td><select name="collName"></select></td><td rowSpan="4" name="result"></td></tr>',
+                '<tr><td><select name="collName"></select></td><td rowSpan="4" name="resultField"></td><td rowSpan="4" name="dataField"></td></tr>',
                 '<tr><td><select name="column"></select></td></tr>',
                 '<tr><td><input type="text" name="keyword"></td></tr>',
                 '<tr><td><input type="button" name="search" value="検索"></td></tr>',
+                '<tr><td><input type="button" name="cancel" value="終了"></td></tr>',
                 '</table></tbody>'
             ].join("")});
             sw.setContentStyle({
@@ -19,6 +20,8 @@ $(function(){
             sw.keepPosition();
 
             var el = sw.$el;
+            el.find("td").css({"border-bottom-width":"0","padding":"0.5ex 0"});
+
             el.find('[name="collName"]').append([
                 '<option value="" selected></option>',
                 _val.server.getData("collectionInfo").map(function(collObj){
@@ -52,11 +55,16 @@ $(function(){
                 })
             });
 
+            el.find('[name="cancel"]').on("click",function(e){
+                sw.remove();
+            });
+
             el.find('[name="search"]').on("click",function(){
                 var dataName = el.find('[name="collName"]').val();
                 var column = el.find('[name="column"]').val();
                 var keyword = el.find('[name="column"]').val();
                 var data;
+                var result = el.find('[name="resultField"]');
                 (!_val.server.isLoadedData(dataName) ? _val.server.loadDataByName(dataName) : Promise.resolve()).then(function(){
                     data = _val.server.getData(dataName).filter(function(dp){
                         var value = dp.getValue(column);
@@ -74,12 +82,15 @@ $(function(){
                                 return;
                         }
                     });
+                    //TODO create table under [name="resultField"]
+                    //show _id and value(column's data')
+                    //add click(or mouseover) event on _id(tag a? or button?)
+                    console.log(data);
                 })
             })
 
 
 
-            var result = el.find('[name="result"]');
 
         }
     };

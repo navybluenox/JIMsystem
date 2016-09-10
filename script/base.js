@@ -218,21 +218,21 @@ var LocalDate = (function(){
             }
         }
         static getStandardTime(){
-            return new Date(_config.getValue("base.standardTime"));
+            return new Date(_config.getValue("content.base.standardTime"));
         }
         static getTimeUnit(){
-            return _config.getValue("workAssign.timeUnit");
+            return _config.getValue("content.workAssign.timeUnit");
         }
         static getOpenTime(day){
-            var obj = _config.getValue("base.openTime")[day-1];
+            var obj = _config.getValue("content.base.openTime")[day-1];
             return {
                 "start":new LocalDate(obj.start),
                 "end":new LocalDate(obj.end)
             };
         }
         static getWorkTime(day){
-            var startDay = _config.getValue("workAssign.workStart");
-            var obj = _config.getValue("workAssign.workTime")[day-startDay];
+            var startDay = _config.getValue("content.workAssign.workStart");
+            var obj = _config.getValue("content.workAssign.workTime")[day-startDay];
             return {
                 "start":new LocalDate(obj.start),
                 "end":new LocalDate(obj.end)
