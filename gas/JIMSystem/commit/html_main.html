@@ -18,20 +18,22 @@
 	<body>
 		<div>
 			<header>
-				<h1>JIMシステム</h1>
-                <div id="session">
-                    <span id="sessionName"></span>
-                </div>
-                <div id="reloadData">
-                    <input type="button" value="データをリロード" onclick="_val.server.reloadDataAll()" style="fload: right">
-                </div>
-				<ul id="menubar">
-					<li><a href="#1" onclick='movePage("editDatabase","content")'>editDatabase</a></li>
-					<li><a href="#2" onclick='movePage("editWorkSpec","content")'>editWorkSpec</a></li>
-					<li><a href="#3" onclick='movePage("assignWork","content")'>assignWork</a></li>
-					<li><a href="#4">blank</a></li>
-					<li><a href="#5" onclick='movePage("runUserScript","content")'>runUserScript</a></li>
-				</ul>
+				<div>
+					<h1>JIMシステム</h1>
+					<div id="session">
+						<span id="sessionName"></span>
+					</div>
+					<div id="reloadData">
+						<input type="button" value="データをリロード" onclick="_val.server.reloadDataAll()">
+					</div>
+					<ul id="menubar">
+						<li><a href="#1" onclick='movePage("editDatabase","content")'>editDatabase</a></li>
+						<li><a href="#2" onclick='movePage("editWorkSpec","content")'>editWorkSpec</a></li>
+						<li><a href="#3" onclick='movePage("assignWork","content")'>assignWork</a></li>
+						<li><a href="#4">blank</a></li>
+						<li><a href="#5" onclick='movePage("runUserScript","content")'>runUserScript</a></li>
+					</ul>
+				</div>
             </header>
             <main>
                 <div id="content"></div>
