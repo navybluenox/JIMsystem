@@ -65,7 +65,7 @@ $(function(){
                             valueTable.children("tbody").data({"length":cellObj.value.length,"keys":keys,"_id":cellObj.rowData._id,"column":cellObj.column});
                             valueTable.children("thead").append("<tr>" + repeatString("<th></th>",keys.length + 1) + "</tr>");
                             valueTable.children("tbody").append(repeatString("<tr>" + repeatString("<td></td>",keys.length + 1) + "</tr>",cellObj.value.length));
-                            $('<tr><td colSpan="' + (keys.length+1) + '"><input type="button" value="add" name="table-addarrayvalue"></td></tr>')
+                            $('<tr><td colSpan="' + (keys.length+1) + '"><input type="button" value="add" name="table-addarrayvalue"><input type="text" name="table-setinsertposition" style="width:2em;"></td></tr>')
                                 .appendTo(valueTable.children("tbody"))
                                 .find("td input")
                                 .css("background","#ddddff");                            
@@ -163,6 +163,28 @@ $(function(){
                         input.attr("name",names.join("-"));
                     })
                     $table.find('input[type="button"][name^="' + ["table","content",dataTbody._id,dataTbody.column].join("-") + '"]').click();
+
+                    //挿入箇所を指定した場合に、その番号を空欄にする
+                    //nameを変えるのは面倒なので、とりあえず一番下に新しく挿入している
+                    var insertPosition = trAdd.children('input[type="text"][name="table-setinsertposition"]').val();
+                    if(insertPosition !== "" && !Number.isNaN(insertPosition)){
+                        insertPosition = +insertPosition;
+                        var names;
+                        for(var i = dataTbody.length; i > insertPosition; i--){
+                            names = ["table","content",dataTbody._id,dataTbody.column,i];
+                            dataTbody.keys.forEach(function(key){
+                                if(key !== ""){
+                                    names.push(key);
+                                }
+                                var targetTo = $(tbody).find('input[name="' + names.join("-") + '"]');
+                                names[4] = i-1;
+                                var targetFrom = $(tbody).find('input[name="' + names.join("-") + '"]');
+                                targetTo.val(targetFrom.val());
+                                targetFrom.val("");
+                            })
+                        }
+                    }
+
                     tbody.data("length",dataTbody.length+1);
                 });
 
