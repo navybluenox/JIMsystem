@@ -70,6 +70,7 @@
             "name":"string",
             "nameShort":"string",
             "leaderId":"string",
+            "leaderIncharge":"string",
             "detail":[{
                 "start":"localdate",
                 "time":"number",

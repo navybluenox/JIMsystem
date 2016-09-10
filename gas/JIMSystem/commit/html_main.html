@@ -24,7 +24,11 @@
 						<span id="sessionName"></span>
 					</div>
 					<div id="reloadData">
-						<input type="button" value="データをリロード" onclick="_val.server.reloadDataAll()">
+						<table><tbody>
+							<tr><td><input type="button" value="データをリロード" onclick="_val.server.reloadDataAll()"></td></tr>
+							<tr><td><input type="button" value="データを検索" onclick="_val.pageFun.main.openSearchWindow()"></td></tr>
+						</tbody></table>
+						
 					</div>
 					<ul id="menubar">
 						<li><a href="#1" onclick='movePage("editDatabase","content")'>editDatabase</a></li>

@@ -58,6 +58,8 @@ class ModalWindow{
         this.$el = $('<div class="mw-content"></div>').css("display","none").appendTo(this.$parent);
         this.$background = $('<div class="mw-background"></div>').css("display","none").appendTo($("body"));
         this.$el.append($(option.html));
+        this.positionLeft = 1/2;
+        this.positionTop = 1/2;
 
         this.$el.css("display","none");
 
@@ -82,8 +84,8 @@ class ModalWindow{
         this.positionFun = function(){
             var $window = $(window);
             this.$el.css({
-                left:(($window.width() - this.$el.outerWidth())/2) + "px",
-                top:(($window.height() - this.$el.outerHeight())/2)*(2/3) + "px"
+                left:($window.width()*this.positionLeft - this.$el.outerWidth()/2) + "px",
+                top:($window.height()*this.positionTop - this.$el.outerHeight()/2) + "px"
             });
         }
 

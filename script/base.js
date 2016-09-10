@@ -196,6 +196,14 @@ var LocalDate = (function(){
                         this._localTime = (new Date(timeValue.replace(/local_/,""))).getTime() - standardTime.getTime();
                     }else if(/^local_-?\d+$/.test(timeValue)){
                         this._localTime = +(timeValue.replace(/local_/,""));
+                    }else if(timeValue !== "" && /^(?:-?\d{1,2}日目)?(?:\d{1,2}時)?(?:\d{1,2}分)?(?:\d{1,2}秒)?(?:\d{1,3}ミリ秒)?$/.test(timeValue)){
+                        var arr = /^(?:(-?\d{1,2})日目)?(?:(\d{1,2})時)?(?:(\d{1,2})分)?(?:(\d{1,2})秒)?(?:(\d{1,3})ミリ秒)?$/.exec(timeValue);
+                        //index 1->day 2->hour 3->minute 4->second 5->millsecond
+                        var obj = {};
+                        for(var i=1,l=arr.length;i<l;i++){
+                            if(arr[i] !== undefined)  obj[[null,"day","hour","minute","second","millsecond"][i]] = +arr[i];
+                        }
+                        this._localTime = (new LocalDate(obj)).getLocalTime();
                     }else{
                         targetTime = new Date(timeValue);
                         this._localTime = targetTime.getTime() - standardTime.getTime();
