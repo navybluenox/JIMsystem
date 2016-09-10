@@ -38,17 +38,15 @@
             "azusaId":"number",
             "azusaSendName":"string",
             "grade":"number",
-            "name_last":"string",
-            "name_first":"string",
-            "name_last_phonetic":"string",
-            "name_first_phonetic":"string",
+            "nameLast":"string",
+            "nameFirst":"string",
+            "nameLastPhonetic":"string",
+            "nameFirstPhonetic":"string",
             "incharge":["string"],
             "inchargeCode":["string"],
             "oldInchargeCode":[{"org":"string","nth":"number","incharge":"string"}],
             "isRojin":"boolean",
             "isAvailable":"boolean"
-
-
         }},
         {"_id":"fZBpdfgWyMZdAp3W","created":"2016-07-18T08:00:00.000Z","updated":"2016-07-18T08:00:00.000Z","name":"userGroup","fileId":"0B88bKUOZP4-AQ01mUnoyTmZIUUk","column":{
             "_id":"string",
@@ -68,7 +66,19 @@
         {"_id":"eXjsCFLMFMkuaNMc","created":"2016-07-18T08:00:00.000Z","updated":"2016-07-18T08:00:00.000Z","name":"workList","fileId":"0B88bKUOZP4-AUHR5T1AwWkdVTXc","column":{
             "_id":"string",
             "created":"date",
-            "updated":"date"
+            "updated":"date",
+            "name":"string",
+            "nameShort":"string",
+            "leaderId":"string",
+            "detail":[{
+                "start":"localdate",
+                "time":"number",
+                "number":"string"
+            }],
+            "description":"string",
+            "condition":"string",
+            "note":"string",
+            "asAssined":"boolean"
         }},
         {"_id":"E5XwwhcfPLrWKJfr","created":"2016-07-18T08:00:00.000Z","updated":"2016-07-18T08:00:00.000Z","name":"workNotAssigned","fileId":"0B88bKUOZP4-ATzhueWlNR2NSdm8","column":{
             "_id":"string",
