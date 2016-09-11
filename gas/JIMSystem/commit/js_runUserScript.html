@@ -9,6 +9,10 @@ $(function(){
                 }
                 if(e.ctrlKey && e.shiftKey && e.keyCode === 83){
                     localStorage.setItem("userScript",textarea.val());
+                    var el = $("<p>保存しました</p>").appendTo($("#formRunUserScript"));
+                    setTimeout(function(){
+                        el.remove();
+                    },3000)
                 }
             })
             var script = localStorage.getItem("userScript");
