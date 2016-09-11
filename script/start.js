@@ -57,7 +57,7 @@
         }).then(function(){
             _val.server = new Server();
             _val.server.onReady(function(that){
-                _val.server.loadDataByName("systemConfig")
+                _val.server.loadData("systemConfig")
                 .then(function(v){
                     _val.config = v.find(function(v1){
                         return v1.getValue("modeName") === _val.baseConfig.mode;

@@ -83,10 +83,14 @@ var Server = (function(){
             return cache[dataName] !== undefined;
         }
         loadData(collInfo,option){
+            //collInfo:CollectionInfo型かdataName(String型)を要求
             if(!(collInfo instanceof CollectionInfo)){
-                console.log("Error : An argument of fun:loadData is not an instance of CollectionInfo");
-                console.log(collInfo);
-                throw new Error();
+                collInfo = this.getCollectionInfoByName(collInfo);
+                if(collInfo === undefined){
+                    console.log("Error : An argument of fun:loadData is not an instance of CollectionInfo");
+                    console.log(collInfo);
+                    throw new Error();
+                }
             }
             console.log("loadData : " + collInfo.getValue("name"));
             if(option === undefined || classof(option) === "object"){

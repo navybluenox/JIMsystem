@@ -22,7 +22,7 @@ $(function(){
             $(result).children().remove();
 
             if(!_val.server.isLoadedData(dataName)){
-                promise = _val.server.loadDataByName(dataName);
+                promise = _val.server.loadData(dataName);
             }else{
                 promise = Promise.resolve();
             }

@@ -41,7 +41,7 @@ $(function(){
 
                 var promise;
                 if(!_val.server.isLoadedData(dataName)){
-                    promise = _val.server.loadDataByName(dataName);
+                    promise = _val.server.loadData(dataName);
                 }else{
                     promise = Promise.resolve();
                 }
@@ -65,7 +65,7 @@ $(function(){
                 var keyword = el.find('[name="column"]').val();
                 var data;
                 var result = el.find('[name="resultField"]');
-                (!_val.server.isLoadedData(dataName) ? _val.server.loadDataByName(dataName) : Promise.resolve()).then(function(){
+                (!_val.server.isLoadedData(dataName) ? _val.server.loadData(dataName) : Promise.resolve()).then(function(){
                     data = _val.server.getData(dataName).filter(function(dp){
                         var value = dp.getValue(column);
                         switch(classof(value)){
