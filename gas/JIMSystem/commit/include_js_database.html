@@ -215,8 +215,14 @@ var Datapiece = (function(){
                             d = {};
                         }
                         Object.keys(dpObj).forEach(function(key){
-                            if(colObj[key] !== undefined){
-                                goDeepLevelValue(dpObj[key],colObj[key],d[key],d,key,op);
+                            if(/^@/.test(key)){
+                                //autoKeyモード
+                                //setterがうまくやってくれるはず
+                                dpObj[key] = d[key];
+                            }else{
+                                if(colObj[key] !== undefined){
+                                    goDeepLevelValue(dpObj[key],colObj[key],d[key],d,key,op);
+                                }
                             }
                         });
                         return d;
@@ -247,13 +253,18 @@ var Datapiece = (function(){
         //非推奨
         setValue(colName,value){
             var colType;
-            try{
-                colType = getValueFromObjectByKey(this._collInfo.getValue("column"),colName);
-            }catch(e){
-                console.log("Attention : " + "There is no property(" + colName + ") of" + this.getDataName() + " (Datapiece.prototype.setValue)");
-                return this;
+            if(/^@/.test(colName)){
+                //autoKeyモード
+                this._data[colName] = value;
+            }else{
+                try{
+                    colType = getValueFromObjectByKey(this._collInfo.getValue("column"),colName);
+                }catch(e){
+                    console.log("Attention : " + "There is no property(" + colName + ") of" + this.getDataName() + " (Datapiece.prototype.setValue)");
+                    return this;
+                }
+                this._data[colName] = castType(value,colType);
             }
-            this._data[colName] = castType(value,colType);
             return this;
         }
         setNewId(overwrite){
