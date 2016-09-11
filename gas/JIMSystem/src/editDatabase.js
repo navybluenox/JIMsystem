@@ -104,7 +104,7 @@ $(function(){
 
                 //行追加ボタンを作成
                 $('<tr><td colSpan="' + columns.length +'"><input type="button" value="add" name="table-add-data"></td></tr>').appendTo($table.children("tbody")).find("td input")
-                .css({"width":"216px","background":"#ddddff"})
+                .css({"width":"216px","background":"#00ff7f"})
                 .data({"num_newdata":0})
                 .on("click",function(e){
                     var trAdd = $(e.currentTarget).parent("td").parent("tr");

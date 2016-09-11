@@ -107,9 +107,9 @@ class ModalWindow{
             option.callback(this.$el,this.$background)
         }
 
-        var timer = false;
+        var timer;
         $(window).on("resize.modalWindow",function(){
-            if(timer !== false) clearTimeout(timer);
+            if(timer !== undefined) clearTimeout(timer);
             timer = setTimeout(function(){
                 that.keepPosition();
                 that.applyContentStyle();

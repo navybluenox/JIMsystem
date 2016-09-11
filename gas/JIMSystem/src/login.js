@@ -13,7 +13,12 @@
 $(function(){
     _val.pageFun.login = {
         onload:function(){
-            $("#pass").bind("keydown",function(e){
+            $(window).on("error",function(e){
+                console.log("Uncaught Error!");
+                console.log(e);
+                alert(["予期せぬエラーが発生しました。","再現性がある場合、管理者まで報告してください。",e].join("\n"));
+            });
+            $("#pass").on("keydown",function(e){
                 if(e.keyCode === 13) _val.pageFun.login.sendPass();
             });
             var mw = new ModalWindow({"html":"<p>loading ... </p>","disableClickBackground":true});
