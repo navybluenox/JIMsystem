@@ -218,7 +218,7 @@ var Datapiece = (function(){
                             if(/^@/.test(key)){
                                 //autoKeyモード
                                 //setterがうまくやってくれるはず
-                                dpObj[key] = d[key];
+                                d[key] = dpObj[key];
                             }else{
                                 if(colObj[key] !== undefined){
                                     goDeepLevelValue(dpObj[key],colObj[key],d[key],d,key,op);
