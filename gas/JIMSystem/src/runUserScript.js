@@ -6,7 +6,7 @@ $(function(){
                 if(e.ctrlKey && e.keyCode === 13){
                     _val.pageFun.runUserScript.runScript();
                 }
-                if(e.ctrlKey && e.keyCode === 83){
+                if(e.ctrlKey && e.shiftKey && e.keyCode === 83){
                     localStorage.setItem("userScript",textarea.val());
                 }
             })

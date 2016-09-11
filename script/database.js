@@ -243,6 +243,7 @@ var Datapiece = (function(){
             }
             return this;
         }
+        //非推奨
         setValue(colName,value){
             var colType;
             try{
@@ -257,7 +258,7 @@ var Datapiece = (function(){
         setNewId(overwrite){
             if(overwrite === undefined) overwrite = false;
             if(!overwrite && this.getValue("_id") !== undefined) return this;
-            this.setValue("_id",Datapiece.getNewId(this.getDataName()));
+            this.setValues({"_id":Datapiece.getNewId(this.getDataName())});
             return this;
         }
         //消すかも
@@ -443,7 +444,7 @@ class WorkList extends Datapiece{
                     return ret;
                 })
             },"set":function(value){
-                that.setValue("detail",value.map(function(obj){
+                that.setValues({"detail":value.map(function(obj){
                     if(obj === undefined || classof(obj) !== "object")  return;
                     if(obj.number !== undefined && classof(obj.number) === "array"){
                         obj.number = obj.number.join(",");
@@ -451,7 +452,7 @@ class WorkList extends Datapiece{
                         delete obj.number;
                     }
                     return obj;
-                }));
+                })});
             }
         })
     }

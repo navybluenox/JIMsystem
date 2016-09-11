@@ -116,9 +116,6 @@ var Server = (function(){
                 console.log(e);
             });
         }
-        loadDataByName(dataName,option){
-            return this.loadData(this.getCollectionInfoByName(dataName));
-        }
         loadDataAll(){
             return Promise.all(cache.collectionInfo.map(function(collInfo){
                 return this.loadData(collInfo);
@@ -175,12 +172,12 @@ var Server = (function(){
                 that._updatingQueue = that._updatingQueue.map(function(queue){
                     switch(queue.kind){
                         case "change":
-                            queue.value.setValue("updated",nowTime);
+                            queue.value.setValues({"updated":nowTime});
                             return queue;
                         case "add":
                             queue.value
-                                .setValue("created",nowTime)
-                                .setValue("updated",nowTime)
+                                .setValues({"created":nowTime})
+                                .setValues({"updated":nowTime})
                                 .setNewId();
                             return queue;
                         case "remove":
