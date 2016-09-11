@@ -15,8 +15,14 @@ $(function(){
         onload:function(){
             $(window).on("error",function(e){
                 console.log("Uncaught Error!");
-                console.log(e);
-                alert(["予期せぬエラーが発生しました。","再現性がある場合、管理者まで報告してください。",e].join("\n"));
+                console.log("eventObject",e.originalEvent);
+                console.log("errorObject",e.originalEvent.error);
+                alert(["予期せぬエラーが発生しました。","再現性がある場合、管理者まで報告してください。","//ブラウザのログにエラーの詳細がのっているから、PCの画面を見せてくれたほうが助かる",
+                [
+                    "message:" + e.originalEvent.message,
+                    "line No.:" + e.originalEvent.lineno,
+                    "Column No.:" + e.originalEvent.colno
+                ].join("\n")].join("\n"));
             });
             $("#pass").on("keydown",function(e){
                 if(e.keyCode === 13) _val.pageFun.login.sendPass();
