@@ -428,19 +428,21 @@ class WorkGroup extends Datapiece{
 class WorkList extends Datapiece{
     constructor(datapieceObj,option){
         super(datapieceObj,"workList",option);
-    }
-    get auto_detail(){
-        return this.getValue("detail").map(function(obj){
-            obj.number = obj.number.split(",");
-        })
-    }
-    set auto_detail(value){
-        this.detail = value.map(function(obj){
-            if(obj === undefined || classof(obj) !== "object")  return;
-            if(obj.detail !== undefined){
-                obj.detail = obj.detail.join(",");
+        var that = this;
+        Object.defineProperty(this._data,"@detail",{
+            "get":function(){
+                return this.getValue("detail").map(function(obj){
+                    obj.number = obj.number.split(",");
+                })
+            },"set":function(value){
+                this.detail = value.map(function(obj){
+                    if(obj === undefined || classof(obj) !== "object")  return;
+                    if(obj.detail !== undefined){
+                        obj.detail = obj.detail.join(",");
+                    }
+                    return obj;
+                })
             }
-            return obj;
         })
     }
 }
