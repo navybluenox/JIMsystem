@@ -432,16 +432,26 @@ class WorkList extends Datapiece{
         Object.defineProperty(this._data,"@detail",{
             "get":function(){
                 return that.getValue("detail").map(function(obj){
-                    obj.number = obj.number.split(",");
+                    var ret = {};
+                    Object.keys(obj).forEach(function(key){
+                        if(key === "number"){
+                            ret[key] = obj[key].split(",");
+                        }else{
+                            ret[key] = obj[key];
+                        }
+                    })
+                    return ret;
                 })
             },"set":function(value){
-                that.detail = value.map(function(obj){
+                that.setValue("detail",value.map(function(obj){
                     if(obj === undefined || classof(obj) !== "object")  return;
-                    if(obj.detail !== undefined){
-                        obj.detail = obj.detail.join(",");
+                    if(obj.number !== undefined && classof(obj.number) === "array"){
+                        obj.number = obj.number.join(",");
+                    }else{
+                        delete obj.number;
                     }
                     return obj;
-                })
+                }));
             }
         })
     }

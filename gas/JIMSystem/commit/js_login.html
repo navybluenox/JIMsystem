@@ -20,9 +20,10 @@ $(function(){
                 console.log("errorObject",e.originalEvent.error);
                 alert(["予期せぬエラーが発生しました。","再現性がある場合、管理者まで報告してください。","//ブラウザのログにエラーの詳細がのっているから、PCの画面を見せてくれたほうが助かる",
                 [
-                    "message:" + e.originalEvent.message,
-                    "line No.:" + e.originalEvent.lineno,
-                    "Column No.:" + e.originalEvent.colno
+                    "Message:" + e.originalEvent.message,
+                    "Line:" + e.originalEvent.lineno,
+                    "Column:" + e.originalEvent.colno,
+                    "filename:" + e.originalEvent.filename
                 ].join("\n")].join("\n"));
             });
             $("#pass").on("keydown",function(e){
