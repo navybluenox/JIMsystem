@@ -6,9 +6,9 @@ $(function(){
         openSearchWindow:function(){
             var sw = new ModalWindow({"html":[
                 '<table><tbody>',
-                '<tr><td><select name="collName"></select></td><td rowSpan="4" name="resultField"></td><td rowSpan="4" name="dataField"></td></tr>',
-                '<tr><td><select name="column"></select></td></tr>',
-                '<tr><td><input type="text" name="keyword"></td></tr>',
+                '<tr><td>データ名：<select name="collName"></select></td><td rowSpan="4" name="resultField"></td><td rowSpan="4" name="dataField"></td></tr>',
+                '<tr><td>カラム名：<select name="column"></select></td></tr>',
+                '<tr><td>検索ワード<input type="text" name="keyword"></td></tr>',
                 '<tr><td><input type="button" name="search" value="検索"></td></tr>',
                 '<tr><td><input type="button" name="cancel" value="終了"></td></tr>',
                 '</table></tbody>'

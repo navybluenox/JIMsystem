@@ -463,7 +463,7 @@ class WorkList extends Datapiece{
                         delete obj.number;
                     }
                     return obj;
-                })});
+                })},{overwrite:true});
             }
         })
     }
