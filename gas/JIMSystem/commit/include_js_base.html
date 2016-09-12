@@ -195,7 +195,7 @@ var LocalDate = (function(){
                     ){
                         this._localTime = (new Date(timeValue.replace(/local_/,""))).getTime() - standardTime.getTime();
                     }else if(/^local_-?\d+$/.test(timeValue)){
-                        this._localTime = +(timeValue.replace(/local_/,""));
+                        this._localTime = +(timeValue.replace(/^local_/,""));
                     }else if(timeValue !== "" && /^(?:-?\d{1,2}日目)?(?:\d{1,2}時)?(?:\d{1,2}分)?(?:\d{1,2}秒)?(?:\d{1,3}ミリ秒)?$/.test(timeValue)){
                         var arr = /^(?:(-?\d{1,2})日目)?(?:(\d{1,2})時)?(?:(\d{1,2})分)?(?:(\d{1,2})秒)?(?:(\d{1,3})ミリ秒)?$/.exec(timeValue);
                         //index 1->day 2->hour 3->minute 4->second 5->millsecond
@@ -274,7 +274,7 @@ var LocalDate = (function(){
             return new Date(LocalDate.getStandardTime().getTime() + this._localTime);
         }
         toJSON(){
-            return JSON.stringify("local_" + this.getLocalTime());
+            return "local_" + this.getLocalTime();
         }
         toISOString(){
             return "local_" + this.getAsDate().toISOString();
