@@ -18,7 +18,7 @@ function getPageFromServer(pageName){
     return runServerFun("getPage",[pageName]);
 }
 
-function movePage(pageName,insertTag){
+function movePage(pageName,insertTag,option){
     if(typeof insertTag === "string"){
         switch(insertTag){
             case "content":
@@ -26,6 +26,9 @@ function movePage(pageName,insertTag){
                 break;
         }
     }
+    if(option === undefined)  option = {};
+    if(option.state === undefined)  option.state = {};
+    if(option.parameters === undefined)  option.parameters = {};
     return getPageFromServer(pageName)
     .then(function(v){
         if(insertTag !== undefined){
@@ -33,6 +36,9 @@ function movePage(pageName,insertTag){
         }
         return v;
     }).then(function(v){
+        //after change page
+        //set handler here
+        google.script.history.push(option.state,option.parameters,pageName);
         if(_val.pageFun && _val.pageFun[pageName] && _val.pageFun[pageName].onload){
             _val.pageFun[pageName].onload();
         }

@@ -2,7 +2,9 @@
 $(function(){
     _val.pageFun.main = {
         onload:function(){
-
+            google.script.history.setChangeHandler(function (e) {
+                movePage(e.location.hash,"content",{state:e.state,parameters:e.location.parameters});
+            });
         },
         openSearchWindow:function(){
             var sw = new ModalWindow({"html":[

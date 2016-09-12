@@ -53,14 +53,11 @@ $(function(){
                     el.textContent = "パスワードが間違っています";
                     document.getElementById("passdiv").appendChild(el);
                 }else{
-                    _val.pageFun.login.loadData();
                     $(document.documentElement).children().remove();
                     document.documentElement.innerHTML = innerHtml;
+                    _val.pageFun.main.onload();
                 }
             });
-        },
-        loadData:function(){
-            
         }
     }
     _val.pageFun.login.onload();
