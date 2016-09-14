@@ -283,6 +283,9 @@ var Datapiece = (function(){
         toJSON(){
             return this._data;
         }
+        toString(){
+            return JSON.stringify({"dataName":this.getDataName(), "data":this.toJSON()})
+        }
         getDataName(){
             return this._dataName;
         }

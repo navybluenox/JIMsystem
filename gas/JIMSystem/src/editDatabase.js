@@ -202,7 +202,7 @@ $(function(){
             });
         },
         updateData:function(){
-            var la = createLoadingAlert();
+            var la = new createLoadingAlert();
 
             var server = _val.server;
             var $table = $("#formEditDatabase_result").children("table"); 

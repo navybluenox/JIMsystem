@@ -64,7 +64,7 @@ $(function(){
             el.find('[name="search"]').on("click",function(){
                 var dataName = el.find('[name="collName"]').val();
                 var column = el.find('[name="column"]').val();
-                var keyword = el.find('[name="column"]').val();
+                var keyword = el.find('[name="keyword"]').val();
                 var data;
                 var result = el.find('[name="resultField"]');
                 (!_val.server.isLoadedData(dataName) ? _val.server.loadData(dataName) : Promise.resolve()).then(function(){
@@ -73,7 +73,7 @@ $(function(){
                         switch(classof(value)){
                             case "string":
                             case "number":
-                            case "number":
+                            case "boolean":
                             case "null":
                                 return (new RegExp(keyword)).test("" + value);
                             case "date":

@@ -83,12 +83,14 @@ var Server = (function(){
             return cache[dataName] !== undefined;
         }
         loadData(collInfo,option){
+            var la = new createLoadingAlert();
             //collInfo:CollectionInfo型かdataName(String型)を要求
             if(!(collInfo instanceof CollectionInfo)){
                 collInfo = this.getCollectionInfoByName(collInfo);
                 if(collInfo === undefined){
                     console.log("Error : An argument of fun:loadData is not an instance of CollectionInfo");
                     console.log(collInfo);
+                    la.remove();
                     throw new Error();
                 }
             }
@@ -115,6 +117,7 @@ var Server = (function(){
             .catch(function(e){
                 that._loading = that._loading.filter(function(obj){return obj.id !== loadingId});
                 console.log(e);
+                la.remove();
             });
         }
         loadDataAll(){
@@ -287,52 +290,50 @@ function runServerFun(funName,_arguments,userObj){
     });
 }
 
-function createLoadingAlert(){
-    var div = $("<div></div>").appendTo($("#modalWindow"));
-    var img = $('<img src="https://jimsystem-a5629.firebaseapp.com/resource/gif-load.gif" alt="now updating...">').appendTo(div);
-    
-    div.css("display","none")
-
-    setStyle();
-    setPosition();
-
-    div.fadeIn("slow");
-
-    var timer;
-    $(window).on("resize.loadingAlert",function(){
-        if(timer !== undefined) clearTimeout(timer);
-            timer = setTimeout(function(){
-            setPosition();
+(function(){
+    var img = $('<img src="https://jimsystem-a5629.firebaseapp.com/resource/gif-load.gif" alt="now updating...">');
+    return class createLoadingAlert{
+        constructor(){
+            var that = this;
+            this._div = $("<div></div>").appendTo($("#modalWindow"));
+            this._div.append(img);
+            this._div.css("display","none")
             setStyle();
-        },200);
-    })
-
-    function setPosition(){
-        var margin = 10;
-        div.css({
-            "left":"" + margin + "px",
-            "top":"" + ($(window).height() - div.outerWidth() - margin) + "px"
-        })
-    }
-    
-    function setStyle(){
-        div.css({
-            "z-index":2,
-            "position":"fixed",
-            "border":"2px solid #FFFFFF",
-            "border-radius":"10px",
-            "margin":"0",
-            "padding":"0",
-            "backgroud":"#FFFFFF"
-        })
-    }
-
-    return {
-        "remove":function(){
-            div.fadeOut("slow");
-            div.remove();
+            setPosition();
+            this._div.fadeIn("slow");
+            var timer;
+            $(window).on("resize.loadingAlert",function(){
+                if(timer !== undefined) clearTimeout(timer);
+                    timer = setTimeout(function(){
+                    setPosition();
+                    setStyle();
+                },200);
+            })
+            function setPosition(){
+                var margin = 10;
+                that._div.css({
+                    "left":"" + margin + "px",
+                    "top":"" + ($(window).height() - that._div.outerWidth() - margin) + "px"
+                })
+            }
+            function setStyle(){
+                that._div.css({
+                    "z-index":2,
+                    "position":"fixed",
+                    "border":"2px solid #FFFFFF",
+                    "border-radius":"10px",
+                    "margin":"0",
+                    "padding":"0",
+                    "backgroud":"#FFFFFF"
+                })
+            }
+        }
+        remove(){
+            this._div.fadeOut("slow");
+            this._div.remove();
         }
     }
-}
+})();
+
 
 </script>
