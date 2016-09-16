@@ -290,7 +290,7 @@ function runServerFun(funName,_arguments,userObj){
     });
 }
 
-(function(){
+var createLoadingAlert = (function(){
     var img = $('<img src="https://jimsystem-a5629.firebaseapp.com/resource/gif-load.gif" alt="now updating...">');
     return class createLoadingAlert{
         constructor(){
