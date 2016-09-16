@@ -58,9 +58,15 @@ $(function(){
                 })
             });
 
+            el.find('[name="keyword"]').on("keydown",function(e){
+                if(e.keyCode === 13){
+                    el.find('[name="search"]').trigger("click");
+                }
+            })
+
             el.find('[name="cancel"]').on("click",function(e){
                 sw.remove();
-            });
+            });            
 
             el.find('[name="search"]').on("click",function(){
                 var dataName = el.find('[name="collName"]').val();
