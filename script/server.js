@@ -111,6 +111,7 @@ var Server = (function(){
                 });
                 that._loading = that._loading.filter(function(obj){return obj.id !== loadingId});
                 console.log(cache[collName]);
+                la.remove();
                 return cache[collName];
             })
             .catch(function(e){
@@ -158,6 +159,7 @@ var Server = (function(){
         sendUpdateQueue(){
             var that = this;
             var nowTime;
+            var la = new createLoadingAlert();
             return (new Promise(function(resolve,reject){
                 var si = setInterval(function(){
                     if(!that._updating){
@@ -234,7 +236,7 @@ var Server = (function(){
                 }
             }).then(function(){
                 that._updating = false;
-
+                la.remove();
             });
         }
         changeData(datapieces){

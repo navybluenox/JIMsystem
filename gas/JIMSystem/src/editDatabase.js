@@ -202,8 +202,6 @@ $(function(){
             });
         },
         updateData:function(){
-            var la = new createLoadingAlert();
-
             var server = _val.server;
             var $table = $("#formEditDatabase_result").children("table"); 
             var ThisDataPiece = Datapiece.getClassByName($("#formEditDatabase [name='databaseName']").val());
@@ -300,7 +298,6 @@ $(function(){
             server.sendUpdateQueue()
             .then(function(){
                 _val.pageFun.editDatabase.showTable();
-                la.remove();
             });
         }
     };
