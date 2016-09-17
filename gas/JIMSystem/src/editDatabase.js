@@ -18,6 +18,7 @@ $(function(){
             var result = document.getElementById("formEditDatabase_result");
             var promise;
             var dataName = $("#formEditDatabase [name='databaseName']").val();
+            if(dataName === "") return;
 
             $(result).children().remove();
 
@@ -120,7 +121,7 @@ $(function(){
                     });
                     $(e.currentTarget).data({"num_newdata":dataIndex+1});
                     //ボタンを自動で押して、全てテキストボックスに変換
-                    tds.find('input[type="button"][name^="table-content-"]').click();
+                    tds.find('input[type="button"][name^="table-content-"]').trigger("click");
                     //セルの中央揃えのし直し
                     tableObj.styleFun();
                 });
@@ -162,7 +163,7 @@ $(function(){
                         if(key !== "") names.push(key);
                         input.attr("name",names.join("-"));
                     })
-                    $table.find('input[type="button"][name^="' + ["table","content",dataTbody._id,dataTbody.column,""].join("-") + '"]').click();
+                    $table.find('input[type="button"][name^="' + ["table","content",dataTbody._id,dataTbody.column,""].join("-") + '"]').trigger("click");
 
                     //挿入箇所を指定した場合に、その番号を空欄にする
                     //nameを変えるのは面倒なので、とりあえず一番下に新しく挿入している
@@ -192,7 +193,7 @@ $(function(){
                     var target = $(e.currentTarget);
                     var names = target.attr("name").split("-");
                     var inputs = $table.find('input[name^="' + ["table","content",names[2],names[3],names[4]].join("-") + '"]');
-                    inputs.click();
+                    inputs.trigger("click");
                     if(target.prop("checked")){
                         inputs.prop("disabled",true).css("background","#E0E0E0");
                     }else{

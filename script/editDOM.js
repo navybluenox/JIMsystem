@@ -171,6 +171,7 @@ class ModalWindow{
 function createTable(parent,data,columns,callback,option){
     if(callback === undefined)  callback = function(cellObj){cellObj.$el.css({"text-align":"center"}).text(cellObj.value)};
     if(option === undefined)  option = {};
+    if(!(parent instanceof $)) parent = $(parent);
 
     [
             {key:"tableLevel",value:0}
@@ -180,7 +181,7 @@ function createTable(parent,data,columns,callback,option){
         }
     })
 
-    var $table = $(parent)
+    var $table = parent
         .append("<table><thead></thead><tbody></tbody></table>")
         .children("table")
         .data("table-level",option.tableLevel);

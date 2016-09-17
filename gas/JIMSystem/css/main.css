@@ -89,6 +89,7 @@ input {
             margin: 2ex 1ex 1ex;
             padding: 1ex;
             background: #e4f0fc;
+            overflow: auto;
         }
             #content section p {
                 margin: 1ex 0.5em 1ex;
