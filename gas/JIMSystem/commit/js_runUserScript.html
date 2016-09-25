@@ -20,12 +20,11 @@ $(function(){
                 textarea.val(script);
             }
 
-            var timer;
+            var dr = new DelayRun(function(){
+                localStorage.setItem("userScript",textarea.val());
+            },200);
             textarea.on("change",function(){
-                if(timer !== undefined) clearTimeout(timer);
-                timer = setTimeout(function(){
-                    localStorage.setItem("userScript",textarea.val());
-                },200);
+                dr.runLater();
             })
         },
         runScript:function(){

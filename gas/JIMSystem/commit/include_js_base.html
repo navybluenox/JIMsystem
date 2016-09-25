@@ -312,6 +312,25 @@ function classof(val){
     }
 }
 
+class DelayRun{
+    constructor(callback,timeout){
+        this._fun = callback;
+        this._timeout = (timeout === undefined ? 50 : timeout);
+    }
+    runNow(){
+        this._fun();
+    }
+    runLater(){
+        var that = this;
+        if(this._to === undefined || this._to === null){
+            clearTimeout(this._to);
+        }
+        this._to = setTimeout(function(){
+            that.runNow();
+        },this._timeout);
+    }
+}
+
 function repeatString(str,num){
     return (new Array(num+1)).join(str);
 }

@@ -113,13 +113,12 @@ class ModalWindow{
             option.callback(this.$el,this.$background)
         }
 
-        var timer;
+        var dr = new DelayRun(function(){
+            that.keepPosition();
+            that.applyContentStyle();
+        });
         $(window).on("resize.modalWindow",function(){
-            if(timer !== undefined) clearTimeout(timer);
-            timer = setTimeout(function(){
-                that.keepPosition();
-                that.applyContentStyle();
-            },200);
+            dr.runLater();
         })
         return this;
     }

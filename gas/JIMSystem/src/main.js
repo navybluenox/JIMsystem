@@ -59,17 +59,16 @@ $(function(){
                 })
             });
 
-            var timer_keyword;
+            var dr = new DelayRun(function(){
+                //TODO incremental search
+                el.find('[name="search"]').trigger("click");
+            });
             el.find('[name="keyword"]').on("keydown",function(e){
                 if(e.keyCode === 13){
                     el.find('[name="search"]').trigger("click");
                 }
-            }).on("change",function(e){
-                if(timer_keyword !== undefined)  clearTimeout(timer_keyword);
-                timer_keyword = setTimeout(function(){
-                    //TODO incremental search
-                    el.find('[name="search"]').trigger("click");
-                },100);
+            }).on("keyup",function(e){
+                dr.runLater();
             })
 
             el.find('[name="cancel"]').on("click",function(e){

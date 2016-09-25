@@ -304,13 +304,13 @@ var LoadingAlert = (function(){
             setStyle();
             setPosition();
             this._div.fadeIn("slow");
+            var dr = new DelayRun(function(){
+                setPosition();
+                setStyle();
+            });
             var timer;
             $(window).on("resize.loadingAlert",function(){
-                if(timer !== undefined) clearTimeout(timer);
-                    timer = setTimeout(function(){
-                    setPosition();
-                    setStyle();
-                },200);
+                dr.runLater();
             })
             las.push(this);
             function setPosition(){
