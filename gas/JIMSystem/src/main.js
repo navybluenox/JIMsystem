@@ -151,7 +151,7 @@ $(function(){
                             var td = tr.find("td").eq(1);
                             var v = targetData.getValue(key);
                             if(Array.isArray(v)){
-                                var li = $("<li>" + repeatString("<ol></ol>") + "</li>",v.length).appendTo(td);
+                                var li = $("<li>" + repeatString("<ol></ol>",v.length) + "</li>").appendTo(td);
                                 v.forEach(function(val,valIndex){
                                     var ol = li.find("ol").eq(valIndex);
                                     ol.text(castIntoString(val));
