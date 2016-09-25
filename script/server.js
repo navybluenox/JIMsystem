@@ -82,7 +82,7 @@ var Server = (function(){
             return cache[dataName] !== undefined;
         }
         loadData(collInfo,option){
-            var la = new createLoadingAlert();
+            var la = new LoadingAlert();
             //collInfo:CollectionInfo型かdataName(String型)を要求
             if(!(collInfo instanceof CollectionInfo)){
                 collInfo = this.getCollectionInfoByName(collInfo);
@@ -159,7 +159,7 @@ var Server = (function(){
         sendUpdateQueue(){
             var that = this;
             var nowTime;
-            var la = new createLoadingAlert();
+            var la = new LoadingAlert();
             return (new Promise(function(resolve,reject){
                 var si = setInterval(function(){
                     if(!that._updating){
@@ -291,9 +291,10 @@ function runServerFun(funName,_arguments,userObj){
     });
 }
 
-var createLoadingAlert = (function(){
+var LoadingAlert = (function(){
     var img = $('<img src="https://jimsystem-a5629.firebaseapp.com/resource/gif-load.gif" alt="now updating...">');
-    return class createLoadingAlert{
+    var las = [];
+    return class LoadingAlert{
         constructor(){
             var that = this;
             this._div = $("<div></div>").appendTo($("#modalWindow"));
@@ -310,8 +311,9 @@ var createLoadingAlert = (function(){
                     setStyle();
                 },200);
             })
+            las.push(this);
             function setPosition(){
-                var margin = 10;
+                var margin = 20;
                 that._div.css({
                     "left":"" + margin + "px",
                     "top":"" + ($(window).height() - that._div.outerWidth() - margin) + "px"
@@ -324,10 +326,15 @@ var createLoadingAlert = (function(){
                     "border":"2px solid #FFFFFF",
                     "border-radius":"10px",
                     "margin":"0",
-                    "padding":"0",
-                    "backgroud":"#FFFFFF"
+                    "padding":"2px",
+                    "background":"#FFFFFF"
                 })
             }
+        }
+        static removeAll(){
+            las.forEach(function(la){
+                la.remove();
+            })
         }
         remove(){
             this._div.fadeOut("slow");

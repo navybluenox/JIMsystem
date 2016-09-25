@@ -129,7 +129,7 @@ $(function(){
                                 showData(cellObj.value);
                             })
                         }else if(cellObj.column === column){
-                            cellObj.el.text(cellObj.value);
+                            cellObj.$el.text(cellObj.value);
                         }else if(cellObj.column === "button"){
                             $('<input type="button" value="show→">').appendTo(cellObj.el).on("click",function(e){
                                 showData(cellObj.value);
