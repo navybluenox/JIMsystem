@@ -93,12 +93,12 @@ $(function(){
                                     var input = $('<input type="button">').appendTo(thisCell);
                                     var names = ["table","content",cellObj.rowData._id,cellObj.column,vIndex];
                                     if(key !== "") names.push(key);
-                                    input.val(key !== "" ? v[key] : v).attr("name",names.join("-"));
+                                    input.val(castIntoString(key !== "" ? v[key] : v)).attr("name",names.join("-"));
                                 })
                             });
                         }else{
                             var input = $('<input type="button">').appendTo(cellObj.$el);
-                            input.val(cellObj.value).attr("name",["table","content",cellObj.rowData._id,cellObj.column].join("-"));
+                            input.val(castIntoString(cellObj.value)).attr("name",["table","content",cellObj.rowData._id,cellObj.column].join("-"));
                         }
                     }
                 }

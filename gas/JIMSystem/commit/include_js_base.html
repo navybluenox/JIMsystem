@@ -312,6 +312,19 @@ function classof(val){
     }
 }
 
+function castIntoString(val){
+    switch(classof(val)){
+        case "object":
+            return JSON.stringify(val);
+        case "array":
+            return "[" + val.map(function(v){return castIntoString(v)}).join(",") + "]";
+        case "date":
+            return dateToValue(val).str;
+        default:
+            return val;
+    }
+}
+
 class DelayRun{
     constructor(callback,timeout){
         this._fun = callback;

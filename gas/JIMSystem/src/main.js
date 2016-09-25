@@ -14,8 +14,8 @@ $(function(){
                     '<div><input type="button" name="search" value="検索"></div>',
                     '<div><input type="button" name="cancel" value="終了"></div>',
                 '</div>',
-                '<div name="resultField" style="width:40%;"></div>',
-                '<div name="dataField" style="padding:0 2em;"></div>'
+                '<div name="resultField" style="width:30%;"></div>',
+                '<div name="dataField"></div>'
             ].join("")});
             sw.setContentStyle({
                 "width":"80%",
@@ -120,7 +120,7 @@ $(function(){
                         }
                     }).map(function(v){return v.getValues(v)});
                     el.find('[name="resultField"]').children().remove();
-                    createTable(el.find('[name="resultField"]'),data,["button","_id",column],function(cellObj){
+                    createTable(el.find('[name="resultField"]'),data,["_id",column],function(cellObj){
                         if(cellObj.column === "_id"){
                             $('<a herf="#">' + cellObj.value + "</a>").appendTo(cellObj.$el).on("mouseover",function(e){
                                 showData(cellObj.value);
@@ -143,12 +143,22 @@ $(function(){
                         var table = $("<table><tbody></tbody></table>").appendTo(parent);
                         table.find("tbody").append(repeatString("<tr><td></td><td></td></tr>",Object.keys(columnObj).length));
                         table.find("td").css({"padding":"0","font-size":"0.9em"});
+                        table.find("td:last-child").css({"padding-left":"0.5em"});
                         
                         Object.keys(columnObj).forEach(function(key,keyIndex){
                             var tr = table.find("tbody tr").eq(keyIndex);
                             tr.find("td").eq(0).text(key);
                             var td = tr.find("td").eq(1);
-                            td.text(targetData.getValue(key));
+                            var v = targetData.getValue(key);
+                            if(Array.isArray(v)){
+                                var li = $("<li>" + repeatString("<ol></ol>") + "</li>",v.length).appendTo(td);
+                                v.forEach(function(val,valIndex){
+                                    var ol = li.find("ol").eq(valIndex);
+                                    ol.text(castIntoString(val));
+                                });
+                            }else{
+                                td.text(castIntoString(v));
+                            }
                         });
                     }
                 })
