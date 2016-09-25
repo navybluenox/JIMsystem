@@ -130,7 +130,7 @@ $(function(){
                                 showData(cellObj.value);
                             })
                         }else if(cellObj.column === column){
-                            cellObj.le.text(cellObj.value);
+                            cellObj.el.text(cellObj.value);
                         }else if(cellObj.column === "button"){
                             $('<input type="button" value="show→">').appendTo(cellObj.el).on("click",function(e){
                                 showData(cellObj.value);
@@ -148,7 +148,7 @@ $(function(){
                         Object.keys(columnObj).forEach(function(key,keyIndex){
                             var tr = table.find("tbody tr").eq(keyIndex);
                             tr.find("td").eq(0).text(key);
-                            var td = tr.findI("td").eq(1);
+                            var td = tr.find("td").eq(1);
                             //TODO!!
                         });
                     }
