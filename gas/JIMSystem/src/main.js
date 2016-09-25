@@ -25,6 +25,7 @@ $(function(){
 
             var el = sw.$el;
             el.children("div").css({"height":"100%","float":"left","overflow":"auto","margin":"0 1em"});
+            el.children("div").eq(0).children("div").css({"margin":"1ex 0"});
 
             el.find('[name="collName"]').append([
                 '<option value="" selected></option>',
@@ -141,12 +142,13 @@ $(function(){
                         var columnObj = _val.server.getCollectionInfoByName(dataName).getValue("column");
                         var table = $("<table><tbody></tbody></table>").appendTo(parent);
                         table.find("tbody").append(repeatString("<tr><td></td><td></td></tr>",Object.keys(columnObj).length));
+                        table.find("td").css({"padding":"0","font-size":"0.9em"});
                         
                         Object.keys(columnObj).forEach(function(key,keyIndex){
                             var tr = table.find("tbody tr").eq(keyIndex);
                             tr.find("td").eq(0).text(key);
                             var td = tr.find("td").eq(1);
-                            //TODO!!
+                            td.text(targetData.getValue(key));
                         });
                     }
                 })
