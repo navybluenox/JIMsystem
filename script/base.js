@@ -314,9 +314,11 @@ function classof(val){
 function castIntoString(val){
     switch(classof(val)){
         case "object":
-            return JSON.stringify(val);
+            return "{" + Object.keys(val).map(function(key){
+                return key + ":" + castIntoString(val[key]);
+            }).join(", ") + "}";
         case "array":
-            return "[" + val.map(function(v){return castIntoString(v)}).join(",") + "]";
+            return "[" + val.map(function(v){return castIntoString(v)}).join(", ") + "]";
         case "date":
             return dateToValue(val).str;
         default:

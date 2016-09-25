@@ -153,8 +153,8 @@ $(function(){
                             var v = targetData.getValue(key);
                             if(Array.isArray(v)){
                                 var ol = $("<ol>" + repeatString("<li></li>",v.length) + "</ol>").appendTo(td);
-                                ol.css({"list-style":"decimal"})
-                                ol.find("li").css({"padding":"0","margin":"0"})
+                                ol.css({"list-style":"decimal","padding":"0","margin":"0"});
+                                ol.find("li").css({"padding":"0","margin":"0"});
                                 v.forEach(function(val,valIndex){
                                     var li = ol.find("li").eq(valIndex);
                                     li.text(castIntoString(val));
