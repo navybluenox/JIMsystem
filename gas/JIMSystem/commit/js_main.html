@@ -8,15 +8,15 @@ $(function(){
         },
         openSearchWindow:function(){
             var sw = new ModalWindow({"html":[
-                '<div style="width:20%;">',
+                '<div style="max-width:20%;">',
                     '<div>データ名：<select name="collName"></select></div>',
                     '<div>カラム名：<select name="column"></select></div>',
                     '<div>検索ワード<input type="text" name="keyword"></div>',
                     '<div><input type="button" name="search" value="検索"></div>',
                     '<div><input type="button" name="cancel" value="終了"></div>',
                 '</div>',
-                '<div name="resultField" style="width:30%;"></div>',
-                '<div name="dataField"></div>'
+                '<div name="resultField" style="max-width:30%;"></div>',
+                '<div name="dataField" style="min-width:50%;"></div>'
             ].join("")});
             sw.setContentStyle({
                 "width":"80%",
@@ -25,7 +25,7 @@ $(function(){
             sw.keepPosition();
 
             var el = sw.$el;
-            el.children("div").css({"height":"100%","float":"left","overflow":"auto","margin":"0 1em"});
+            el.children("div").css({"height":"100%","float":"left","overflow":"auto","padding":"0 1em","box-sizing":"border-box"});
             el.children("div").eq(0).children("div").css({"margin":"1ex 0"});
 
             el.find('[name="collName"]').append([
@@ -153,11 +153,11 @@ $(function(){
                             var v = targetData.getValue(key);
                             if(Array.isArray(v)){
                                 var ol = $("<ol>" + repeatString("<li></li>",v.length) + "</ol>").appendTo(td);
-                                ol.css({"list-style":"decimal","padding":"0","margin":"0"});
+                                ol.css({"list-style":"none","padding":"0","margin":"0"});
                                 ol.find("li").css({"padding":"0","margin":"0"});
                                 v.forEach(function(val,valIndex){
                                     var li = ol.find("li").eq(valIndex);
-                                    li.text(castIntoString(val));
+                                    li.text("" + valIndex + ". " + castIntoString(val));
                                 });
                             }else{
                                 td.text(castIntoString(v));
