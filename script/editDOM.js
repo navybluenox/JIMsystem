@@ -221,7 +221,10 @@ function createTable(parent,data,columns,callback,option){
         $table.children("tbody").children("tr").children("td").css({"text-align":"center"}).children().css({"margin":"0 auto"});
         $table.children("tbody,thead").children("tr").children("td,th").css({
             "padding":"0.3ex 0.3em","background":"inherit",
-            "border-style":"solid","border-color":"#000000","border-width":"0 0.3px"
+            "border-style":"solid","border-color":"#000000","border-width":"0 0 0 0.3px"
+        });
+        $table.children("tbody,thead").children("tr").children("td:last-child,th:last-child").css({
+            "border-width":"0 0.3px 0 0.3px"
         });
         $table.children("thead").children("tr").css({"background":"#BDDBF9"});
         $table.children("tbody").children("tr:nth-child(2n+1)").css({"background":"#F9F9F9"});

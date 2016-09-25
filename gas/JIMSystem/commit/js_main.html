@@ -63,12 +63,13 @@ $(function(){
             var timer_keyword;
             el.find('[name="keyword"]').on("keydown",function(e){
                 if(e.keyCode === 13){
-                    el.find('[name="search"]');
+                    el.find('[name="search"]').trigger("click");
                 }
             }).on("change",function(e){
                 if(timer_keyword !== undefined)  clearTimeout(timer_keyword);
                 timer_keyword = setTimeout(function(){
                     //TODO incremental search
+                    el.find('[name="search"]').trigger("click");
                 },100);
             })
 
@@ -119,12 +120,10 @@ $(function(){
                                 return 0;
                         }
                     }).map(function(v){return v.getValues(v)});
-                    //TODO create table under [name="resultField"]
-                    //show _id and value(column's data')
-                    //add click(or mouseover) event on _id(tag a? or button?)
+                    el.find('[name="resultField"]').children().remove();
                     createTable(el.find('[name="resultField"]'),data,["button","_id",column],function(cellObj){
                         if(cellObj.column === "_id"){
-                            $('<a herf="#">' + cellObj.value + "</a>").appendTo(cellObj.el).on("mouseover",function(e){
+                            $('<a herf="#">' + cellObj.value + "</a>").appendTo(cellObj.$el).on("mouseover",function(e){
                                 showData(cellObj.value);
                             }).on("click",function(e){
                                 showData(cellObj.value);
@@ -132,7 +131,7 @@ $(function(){
                         }else if(cellObj.column === column){
                             cellObj.$el.text(cellObj.value);
                         }else if(cellObj.column === "button"){
-                            $('<input type="button" value="show→">').appendTo(cellObj.el).on("click",function(e){
+                            $('<input type="button" value="show→">').appendTo(cellObj.$el).on("click",function(e){
                                 showData(cellObj.value);
                             })
                         }
