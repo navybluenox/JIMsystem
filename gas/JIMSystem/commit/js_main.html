@@ -8,13 +8,15 @@ $(function(){
         },
         openSearchWindow:function(){
             var sw = new ModalWindow({"html":[
-                '<table><tbody>',
-                '<tr><td>データ名：<select name="collName"></select></td><td rowSpan="4" name="resultField"></td><td rowSpan="4" name="dataField"></td></tr>',
-                '<tr><td>カラム名：<select name="column"></select></td></tr>',
-                '<tr><td>検索ワード<input type="text" name="keyword"></td></tr>',
-                '<tr><td><input type="button" name="search" value="検索"></td></tr>',
-                '<tr><td><input type="button" name="cancel" value="終了"></td></tr>',
-                '</table></tbody>'
+                '<div style="width:20%;">',
+                    '<div>データ名：<select name="collName"></select></div>',
+                    '<div>カラム名：<select name="column"></select></div>',
+                    '<div>検索ワード<input type="text" name="keyword"></div>',
+                    '<div><input type="button" name="search" value="検索"></div>',
+                    '<div><input type="button" name="cancel" value="終了"></div>',
+                '</div>',
+                '<div name="resultField" style="width:40%;"></div>',
+                '<div name="dataField" style="padding:0 2em;"></div>'
             ].join("")});
             sw.setContentStyle({
                 "width":"80%",
@@ -23,9 +25,7 @@ $(function(){
             sw.keepPosition();
 
             var el = sw.$el;
-            el.find("td").css({"border-bottom-width":"0","padding":"0.5ex 0"});
-            el.find('[name="resultField"]').css({"overflow":"auto","width":"30%"});
-            el.find('[name="dataField"]').css({"overflow":"auto","width":"50%"});
+            el.children("div").css({"height":"100%","float":"left","overflow":"auto","margin":"0 1em"});
 
             el.find('[name="collName"]').append([
                 '<option value="" selected></option>',
@@ -150,7 +150,6 @@ $(function(){
                             //TODO!!
                         });
                     }
-                    console.log(data);
                 })
             })
 
