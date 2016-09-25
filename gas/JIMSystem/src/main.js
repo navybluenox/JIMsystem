@@ -151,10 +151,12 @@ $(function(){
                             var td = tr.find("td").eq(1);
                             var v = targetData.getValue(key);
                             if(Array.isArray(v)){
-                                var li = $("<li>" + repeatString("<ol></ol>",v.length) + "</li>").appendTo(td);
+                                var ol = $("<ol>" + repeatString("<li></li>",v.length) + "</ol>").appendTo(td);
+                                ol.css({"list-style":"decimal"})
+                                ol.find("li").css({"padding":"0","margin":"0"})
                                 v.forEach(function(val,valIndex){
-                                    var ol = li.find("ol").eq(valIndex);
-                                    ol.text(castIntoString(val));
+                                    var li = ol.find("li").eq(valIndex);
+                                    li.text(castIntoString(val));
                                 });
                             }else{
                                 td.text(castIntoString(v));
