@@ -156,12 +156,18 @@ $(function(){
                                 ol.find("li").css({"padding":"0","margin":"0"});
                                 v.forEach(function(val,valIndex){
                                     var li = ol.find("li").eq(valIndex);
-                                    li.text("" + valIndex + ". " + castIntoString(val));
+                                    li.append("" + valIndex + ". " + '<span class="datavalue">' + castIntoString(val) + "</span>");
                                 });
                             }else{
-                                td.text(castIntoString(v));
+                                td.append('<span class="datavalue">' + castIntoString(v) + "</span>");
                             }
                         });
+                        table.find("span.datavalue").css({"text-decoration":"underline","color":"#1155cc"});
+                        table.on("click","span.datavalue",function(e){
+                            var target = $(e.currentTarget);
+                            var value = target.text();
+                            //TODO
+                        })
                     }
                 })
             })
