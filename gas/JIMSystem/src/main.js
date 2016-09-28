@@ -156,13 +156,15 @@ $(function(){
                                 ol.find("li").css({"padding":"0","margin":"0"});
                                 v.forEach(function(val,valIndex){
                                     var li = ol.find("li").eq(valIndex);
-                                    li.append("" + valIndex + ". " + '<input type="text" value="' + castIntoString(val) + '" class="datavalue">');
+                                    li.append("" + valIndex + ". " + '<span class="datavalue">' + castIntoString(val) + "</span>");
                                 });
                             }else{
-                                td.append('<input type="text" value="' + castIntoString(v) + '" class="datavalue">');
+                                td.append('<span class="datavalue">' + castIntoString(v) + "</span>");
                             }
                         });
-                        table.find("input.datavalue").css({"text-decoration":"underline","color":"#1155cc"});
+                        table.find("span.datavalue").css({"text-decoration":"underline","color":"#1155cc"}).on("focus",function(e){
+                            $(e.currentTarget).select();
+                        });
                     }
                 })
             })
