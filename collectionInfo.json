@@ -77,6 +77,7 @@
             "_id":"データID",
             "created":"作成日時",
             "updated":"更新日時",
+            "sortId":"ソート番号",
             "azusaId":"AZUSA ID",
             "azusaSendName":"AZUSA配送名",
             "grade":"入学学年",
@@ -86,7 +87,7 @@
             "nameFirstPhonetic":"名（ふりがな）",
             "incharge":["担当名"],
             "inchargeCode":["担当略称"],
-            "oldInchargeCode":[{"org":"団体の略称","nth":"期","incharge":"過去の担当の略称"}],
+            "oldInchargeCode":[{"_name":"過去の担当","org":"団体の略称","nth":"期","incharge":"担当の略称"}],
             "isRojin":"老人であるか",
             "isAvailable":"今期に参加するか"
         }},
@@ -125,11 +126,7 @@
             "nameShort":"string",
             "leaderId":"string",
             "leaderIncharge":"string",
-            "detail":[{
-                "start":"localdate",
-                "time":"number",
-                "number":"string"
-            }],
+            "detail":[{"start":"localdate","time":"number","number":"string"}],
             "description":"string",
             "condition":"string",
             "caption":"string",
@@ -143,11 +140,7 @@
             "nameShort":"人割名（省略用）",
             "leaderId":"統括のUserID",
             "leaderIncharge":"統括の担当略称",
-            "detail":[{
-                "start":"人割開始時間",
-                "time":"単位人割時間の数",
-                "number":"各単位人割時間ごとの人数"
-            }],
+            "detail":[{"_name":"時間・人数","start":"開始時間","time":"単位人割時間の数","number":"各単位人割時間ごとの人数"}],
             "description":"業務内容",
             "condition":"人割条件",
             "caption":"業務説明文",
