@@ -124,10 +124,7 @@ $(function(){
                         default:
                             return "<th></th>"
                     }
-                }) + "</tr>").appendTo($table.children("thead")).css({"background":"#BDDBF9"}).children("th").css({
-                    "padding":"0.3ex 0.3em","background":"inherit",
-                    "border-style":"solid","border-color":"#000000","border-width":"0 0 0 0.3px"
-                }).find(":last-child").css({"border-width":"0 0.3px 0 0.3px"});
+                }) + "</tr>").appendTo($table.children("thead"));
 
                 //行追加ボタンを作成
                 $('<tr><td colSpan="' + columns.length +'"><input type="button" value="add" name="table-add-data"></td></tr>').appendTo($table.children("tbody")).find("td input")

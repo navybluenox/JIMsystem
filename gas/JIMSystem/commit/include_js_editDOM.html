@@ -197,7 +197,6 @@ function createTable(parent,data,columns,callback,option){
     $table.children("tbody").append(repeatString("<tr>" + repeatString("<td></td>",columns.length) + "</tr>",data.length));
 
     var $ths = $table.children("thead").children("tr").children("th");
-    $ths.css({"padding":"0 10px","text-align":"center"});
 
     columns.forEach(function(column,columnIndex){
         var $th = $ths.eq(columnIndex);
@@ -227,7 +226,7 @@ function createTable(parent,data,columns,callback,option){
         //セルの中央揃え
         $table.children("tbody").children("tr").children("td").css({"text-align":"center"}).children().css({"margin":"0 auto"});
         $table.children("tbody,thead").children("tr").children("td,th").css({
-            "padding":"0.3ex 0.3em","background":"inherit",
+            "padding":"0.3ex 0.3em","background":"inherit","text-align":"center",
             "border-style":"solid","border-color":"#000000","border-width":"0 0 0 0.3px"
         });
         $table.children("tbody,thead").children("tr").children("td:last-child,th:last-child").css({
