@@ -4,9 +4,9 @@
         <h2>新規作成・編集</h2>
         <form id="formEditWorkList_edit">
             <table class="tableform"><tbody>
-                <tr><td>人割名</td><td></td><td></td></tr>
-                <tr><td>人割名（省略用）</td><td></td><td></td></tr>
-                <tr><td>統括のUserID</td><td></td><td></td></tr>
+                <tr><td>人割名</td><td></td><td>正式名</td></tr>
+                <tr><td>人割名（省略用）</td><td></td><td>印刷用などに使用</td></tr>
+                <tr><td>統括のUserID</td><td></td><td>AZUSA配送名で検索：<input type="text" onkeydown='if(event.keyCode===13)_val.pageFun.editWorkList.searchUserIdByAzusa($(this).parent().children("input[type="button"]"))'><input type="button" value="Search" onclick="_val.pageFun.editWorkList.searchUserIdByAzusa(this)"></td></tr>
                 <tr><td>統括の担当略称</td><td></td><td></td></tr>
                 <tr><td>時間・人数</td><td></td><td></td></tr>
                 <tr><td>業務内容</td><td></td><td></td></tr>
