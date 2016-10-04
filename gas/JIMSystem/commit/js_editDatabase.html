@@ -34,7 +34,8 @@ $(function(){
                     .filter(function(v){return true})
                     //.sort(function(a,b){return 1})
                     .map(function(v){return v.getValues()});
-                var columnObj = _val.server.getCollectionInfoByName(dataName).getValue("column");
+                var collInfo = _val.server.getCollectionInfoByName(dataName);
+                var columnObj = collInfo.getValue("column");
                 var columns = ["remove","baseInfo"].concat(
                     Object.keys(columnObj).filter(function(colName){return !inArray(["_id","updated","created"],colName)})
                 );
@@ -43,10 +44,11 @@ $(function(){
                 var $table = tableObj.$table;
 
                 function editCells(cellObj){
-                    if(cellObj.column === "remove"){
+                    var columnName = cellObj.column;
+                    if(columnName === "remove"){
                         var input = $('<input type="checkbox">').appendTo(cellObj.$el);
                         input.attr("name",["table","remove",cellObj.rowData._id].join("-"));
-                    }else if(cellObj.column === "baseInfo"){
+                    }else if(columnName === "baseInfo"){
                         //「cellObj.value === ""」の時、新規追加した行なので、関数dataToValueを通さない
                         $([
                             "<table><tbody>",
@@ -59,12 +61,12 @@ $(function(){
                             .find("tbody tr td")
                             .css("padding","0 0.25em");
                     }else{
-                        if(classof(columnObj[cellObj.column]) === "array"){
+                        if(classof(columnObj[columnName]) === "array"){
                             var valueTable = $("<table><thead></thead><tbody></tbody></table>").appendTo(cellObj.$el);
-                            var keyInfo = columnObj[cellObj.column][0];
+                            var keyInfo = columnObj[columnName][0];
 
                             keys = (classof(keyInfo) === "object" ? Object.keys(keyInfo) : [""]);
-                            valueTable.children("tbody").data({"length":cellObj.value.length,"keys":keys,"_id":cellObj.rowData._id,"column":cellObj.column});
+                            valueTable.children("tbody").data({"length":cellObj.value.length,"keys":keys,"_id":cellObj.rowData._id,"column":columnName});
                             valueTable.children("thead").append("<tr>" + repeatString("<th></th>",keys.length + 1) + "</tr>");
                             var trAdd = valueTable.children("tbody").append(repeatString("<tr>" + repeatString("<td></td>",keys.length + 1) + "</tr>",cellObj.value.length));
                             $('<tr><td colSpan="' + (keys.length+1) + '"><input type="button" value="add" name="table-addarrayvalue"><span style="font-size:0.8em; padding:0 0.25em">挿入位置：</span><input type="text" name="table-setinsertposition" style="width:2em;"></td></tr>')
@@ -88,21 +90,44 @@ $(function(){
                             cellObj.value.forEach(function(v,vIndex){
                                 var thisRow = valueTable.children("tbody").children("tr").eq(vIndex);
                                 $('<input type="checkbox">').appendTo(thisRow.children("td").eq(0))
-                                    .attr("name",["table","removearrayvalue",cellObj.rowData._id,cellObj.column,vIndex].join("-"));
+                                    .attr("name",["table","removearrayvalue",cellObj.rowData._id,columnName,vIndex].join("-"));
                                 keys.forEach(function(key,keyIndex){
                                     var thisCell = thisRow.children("td").eq(keyIndex + 1);
                                     var input = $('<input type="button">').appendTo(thisCell);
-                                    var names = ["table","content",cellObj.rowData._id,cellObj.column,vIndex];
+                                    var names = ["table","content",cellObj.rowData._id,columnName,vIndex];
                                     if(key !== "") names.push(key);
                                     input.val(castIntoString(key !== "" ? v[key] : v)).attr("name",names.join("-"));
                                 })
                             });
                         }else{
                             var input = $('<input type="button">').appendTo(cellObj.$el);
-                            input.val(castIntoString(cellObj.value)).attr("name",["table","content",cellObj.rowData._id,cellObj.column].join("-"));
+                            input.val(castIntoString(cellObj.value)).attr("name",["table","content",cellObj.rowData._id,columnName].join("-"));
                         }
                     }
                 }
+
+                //theadにカラム名（日本語）を追加
+                var columnNameObj = collInfo.getValue("columnName");
+                $("<tr>" + columns.map(function(column,colIndex){
+                    if(colIndex === 0 || colIndex === 1) return "<th></th>";
+                    var type = columnObj[column];
+                    var name = columnNameObj[column];
+                    switch(classof(type)){
+                        case "string":
+                            return "<th>" + name + "</th>"
+                        case "array":
+                            if(classof(type[0]) === "object"){
+                                return "<th>" + Object.keys(type[0]).map(function(key){return key + ":" + name[0][key]}).join(", ") + "</th>"
+                            }else{
+                                return "<th>" + name[0] + "</th>"
+                            }
+                        default:
+                            return "<th></th>"
+                    }
+                }) + "</tr>").appendTo($table.children("thead")).css({"background":"#BDDBF9"}).children("th").css({
+                    "padding":"0.3ex 0.3em","background":"inherit",
+                    "border-style":"solid","border-color":"#000000","border-width":"0 0 0 0.3px"
+                }).find(":last-child").css({"border-width":"0 0.3px 0 0.3px"});
 
                 //行追加ボタンを作成
                 $('<tr><td colSpan="' + columns.length +'"><input type="button" value="add" name="table-add-data"></td></tr>').appendTo($table.children("tbody")).find("td input")

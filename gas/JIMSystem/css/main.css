@@ -47,6 +47,7 @@ input {
 table.tableform {
     border: 1px #000000 solid;
     border-collapse: collapse;
+    margin: 3em;
     }
     table.tableform > thead > tr > th, table.tableform > tbody > tr > td {
         padding: 0.5ex 1em;

@@ -5,30 +5,56 @@
             "updated":"date",
             "name":"string",
             "fileId":"string",
-            "column":"other"
-        }
-        },
+            "column":"other",
+            "columnName":"other"
+        },"columnName":{
+            "_id":"データID",
+            "created":"作成日時",
+            "updated":"更新日時",
+            "name":"コレクション名",
+            "fileId":"データファイルID",
+            "column":"データテンプレート",
+            "columnName":"カラム名"
+        }},
         {"_id":"MDTWafLypQHhmgSN","created":"2016-07-18T08:00:00.000Z","updated":"2016-07-18T08:00:00.000Z","name":"systemConfig","fileId":"0B88bKUOZP4-AUlcwZFFNYl8zNDg","column":{
             "_id":"string",
             "created":"date",
             "updated":"date",
             "modeName":"string",
             "content":"other"
+        },"columnName":{
+            "_id":"データID",
+            "created":"作成日時",
+            "updated":"更新日時",
+            "modeName":"設定モード名",
+            "content":"設定内容"
         }},
         {"_id":"eWy3mSJZ49DxUQTH","created":"2016-07-18T08:00:00.000Z","updated":"2016-07-18T08:00:00.000Z","name":"fileInfo","fileId":"0B88bKUOZP4-Ac01lZHQ5cUo0SGM","column":{
             "_id":"string",
             "created":"date",
             "updated":"date"
+        },"columnName":{
+            "_id":"データID",
+            "created":"作成日時",
+            "updated":"更新日時"
         }},
         {"_id":"ymVPEGRrhpTG7SLf","created":"2016-07-18T08:00:00.000Z","updated":"2016-07-18T08:00:00.000Z","name":"shiftTableUser","fileId":"0B88bKUOZP4-AUmVlb3VjbmE3cEU","column":{
             "_id":"string",
             "created":"date",
             "updated":"date"
+        },"columnName":{
+            "_id":"データID",
+            "created":"作成日時",
+            "updated":"更新日時"
         }},
         {"_id":"pFsbSQKFhL9EMQK8","created":"2016-07-18T08:00:00.000Z","updated":"2016-07-18T08:00:00.000Z","name":"shiftTableWork","fileId":"0B88bKUOZP4-AWVlBZGF3ODlwWHc","column":{
             "_id":"string",
             "created":"date",
             "updated":"date"
+        },"columnName":{
+            "_id":"データID",
+            "created":"作成日時",
+            "updated":"更新日時"
         }},
         {"_id":"JJUwBcLNunQ9YXXB","created":"2016-07-18T08:00:00.000Z","updated":"2016-07-18T08:00:00.000Z","name":"user","fileId":"0B88bKUOZP4-AVHpNNXdDZVV2YzA","column":{
             "_id":"string",
@@ -47,21 +73,49 @@
             "oldInchargeCode":[{"org":"string","nth":"number","incharge":"string"}],
             "isRojin":"boolean",
             "isAvailable":"boolean"
+        },"columnName":{
+            "_id":"データID",
+            "created":"作成日時",
+            "updated":"更新日時",
+            "azusaId":"AZUSA ID",
+            "azusaSendName":"AZUSA配送名",
+            "grade":"入学学年",
+            "nameLast":"姓",
+            "nameFirst":"名",
+            "nameLastPhonetic":"姓（ふりがな）",
+            "nameFirstPhonetic":"名（ふりがな）",
+            "incharge":["担当名"],
+            "inchargeCode":["担当略称"],
+            "oldInchargeCode":[{"org":"団体の略称","nth":"期","incharge":"過去の担当の略称"}],
+            "isRojin":"老人であるか",
+            "isAvailable":"今期に参加するか"
         }},
         {"_id":"fZBpdfgWyMZdAp3W","created":"2016-07-18T08:00:00.000Z","updated":"2016-07-18T08:00:00.000Z","name":"userGroup","fileId":"0B88bKUOZP4-AQ01mUnoyTmZIUUk","column":{
             "_id":"string",
             "created":"date",
             "updated":"date"
+        },"columnName":{
+            "_id":"データID",
+            "created":"作成日時",
+            "updated":"更新日時"
         }},
         {"_id":"TfKSdngFPNKGmdym","created":"2016-07-18T08:00:00.000Z","updated":"2016-07-18T08:00:00.000Z","name":"workAssign","fileId":"0B88bKUOZP4-AVE9PcGYtbm00SDA","column":{
             "_id":"string",
             "created":"date",
             "updated":"date"
+        },"columnName":{
+            "_id":"データID",
+            "created":"作成日時",
+            "updated":"更新日時"
         }},
         {"_id":"6beicmYizLdWEcDS","created":"2016-07-18T08:00:00.000Z","updated":"2016-07-18T08:00:00.000Z","name":"workGroup","fileId":"0B88bKUOZP4-ARFFxdGRCeEJlQnc","column":{
             "_id":"string",
             "created":"date",
             "updated":"date"
+        },"columnName":{
+            "_id":"データID",
+            "created":"作成日時",
+            "updated":"更新日時"
         }},
         {"_id":"eXjsCFLMFMkuaNMc","created":"2016-07-18T08:00:00.000Z","updated":"2016-07-18T08:00:00.000Z","name":"workList","fileId":"0B88bKUOZP4-AUHR5T1AwWkdVTXc","column":{
             "_id":"string",
@@ -81,11 +135,34 @@
             "caption":"string",
             "note":"string",
             "asAssined":"boolean"
+        },"columnName":{
+            "_id":"データID",
+            "created":"作成日時",
+            "updated":"更新日時",
+            "name":"人割名",
+            "nameShort":"人割名（省略用）",
+            "leaderId":"統括のUserID",
+            "leaderIncharge":"統括の担当略称",
+            "detail":[{
+                "start":"人割開始時間",
+                "time":"単位人割時間の数",
+                "number":"各単位人割時間ごとの人数"
+            }],
+            "description":"業務内容",
+            "condition":"人割条件",
+            "caption":"業務説明文",
+            "note":"メモ書き",
+            "asAssined":"割り振り済みとみなすか"
+
         }},
         {"_id":"E5XwwhcfPLrWKJfr","created":"2016-07-18T08:00:00.000Z","updated":"2016-07-18T08:00:00.000Z","name":"workNotAssigned","fileId":"0B88bKUOZP4-ATzhueWlNR2NSdm8","column":{
             "_id":"string",
             "created":"date",
             "updated":"date"
+        },"columnName":{
+            "_id":"データID",
+            "created":"作成日時",
+            "updated":"更新日時"
         }}
     ],
     "version":""
