@@ -116,7 +116,7 @@ $(function(){
                             return "<th>" + name + "</th>"
                         case "array":
                             if(classof(type[0]) === "object"){
-                                return "<th>" + Object.keys(type[0]).map(function(key){return key + ":" + name[0][key]}).join(", ") + "</th>"
+                                return '<th style="word-break:break-all;"><p>' + name[0] + "</p><p>" + Object.keys(type[0]).map(function(key){return key + ":" + name[0][key]}).join(", ") + "</p></th>"
                             }else{
                                 return "<th>" + name[0] + "</th>"
                             }
