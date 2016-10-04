@@ -46,6 +46,10 @@ input {
 
 textarea {
     resize: both;
+    padding: 0;
+    margin: 0;
+    height: 15ex;
+    width: 20em;
 }
 
 table.tableform {
