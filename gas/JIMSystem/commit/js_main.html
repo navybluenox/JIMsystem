@@ -20,7 +20,8 @@ $(function(){
             ].join("")});
             sw.setContentStyle({
                 "width":"80%",
-                "height":"80%"
+                "height":"80%",
+                "overflow":"auto"
             });
             sw.keepPosition();
 
@@ -163,10 +164,16 @@ $(function(){
                                 td.append('<span class="datavalue">' + castIntoString(v) + "</span>");
                             }
                         });
-                        table.find("span.datavalue").css({"text-decoration":"underline","color":"#1155cc"}).on("focus",function(e){
-                            var cl = new Clipboard(e.currentTarget);
-                            cl.on("success",function(e){e.clearSelection();});
-                        });
+                        table.find("span.datavalue").css({"text-decoration":"underline","color":"#1155cc"}).get().forEach(function(el){
+                            var cl = new Clipboard(el,{target:function(){return el}});
+                            cl.on("success",function(e){
+                                var el = $("<span>Copied!!</span>").appendTo($(e).parent());
+                                setInterval(function(){
+                                    el.fadeOut(500,function(){el.remove();})
+                                },3000);
+                                console.log("copied!!",e.text);
+                            });
+                        });;
                     }
                 })
             })

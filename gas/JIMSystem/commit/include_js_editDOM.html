@@ -128,6 +128,13 @@ class ModalWindow{
         $(window).off("resize.modalWindow");
         return null;
     }
+    fadeOut(){
+        var that = this;
+        this.$background.fadeOut("normal",function(){that.$background.remove()});
+        this.$el.fadeOut("normal",function(){that.$el.remove()});
+        $(window).off("resize.modalWindow");
+        return null;
+    }
     createHtml(){
         this.$el.children().remove();
     }

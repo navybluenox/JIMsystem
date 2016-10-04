@@ -334,11 +334,14 @@ var LoadingAlert = (function(){
         static removeAll(){
             las.forEach(function(la){
                 la.remove();
-            })
+            });
+            las.length = 0;
         }
         remove(){
-            this._div.fadeOut("slow");
-            this._div.remove();
+            var that = this;
+            this._div.fadeOut("normal",function(){
+                that._div.remove();
+            });
         }
     }
 })();

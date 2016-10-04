@@ -40,7 +40,7 @@ $(function(){
                     }
                 },100);
             }).then(function(){
-                mw.remove();
+                mw.fadeOut();
             });
         },
         sendPass:function(){
