@@ -44,6 +44,10 @@ input {
     padding: 0;
 }
 
+textarea {
+    resize: both;
+}
+
 table.tableform {
     border: 1px #000000 solid;
     border-collapse: collapse;
