@@ -78,6 +78,7 @@
             }],
             "description":"string",
             "condition":"string",
+            "caption":"string",
             "note":"string",
             "asAssined":"boolean"
         }},
