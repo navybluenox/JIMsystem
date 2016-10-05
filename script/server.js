@@ -165,7 +165,7 @@ var Server = (function(){
             return this.getCollectionInfoByName(dataName).version;
         }
         sendUpdateQueue(){
-            if(!checkAuthorization("Server.sendUpdateQueue")) return;
+            if(!checkAuthorization("Server.prototype.sendUpdateQueue")) return;
             
             var that = this;
             var nowTime;

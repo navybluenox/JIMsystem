@@ -27,6 +27,7 @@ $(function(){
             })
         },
         runScript:function(){
+            if(!checkAuthorization("_val.pageFun.runUserScript.runScript")) return;
             var form = $("#formRunUserScript");
             var content = form.find("textarea").val();
             eval(content);
