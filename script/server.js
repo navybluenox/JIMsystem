@@ -165,6 +165,8 @@ var Server = (function(){
             return this.getCollectionInfoByName(dataName).version;
         }
         sendUpdateQueue(){
+            if(!checkAuthorization("Server.sendUpdateQueue")) return;
+            
             var that = this;
             var nowTime;
             var la = new LoadingAlert();
@@ -354,4 +356,5 @@ var LoadingAlert = (function(){
         }
     }
 })();
+
 

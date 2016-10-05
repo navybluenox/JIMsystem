@@ -298,6 +298,14 @@ var LocalDate = (function(){
     }
 })();
 
+function checkAuthorization(funName){
+    var a = _val.authorization;
+    if(!a){
+        alert(["その操作は管理者のみが実行できます",funName === undefined ? "" : "対象関数：" + funName].join("\n"));
+    }
+    return a;
+}
+
 function classof(val){
     if(typeof val === "object"){
         if(val === null)  return "null";
