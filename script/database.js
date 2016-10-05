@@ -309,7 +309,7 @@ var Datapiece = (function(){
                         return ret;
                 }
             }
-            this.setValues(fun(data,colObj));
+            this.setValues(fun(data,colObj),{overwrite:true});
             return this;
         }
         //消すかも
