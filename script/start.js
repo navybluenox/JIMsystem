@@ -45,7 +45,7 @@
         //baseConfig.jsonのfileId
         baseConfigFileId:"0B88bKUOZP4-AdUw1WEJWVkkwTzA",
         pageFun:{},
-        authorization:false
+        authorization:true
     };
     var _tmp = {};
     $(function(){
