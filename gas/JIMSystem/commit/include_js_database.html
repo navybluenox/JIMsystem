@@ -275,6 +275,41 @@ var Datapiece = (function(){
         }
         setDefaultValue(){
             var colObj = this.getCollectionInfo().getValue("column");
+            var data = this.getValues();
+            var fun = function(d,col){
+                switch(classof(col)){
+                    case "string":
+                        if(d === undefined){
+                            switch(col){
+                                case "string":
+                                    return "";
+                                case "number":
+                                    return 0;
+                                case "boolean":
+                                    return false;
+                                case "date":
+                                    return new Date();
+                                case "localdate":
+                                    return new LocalDate();
+                                default:
+                                    return undefined;
+                            }
+                        }
+                    case "array":
+                        if(d === undefined)  return [];
+                        return d.map(function(e){
+                            return e === undefined ? fun(e,col[0]) : e;
+                        })
+                    case "object":
+                        var ret = {};
+                        Object.keys(col).forEach(function(key){
+                            if(d === undefined || d[key] === undefined){
+                                ret[key] = fun(undefined,col[key]);
+                            }
+                        })
+                        return ret;
+                }
+            }
         }
         //消すかも
         getValues(){
