@@ -310,6 +310,8 @@ var Datapiece = (function(){
                         return ret;
                 }
             }
+            this.setValues(fun(data,colObj));
+            return this;
         }
         //消すかも
         getValues(){
