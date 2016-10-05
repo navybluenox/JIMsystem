@@ -175,12 +175,13 @@ class ModalWindow{
 }
 
 function createTable(parent,data,columns,callback,option){
-    if(callback === undefined)  callback = function(cellObj){cellObj.$el.css({"text-align":"center"}).text(cellObj.value)};
+    if(callback === undefined)  callback = function(cellObj){cellObj.$el.text(cellObj.value)};
     if(option === undefined)  option = {};
     if(!(parent instanceof $)) parent = $(parent);
 
     [
-            {key:"tableLevel",value:0}
+            {key:"tableLevel",value:0},
+            {key:"header",value:columns}
     ].forEach(function(obj){
         if(option[obj.key] === undefined){
             option[obj.key] = obj.value;
@@ -197,9 +198,9 @@ function createTable(parent,data,columns,callback,option){
 
     var $ths = $table.children("thead").children("tr").children("th");
 
-    columns.forEach(function(column,columnIndex){
-        var $th = $ths.eq(columnIndex);
-        $th.text(column);
+    option.header.forEach(function(headerName,index){
+        var $th = $ths.eq(index);
+        $th.text(headerName);
     })
 
     var $rows = $table.children("tbody").children("tr");
