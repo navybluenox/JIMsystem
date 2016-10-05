@@ -25,8 +25,8 @@
                 <tr><td>人割名</td><td><input type="text" name="name" onkeydown="if(event.keyCode === 13){_val.pageFun.editWorkList.searchWorkList();return false;}"></td></tr>
                 <tr><td>統括の氏名・配送名</td><td><input type="text" name="leader" onkeydown="if(event.keyCode === 13){_val.pageFun.editWorkList.searchWorkList();return false;}"></td></tr>
                 <tr><td>統括の担当略称</td><td><input type="text" name="incharge" onkeydown="if(event.keyCode === 13){_val.pageFun.editWorkList.searchWorkList();return false;}"></td></tr>
-                <input type="button" name="run" value="検索" onclick="">
             </tbody></table>
+            <input type="button" name="run" value="検索" onclick="_val.pageFun.editWorkList.searchWorkList()">
         </form>
         <div id="formEditWorkList_search_result"></div>
     </section>
