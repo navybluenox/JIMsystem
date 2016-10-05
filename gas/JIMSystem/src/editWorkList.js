@@ -34,7 +34,7 @@ $(function(){
                 workList = new WorkList({"_id":_id});
                 _val.server.removeData(workList);
             }
-            //_val.server.sendUpdateQueue();
+            _val.server.sendUpdateQueue();
         },searchWorkList(sortFun){
             var result = $("#formEditWorkList_search_result");
             var form_search = $("#formEditWorkList_search_cond");

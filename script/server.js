@@ -245,6 +245,7 @@ var Server = (function(){
             }).then(function(){
                 that._updating = false;
                 la.remove();
+                console.log("update finished!!");
             });
         }
         changeData(datapieces){

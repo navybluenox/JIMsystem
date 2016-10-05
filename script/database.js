@@ -187,13 +187,13 @@ var Datapiece = (function(){
             }
             if(option === undefined){
                 //大抵optionは空なので軽量化のためにここに文を設置
-                goDeepLevelValue(datapieceObj,this._collInfo.getValue("column"),this._data,null,null,{});
+                goDeepLevelValue(datapieceObj,this.getCollectionInfo().getValue("column"),this._data,null,null,{});
             }else{
                 //アプリ起動時にデータロードを行う際、CollectionInfoクラスのsetValues()で、まだ値が代入されていないServerのcloser内のcacheにアクセスするのを避ける
                 if(option.setCollectionInfo !== undefined){
                     goDeepLevelValue(datapieceObj,option.setCollectionInfo.column,this._data,null,null,option);
                 }else{
-                    goDeepLevelValue(datapieceObj,this._collInfo.getValue("column"),this._data,null,null,option);
+                    goDeepLevelValue(datapieceObj,this.getCollectionInfo().getValue("column"),this._data,null,null,option);
                 }
             }
 
@@ -257,7 +257,7 @@ var Datapiece = (function(){
                 this._data[colName] = value;
             }else{
                 try{
-                    colType = getValueFromObjectByKey(this._collInfo.getValue("column"),colName);
+                    colType = getValueFromObjectByKey(this.getCollectionInfo().getValue("column"),colName);
                 }catch(e){
                     console.log("Attention : " + "There is no property(" + colName + ") of" + this.getDataName() + " (Datapiece.prototype.setValue)");
                     return this;
@@ -271,6 +271,9 @@ var Datapiece = (function(){
             if(!overwrite && this.getValue("_id") !== undefined) return this;
             this.setValues({"_id":Datapiece.getNewId(this.getDataName())});
             return this;
+        }
+        setDefaultValue(){
+            var colObj = this.getCollectionInfo().getValue("column");
         }
         //消すかも
         getValues(){

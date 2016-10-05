@@ -6,14 +6,14 @@
             <table class="tableform"><tbody>
                 <tr><td>人割名</td><td><input type="text" name="name"></td><td>正式名</td></tr>
                 <tr><td>人割名（省略用）</td><td><input type="text" name="nameShort"></td><td>印刷用などに使用</td></tr>
-                <tr><td>統括のUserID</td><td><input type="text" name="leaderId" onkeydown="_val.pageFun.editWorkList.searchInchrageByUserId()"></td><td>AZUSA配送名で検索：<input type="text" name="searchId" onkeydown='if(event.keyCode===13){_val.pageFun.editWorkList.searchUserIdByAzusa();return false;}'><input type="button" value="Search" tabindex="-1" onclick="_val.pageFun.editWorkList.searchUserIdByAzusa()"></td></tr>
+                <tr><td>統括のUserID</td><td><input type="text" name="leaderId" onkeydown="_val.pageFun.editWorkList.searchInchrageByUserId()"></td><td>AZUSA配送名で検索：<input type="text" name="searchId" tabindex="-1" onkeydown='if(event.keyCode===13){_val.pageFun.editWorkList.searchUserIdByAzusa();return false;}'><input type="button" value="Search" tabindex="-1" onclick="_val.pageFun.editWorkList.searchUserIdByAzusa()"></td></tr>
                 <tr><td>統括の担当略称</td><td><input type="text" name="leaderIncharge"></td><td>UserIDから検索<select name="searchIncharge" tabindex="-1" onchange="_val.pageFun.editWorkList.setInchrage()"></td></tr>
                 <tr><td>時間・人数</td><td><input type="hidden" name="detail"><table></table></td><td></td></tr>
                 <tr><td>業務内容</td><td><textarea name="description"></textarea></td><td>業務内容の詳細</td></tr>
                 <tr><td>人割条件</td><td><textarea name="condition"></textarea></td><td>人割の氏名や人数などの担当の要求</td></tr>
                 <tr><td>業務説明文</td><td><textarea name="caption"></textarea></td><td>JIMシステムなどで一般委員向けに表示する説明文</td></tr>
                 <tr><td>メモ書き</td><td><textarea name="note"></textarea></td><td></td></tr>
-                <tr><td>割り振り済み扱いにする</td><td><input type="checkbox" name="asAssined"></td><td>未割り振り人割から除外</td></tr>
+                <tr><td>割り振り済み扱いにする</td><td><input type="checkbox" name="asAssined" onkeydown='if(event.keyCode===13){$(this).prop("checked",!$(this).prop("checked"));return false;}'></td><td>未割り振り人割から除外</td></tr>
             </tbody></table>
             <input type="button" name="run_add" value="新規作成" onclick='_val.pageFun.editWorkList.updateWorkList("add")'><input type="button" name="run_change" value="変更を保存" onclick='_val.pageFun.editWorkList.updateWorkList("change")'>
         </form>
