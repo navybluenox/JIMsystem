@@ -70,7 +70,7 @@
             "nameFirstPhonetic":"string",
             "incharge":["string"],
             "inchargeCode":["string"],
-            "oldInchargeCode":[{"org":"string","nth":"number","incharge":"string"}],
+            "oldIncharge":[{"org":"string","nth":"number","code":"string"}],
             "isRojin":"boolean",
             "isAvailable":"boolean"
         },"columnName":{
@@ -87,7 +87,7 @@
             "nameFirstPhonetic":"名（ふりがな）",
             "incharge":["担当名"],
             "inchargeCode":["担当略称"],
-            "oldInchargeCode":[{"_name":"過去の担当","org":"団体の略称","nth":"期","incharge":"担当の略称"}],
+            "oldIncharge":[{"_name":"過去の担当","org":"団体の略称","nth":"期","code":"担当の略称"}],
             "isRojin":"老人であるか",
             "isAvailable":"今期に参加するか"
         }},

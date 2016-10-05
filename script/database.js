@@ -187,7 +187,8 @@ var Datapiece = (function(){
             }
             if(option === undefined){
                 //大抵optionは空なので軽量化のためにここに文を設置
-                goDeepLevelValue(datapieceObj,this.getCollectionInfo().getValue("column"),this._data,null,null,{});
+                //defaultでオーバーライトモードを有効（2016/10/6）
+                goDeepLevelValue(datapieceObj,this.getCollectionInfo().getValue("column"),this._data,null,null,{overwrite:true});
             }else{
                 //アプリ起動時にデータロードを行う際、CollectionInfoクラスのsetValues()で、まだ値が代入されていないServerのcloser内のcacheにアクセスするのを避ける
                 if(option.setCollectionInfo !== undefined){
