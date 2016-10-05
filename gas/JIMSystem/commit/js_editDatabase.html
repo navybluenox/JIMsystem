@@ -18,7 +18,7 @@ $(function(){
         showTable:function(){
             var result = document.getElementById("formEditDatabase_result");
             var dataName = $("#formEditDatabase [name='databaseName']").val();
-            if(dataName === "") return;
+            if(dataName === "blank") return;
             $(result).children().remove();
           
             _val.server.loadData(dataName).then(function(){
