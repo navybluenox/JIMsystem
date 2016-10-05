@@ -2,6 +2,7 @@
 $(function(){
     var workListEditing;
     var form;
+    var formNameList = [{"name":"name"},{"name":"nameShort"},{"name":"leaderId"},{"name":"leaderIncharge"},{"name":"description"},{"name":"condition"},{"name":"caption"},{"name":"note"},{"name":"asAssined"}];
     _val.pageFun.editWorkList = {
         onload:function(){
             _val.server.loadData("user");
@@ -11,9 +12,9 @@ $(function(){
             var workList;
             var setValue = {};
             if(kind === "add" || kind === "change"){
-                ["name","nameShort","leaderId","leaderIncharge","description","condition","caption","note","asAssined"].forEach(function(obj){
+                formNameList.forEach(function(obj){
                     var el = form.find('[name="' + obj.name + '"]');
-                    setValue[obj.key] = el.val();
+                    setValue[obj.key === undefined ? obj.name : obj.key] = el.val();
                 })
                 //TODO set detail
 
@@ -67,11 +68,20 @@ $(function(){
                 workLists =  sortFun(workLists);
             }
 
+            var fun_fillForm = function(workList){
+                formNameList.forEach(function(obj){
+                    var el = form.find('[name="' + obj.name + '"]');
+                    el.val(workList.getValue(obj.key === undefined ? obj.name : obj.key));
+                })
+                //TODO set detail
+            }
+
             var table = createTable(result,workLists,["edit","leaderIncharge","leaderId","name","caption"],function(cellObj){
                 var workList = cellObj.rowData;
                 if(cellObj.column === "edit"){
-                //TODO
-
+                    var buttons = $('<input type="button" value="フォームに入力"><input type="button" value="削除">').appendTo(cellObj.el);
+                    buttons.eq(0).on("click",function(e){fun_fillForm(workList)});
+                    buttons.eq(1).on("click",function(e){_val.pageFun.editWorkList.updateWorkList("remove",workList.getValue("_id"))});
                 }else{
                     var str;
                     switch(cellObj.column){
@@ -84,9 +94,9 @@ $(function(){
                             str = _val.server.getDataById(workList.getValue("leaderId"),"user")[0].getValue("azusaSendName");
                             break;
                     }
-                    cellObj.$el.text(str);
+                    cellObj.el.text(str);
                 }
-            },{"header":["edit","担当","統括配送名","人割名","業務説明文"]})
+            },{"header":["edit","担当","統括配送名","人割名","業務説明文"]});
 
         },searchUserIdByAzusa:function(){
             var target = form.find('[name="leaderId"]');

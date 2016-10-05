@@ -214,7 +214,8 @@ function createTable(parent,data,columns,callback,option){
                 v = v[c];
             })
             callback({
-                "$el":$cell,
+                "$el":$cell,    //前方互換性
+                "el":$cell,
                 "value":v,
                 "column":column,
                 "rowData":value
@@ -239,6 +240,6 @@ function createTable(parent,data,columns,callback,option){
 
     setTableStyle();
 
-    return {"$table":$table,"styleFun":setTableStyle};
+    return {"$table":$table,"el":$table,"styleFun":setTableStyle};
 }
 
