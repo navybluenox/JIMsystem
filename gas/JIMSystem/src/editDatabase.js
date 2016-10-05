@@ -16,14 +16,11 @@ $(function(){
         },
         showTable:function(){
             var result = document.getElementById("formEditDatabase_result");
-            var promise;
             var dataName = $("#formEditDatabase [name='databaseName']").val();
             if(dataName === "") return;
-
             $(result).children().remove();
-            promise = _val.server.loadData(dataName);
-           
-            promise.then(function(){
+          
+            _val.server.loadData(dataName).then(function(){
                 var dataArr = _val.server.getData(dataName)
                     .filter(function(v){return true})
                     //.sort(function(a,b){return 1})

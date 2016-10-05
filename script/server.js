@@ -92,7 +92,6 @@ var Server = (function(){
                     throw new Error();
                 }
             }
-            console.log("loadData : " + collInfo.getValue("name"));
             if(option === undefined || classof(option) === "object"){
                 option = {overwrite:true};
             }else{
@@ -103,6 +102,7 @@ var Server = (function(){
             //reloadフラグがfalseで強制リロードでない&既にロードされている　→　自動でスキップ
             if(!reload && this.isLoadedData(collInfo.getValue("name")))  return Promise.resolve();
 
+            console.log("loadData : " + collInfo.getValue("name"));
             var la = new LoadingAlert();
             var that = this;
             var loadingId = makeRandomStr();
@@ -125,6 +125,9 @@ var Server = (function(){
                 la.remove();
             });
         }
+        reloadData(collInfo,option){
+            return this.loadData(collInfo,option,true);
+        }
         loadDataAll(){
             return Promise.all(cache.collectionInfo.map(function(collInfo){
                 return this.loadData(collInfo);
@@ -135,7 +138,7 @@ var Server = (function(){
             return Promise.all(Object.keys(cache).map(function(dataName){
                 return that.getCollectionInfoByName(dataName)
             }).map(function(collInfo){
-                return that.loadData(collInfo,undefined,true);
+                return that.reloadData(collInfo);
             }));
         }
         getData(dataName,newCopy){

@@ -45,14 +45,7 @@ $(function(){
                 el_column.children().remove();
                 el_column.append('<option value="" selected></option>');
 
-                var promise;
-                if(!_val.server.isLoadedData(dataName)){
-                    promise = _val.server.loadData(dataName);
-                }else{
-                    promise = Promise.resolve();
-                }
-
-                promise.then(function(){
+                _val.server.loadData(dataName).then(function(){
                     el_column.append(
                         Object.keys(_val.server.getCollectionInfoByName(dataName).getValue("column")).map(function(column){
                             return '<option value="' + column + '">' + column + '</option>';
@@ -85,7 +78,7 @@ $(function(){
                 var keyword = el.find('[name="keyword"]').val();
                 var data;
                 var result = el.find('[name="resultField"]');
-                (!_val.server.isLoadedData(dataName) ? _val.server.loadData(dataName) : Promise.resolve()).then(function(){
+                _val.server.loadData(dataName).then(function(){
                     data = _val.server.getData(dataName).filter(function(dp){
                         var value = dp.getValue(column);
                         switch(type){
