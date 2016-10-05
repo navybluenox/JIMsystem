@@ -62,7 +62,7 @@ table.tableform {
         margin: 0;
         border: 1px #000000 solid;
     }
-    table.tableform > thead > tr > th[colspan="0"], table.tableform > tbody > tr > td[colspan="0"] {
+    table.tableform > thead > tr > th:first-child, table.tableform > tbody > tr > td:first-child {
         background: #A4CFF9;
     }
 

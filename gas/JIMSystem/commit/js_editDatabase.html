@@ -22,13 +22,8 @@ $(function(){
             if(dataName === "") return;
 
             $(result).children().remove();
-
-            if(!_val.server.isLoadedData(dataName)){
-                promise = _val.server.loadData(dataName);
-            }else{
-                promise = Promise.resolve();
-            }
-            
+            promise = _val.server.loadData(dataName);
+           
             promise.then(function(){
                 var dataArr = _val.server.getData(dataName)
                     .filter(function(v){return true})
