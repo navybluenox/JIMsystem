@@ -51,16 +51,16 @@
         メソッド
             getAsDateClass()
                 Date型で設定時間を返します
-            getLocalTime()
+            getTime()
                 0日目からのローカル時間を返します
-            getLocalTimeObj()
+            getTimeObj()
                 0日目からのローカル時間を返します
                 {day:Number,hour:Number,minute:Number,second:Number} の形で返します
-            getLocalDays()
-            getLocalHours()
-            getLocalMinutes()
-            getLocalSeconds()
-            getLocalMillseconds()
+            getDays()
+            getHours()
+            getMinutes()
+            getSeconds()
+            getMillseconds()
                 ローカル時間を返します
             addTime(localTime)
                 ローカル時間を進めます
@@ -203,7 +203,7 @@ var LocalDate = (function(){
                         for(var i=1,l=arr.length;i<l;i++){
                             if(arr[i] !== undefined)  obj[[null,"day","hour","minute","second","millsecond"][i]] = +arr[i];
                         }
-                        this._localTime = (new LocalDate(obj)).getLocalTime();
+                        this._localTime = (new LocalDate(obj)).getTime();
                     }else{
                         targetTime = new Date(timeValue);
                         this._localTime = targetTime.getTime() - standardTime.getTime();
@@ -224,8 +224,8 @@ var LocalDate = (function(){
             return _val.config.getValue("content.workAssign.timeUnit");
         }
         static getTimeUnitAsConverted(unitName){
-            var ld = new LocalDate(LocalDate.getTimeUnit());
-            return ld["get" + unitName.replace(/^[a-z]/,function(v){return v.toUpperCase();}) + "s"]();
+            var unitValue = [1,1000,60000,3600000,86400000][["millsecond","second","minute","hour","day"].findIndex(function(v){return v === unitName})];
+            return LocalDate.getTimeUnit() / unitValue;
         }
         static getOpenTime(day,kind){
             return _val.config.getOpenTime(day,kind);
@@ -234,14 +234,14 @@ var LocalDate = (function(){
             return _val.config.getWorkTime(day,kind);
         }
         copy(){
-            return new LocalDate(this.getLocalTime());
+            return new LocalDate(this.getTime());
         }
         getAsDateClass(){
             var targetTime = LocalDate.getStandardTime();
             return targetTime.setMilliseconds(targetTime.getMilliseconds() + this._localTime);
         };
-        getLocalTime(){return this._localTime};
-        getLocalTimeObj(){
+        getTime(){return this._localTime};
+        getTimeObj(){
             var dayOffset = 0;
             var localTime = this._localTime;
             while(localTime < 0){
@@ -256,11 +256,11 @@ var LocalDate = (function(){
                 millsecond:localTime%1000
             };
         };
-        getLocalDays(){return this.getLocalTimeObj().day};
-        getLocalHours(){return this.getLocalTimeObj().hour};
-        getLocalMinutes(){return this.getLocalTimeObj().minute};
-        getLocalSeconds(){return this.getLocalTimeObj().second};
-        getLocalMillseconds(){return this.getLocalTimeObj().millsecond};
+        getDays(){return this.getTimeObj().day};
+        getHours(){return this.getTimeObj().hour};
+        getMinutes(){return this.getTimeObj().minute};
+        getSeconds(){return this.getTimeObj().second};
+        getMillseconds(){return this.getTimeObj().millsecond};
         addTime(time){this._localTime += time; return this;}
         addDays(days){this.addTime(days * 24*60*60*1000); return this;};
         addHours(hours){this.addTime(hours * 60*60*1000); return this;};
@@ -272,7 +272,7 @@ var LocalDate = (function(){
             return new Date(LocalDate.getStandardTime().getTime() + this._localTime);
         }
         toJSON(){
-            return "local_" + this.getLocalTime();
+            return "local_" + this.getTime();
         }
         toISOString(){
             return "local_" + this.getAsDate().toISOString();
@@ -286,11 +286,11 @@ var LocalDate = (function(){
                 if(option[v] === undefined)  option[v] = true;
             });
             return [
-                option.hideDay ? "" : this.getLocalDays() + "日目",
-                option.hideHour ? "" : this.getLocalHours() + "時",
-                option.hideMinute ? "" : this.getLocalMinutes() + "分",
-                option.hideSecond ? "" : this.getLocalSeconds() + "秒",
-                option.hideMillsecond ? "" : this.getLocalMillseconds() + "ミリ秒"                
+                option.hideDay ? "" : this.getDays() + "日目",
+                option.hideHour ? "" : this.getHours() + "時",
+                option.hideMinute ? "" : this.getMinutes() + "分",
+                option.hideSecond ? "" : this.getSeconds() + "秒",
+                option.hideMillsecond ? "" : this.getMillseconds() + "ミリ秒"                
             ].join("");
         }
     }

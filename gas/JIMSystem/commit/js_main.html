@@ -55,6 +55,10 @@ $(function(){
                 })
             });
 
+            el.find('[name="column"]').on("change",function(e){
+                el.find('[name="search"]').trigger("click");
+            });
+
             var dr = new DelayRun(function(){
                 //TODO incremental search
                 el.find('[name="search"]').trigger("click");
@@ -91,7 +95,7 @@ $(function(){
                             case "date":
                                 return (new Date(keyword)).getTime() === value.getTime();
                             case "localdate":
-                                return (new LocalDate(keyword)).getLocalTime() === value.getLocalTime();
+                                return (new LocalDate(keyword)).getTime() === value.getTime();
                             default:
                                 return;
                         }
@@ -108,7 +112,7 @@ $(function(){
                             case "date":
                                 return valueA.getTime() - valueB.getTime();
                             case "localdate":
-                                return valueA.getLocalTime() - valueB.getLocalTime();
+                                return valueA.getTime() - valueB.getTime();
                             case "null":
                             default:
                                 return 0;

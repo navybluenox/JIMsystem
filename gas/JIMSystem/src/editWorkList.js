@@ -141,14 +141,21 @@ $(function(){
             var detailTable = form.find('[name="detail"]').siblings("table");
             var targetRow = detailTable.find('[name="detail_addSection"]').closest("tr");
             var detailNum = detailTable.children("tbody").children("tr").length - 1;
+            var namePrefix = "detail_" + detailNum + "_";
             var tr = $("<tr><td>" + [
-                '<input type="checkbox" name="detail_' + detailNum + '_remove">',
-                '<input type="button" name="detail_' + detailNum + '_addAllNumber" value="all">',[
-                    '<input type="number" name="detail_' + detailNum + '_start_day" value="0" max="_val.config.getWorkEndDay()" min="_val.config.getWorkStartDay()">',
-                    '<input type="number" name="detail_' + detailNum + '_start_hour" value="0" max="23" min="0">',
-                    '<input type="number" name="detail_' + detailNum + '_start_minute" value="0" max="59" min="0" step="' +  +'">',
-                ].join(""),
-            ].join("</td><td>") + "</tr>").insertBefore(targetRow);
+                '<input type="checkbox" name="' + namePrefix + 'remove">',
+                '<input type="button" name="' + namePrefix + 'addAllNumber" value="all">',[
+                    '<input type="number" name="' + namePrefix + 'start_day" value="0" max="_val.config.getWorkEndDay()" min="_val.config.getWorkStartDay()">日目',
+                    '<input type="number" name="' + namePrefix + 'start_hour" value="0" max="23" min="0">時',
+                    '<input type="number" name="' + namePrefix + 'start_minute" value="0" max="59" min="0" step="' + LocalDate.getTimeUnitAsConverted("minute") +'">分'
+                ].join(""),[
+                    '<table><tbody><tr></tr><tr><td rowspan="2">',
+                        '<input type="button" name="' + namePrefix + 'extendInterval" value="延長">',
+                        '<input type="button" name="' + namePrefix + 'shortenInterval" value="短縮">',
+                    '</td></tr></tbody></table>',
+                    '<input type="hidden" name="' + namePrefix + 'interval" value="' + 0 + '">'
+                ].join("")
+            ].join("</td><td>") + "</td></tr>").insertBefore(targetRow);
 
         }
     };
