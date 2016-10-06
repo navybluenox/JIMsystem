@@ -60,7 +60,7 @@ $(function(){
                         reg_leader.test(user.getValue("nameLastPhonetic") + user.getValue("nameFirstPhonetic"))
                     );
                 }
-                return !flag;
+                return flag;
             });
 
             if(sortFun !== undefined && typeof sortFun === "function"){
