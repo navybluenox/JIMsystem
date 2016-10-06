@@ -39,6 +39,9 @@ $(function(){
         },searchWorkList(sortFun){
             var result = $("#formEditWorkList_search_result");
             var form_search = $("#formEditWorkList_search_cond");
+
+            result.children().remove();
+
             var cond = {};
             ["name","leader","incharge"].forEach(function(name){
                 cond[name] = form_search.find('[name="' + name + '"]').val();
