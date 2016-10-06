@@ -153,24 +153,27 @@ $(function(){
                 var trigger = $(e.currentTarget);
                 if(param === undefined){
                     param = {};
-                    param.detailIndex = + trigger.attr("name").replace(/^detail_addAllNumber_$/,"");
+                    param.detailIndex = +trigger.attr("name").replace(/^detail_extendInterval_/,"");
                     param.start = _val.pageFun.editWorkList.getDetailStart(param.detailIndex);
-                    param.interval = detailTable.find('[name="detail_interval_"' + param.detailIndex + ']').val();
+                    param.interval = detailTable.find('[name="detail_interval_' + param.detailIndex + '"]').val();
                     param.num = 1;
                 }
 
 
 
                 //TODO
+
+
             });
             detailTable.on("click",'[name^="detail_shortenInterval"]',function(e,param){
             });
 
             
-
-            function extendInterval(detailIndex,start,interval,num){
-
+            //生成時に1回、detail_start変更時に実行
+            function makeDetailNumberTableHeader(detailIndex){
+                //TODO
             }
+
         },addSection:function(detailObj){
             if(detailObj === undefined)  detailObj = {"start":new LocalDate(),"interval":0,"number":[]};
             var targetRow = detailTable.find('[name="detail_addSection"]').closest("tr");
@@ -189,12 +192,15 @@ $(function(){
                     '<input type="hidden" name="detail_interval_' + detailNum + '" value="' + 0 + '">'
                 ].join("")
             ].join("</td><td>") + "</td></tr>").insertBefore(targetRow);
+
+            //TODO set css of numberTable here
+
+
             tr.find("td").css({"padding":0,"text-align":"center"});
             tr.find('[type="button"]').css({"min-width":"initial"});
-            tr.find('[name="detail_addAllNumber"]').css({"padding":"0 1em"});
+            tr.find('[name^="detail_addAllNumber"]').css({"padding":"0 1em"});
             tr.find('[name^="detail_start"]').css({"width":"3em"});
             tr.find('[name^="detail_number"]').css({"width":"3em"});
-            //TODO set css of numberTable here
 
 
 
