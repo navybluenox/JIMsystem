@@ -32,7 +32,9 @@ $(function(){
                 }
             }else if(kind === "remove"){
                 workList = new WorkList({"_id":_id});
-                _val.server.removeData(workList);
+                _val.server.removeData(workList).then(function(){
+                    _val.pageFun.editWorkList.searchWorkList();
+                });
             }
             _val.server.sendUpdateQueue();
         },searchWorkList(sortFun){
@@ -40,6 +42,7 @@ $(function(){
             var form_search = $("#formEditWorkList_search_cond");
 
             result.children().remove();
+            result.append("<h3>検索結果</h3>");
 
             var cond = {};
             ["name","leader","incharge"].forEach(function(name){
@@ -99,6 +102,7 @@ $(function(){
                     cellObj.el.text(str);
                 }
             },{"header":["edit","担当","統括配送名","人割名","業務説明文"]});
+            table.el.css({"margin":"3em"});
 
         },searchUserIdByAzusa:function(){
             var target = form.find('[name="leaderId"]');
