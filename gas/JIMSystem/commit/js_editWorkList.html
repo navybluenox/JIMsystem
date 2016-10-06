@@ -8,6 +8,7 @@ $(function(){
             _val.server.loadData("user");
             _val.server.loadData("workList");
             form = $("#formEditWorkList_edit");
+            _val.pageFun.editWorkList.makeDetailTable();
         },updateWorkList:function(kind,_id){
             var workList;
             var setValue = {};
@@ -130,6 +131,26 @@ $(function(){
             var target = form.find('[name="leaderIncharge"]');
             var value = form.find('[name="searchIncharge"]').val();
             target.val(value);
+        },makeDetailTable:function(){
+            var detailTable = form.find('[name="detail"]').siblings("table");
+
+            function extendInterval(detailIndex,start,interval,num){
+
+            }
+        },addSection:function(detailObj){
+            if(detailObj === undefined)  detailObj = {"start":new LocalDate(),"interval":0,"number":[]};
+            var detailTable = form.find('[name="detail"]').siblings("table");
+            var targetRow = detailTable.find('[name="detail_addSection"]').closest("tr");
+            var detailNum = detailTable.children("tbody").children("tr").length - 1;
+            var tr = $("<tr><td>" + [
+                '<input type="checkbox" name="detail_' + detailNum + '_remove">',
+                '<input type="button" name="detail_' + detailNum + '_addAllNumber" value="all">',[
+                    '<input type="number" name="detail_' + detailNum + '_start_day" value="0" max="_val.config.getWorkEndDay()" min="_val.config.getWorkStartDay()">',
+                    '<input type="number" name="detail_' + detailNum + '_start_hour" value="0" max="23" min="0">',
+                    '<input type="number" name="detail_' + detailNum + '_start_minute" value="0" max="59" min="0" step="' +  +'">',
+                ].join(""),
+            ].join("</td><td>") + "</tr>").insertBefore(targetRow);
+
         }
     };
 });

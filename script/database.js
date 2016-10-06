@@ -455,6 +455,34 @@ class SystemConfig extends Datapiece{
     constructor(datapieceObj,option){
         super(datapieceObj,"systemConfig",option);
     }
+    getOpenTime(day,kind){
+        var localDateObj = this.getValue("content.base.openTime")[day-1];
+        if(kind == "start" || kind == "end"){
+            return (new LocalDate(localDateObj[kind])).addDays(day);
+        }else{
+            return {"start":this.getOpenTime(day,"start"),"end":this.getOpenTime(day,"end")};
+        }
+    }
+    getOpenStartDay(){
+        return 1;
+    }
+    getOpenEndDay(){
+        return this.getValue("content.base.openTime").length;
+    }
+    getWorkTime(day,kind){
+        var localDateObj = this.getValue("content.workAssign.workTime")[day - this.getWorkStartDay()];
+        if(kind == "start" || kind == "end"){
+            return (new LocalDate(localDateObj[kind])).addDays(day);
+        }else{
+            return {"start":this.getWorkTime(day,"start"),"end":this.getWorkTime(day,"end")};
+        }
+    }
+    getWorkStartDay(){
+        return this.getValue("content.workAssign.workStart");
+    }
+    getWorkEndDay(){
+        return this.getValue("content.workAssign.workStart") + this.getValue("content.workAssign.workTime").length - 1;
+    }
 }
 
 class User extends Datapiece{

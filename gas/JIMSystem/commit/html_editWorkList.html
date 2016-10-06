@@ -8,7 +8,12 @@
                 <tr><td>人割名（省略用）</td><td><input type="text" name="nameShort"></td><td>印刷用などに使用</td></tr>
                 <tr><td>統括のUserID</td><td><input type="text" name="leaderId" onkeydown="_val.pageFun.editWorkList.searchInchrageByUserId()"></td><td>AZUSA配送名で検索：<input type="text" name="searchId" tabindex="-1" onkeydown='if(event.keyCode===13){_val.pageFun.editWorkList.searchUserIdByAzusa();return false;}'><input type="button" value="Search" tabindex="-1" onclick="_val.pageFun.editWorkList.searchUserIdByAzusa()"></td></tr>
                 <tr><td>統括の担当略称</td><td><input type="text" name="leaderIncharge"></td><td>UserIDから検索<select name="searchIncharge" tabindex="-1" onchange="_val.pageFun.editWorkList.setInchrage()"></td></tr>
-                <tr><td>時間・人数</td><td><input type="hidden" name="detail"><table></table></td><td></td></tr>
+                <tr><td></td><td><input type="hidden" name="detail"><table><thead>
+                    <tr><td>remove</td><td><input type="button" name="detail_increment" value="+" onclick='var el=$(this);if(el.val()==="+"){el.val("-")}else{el.val("+")}'></td><td>開始</td><td>時間・人数</td></tr>
+                </thead><tbody>
+                    <tr><td colspan="4"><input type="button" name="detail_addSection" value="セクションを追加" onclick="_val.pageFun.editWorkList.addSection()"></td></tr>
+                </tbody>
+                </table></td><td></td></tr>
                 <tr><td>業務内容</td><td><textarea name="description"></textarea></td><td>業務内容の詳細</td></tr>
                 <tr><td>人割条件</td><td><textarea name="condition"></textarea></td><td>人割の氏名や人数などの担当の要求</td></tr>
                 <tr><td>業務説明文</td><td><textarea name="caption"></textarea></td><td>JIMシステムなどで一般委員向けに表示する説明文</td></tr>
