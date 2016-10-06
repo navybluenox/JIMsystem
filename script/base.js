@@ -237,6 +237,9 @@ var LocalDate = (function(){
                 "end":new LocalDate(obj.end)
             };
         }
+        copy(){
+            return new LocalDate(this.getLocalTime());
+        }
         getAsDateClass(){
             var targetTime = LocalDate.getStandardTime();
             return targetTime.setMilliseconds(targetTime.getMilliseconds() + this._localTime);

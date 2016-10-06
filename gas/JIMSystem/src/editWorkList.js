@@ -85,8 +85,8 @@ $(function(){
                 var workList = cellObj.rowData;
                 if(cellObj.column === "edit"){
                     var buttons = $('<input type="button" value="フォームに入力"><input type="button" value="削除">').appendTo(cellObj.el);
-                    buttons.eq(0).on("click",function(e){fun_fillForm(workList)});
-                    buttons.eq(1).on("click",function(e){_val.pageFun.editWorkList.updateWorkList("remove",workList.getValue("_id"))});
+                    buttons.eq(0).on("click",function(e){fun_fillForm(workList);workListEditing = workList;});
+                    buttons.eq(1).on("click",function(e){_val.pageFun.editWorkList.updateWorkList("remove",workList.getValue("_id"));});
                 }else{
                     var str;
                     switch(cellObj.column){
