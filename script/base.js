@@ -260,6 +260,7 @@ var LocalDate = (function(){
         getMinutes(){return this.getTimeObj().minute};
         getSeconds(){return this.getTimeObj().second};
         getMillseconds(){return this.getTimeObj().millsecond};
+        getDifferentialHours(standard){return this.getHours() + (this.getDays() - standard)*24}
         addTime(time){this._localTime += time; return this;}
         addDays(days){this.addTime(days * 24*60*60*1000); return this;};
         addHours(hours){this.addTime(hours * 60*60*1000); return this;};

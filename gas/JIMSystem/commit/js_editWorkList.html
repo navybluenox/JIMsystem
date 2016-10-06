@@ -6,11 +6,42 @@ $(function(){
     var detailTable;
     _val.pageFun.editWorkList = {
         onload:function(){
+            var that =  _val.pageFun.editWorkList;
             _val.server.loadData("user");
             _val.server.loadData("workList");
             form = $("#formEditWorkList_edit");
             detailTable = form.find('[name="detail"]').siblings("table");
-            _val.pageFun.editWorkList.makeDetailTable();
+            that.makeDetailNumberTable();
+            //set events
+            detailTable.on("click",'[name^="detail_addAllNumber"]',function(e){
+                var trigger = $(e.currentTarget);
+                var target = detailTable.find('[name^=detail_number_' + trigger.attr("name").replace(/^detail_addAllNumber_$/,"") + '_]');
+                target.trigger("click");
+            })
+            detailTable.on("click",'[name^="detail_number"]',function(e){
+                var trigger = $(e.currentTarget);
+                var sign = detailTable.find('[name="detail_increment"]').val();
+                if(sign === "+"){
+                    trigger.val(trigger.val() + 1);
+                }else if(sign === "-" && trigger.val() > 1){
+                    trigger.val(trigger.val() - 1);
+                }
+            });
+            detailTable.on("click",'[name^="detail_extendInterval"]',function(e,param){
+                var trigger = $(e.currentTarget);
+                var detailIndex = +trigger.attr("name").replace(/^detail_extendInterval_/,"");
+                var numberArray = that.getDetailNumber(detailIndex);
+                numberArray.push(1);
+                that.makeDetailNumberTable(detailIndex,numberArray);
+            });
+            detailTable.on("click",'[name^="detail_shortenInterval"]',function(e,param){
+                var trigger = $(e.currentTarget);
+                var detailIndex = +trigger.attr("name").replace(/^detail_extendInterval_/,"");
+                var numberArray = that.getDetailNumber(detailIndex);
+                numberArray.length = numberArray.length - 1;
+                that.makeDetailNumberTable(detailIndex,numberArray);
+            });
+            
         },updateWorkList:function(kind,_id){
             var workList;
             var setValue = {};
@@ -82,7 +113,9 @@ $(function(){
                     var el = form.find('[name="' + obj.name + '"]');
                     el.val(workList.getValue(obj.key === undefined ? obj.name : obj.key));
                 })
-                //TODO set detail
+                workList.getValue("@detail").forEach(function(detailObj){
+                    _val.pageFun.editWorkList.addSection(detailObj);
+                })
             }
 
             var table = createTable(result,workLists,["edit","leaderIncharge","leaderId","name","caption"],function(cellObj){
@@ -133,76 +166,82 @@ $(function(){
             var target = form.find('[name="leaderIncharge"]');
             var value = form.find('[name="searchIncharge"]').val();
             target.val(value);
-        },makeDetailTable:function(){
-            //set events
-            detailTable.on("click",'[name^="detail_addAllNumber"]',function(e){
-                var trigger = $(e.currentTarget);
-                var target = detailTable.find('[name^=detail_number_' + trigger.attr("name").replace(/^detail_addAllNumber_$/,"") + '_]');
-                target.trigger("click");
-            })
-            detailTable.on("click",'[name^="detail_number"]',function(e){
-                var trigger = $(e.currentTarget);
-                var sign = detailTable.find('[name="detail_increment"]').val();
-                if(sign === "+"){
-                    trigger.val(trigger.val() + 1);
-                }else if(sign === "-" && trigger.val() > 1){
-                    trigger.val(trigger.val() - 1);
+        },makeDetailNumberTable:function(detailIndex,numberArray){
+            var targetTable = detailTable.find('[name="detail_interval_' + detailIndex + '"]').siblings("table");
+            var tr1 = targetTable.find("tbody > tr").eq(0);
+            var tr2 = targetTable.find("tbody > tr").eq(1);
+            var startTime = _val.pageFun.editWorkList.getDetailStart(detailIndex);
+
+            tr1.children().not(":last-child").remove();
+            tr2.children().remove();
+            tr1.prepend(repeatString("<td></td>",numberArray.length));
+            tr2.append(repeatString("<td></td>",numberArray.length));
+
+            (function(){
+                var a = numberArray.slice();
+                var num,td1,td2,time,numIndex;
+                while((num = a.pop()) !== underfined){
+                    numIndex = a.length;
+                    td1 = tr1.children().eq(numIndex);
+                    td2 = tr2.children().eq(numIndex);
+                    time = startTime.copy().addTimeUnit(numIndex);
+                    if(time.getMinutes() === 0){
+                        td1.text(time.getDifferentialHours(startTime.getDays()));
+                    }else{
+                        td1.remove();
+                    }
+                    td2.append('<input type="button" name="detail_number_' + detailIndex + '_' + numIndex + '" value="'+ num +'">');
                 }
-            });
-            detailTable.on("click",'[name^="detail_extendInterval"]',function(e,param){
-                var trigger = $(e.currentTarget);
-                if(param === undefined){
-                    param = {};
-                    param.detailIndex = +trigger.attr("name").replace(/^detail_extendInterval_/,"");
-                    param.start = _val.pageFun.editWorkList.getDetailStart(param.detailIndex);
-                    param.interval = detailTable.find('[name="detail_interval_' + param.detailIndex + '"]').val();
-                    param.num = 1;
-                }
+            })();
 
+            detailTable.find('[name="detail_interval_' + detailIndex + '"]').val(numberArray);
 
+            var td1s = tr1.children().not(":last-child");
+            var td2s = tr1.children();
+            var timeUnitsPerHour = 60/LocalDate.getTimeUnitAsConverted("minute");
+            var endTime = startTime.copy().addTimeUnit(numberArray.length);
 
-                //TODO
-
-
-            });
-            detailTable.on("click",'[name^="detail_shortenInterval"]',function(e,param){
-            });
-
-            
-            //生成時に1回、detail_start変更時に実行
-            //縦罫線も更新
-            function makeDetailNumberTableHeader(detailIndex){
-                //TODO
+            td1s.attr("colspan",timeUnitsPerHour);
+            td1s.first().attr("colspan",timeUnitsPerHour*(60 - startTime.getMinutes())/60);
+            if(endTime.getMinutes() !== 0){
+                td1s.last().attr("colspan",timeUnitsPerHour*endTime.getMinutes()/60);
             }
 
+            targetTable.css({"border":"1px #000000 solid","border-collapse":"collapse"});
+            targetTable.find("td").css({"margin":"0","border":"1px #000000 solid"});
+            td1s.css({"text-align":"left"});
+            td1s.filter(":nth-child(2n)").css({"background":"#7FFFD4"});
+            td1s.filter(":nth-child(2n+1)").css({"background":"#66CDAA"});
+            td2s.find('[name^="detail_number"]').css({"padding":"0 1em"});
+            td2s.not(":nth-child(" + timeUnitsPerHour + "n)").css({"border-left-style":"dashed"});
+
         },addSection:function(detailObj){
-            if(detailObj === undefined)  detailObj = {"start":new LocalDate(),"interval":0,"number":[]};
+            if(detailObj === undefined)  detailObj = {"start":new LocalDate(),"number":[]};
             var targetRow = detailTable.find('[name="detail_addSection"]').closest("tr");
             var detailNum = detailTable.children("tbody").children("tr").length - 1;
             var tr = $("<tr><td>" + [
                 '<input type="checkbox" name="detail_remove_' + detailNum + '">',
                 '<input type="button" name="detail_addAllNumber_' + detailNum + '" value="all">',[
-                    '<input type="number" name="detail_start_day_' + detailNum + '" value="0" max="' + _val.config.getWorkEndDay() + '" min="' + _val.config.getWorkStartDay() + '">日目',
-                    '<input type="number" name="detail_start_hour_' + detailNum + '" value="0" max="23" min="0">時',
-                    '<input type="number" name="detail_start_minute_' + detailNum + '" value="0" max="59" min="0" step="' + LocalDate.getTimeUnitAsConverted("minute") +'">分'
+                    '<input type="number" name="detail_start_day_' + detailNum + '" value="' + detailObj.start.getDays() + '" max="' + _val.config.getWorkEndDay() + '" min="' + _val.config.getWorkStartDay() + '">日目',
+                    '<input type="number" name="detail_start_hour_' + detailNum + '" value="' + detailObj.start.getHours() + '" max="23" min="0">時',
+                    '<input type="number" name="detail_start_minute_' + detailNum + '" value="' + detailObj.start.getMinutes() + '" max="59" min="0" step="' + LocalDate.getTimeUnitAsConverted("minute") +'">分'
                 ].join(""),[
-                    '<table><tbody><tr></tr><tr><td rowspan="2">',
+                    '<table><tbody><tr><td rowspan="2">',
                         '<input type="button" name="detail_extendInterval_' + detailNum + '" value="延長">',
                         '<input type="button" name="detail_shortenInterval_' + detailNum + '" value="短縮">',
-                    '</td></tr></tbody></table>',
-                    '<input type="hidden" name="detail_interval_' + detailNum + '" value="' + 0 + '">'
+                    '</td></tr><tr></tr></tbody></table>',
+                    '<input type="hidden" name="detail_interval_' + detailNum + '" value="' + detailObj.number.length + '">'
                 ].join("")
             ].join("</td><td>") + "</td></tr>").insertBefore(targetRow);
 
             //TODO set css of numberTable here
-
-
             tr.find("td").css({"padding":0,"text-align":"center"});
             tr.find('[type="button"]').css({"min-width":"initial"});
             tr.find('[name^="detail_addAllNumber"]').css({"padding":"0 1em"});
             tr.find('[name^="detail_start"]').css({"width":"3em"});
             tr.find('[name^="detail_number"]').css({"width":"3em"});
 
+            _val.pageFun.editWorkList.makeDetailNumberTable(detailNum,detailObj.number);
 
 
         },getDetailStart:function(detailIndex){
