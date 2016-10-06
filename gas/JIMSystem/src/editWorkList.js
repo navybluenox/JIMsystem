@@ -2,11 +2,13 @@ $(function(){
     var workListEditing;
     var form;
     var formNameList = [{"name":"name"},{"name":"nameShort"},{"name":"leaderId"},{"name":"leaderIncharge"},{"name":"description"},{"name":"condition"},{"name":"caption"},{"name":"note"},{"name":"asAssined"}];
+    var detailTable;
     _val.pageFun.editWorkList = {
         onload:function(){
             _val.server.loadData("user");
             _val.server.loadData("workList");
             form = $("#formEditWorkList_edit");
+            detailTable = form.find('[name="detail"]').siblings("table");
             _val.pageFun.editWorkList.makeDetailTable();
         },updateWorkList:function(kind,_id){
             var workList;
@@ -131,32 +133,87 @@ $(function(){
             var value = form.find('[name="searchIncharge"]').val();
             target.val(value);
         },makeDetailTable:function(){
-            var detailTable = form.find('[name="detail"]').siblings("table");
+            //set events
+            detailTable.on("click",'[name^="detail_addAllNumber"]',function(e){
+                var trigger = $(e.currentTarget);
+                var target = detailTable.find('[name^=detail_number_' + trigger.attr("name").replace(/^detail_addAllNumber_$/,"") + '_]');
+                target.trigger("click");
+            })
+            detailTable.on("click",'[name^="detail_number"]',function(e){
+                var trigger = $(e.currentTarget);
+                var sign = detailTable.find('[name="detail_increment"]').val();
+                if(sign === "+"){
+                    trigger.val(trigger.val() + 1);
+                }else if(sign === "-" && trigger.val() > 1){
+                    trigger.val(trigger.val() - 1);
+                }
+            });
+            detailTable.on("click",'[name^="detail_extendInterval"]',function(e,param){
+                var trigger = $(e.currentTarget);
+                var 
+                if(param === undefined){
+                    param = {};
+                    param.detailIndex = + trigger.attr("name").replace(/^detail_addAllNumber_$/,"");
+                    param.start = _val.pageFun.editWorkList.getDetailStart(param.detailIndex);
+                    param.interval = detailTable.find('[name="detail_interval_"' + param.detailIndex + ']').val();
+                    param.num = 1;
+                }
+
+
+
+                //TODO
+            });
+            detailTable.on("click",'[name^="detail_shortenInterval"]',function(e,param){
+            });
+
+            
 
             function extendInterval(detailIndex,start,interval,num){
 
             }
         },addSection:function(detailObj){
             if(detailObj === undefined)  detailObj = {"start":new LocalDate(),"interval":0,"number":[]};
-            var detailTable = form.find('[name="detail"]').siblings("table");
             var targetRow = detailTable.find('[name="detail_addSection"]').closest("tr");
             var detailNum = detailTable.children("tbody").children("tr").length - 1;
-            var namePrefix = "detail_" + detailNum + "_";
             var tr = $("<tr><td>" + [
-                '<input type="checkbox" name="' + namePrefix + 'remove">',
-                '<input type="button" name="' + namePrefix + 'addAllNumber" value="all">',[
-                    '<input type="number" name="' + namePrefix + 'start_day" value="0" max="_val.config.getWorkEndDay()" min="_val.config.getWorkStartDay()">日目',
-                    '<input type="number" name="' + namePrefix + 'start_hour" value="0" max="23" min="0">時',
-                    '<input type="number" name="' + namePrefix + 'start_minute" value="0" max="59" min="0" step="' + LocalDate.getTimeUnitAsConverted("minute") +'">分'
+                '<input type="checkbox" name="detail_remove_' + detailNum + '">',
+                '<input type="button" name="detail_addAllNumber_' + detailNum + '" value="all">',[
+                    '<input type="number" name="detail_start_day_' + detailNum + '" value="0" max="' + _val.config.getWorkEndDay() + '" min="' + _val.config.getWorkStartDay() + '">日目',
+                    '<input type="number" name="detail_start_hour_' + detailNum + '" value="0" max="23" min="0">時',
+                    '<input type="number" name="detail_start_minute_' + detailNum + '" value="0" max="59" min="0" step="' + LocalDate.getTimeUnitAsConverted("minute") +'">分'
                 ].join(""),[
                     '<table><tbody><tr></tr><tr><td rowspan="2">',
-                        '<input type="button" name="' + namePrefix + 'extendInterval" value="延長">',
-                        '<input type="button" name="' + namePrefix + 'shortenInterval" value="短縮">',
+                        '<input type="button" name="detail_extendInterval_' + detailNum + '" value="延長">',
+                        '<input type="button" name="detail_shortenInterval_' + detailNum + '" value="短縮">',
                     '</td></tr></tbody></table>',
-                    '<input type="hidden" name="' + namePrefix + 'interval" value="' + 0 + '">'
+                    '<input type="hidden" name="detail_interval_' + detailNum + '" value="' + 0 + '">'
                 ].join("")
             ].join("</td><td>") + "</td></tr>").insertBefore(targetRow);
+            tr.find("td").css({"padding":0,"text-align":"center"});
+            tr.find('[type="button"]').css({"min-width":"initial"});
+            tr.find('[name="detail_addAllNumber"]').css({"padding":"0 1em"});
+            tr.find('[name^="detail_start"]').css({"width":"3em"});
+            tr.find('[name^="detail_number"]').css({"width":"3em"});
+            //TODO set css of numberTable here
 
+
+
+        },getDetailStart(detailIndex){
+            var fun = function(key){return detailTable.find('[name="detail_start_' + key + '_' + detailIndex + '"]');}
+            return new LocalDate({
+                "day":fun("day"),
+                "hour":fun("hour"),
+                "minute":fun("minute")
+            });
+        },getDetailNumber(detailIndex){
+            var ret = [];
+            var target = detailTable.find('[name="detail_number_' + detailIndex + '"]');
+            target.map(function(i,_el){
+                var el = $(_el);
+                var index = +el.attr("name").replace(/^detail_number_(?:\d+)_/,"");
+                ret[index] = el.val();
+            });
+            return ret;
         }
     };
 });
