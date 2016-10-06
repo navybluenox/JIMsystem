@@ -40,7 +40,7 @@ $(function(){
                 });
             }
             _val.server.sendUpdateQueue();
-        },searchWorkList(sortFun){
+        },searchWorkList:function(sortFun){
             var result = $("#formEditWorkList_search_result");
             var form_search = $("#formEditWorkList_search_cond");
 
@@ -150,7 +150,6 @@ $(function(){
             });
             detailTable.on("click",'[name^="detail_extendInterval"]',function(e,param){
                 var trigger = $(e.currentTarget);
-                var 
                 if(param === undefined){
                     param = {};
                     param.detailIndex = + trigger.attr("name").replace(/^detail_addAllNumber_$/,"");
@@ -198,14 +197,14 @@ $(function(){
 
 
 
-        },getDetailStart(detailIndex){
+        },getDetailStart:function(detailIndex){
             var fun = function(key){return detailTable.find('[name="detail_start_' + key + '_' + detailIndex + '"]');}
             return new LocalDate({
                 "day":fun("day"),
                 "hour":fun("hour"),
                 "minute":fun("minute")
             });
-        },getDetailNumber(detailIndex){
+        },getDetailNumber:function(detailIndex){
             var ret = [];
             var target = detailTable.find('[name="detail_number_' + detailIndex + '"]');
             target.map(function(i,_el){
