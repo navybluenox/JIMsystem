@@ -169,6 +169,7 @@ $(function(){
 
             
             //生成時に1回、detail_start変更時に実行
+            //縦罫線も更新
             function makeDetailNumberTableHeader(detailIndex){
                 //TODO
             }
