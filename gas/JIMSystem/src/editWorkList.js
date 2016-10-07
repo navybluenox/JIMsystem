@@ -111,11 +111,14 @@ $(function(){
                         setValue[key] = el.val();
                     }
                 })
-                //TODO skip removed row
                 setValue["@detail"] = [];
+                var skip = detailTable.find('[name="detail_remove"]').filter('[val="done"]').map(function(i,el){return +$(el).attr("name").replace(/^detail_remove_/,"")}).get();
                 for(var i=0,l=+detailTable.find('[name="detail_sectionNum"]').val();i<l;i++){
-                    setValue["@detail"][i] = {"start":_val.pageFun.editWorkList.getDetailStart(i),"number":_val.pageFun.editWorkList.getDetailNumber(i)};
+                    if(!inArray(skip,i)){
+                        setValue["@detail"][i] = {"start":_val.pageFun.editWorkList.getDetailStart(i),"number":_val.pageFun.editWorkList.getDetailNumber(i)};
+                    }
                 }
+                setValue["@detail"] = setValue["@detail"].filter(function(v){return v !== undefined});
 
                 if(kind === "change"){
                     if(workListEditing === undefined){
@@ -262,7 +265,7 @@ $(function(){
                 }
             })();
 
-            detailTable.find('[name="detail_interval_' + detailIndex + '"]').val(numberArray);
+            detailTable.find('[name="detail_interval_' + detailIndex + '"]').val(numberArray.length);
 
             var td1s = tr1.children().not(":first-child");
             var td2s = tr2.children();
