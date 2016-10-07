@@ -46,9 +46,58 @@ $(function(){
                 var numberArray = that.getDetailNumber(detailIndex);
                 that.makeDetailNumberTable(detailIndex,numberArray);
             });
-            //TODO detail_remove display=none value=done
-            //TODO detail_start 繰り上がり
-            
+            detailTable.on("click",'[name^="detail_remove"]',function(e){
+                var trigger = $(e.currentTarget);
+                var detailIndex = +trigger.attr("name").replace(/^detail_remove_/,"");
+                var target = trigger.closest("tr");
+                target.css({"display":"none"});
+                trigger.val("done");
+            });
+            detailTable.on("change",'[name^="detail_start_hour"]',function(e){
+                var trigger = $(e.currentTarget);
+                if(+trigger.val() !== -1 && +trigger.val() !== 24)  return;
+                var detailIndex = +trigger.attr("name").replace(/^detail_start_hour_/,"");
+                var day = detailTable.find('[name="detail_start_day_' + detailIndex + '"]');
+                if(+trigger.val() === -1){
+                    if(+day.val() === _val.config.getWorkStartDay()){
+                        trigger.val(0);
+                    }else{
+                        day.val(+day.val()-1);
+                        trigger.val(23);
+                    }
+                }else{
+                    if(+day.val() === _val.config.getWorkEndDay()){
+                        trigger.val(23);
+                    }else{
+                        day.val(+day.val()+1);
+                        trigger.val(0);
+                    }
+                }
+            });
+            detailTable.on("change",'[name^="detail_start_minute"]',function(e){
+                var trigger = $(e.currentTarget);
+                var unit = LocalDate.getTimeUnitAsConverted("minute");
+                if(+trigger.val() !== -unit && +trigger.val() !== 60)  return;
+                var detailIndex = +trigger.attr("name").replace(/^detail_start_minute_/,"");
+                var hour = detailTable.find('[name="detail_start_hour_' + detailIndex + '"]');
+                var day = detailTable.find('[name="detail_start_day_' + detailIndex + '"]');
+                if(+trigger.val() === -unit){
+                    if(+day.val() === _val.config.getWorkStartDay() && +hour.val() <= 0){
+                        trigger.val(0);                        
+                    }else{
+                        hour.val(+hour.val()-1);
+                        trigger.val(60-unit);
+                    }
+                }else{
+                    if(+day.val() === _val.config.getWorkEndDay() && +hour.val() >= 23){
+                        trigger.val(60-unit);
+                    }else{
+                        hour.val(+hour.val()+1);
+                        trigger.val(0);
+                    }
+                }
+                hour.trigger("change");
+            });
         },updateWorkList:function(kind,_id){
             var workList;
             var setValue = {};
@@ -242,8 +291,8 @@ $(function(){
                 '<input type="button" name="detail_remove_' + detailNum + '" value="remove">',
                 '<input type="button" name="detail_addAllNumber_' + detailNum + '" value="all">',[
                     '<input type="number" name="detail_start_day_' + detailNum + '" value="' + detailObj.start.getDays() + '" max="' + _val.config.getWorkEndDay() + '" min="' + _val.config.getWorkStartDay() + '">日目',
-                    '<input type="number" name="detail_start_hour_' + detailNum + '" value="' + detailObj.start.getHours() + '" max="23" min="0">時',
-                    '<input type="number" name="detail_start_minute_' + detailNum + '" value="' + detailObj.start.getMinutes() + '" max="59" min="0" step="' + LocalDate.getTimeUnitAsConverted("minute") +'">分'
+                    '<input type="number" name="detail_start_hour_' + detailNum + '" value="' + detailObj.start.getHours() + '" max="24" min="-1">時',
+                    '<input type="number" name="detail_start_minute_' + detailNum + '" value="' + detailObj.start.getMinutes() + '" max="60" min="-' + LocalDate.getTimeUnitAsConverted("minute") + '" step="' + LocalDate.getTimeUnitAsConverted("minute") +'">分'
                 ].join(""),[
                     '<table><tbody><tr><td rowspan="2">',
                         '<input type="button" name="detail_extendInterval_' + detailNum + '" value="延長">',
