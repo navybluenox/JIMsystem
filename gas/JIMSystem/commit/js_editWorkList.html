@@ -20,27 +20,26 @@ $(function(){
             detailTable.on("click",'[name^="detail_number"]',function(e){
                 var trigger = $(e.currentTarget);
                 var sign = detailTable.find('[name="detail_increment"]').val();
-                if(sign === "+"){
+                if(sign === "up"){
                     trigger.val(+trigger.val() + 1);
-                }else if(sign === "-" && trigger.val() > 1){
+                }else if(sign === "down" && trigger.val() > 1){
                     trigger.val(+trigger.val() - 1);
                 }
+                _val.pageFun.editWorkList.changeButtonColor(trigger,trigger.val());
             });
-            detailTable.on("click",'[name^="detail_extendInterval"]',function(e){
+            detailTable.on("change",'[name^="detail_interval"]',function(e){
                 var trigger = $(e.currentTarget);
-                var detailIndex = +trigger.attr("name").replace(/^detail_extendInterval_/,"");
+                var detailIndex = +trigger.attr("name").replace(/^detail_interval_/,"");
                 var numberArray = that.getDetailNumber(detailIndex);
-                numberArray.push(1);
+                if(+trigger.val() > numberArray.length){
+                    while(numberArray.length !== +trigger.val()){
+                        numberArray.push(1);
+                    }
+                }else if(+trigger.val() < numberArray.length){
+                    numberArray.length = +trigger.val();
+                }
                 that.makeDetailNumberTable(detailIndex,numberArray);
-            });
-            detailTable.on("click",'[name^="detail_shortenInterval"]',function(e){
-                var trigger = $(e.currentTarget);
-                var detailIndex = +trigger.attr("name").replace(/^detail_shortenInterval_/,"");
-                var numberArray = that.getDetailNumber(detailIndex);
-                if(numberArray.length === 0) return;
-                numberArray.length = numberArray.length - 1;
-                that.makeDetailNumberTable(detailIndex,numberArray);
-            });
+            });            
             detailTable.on("change",'[name^="detail_start"]',function(e){
                 var trigger = $(e.currentTarget);
                 var detailIndex = +trigger.attr("name").replace(/^detail_start_(?:day|hour|minute)_/,"");
@@ -239,7 +238,7 @@ $(function(){
             var value = form.find('[name="searchIncharge"]').val();
             target.val(value);
         },makeDetailNumberTable:function(detailIndex,numberArray){
-            var targetTable = detailTable.find('[name="detail_interval_' + detailIndex + '"]').siblings("table");
+            var targetTable = detailTable.find('[name="detail_interval_' + detailIndex + '"]').closest("table");
             var tr1 = targetTable.find("tbody > tr").eq(0);
             var tr2 = targetTable.find("tbody > tr").eq(1);
             var startTime = _val.pageFun.editWorkList.getDetailStart(detailIndex);
@@ -258,15 +257,16 @@ $(function(){
                     td2 = tr2.children().eq(numIndex);
                     time = startTime.copy().addTimeUnit(numIndex);
                     if(time.getMinutes() === 0 || numIndex === 0){
-                        td1.text(time.getDifferentialHours(startTime.getDays()));
+                        td1.text(time.getDifferentialHours(startTime.getDays()) + "時");
                     }else{
                         td1.remove();
                     }
-                    td2.append('<input type="button" name="detail_number_' + detailIndex + '_' + numIndex + '" value="'+ num +'">');
+                    _val.pageFun.editWorkList.changeButtonColor(
+                        $('<input type="button" name="detail_number_' + detailIndex + '_' + numIndex + '" value="'+ num +'">').appendTo(td2),
+                        num
+                    );
                 }
             })();
-
-            detailTable.find('[name="detail_interval_' + detailIndex + '"]').val(numberArray.length);
 
             var td1s = tr1.children().not(":first-child");
             var td2s = tr2.children();
@@ -299,10 +299,8 @@ $(function(){
                     '<input type="number" name="detail_start_minute_' + detailNum + '" value="' + detailObj.start.getMinutes() + '" max="60" min="-' + LocalDate.getTimeUnitAsConverted("minute") + '" step="' + LocalDate.getTimeUnitAsConverted("minute") +'">分'
                 ].join(""),[
                     '<table><tbody><tr><td rowspan="2">',
-                        '<input type="button" name="detail_extendInterval_' + detailNum + '" value="延長">',
-                        '<input type="button" name="detail_shortenInterval_' + detailNum + '" value="短縮">',
+                        '<input type="number" name="detail_interval_' + detailNum + '" value="' + detailObj.number.length + '" min="0">×' + LocalDate.getTimeUnitAsConverted("minute") + '分間',
                     '</td></tr><tr></tr></tbody></table>',
-                    '<input type="hidden" name="detail_interval_' + detailNum + '" value="' + detailObj.number.length + '">'
                 ].join("")
             ].join("</td><td>") + "</td></tr>").insertBefore(targetRow);
 
@@ -311,6 +309,7 @@ $(function(){
             tr.find('[name^="detail_addAllNumber"]').css({"padding":"0 1em"});
             tr.find('[name^="detail_start"]').css({"width":"3em"});
             tr.find('[name^="detail_number"]').css({"width":"3em"});
+            tr.find('[name^="detail_interval"]').css({"width":"3em"});
 
             _val.pageFun.editWorkList.makeDetailNumberTable(detailNum,detailObj.number);
             detailTable.find('[name="detail_sectionNum"]').val(+detailTable.find('[name="detail_sectionNum"]').val() + 1);
@@ -331,6 +330,13 @@ $(function(){
                 ret[index] = +el.val();
             });
             return ret;
+        },changeButtonColor:function(el,_num){
+            var hue = [200,140,60,30];
+            var lightness = [90,80,70,60,50];
+            var num = (_num > 20 ? 20 : _num) - 1;
+            var backgroundColor = "hsl(" + hue[(num-num%5)/5] + ", 100%, " + lightness[num%5] + "%)";
+            var fontColor = "#000000";
+            $(el).css({"background":backgroundColor,"color":fontColor,"text-decoration": _num%5 === 0 ? "underline" : ""});
         }
     };
 });
