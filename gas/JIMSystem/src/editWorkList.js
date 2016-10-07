@@ -46,6 +46,8 @@ $(function(){
                 var numberArray = that.getDetailNumber(detailIndex);
                 that.makeDetailNumberTable(detailIndex,numberArray);
             });
+            //TODO detail_remove display=none value=done
+            //TODO detail_start 繰り上がり
             
         },updateWorkList:function(kind,_id){
             var workList;
@@ -55,7 +57,11 @@ $(function(){
                     var el = form.find('[name="' + obj.name + '"]');
                     setValue[obj.key === undefined ? obj.name : obj.key] = el.val();
                 })
-                //TODO set detail
+                //TODO skip removed row
+                setValue["@detail"] = (new Array(+detailTable.find('[name="detail_sectionNum"]').val())).map(function(v,index){
+                    return {"start":_val.pageFun.editWorkList.getDetailStart(index),"number":_val.pageFun.editWorkList.getDetailNumber(index)};
+                });
+
 
                 if(kind === "change"){
                     if(workListEditing === undefined){
@@ -118,6 +124,8 @@ $(function(){
                     var el = form.find('[name="' + obj.name + '"]');
                     el.val(workList.getValue(obj.key === undefined ? obj.name : obj.key));
                 })
+                detailTable.find("tbody > tr").not(":last-child").remove();
+                detailTable.find('[name="detail_sectionNum"]').val(0);
                 workList.getValue("@detail").forEach(function(detailObj){
                     _val.pageFun.editWorkList.addSection(detailObj);
                 })
@@ -138,7 +146,8 @@ $(function(){
                             str = workList.getValue(cellObj.column);
                             break;
                         case "leaderId":
-                            str = _val.server.getDataById(workList.getValue("leaderId"),"user")[0].getValue("azusaSendName");
+                            var user = _val.server.getDataById(workList.getValue("leaderId"),"user")[0];
+                            str = user === undefined ? "" : user.getValue("azusaSendName");
                             break;
                     }
                     cellObj.el.text(str);
@@ -187,10 +196,10 @@ $(function(){
                 var num,td1,td2,time,numIndex;
                 while((num = a.pop()) !== undefined){
                     numIndex = a.length;
-                    td1 = tr1.children().eq(numIndex);
+                    td1 = tr1.children().eq(numIndex+1);
                     td2 = tr2.children().eq(numIndex);
                     time = startTime.copy().addTimeUnit(numIndex);
-                    if(time.getMinutes() === 0 || numberArray.length === 1){
+                    if(time.getMinutes() === 0 || numIndex === 0){
                         td1.text(time.getDifferentialHours(startTime.getDays()));
                     }else{
                         td1.remove();
@@ -225,7 +234,7 @@ $(function(){
             var targetRow = detailTable.find('[name="detail_addSection"]').closest("tr");
             var detailNum = detailTable.children("tbody").children("tr").length - 1;
             var tr = $("<tr><td>" + [
-                '<input type="checkbox" name="detail_remove_' + detailNum + '">',
+                '<input type="button" name="detail_remove_' + detailNum + '" value="remove">',
                 '<input type="button" name="detail_addAllNumber_' + detailNum + '" value="all">',[
                     '<input type="number" name="detail_start_day_' + detailNum + '" value="' + detailObj.start.getDays() + '" max="' + _val.config.getWorkEndDay() + '" min="' + _val.config.getWorkStartDay() + '">日目',
                     '<input type="number" name="detail_start_hour_' + detailNum + '" value="' + detailObj.start.getHours() + '" max="23" min="0">時',
@@ -239,7 +248,6 @@ $(function(){
                 ].join("")
             ].join("</td><td>") + "</td></tr>").insertBefore(targetRow);
 
-            //TODO set css of numberTable here
             tr.find("td").css({"padding":0,"text-align":"center"});
             tr.find('[type="button"]').css({"min-width":"initial"});
             tr.find('[name^="detail_addAllNumber"]').css({"padding":"0 1em"});
@@ -247,7 +255,7 @@ $(function(){
             tr.find('[name^="detail_number"]').css({"width":"3em"});
 
             _val.pageFun.editWorkList.makeDetailNumberTable(detailNum,detailObj.number);
-
+            detailTable.find('[name="detail_sectionNum"]').val(+detailTable.find('[name="detail_sectionNum"]').val() + 1);
 
         },getDetailStart:function(detailIndex){
             var fun = function(key){return detailTable.find('[name="detail_start_' + key + '_' + detailIndex + '"]').val();}

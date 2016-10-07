@@ -19,7 +19,7 @@
                     "collectionInfoFileID":"0B88bKUOZP4-AalctMlZ4MDE0eG8"
                 },
                 "workAssign":{
-                    "timeUnit":1800000,
+                    "timeUnit":900000,
                     "workStart":-1,
                     "workTime":[
                         {
