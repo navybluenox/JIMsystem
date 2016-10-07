@@ -177,7 +177,9 @@ var Datapiece = (function(){
                 })
             }else{
                 this._collInfo = server.getCollectionInfoByName(dataName);
-                this.setValues(datapieceObj,option);
+                if(datapieceObj !== undefined){
+                    this.setValues(datapieceObj,option);
+                }
             }
         }
         setValues(datapieceObj,option){

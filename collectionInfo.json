@@ -131,7 +131,7 @@
             "condition":"string",
             "caption":"string",
             "note":"string",
-            "asAssined":"boolean"
+            "asAssigned":"boolean"
         },"columnName":{
             "_id":"データID",
             "created":"作成日時",
@@ -145,7 +145,7 @@
             "condition":"人割条件",
             "caption":"業務説明文",
             "note":"メモ書き",
-            "asAssined":"割り振り済みとみなすか"
+            "asAssigned":"割り振り済みとみなすか"
 
         }},
         {"_id":"E5XwwhcfPLrWKJfr","created":"2016-07-18T08:00:00.000Z","updated":"2016-07-18T08:00:00.000Z","name":"workNotAssigned","fileId":"0B88bKUOZP4-ATzhueWlNR2NSdm8","column":{

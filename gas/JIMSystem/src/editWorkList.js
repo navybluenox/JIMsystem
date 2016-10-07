@@ -55,13 +55,18 @@ $(function(){
             if(kind === "add" || kind === "change"){
                 formNameList.forEach(function(obj){
                     var el = form.find('[name="' + obj.name + '"]');
-                    setValue[obj.key === undefined ? obj.name : obj.key] = el.val();
+                    var key = obj.key === undefined ? obj.name : obj.key;
+                    if(obj.key === "asAssined"){
+                        setValue[key] = el.prop("checked");
+                    }else{
+                        setValue[key] = el.val();
+                    }
                 })
                 //TODO skip removed row
-                setValue["@detail"] = (new Array(+detailTable.find('[name="detail_sectionNum"]').val())).map(function(v,index){
-                    return {"start":_val.pageFun.editWorkList.getDetailStart(index),"number":_val.pageFun.editWorkList.getDetailNumber(index)};
-                });
-
+                setValue["@detail"] = [];
+                for(var i=0,l=+detailTable.find('[name="detail_sectionNum"]').val();i<l;i++){
+                    setValue["@detail"][i] = {"start":_val.pageFun.editWorkList.getDetailStart(i),"number":_val.pageFun.editWorkList.getDetailNumber(i)};
+                }
 
                 if(kind === "change"){
                     if(workListEditing === undefined){
@@ -70,7 +75,7 @@ $(function(){
                     }
                     setValue._id = workListEditing.getValue("_id");
                 }
-                workList = new WorkList(setValue);
+                workList = (new WorkList()).setValues(setValue);
                 if(kind === "add"){
                     _val.server.addData(workList);
                 }else{
@@ -78,11 +83,11 @@ $(function(){
                 }
             }else if(kind === "remove"){
                 workList = new WorkList({"_id":_id});
-                _val.server.removeData(workList).then(function(){
-                    _val.pageFun.editWorkList.searchWorkList();
-                });
+                _val.server.removeData(workList);
             }
-            _val.server.sendUpdateQueue();
+            _val.server.sendUpdateQueue().then(function(){
+                _val.pageFun.editWorkList.searchWorkList();
+            });
         },searchWorkList:function(sortFun){
             var result = $("#formEditWorkList_search_result");
             var form_search = $("#formEditWorkList_search_cond");
