@@ -10,34 +10,41 @@ $(function(){
             _val.server.loadData("user");
             _val.server.loadData("workList");
             form = $("#formEditWorkList_edit");
-            detailTable = form.find('[name="detail"]').siblings("table");
+            detailTable = form.find('table.workList_detail_table');
             //set events
             detailTable.on("click",'[name^="detail_addAllNumber"]',function(e){
                 var trigger = $(e.currentTarget);
-                var target = detailTable.find('[name^=detail_number_' + trigger.attr("name").replace(/^detail_addAllNumber_$/,"") + '_]');
+                var target = detailTable.find('[name^=detail_number_' + trigger.attr("name").replace(/^detail_addAllNumber_/,"") + ']');
                 target.trigger("click");
-            })
+            });
             detailTable.on("click",'[name^="detail_number"]',function(e){
                 var trigger = $(e.currentTarget);
                 var sign = detailTable.find('[name="detail_increment"]').val();
                 if(sign === "+"){
-                    trigger.val(trigger.val() + 1);
+                    trigger.val(+trigger.val() + 1);
                 }else if(sign === "-" && trigger.val() > 1){
-                    trigger.val(trigger.val() - 1);
+                    trigger.val(+trigger.val() - 1);
                 }
             });
-            detailTable.on("click",'[name^="detail_extendInterval"]',function(e,param){
+            detailTable.on("click",'[name^="detail_extendInterval"]',function(e){
                 var trigger = $(e.currentTarget);
                 var detailIndex = +trigger.attr("name").replace(/^detail_extendInterval_/,"");
                 var numberArray = that.getDetailNumber(detailIndex);
                 numberArray.push(1);
                 that.makeDetailNumberTable(detailIndex,numberArray);
             });
-            detailTable.on("click",'[name^="detail_shortenInterval"]',function(e,param){
+            detailTable.on("click",'[name^="detail_shortenInterval"]',function(e){
                 var trigger = $(e.currentTarget);
-                var detailIndex = +trigger.attr("name").replace(/^detail_extendInterval_/,"");
+                var detailIndex = +trigger.attr("name").replace(/^detail_shortenInterval_/,"");
                 var numberArray = that.getDetailNumber(detailIndex);
+                if(numberArray.length === 0) return;
                 numberArray.length = numberArray.length - 1;
+                that.makeDetailNumberTable(detailIndex,numberArray);
+            });
+            detailTable.on("change",'[name^="detail_start"]',function(e){
+                var trigger = $(e.currentTarget);
+                var detailIndex = +trigger.attr("name").replace(/^detail_start_(?:day|hour|minute)_/,"");
+                var numberArray = that.getDetailNumber(detailIndex);
                 that.makeDetailNumberTable(detailIndex,numberArray);
             });
             
@@ -171,9 +178,9 @@ $(function(){
             var tr2 = targetTable.find("tbody > tr").eq(1);
             var startTime = _val.pageFun.editWorkList.getDetailStart(detailIndex);
 
-            tr1.children().not(":last-child").remove();
+            tr1.children().not(":first-child").remove();
             tr2.children().remove();
-            tr1.prepend(repeatString("<td></td>",numberArray.length));
+            tr1.append(repeatString("<td></td>",numberArray.length));
             tr2.append(repeatString("<td></td>",numberArray.length));
 
             (function(){
@@ -195,8 +202,8 @@ $(function(){
 
             detailTable.find('[name="detail_interval_' + detailIndex + '"]').val(numberArray);
 
-            var td1s = tr1.children().not(":last-child");
-            var td2s = tr1.children();
+            var td1s = tr1.children().not(":first-child");
+            var td2s = tr2.children();
             var timeUnitsPerHour = 60/LocalDate.getTimeUnitAsConverted("minute");
             var endTime = startTime.copy().addTimeUnit(numberArray.length);
 
@@ -211,7 +218,7 @@ $(function(){
             td1s.css({"text-align":"left"});
             td1s.filter(":nth-child(2n)").css({"background":"#7FFFD4"});
             td1s.filter(":nth-child(2n+1)").css({"background":"#66CDAA"});
-            td2s.find('[name^="detail_number"]').css({"padding":"0 1em"});
+            td2s.find('[name^="detail_number"]').css({"padding":"0 1em","min-width":"initial"});
             td2s.not(":nth-child(" + timeUnitsPerHour + "n)").css({"border-left-style":"dashed"});
 
         },addSection:function(detailObj){
@@ -244,7 +251,7 @@ $(function(){
 
 
         },getDetailStart:function(detailIndex){
-            var fun = function(key){return detailTable.find('[name="detail_start_' + key + '_' + detailIndex + '"]');}
+            var fun = function(key){return detailTable.find('[name="detail_start_' + key + '_' + detailIndex + '"]').val();}
             return new LocalDate({
                 "day":fun("day"),
                 "hour":fun("hour"),
@@ -252,11 +259,11 @@ $(function(){
             });
         },getDetailNumber:function(detailIndex){
             var ret = [];
-            var target = detailTable.find('[name="detail_number_' + detailIndex + '"]');
+            var target = detailTable.find('[name^="detail_number_' + detailIndex + '"]');
             target.map(function(i,_el){
                 var el = $(_el);
                 var index = +el.attr("name").replace(/^detail_number_(?:\d+)_/,"");
-                ret[index] = el.val();
+                ret[index] = +el.val();
             });
             return ret;
         }

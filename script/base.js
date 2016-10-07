@@ -166,8 +166,6 @@ var LocalDate = (function(){
             switch(typeof timeValue){
                 case "number":
                     this._localTime = timeValue;
-                    //targetTime = LocalDate.getStandardTime();
-                    //targetTime.setMilliseconds(targetTime.getMilliseconds() + timeValue);
                     break;
                 case "object":
                     if(timeValue instanceof Date){
@@ -176,12 +174,11 @@ var LocalDate = (function(){
                     }else if(timeValue != null){
                         this._localTime = 0;
                         targetTime = LocalDate.getStandardTime()
-                        if(timeValue.day != null)  this._localTime += timeValue.day * 24 * 60 * 60 * 1000;
-                        if(timeValue.hour != null)  this._localTime += timeValue.hour * 60 * 60 * 1000;
-                        if(timeValue.minute != null)  this._localTime += timeValue.minute * 60 * 1000;
-                        if(timeValue.second != null)  this._localTime += timeValue.second * 1000;
-                        if(timeValue.millsecond != null)  this._localTime += timeValue.millsecond;
-                        //targetTime.setMilliseconds(targetTime.getMilliseconds() + this._localTime);
+                        if(timeValue.day != null)  this._localTime += +timeValue.day * 24 * 60 * 60 * 1000;
+                        if(timeValue.hour != null)  this._localTime += +timeValue.hour * 60 * 60 * 1000;
+                        if(timeValue.minute != null)  this._localTime += +timeValue.minute * 60 * 1000;
+                        if(timeValue.second != null)  this._localTime += +timeValue.second * 1000;
+                        if(timeValue.millsecond != null)  this._localTime += +timeValue.millsecond;
                     }else{
                         targetTime = new Date();
                         this._localTime = targetTime.getTime() - standardTime.getTime();
