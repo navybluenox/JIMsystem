@@ -352,6 +352,7 @@ var Datapiece = (function(){
         }
         static sort(datapieces,colName,reverse,dataName){
             if(!Array.isArray(datapieces)) return;
+            if(datapieces.length === 0)  return [];
             if(dataName === undefined)  dataName = datapieces[0].getDataName();
             if(colName === undefined)  colName = "_id";
             if(!Array.isArray(colName)) colName = [colName];
