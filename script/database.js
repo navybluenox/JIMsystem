@@ -163,6 +163,7 @@ var Datapiece = (function(){
             if(option === undefined)  option = {};
             var that = this;
             if(server === undefined){
+                //Serverオブジェクトを変える場合にはここを書き換える
                 server = _val.server;
             }
             this._data = {};
@@ -491,11 +492,27 @@ class User extends Datapiece{
     constructor(datapieceObj,option){
         super(datapieceObj,"user",option);
     }
+    getBackgroundColor(){
+        return "#FFFFFF";
+        //return UserGroup.getColorByUserId(this.getValues("_id"),"background");
+    }
+    getFontColor(){
+        return "#000000";
+        //return UserGroup.getColorByUserId(this.getValues("_id"),"font");
+    }
 }
 
 class UserGroup extends Datapiece{
     constructor(datapieceObj,option){
         super(datapieceObj,"userGroup",option);
+    }
+    static getColorByUserId(id,kind){
+        return _val.server.getData("userGroup")
+            .filter(function(userGroup){
+                return userGroup.getValue("isColorGroup")
+            }).find(function(userGroup){
+                return userGroup.getValue("member") === id
+            }).getValue(kind + "Color");
     }
 }
 
@@ -508,6 +525,14 @@ class WorkAssign extends Datapiece{
 class WorkGroup extends Datapiece{
     constructor(datapieceObj,option){
         super(datapieceObj,"workGroup",option);
+    }
+    static getColorByWorkListId(id,kind){
+        return _val.server.getData("workGroup")
+            .filter(function(userGroup){
+                return userGroup.getValue("isColorGroup")
+            }).find(function(userGroup){
+                return userGroup.getValue("member") === id
+            }).getValue(kind + "Color");
     }
 }
 
@@ -540,6 +565,14 @@ class WorkList extends Datapiece{
                 })},{overwrite:true});
             }
         })
+    }
+    getBackgroundColor(){
+        return "#FFFFFF";
+        //return WorkGroup.getColorByUserId(this.getValues("_id"),"background");
+    }
+    getFontColor(){
+        return "#000000";
+        //return WorkGroup.getColorByUserId(this.getValues("_id"),"font");
     }
 }
 

@@ -160,8 +160,11 @@ Number.isNaN = Number.isNaN || function (value) {
 }*/
 
 var LocalDate = (function(){
+    var config;
     return class LocalDate {
         constructor(timeValue){
+            //SystemConfigが変わる場合にはここを書き換える
+            if(config === undefined)  config = _val.config;
             var targetTime;
             var standardTime = LocalDate.getStandardTime();
             switch(typeof timeValue){
@@ -215,20 +218,20 @@ var LocalDate = (function(){
             }
         }
         static getStandardTime(){
-            return new Date(_val.config.getValue("content.base.standardTime"));
+            return new Date(config.getValue("content.base.standardTime"));
         }
         static getTimeUnit(){
-            return _val.config.getValue("content.workAssign.timeUnit");
+            return config.getValue("content.workAssign.timeUnit");
         }
         static getTimeUnitAsConverted(unitName){
             var unitValue = [1,1000,60000,3600000,86400000][["millsecond","second","minute","hour","day"].findIndex(function(v){return v === unitName})];
             return LocalDate.getTimeUnit() / unitValue;
         }
         static getOpenTime(day,kind){
-            return _val.config.getOpenTime(day,kind);
+            return config.getOpenTime(day,kind);
         }
         static getWorkTime(day,kind){
-            return _val.config.getWorkTime(day,kind);
+            return config.getWorkTime(day,kind);
         }
         copy(){
             return new LocalDate(this.getTime());

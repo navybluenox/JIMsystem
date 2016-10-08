@@ -19,10 +19,12 @@ function getPageFromServer(pageName){
 }
 
 function movePage(pageName,insertTag,option){
+    //pageFunが変わる場合にはここを書き換える
+    var pageFun = _val.pageFun;
     google.script.url.getLocation(function(location){
         var prevPageName = location.hash;
-        if(prevPageName && _val.pageFun && _val.pageFun[prevPageName] && _val.pageFun[prevPageName].onunload){
-            _val.pageFun[prevPageName].onunload();
+        if(prevPageName && pageFun && pageFun[prevPageName] && pageFun[prevPageName].onunload){
+            pageFun[prevPageName].onunload();
         }
     })
 
@@ -46,8 +48,8 @@ function movePage(pageName,insertTag,option){
         //after change page
         //set handler here
         google.script.history.push(option.state,option.parameters,pageName);
-        if(_val.pageFun && _val.pageFun[pageName] && _val.pageFun[pageName].onload){
-            _val.pageFun[pageName].onload();
+        if(pageFun && pageFun[pageName] && pageFun[pageName].onload){
+            pageFun[pageName].onload();
         }
     });
 }

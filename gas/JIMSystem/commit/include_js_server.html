@@ -16,11 +16,13 @@ server.js
 
 var Server = (function(){
     var cache = {};
-    //TODO  Get this info from config.json
+    var collectionInfoFileId;
     //This is collectionInfo.json
     return class Server {
         constructor(){
             var that = this;
+            //baseConfigのcollectionInfoのfileIdを変える場合にはここを書き換える
+            if(collectionInfoFileId === undefined) collectionInfoFileId = _val.baseConfig.collectionInfoFileId;
             this._pendingQueue = [];
             this._updatingQueue = [];
             this._updating = false;
@@ -34,7 +36,7 @@ var Server = (function(){
             this._cache = cache;
             //delete!!!
             if(Object.keys(cache).length === 0){
-                runServerFun("Script.loadDataFromDrive",[_val.baseConfig.collectionInfoFileId,"data"])
+                runServerFun("Script.loadDataFromDrive",[collectionInfoFileId,"data"])
                 .then(function(v){
                     //TODO
                     //value v is invalid (datafile is not incomplete)
