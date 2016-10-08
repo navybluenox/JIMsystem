@@ -238,15 +238,16 @@ $(function(){
             var value = form.find('[name="searchIncharge"]').val();
             target.val(value);
         },makeDetailNumberTable:function(detailIndex,numberArray){
-            var targetTable = detailTable.find('[name="detail_interval_' + detailIndex + '"]').closest("table");
+            var targetTable = detailTable.find('[name="detail_interval_' + detailIndex + '"]').closest("tr").find("table");
             var tr1 = targetTable.find("tbody > tr").eq(0);
             var tr2 = targetTable.find("tbody > tr").eq(1);
             var startTime = _val.pageFun.editWorkList.getDetailStart(detailIndex);
+            var unitNum = numberArray.length;
 
             tr1.children().remove();
             tr2.children().remove();
-            tr1.append(repeatString("<td></td>",numberArray.length));
-            tr2.append(repeatString("<td></td>",numberArray.length));
+            tr1.append(repeatString("<td></td>",unitNum));
+            tr2.append(repeatString("<td></td>",unitNum));
 
             (function(){
                 var a = numberArray.slice();
@@ -270,14 +271,19 @@ $(function(){
 
             var td1s = tr1.children();
             var td2s = tr2.children();
+            var span = detailTable.find('[name="detail_interval_' + detailIndex + '"]').siblings("span");
             var timeUnitsPerHour = 60/LocalDate.getTimeUnitAsConverted("minute");
-            var endTime = startTime.copy().addTimeUnit(numberArray.length);
+            var endTime = startTime.copy().addTimeUnit(unitNum);
 
             td1s.attr("colspan",timeUnitsPerHour);
             td1s.first().attr("colspan",timeUnitsPerHour*(60 - startTime.getMinutes())/60);
             if(endTime.getMinutes() !== 0){
                 td1s.last().attr("colspan",timeUnitsPerHour*endTime.getMinutes()/60);
             }
+            span.text([
+                unitNum < timeUnitsPerHour ? "" : "" + (unitNum - unitNum%timeUnitsPerHour)/timeUnitsPerHour + "時間",
+                unitNum%timeUnitsPerHour === 0 ? "" : "" + ((unitNum%timeUnitsPerHour) * LocalDate.getTimeUnitAsConverted("minute")) + "分"
+            ].join(""));
 
             targetTable.css({"border":"1px #000000 solid","border-collapse":"collapse"});
             targetTable.find("td").css({"padding":"0","border":"1px #000000 solid"});
@@ -297,17 +303,20 @@ $(function(){
                     '<input type="number" name="detail_start_day_' + detailNum + '" value="' + detailObj.start.getDays() + '" max="' + _val.config.getWorkEndDay() + '" min="' + _val.config.getWorkStartDay() + '">日目',
                     '<input type="number" name="detail_start_hour_' + detailNum + '" value="' + detailObj.start.getHours() + '" max="24" min="-1">時',
                     '<input type="number" name="detail_start_minute_' + detailNum + '" value="' + detailObj.start.getMinutes() + '" max="60" min="-' + LocalDate.getTimeUnitAsConverted("minute") + '" step="' + LocalDate.getTimeUnitAsConverted("minute") +'">分'
-                ].join(""),
-                '<input type="number" name="detail_interval_' + detailNum + '" value="' + detailObj.number.length + '" min="0">×' + LocalDate.getTimeUnitAsConverted("minute") + '分間',
+                ].join(""),[
+                    '<input type="number" name="detail_interval_' + detailNum + '" value="' + detailObj.number.length + '" min="0">×' + LocalDate.getTimeUnitAsConverted("minute") + '分間',
+                    '<span></span>'
+                ].join("\n"),
                 '<table><tbody><tr></tr><tr></tr></tbody></table>'
             ].join("</td><td>") + "</td></tr>").insertBefore(targetRow);
 
             tr.find("td").css({"padding":0,"text-align":"center"});
+            tr.find("table").closest("td").css({"display":"inline-block","overflow":"auto","width":detailTable.width() + "px"});
             tr.find('[type="button"]').css({"min-width":"initial"});
             tr.find('[name^="detail_addAllNumber"]').css({"padding":"0 1em"});
             tr.find('[name^="detail_start"]').css({"width":"3em"}).closest("td").css({"white-space":"nowrap"});
-            tr.find('[name^="detail_number"]').css({"width":"3em"}).closest("td").closest("td").css({"display":"inline-block","over-flow":"auto","width":detailTable.width() + "px"});
-            tr.find('[name^="detail_interval"]').css({"width":"3em"}).closest("td").css({"white-space":"nowrap"});
+            tr.find('[name^="detail_number"]').css({"width":"3em"});
+            tr.find('[name^="detail_interval"]').css({"width":"3em"}).closest("td").css({"white-space":"pre"});
 
             _val.pageFun.editWorkList.makeDetailNumberTable(detailNum,detailObj.number);
             detailTable.find('[name="detail_sectionNum"]').val(+detailTable.find('[name="detail_sectionNum"]').val() + 1);
