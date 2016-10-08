@@ -5,6 +5,7 @@ $(function(){
     var formNameList = [{"name":"workListId"},{"name":"userId"},{"name":"start"},{"name":"interval"},{"name":"notice"},{"name":"note"},{"name":"disabled"}];
     _val.pageFun.assignWork = {
         onload:function(){
+            //TODO たぶんここでエラーが起きてる
             form = $("#formAssignWork_edit");
             form.find('[name="start_day"]').attr({"min":_val.config.getWorkStartDay(),"max":_val.config.getWorkEndDay()});
             form.find('[name="start_hour"]').on("change",function(e){
