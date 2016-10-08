@@ -306,9 +306,9 @@ $(function(){
             tr.find("td").css({"padding":0,"text-align":"center"});
             tr.find('[type="button"]').css({"min-width":"initial"});
             tr.find('[name^="detail_addAllNumber"]').css({"padding":"0 1em"});
-            tr.find('[name^="detail_start"]').css({"width":"3em"});
-            tr.find('[name^="detail_number"]').css({"width":"3em"});
-            tr.find('[name^="detail_interval"]').css({"width":"3em"});
+            tr.find('[name^="detail_start"]').css({"width":"3em"}).closest("td").css({"white-space":"nowrap"});
+            tr.find('[name^="detail_number"]').css({"width":"3em"}).closest("td").closest("td").css({"display":"inline-block","over-flow":"auto","width":detailTable.width() + "px"});
+            tr.find('[name^="detail_interval"]').css({"width":"3em"}).closest("td").css({"white-space":"nowrap"});
 
             _val.pageFun.editWorkList.makeDetailNumberTable(detailNum,detailObj.number);
             detailTable.find('[name="detail_sectionNum"]').val(+detailTable.find('[name="detail_sectionNum"]').val() + 1);
