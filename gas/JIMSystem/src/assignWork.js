@@ -2,7 +2,7 @@ $(function(){
     var workAssignEditing;
     var form;
     var formNameList = [{"name":"workListId"},{"name":"userId"},{"name":"start"},{"name":"interval"},{"name":"notice"},{"name":"note"},{"name":"disabled"}];
-    _val.pageFun.makeWorkSpec = {
+    _val.pageFun.assignWork = {
         onload:function(){
             form = $("#formAssignWork_edit");
             form.find('[name="start_day"]').attr({"min":_val.config.getWorkStartDay(),"max":_val.config.getWorkEndDay()});
@@ -48,7 +48,7 @@ $(function(){
                 _val.server.removeData(workAssign);
             }
             _val.server.sendUpdateQueue().then(function(){
-                _val.pageFun.editworkAssign.searchWorkAssign();
+                _val.pageFun.assignWork.searchWorkAssign();
             });
         },searchWorkAssign:function(sortFun){
 
