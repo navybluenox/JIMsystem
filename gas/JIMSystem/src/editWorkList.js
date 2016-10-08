@@ -242,7 +242,7 @@ $(function(){
             var tr2 = targetTable.find("tbody > tr").eq(1);
             var startTime = _val.pageFun.editWorkList.getDetailStart(detailIndex);
 
-            tr1.children().not(":first-child").remove();
+            tr1.children().remove();
             tr2.children().remove();
             tr1.append(repeatString("<td></td>",numberArray.length));
             tr2.append(repeatString("<td></td>",numberArray.length));
@@ -252,7 +252,7 @@ $(function(){
                 var num,td1,td2,time,numIndex;
                 while((num = a.pop()) !== undefined){
                     numIndex = a.length;
-                    td1 = tr1.children().eq(numIndex+1);
+                    td1 = tr1.children().eq(numIndex);
                     td2 = tr2.children().eq(numIndex);
                     time = startTime.copy().addTimeUnit(numIndex);
                     if(time.getMinutes() === 0 || numIndex === 0){
@@ -267,7 +267,7 @@ $(function(){
                 }
             })();
 
-            var td1s = tr1.children().not(":first-child");
+            var td1s = tr1.children();
             var td2s = tr2.children();
             var timeUnitsPerHour = 60/LocalDate.getTimeUnitAsConverted("minute");
             var endTime = startTime.copy().addTimeUnit(numberArray.length);
@@ -296,11 +296,9 @@ $(function(){
                     '<input type="number" name="detail_start_day_' + detailNum + '" value="' + detailObj.start.getDays() + '" max="' + _val.config.getWorkEndDay() + '" min="' + _val.config.getWorkStartDay() + '">日目',
                     '<input type="number" name="detail_start_hour_' + detailNum + '" value="' + detailObj.start.getHours() + '" max="24" min="-1">時',
                     '<input type="number" name="detail_start_minute_' + detailNum + '" value="' + detailObj.start.getMinutes() + '" max="60" min="-' + LocalDate.getTimeUnitAsConverted("minute") + '" step="' + LocalDate.getTimeUnitAsConverted("minute") +'">分'
-                ].join(""),[
-                    '<table><tbody><tr><td rowspan="2">',
-                        '<input type="number" name="detail_interval_' + detailNum + '" value="' + detailObj.number.length + '" min="0">×' + LocalDate.getTimeUnitAsConverted("minute") + '分間',
-                    '</td></tr><tr></tr></tbody></table>',
-                ].join("")
+                ].join(""),
+                '<input type="number" name="detail_interval_' + detailNum + '" value="' + detailObj.number.length + '" min="0">×' + LocalDate.getTimeUnitAsConverted("minute") + '分間',
+                '<table><tbody><tr></tr><tr></tr></tbody></table>'
             ].join("</td><td>") + "</td></tr>").insertBefore(targetRow);
 
             tr.find("td").css({"padding":0,"text-align":"center"});

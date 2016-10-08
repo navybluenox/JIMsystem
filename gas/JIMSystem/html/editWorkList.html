@@ -9,7 +9,7 @@
                 <tr><td>統括のUserID</td><td><input type="text" name="leaderId" tabindex="-1" onkeydown="_val.pageFun.editWorkList.searchInchrageByUserId()"></td><td>AZUSA配送名で検索：<input type="text" name="searchId" tabindex="2" onkeydown='if(event.keyCode===13){_val.pageFun.editWorkList.searchUserIdByAzusa();return false;}'><input type="button" value="Search" tabindex="-1" onclick="_val.pageFun.editWorkList.searchUserIdByAzusa()"></td></tr>
                 <tr><td>統括の担当略称</td><td><input type="text" name="leaderIncharge" tabindex="-1"></td><td>UserIDから検索<select name="searchIncharge" tabindex="2" onchange="_val.pageFun.editWorkList.setInchrage()" onclick="_val.pageFun.editWorkList.setInchrage()"></td></tr>
                 <tr><td></td><td><input type="hidden" name="detail"><table class="workList_detail_table"><thead>
-                    <tr><th></th><th><input type="button" name="detail_increment" value="up" onclick='var el=$(this);if(el.val()==="up"){el.val("down")}else{el.val("up")}' style="padding:0; min-width:initial; width:3em;"></th><th>開始</th><th>時間・人数</th></tr>
+                    <tr><th></th><th><input type="button" name="detail_increment" value="up" onclick='var el=$(this);if(el.val()==="up"){el.val("down")}else{el.val("up")}' style="padding:0; min-width:initial; width:3em;"></th><th>開始</th><th>interval</th><th>時間・人数</th></tr>
                 </thead><tbody>
                     <tr><td colspan="4"><input type="button" name="detail_addSection" value="セクションを追加" onclick="_val.pageFun.editWorkList.addSection()"><input type="hidden" name="detail_sectionNum" value="0"></td></tr>
                 </tbody>
