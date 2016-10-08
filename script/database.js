@@ -353,16 +353,30 @@ var Datapiece = (function(){
             if(!Array.isArray(datapieces)) return;
             if(dataName === undefined)  dataName = datapieces[0].getDataName();
             if(colName === undefined)  colName = "_id";
-            var type = server.getCollectionInfoByName(dataName).getValue("column." + colName);
-            if(classof(type) !== "string")  type = classof(type);
+            if(!Array.isArray(colName)) colName = [colName];
+            var colInfo = server.getCollectionInfoByName(dataName);
+            var types = colName.map(function(c){
+                var type = colInfo.getValue("column." + c);
+                return classof(type) !== "string" ? classof(type) : type;
+            });
             return datapieces.slice().sort(function(a,b){
-                switch(type){
                 //TODO
-                    case :
-                        return;
-                    default :
-                        return 0;
-                }
+                return types.find(function(type,index){
+                    switch(type){
+                        case "number":
+                            return;
+                        case "boolean":
+                            return;
+                        case "string":
+                            return;
+                        case "date":
+                            return;
+                        case "localdate":
+                            return;
+                        default :
+                            return 0;
+                    }
+                });
             });
         }
     }

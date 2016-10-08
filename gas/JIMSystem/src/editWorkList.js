@@ -68,48 +68,18 @@ $(function(){
             });
             detailTable.on("change",'[name^="detail_start_hour"]',function(e){
                 var trigger = $(e.currentTarget);
-                if(+trigger.val() !== -1 && +trigger.val() !== 24)  return;
                 var detailIndex = +trigger.attr("name").replace(/^detail_start_hour_/,"");
                 var day = detailTable.find('[name="detail_start_day_' + detailIndex + '"]');
-                if(+trigger.val() === -1){
-                    if(+day.val() === _val.config.getWorkStartDay()){
-                        trigger.val(0);
-                    }else{
-                        day.val(+day.val()-1);
-                        trigger.val(23);
-                    }
-                }else{
-                    if(+day.val() === _val.config.getWorkEndDay()){
-                        trigger.val(23);
-                    }else{
-                        day.val(+day.val()+1);
-                        trigger.val(0);
-                    }
-                }
+                var minute = detailTable.find('[name="detail_start_minute_' + detailIndex + '"]');
+                LocalDate.increaseDigit(day,trigger,minute);
             });
             detailTable.on("change",'[name^="detail_start_minute"]',function(e){
                 var trigger = $(e.currentTarget);
                 var unit = LocalDate.getTimeUnitAsConverted("minute");
-                if(+trigger.val() !== -unit && +trigger.val() !== 60)  return;
                 var detailIndex = +trigger.attr("name").replace(/^detail_start_minute_/,"");
                 var hour = detailTable.find('[name="detail_start_hour_' + detailIndex + '"]');
                 var day = detailTable.find('[name="detail_start_day_' + detailIndex + '"]');
-                if(+trigger.val() === -unit){
-                    if(+day.val() === _val.config.getWorkStartDay() && +hour.val() <= 0){
-                        trigger.val(0);                        
-                    }else{
-                        hour.val(+hour.val()-1);
-                        trigger.val(60-unit);
-                    }
-                }else{
-                    if(+day.val() === _val.config.getWorkEndDay() && +hour.val() >= 23){
-                        trigger.val(60-unit);
-                    }else{
-                        hour.val(+hour.val()+1);
-                        trigger.val(0);
-                    }
-                }
-                hour.trigger("change");
+                LocalDate.increaseDigit(day,hour,trigger);
             });
         },onunload:function(){
             $(window).off("resize.detailNumberTableWidthLimit");

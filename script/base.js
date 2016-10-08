@@ -232,6 +232,43 @@ var LocalDate = (function(){
         static getWorkTime(day,kind){
             return config.getWorkTime(day,kind);
         }
+        static increaseDigit(dayEl,hourEl,minuteEl){
+            var unit = LocalDate.getTimeUnitAsConverted("minute");
+            if(+minuteEl.val() === -unit || +minuteEl.val() === 60){
+                if(+minuteEl.val() === -unit){
+                    if(+dayEl.val() === config.getWorkStartDay() && +hourEl.val() <= 0){
+                        minuteEl.val(0);
+                    }else{
+                        hourEl.val(+hourEl.val()-1);
+                        minuteEl.val(60-unit);
+                    }
+                }else{
+                    if(+dayEl.val() === config.getWorkEndDay() && +hourEl.val() >= 23){
+                        minuteEl.val(60-unit);
+                    }else{
+                        hourEl.val(+hourEl.val()+1);
+                        minuteEl.val(0);
+                    }
+                }
+            }
+            if(+hourEl.val() === -1 || +hourEl.val() === 24){
+                if(+hourEl.val() === -1){
+                    if(+dayEl.val() === config.getWorkStartDay()){
+                        hourEl.val(0);
+                    }else{
+                        dayEl.val(+dayEl.val()-1);
+                        hourEl.val(23);
+                    }
+                }else{
+                    if(+dayEl.val() === config.getWorkEndDay()){
+                        hourEl.val(23);
+                    }else{
+                        dayEl.val(+dayEl.val()+1);
+                        hourEl.val(0);
+                    }
+                }
+            }
+        }
         copy(){
             return new LocalDate(this.getTime());
         }
