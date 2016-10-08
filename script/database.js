@@ -349,7 +349,7 @@ var Datapiece = (function(){
             }while(inArray(idList,result))
             return result;
         }
-        static sortByValue(datapieces,colName,reverse,dataName){
+        static sort(datapieces,colName,reverse,dataName){
             if(!Array.isArray(datapieces)) return;
             if(dataName === undefined)  dataName = datapieces[0].getDataName();
             if(colName === undefined)  colName = "_id";
@@ -366,17 +366,17 @@ var Datapiece = (function(){
                     if(classof(type) !== "string") type = classof(type);
                     switch(type){
                         case "number":
-                            ret = (a-b);
+                            ret = (aValue-bValue);
                             break;
                         case "boolean":
-                            ret = (b-a);
+                            ret = (bValue-aValue);
                             break;
                         case "string":
-                            ret = a.charCodeAt() - b.charCodeAt();
+                            ret = aValue.charCodeAt() - bValue.charCodeAt();
                             break;
                         case "date":
                         case "localdate":
-                            ret = a.getTime() - b.getTime();
+                            ret = aValue.getTime() - bValue.getTime();
                             break;
                         default :
                             ret = 0;
