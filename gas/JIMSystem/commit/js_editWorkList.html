@@ -13,7 +13,7 @@ $(function(){
             form = $("#formEditWorkList_edit");
             detailTable = form.find('table.workList_detail_table');
             //set events
-            $(window).on("resize.detailNumberTableWidthLimit",function(e){
+            var dr = new DelayRun(function(){
                 var sectionNum = +detailTable.find('[name="detail_sectionNum"]').val();
                 var numberArray;
                 detailNumberTableWidthLimit = $(window).width() * 0.4;
@@ -22,6 +22,9 @@ $(function(){
                         that.makeDetailNumberTable(i,that.getDetailNumber(i));
                     }
                 }
+            });
+            $(window).on("resize.detailNumberTableWidthLimit",function(e){
+                dr.runLater();
             })
             detailTable.on("click",'[name^="detail_addAllNumber"]',function(e){
                 var trigger = $(e.currentTarget);
@@ -304,8 +307,10 @@ $(function(){
             td1s.css({"text-align":"left"});
             td1s.filter(":nth-child(2n)").css({"background":"#7FFFD4"});
             td1s.filter(":nth-child(2n+1)").css({"background":"#66CDAA"});
-            td2s.find('[name^="detail_number"]').css({"padding":"0 1em","min-width":"initial"});
-            td2s.not(":nth-child(" + timeUnitsPerHour + "n)").css({"border-left-style":"dashed"});
+            td2s.find('[name^="detail_number"]').css({"padding":"0 0.6em","min-width":"initial"});
+            td2s.css({"border-left-style":"dashed","border-right-style":"dashed"});
+            td2s.filter(":nth-child(" + timeUnitsPerHour + "n)").css({"border-right-style":"solid"});
+            td2s.filter(":first").css({"border-left-style":"solid"});
 
         },addSection:function(detailObj){
             if(detailObj === undefined)  detailObj = {"start":new LocalDate(),"number":[]};
