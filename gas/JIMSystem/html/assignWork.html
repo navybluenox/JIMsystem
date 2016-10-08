@@ -1,5 +1,20 @@
 <article>
     <h1>人割作成</h1>
     <section>
+        <h2>新規作成・変更</h2>
+        <form id="formAssignWork_edit">
+            <table class="tableform"><tbody>
+            </tbody></table>
+            <input type="button" name="run_add" value="新規作成" tabindex="2" onclick='_val.pageFun.assignWork.updateWorkAssign("add")'><input type="button" name="run_change" value="変更を保存" tabindex="2" onclick='_val.pageFun.assignWork.updateWorkAssign("change")'>
+        </form>
+    </section>
+    <section>
+        <h2>検索</h2>
+        <form id="formAssignWork_search_cond">
+            <table class="tableform"><tbody>
+            </tbody></table>
+            <input type="button" name="run" value="検索" tabindex="2" onclick="_val.pageFun.assignWork.searchWorkAssign();">
+        </form>
+        <div id="formAssignWork_search_result"></div>
     </section>
 </article>

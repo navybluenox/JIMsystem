@@ -349,6 +349,22 @@ var Datapiece = (function(){
             }while(inArray(idList,result))
             return result;
         }
+        static sortByValue(datapieces,colName,dataName){
+            if(!Array.isArray(datapieces)) return;
+            if(dataName === undefined)  dataName = datapieces[0].getDataName();
+            if(colName === undefined)  colName = "_id";
+            var type = server.getCollectionInfoByName(dataName).getValue("column." + colName);
+            if(classof(type) !== "string")  type = classof(type);
+            return datapieces.slice().sort(function(a,b){
+                switch(type){
+                //TODO
+                    case :
+                        return;
+                    default :
+                        return 0;
+                }
+            });
+        }
     }
     function castType(value,type){
         switch(type){

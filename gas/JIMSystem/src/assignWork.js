@@ -3,7 +3,11 @@ $(function(){
         onload:function(){
 
         },onunload:function(){
-            
+
+        },updateWorkAssign:function(kind,_id){
+
+        },searchWorkAssign:function(sortFun){
+
         }
     };
 });
