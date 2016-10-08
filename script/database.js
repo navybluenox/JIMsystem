@@ -349,34 +349,43 @@ var Datapiece = (function(){
             }while(inArray(idList,result))
             return result;
         }
-        static sortByValue(datapieces,colName,dataName){
+        static sortByValue(datapieces,colName,reverse,dataName){
             if(!Array.isArray(datapieces)) return;
             if(dataName === undefined)  dataName = datapieces[0].getDataName();
             if(colName === undefined)  colName = "_id";
             if(!Array.isArray(colName)) colName = [colName];
+            if(reverse === undefined) reverse = [];
             var colInfo = server.getCollectionInfoByName(dataName);
-            var types = colName.map(function(c){
-                var type = colInfo.getValue("column." + c);
-                return classof(type) !== "string" ? classof(type) : type;
-            });
             return datapieces.slice().sort(function(a,b){
                 //TODO
-                return types.find(function(type,index){
+                var ret;
+                colName.find(function(c,index){
+                    var type = colInfo.getValue("column." + c);
+                    var aValue = a.getValue(c);
+                    var bValue = b.getValue(c);
+                    if(classof(type) !== "string") type = classof(type);
                     switch(type){
                         case "number":
-                            return;
+                            ret = (a-b);
+                            break;
                         case "boolean":
-                            return;
+                            ret = (b-a);
+                            break;
                         case "string":
-                            return;
+                            ret = a.charCodeAt() - b.charCodeAt();
+                            break;
                         case "date":
-                            return;
                         case "localdate":
-                            return;
+                            ret = a.getTime() - b.getTime();
+                            break;
                         default :
-                            return 0;
+                            ret = 0;
+                            break;
                     }
-                });
+                    ret = ret * (reverse[index] ? -1 : 1);
+                    return ret !== 0;
+                })
+                return ret;
             });
         }
     }
