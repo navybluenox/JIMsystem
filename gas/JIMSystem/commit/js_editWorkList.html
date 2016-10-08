@@ -4,6 +4,7 @@ $(function(){
     var form;
     var formNameList = [{"name":"name"},{"name":"nameShort"},{"name":"leaderId"},{"name":"leaderIncharge"},{"name":"description"},{"name":"condition"},{"name":"caption"},{"name":"note"},{"name":"asAssined"}];
     var detailTable;
+    var detailNumberTableWidthLimit;
     _val.pageFun.editWorkList = {
         onload:function(){
             var that =  _val.pageFun.editWorkList;
@@ -12,6 +13,16 @@ $(function(){
             form = $("#formEditWorkList_edit");
             detailTable = form.find('table.workList_detail_table');
             //set events
+            $(window).on("resize.detailNumberTableWidthLimit",function(e){
+                var sectionNum = +detailTable.find('[name="detail_sectionNum"]').val();
+                var numberArray;
+                detailNumberTableWidthLimit = $(window).width() * 0.4;
+                for(var i=0,l=sectionNum;i<l;i++){
+                    if(detailTable.find('[name="detail_remove_' + i + '"]').val() !== "done"){
+                        that.makeDetailNumberTable(i,that.getDetailNumber(i));
+                    }
+                }
+            })
             detailTable.on("click",'[name^="detail_addAllNumber"]',function(e){
                 var trigger = $(e.currentTarget);
                 var target = detailTable.find('[name^=detail_number_' + trigger.attr("name").replace(/^detail_addAllNumber_/,"") + ']');
@@ -98,6 +109,8 @@ $(function(){
                 }
                 hour.trigger("change");
             });
+        },onunload:function(){
+            $(window).off("resize.detailNumberTableWidthLimit");
         },updateWorkList:function(kind,_id){
             var workList;
             var setValue = {};
@@ -285,6 +298,7 @@ $(function(){
                 unitNum%timeUnitsPerHour === 0 ? "" : "" + ((unitNum%timeUnitsPerHour) * LocalDate.getTimeUnitAsConverted("minute")) + "分"
             ].join(""));
 
+            targetTable.closest("td").css({"width":detailNumberTableWidthLimit + "px"});
             targetTable.css({"border":"1px #000000 solid","border-collapse":"collapse"});
             targetTable.find("td").css({"padding":"0","border":"1px #000000 solid"});
             td1s.css({"text-align":"left"});
@@ -310,8 +324,11 @@ $(function(){
                 '<table><tbody><tr></tr><tr></tr></tbody></table>'
             ].join("</td><td>") + "</td></tr>").insertBefore(targetRow);
 
+            if(detailNumberTableWidthLimit === undefined){
+                detailNumberTableWidthLimit = $(window).width() * 0.4;
+            }
             tr.find("td").css({"padding":0,"text-align":"center"});
-            tr.find("table").closest("td").css({"display":"inline-block","overflow":"auto","width":detailTable.width() + "px"});
+            tr.find("table").closest("td").css({"display":"inline-block","overflow":"auto"});
             tr.find('[type="button"]').css({"min-width":"initial"});
             tr.find('[name^="detail_addAllNumber"]').css({"padding":"0 1em"});
             tr.find('[name^="detail_start"]').css({"width":"3em"}).closest("td").css({"white-space":"nowrap"});

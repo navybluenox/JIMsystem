@@ -20,6 +20,13 @@ function getPageFromServer(pageName){
 }
 
 function movePage(pageName,insertTag,option){
+    google.script.url.getLocation(function(location){
+        var prevPageName = location.hash;
+        if(prevPageName && _val.pageFun && _val.pageFun[prevPageName] && _val.pageFun[prevPageName].onunload){
+            _val.pageFun[prevPageName].onunload();
+        }
+    })
+
     if(typeof insertTag === "string"){
         switch(insertTag){
             case "content":
