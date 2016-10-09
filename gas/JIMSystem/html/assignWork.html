@@ -4,16 +4,16 @@
         <h2>新規作成・変更</h2>
         <form id="formAssignWork_edit">
             <table class="tableform"><tbody>
-                <tr><td>人割ID</td><td><input type="text" name="workListId"></td><td></td></tr>
-                <tr><td>従事者のUserID</td><td><input type="text" name="userId"></td><td></td></tr>
+                <tr><td>人割ID</td><td><input type="text" name="workListId" tabindex="-1"></td><td></td></tr>
+                <tr><td>従事者のUserID</td><td><input type="text" name="userId" tabindex="-1"></td><td></td></tr>
                 <tr><td>開始時間</td><td><input type="number" name="start_day" tabindex="2" value="0">日目<input type="number" name="start_hour" tabindex="2" max="24" min="-1" value="0">時<input type="number" name="start_minute" max="60" tabindex="2" value="0">分</td><td></td></tr>
                 <tr><td>従事時間</td><td><input type="number" name="interval" tabindex="2" min="1" value="1">×<span></span>分 == <span></span></td><td></td></tr>
                 <tr><td>人割別人割</td><td><table><thead></thead><tbody></tbody></table><input type="hidden" name="shiftTableWork"></td><td></td></tr>
                 <tr><td>従事者の人割</td><td><table><thead></thead><tbody></tbody></table><input type="hidden" name="shiftTableUser"></td><td></td></tr>
                 <tr><td>情報</td><td colspan="2"><div><input type="hidden" name="infomation"></td></tr>
-                <tr><td>個別の注意事項</td><td><textarea name="notice"></textarea></td><td></td></tr>
-                <tr><td>メモ書き</td><td><textarea name="note"></textarea></td><td></td></tr>
-                <tr><td>無効にする</td><td><input type="checkbox" name="disabled"></td><td></td></tr>
+                <tr><td>個別の注意事項</td><td><textarea name="notice" tabindex="2"></textarea></td><td></td></tr>
+                <tr><td>メモ書き</td><td><textarea name="note" tabindex="2"></textarea></td><td></td></tr>
+                <tr><td>無効にする</td><td><input type="checkbox" name="disabled" tabindex="2"></td><td></td></tr>
             </tbody></table>
             <input type="button" name="run_add" value="新規作成" tabindex="2" onclick='_val.pageFun.assignWork.updateWorkAssign("add")'><input type="button" name="run_change" value="変更を保存" tabindex="2" onclick='_val.pageFun.assignWork.updateWorkAssign("change")'>
         </form>
