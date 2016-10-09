@@ -13,7 +13,7 @@
                 <tr><td>情報</td><td colspan="2"><div><input type="hidden" name="infomation"></td></tr>
                 <tr><td>個別の注意事項</td><td><textarea name="notice" tabindex="2"></textarea></td><td></td></tr>
                 <tr><td>メモ書き</td><td><textarea name="note" tabindex="2"></textarea></td><td></td></tr>
-                <tr><td>無効にする</td><td><input type="checkbox" name="disabled" tabindex="2"></td><td></td></tr>
+                <tr><td>無効にする</td><td><input type="checkbox" name="disabled" tabindex="2" onkeydown='if(event.keyCode===13){$(this).prop("checked",!$(this).prop("checked"));return false;}'></td><td></td></tr>
             </tbody></table>
             <input type="button" name="run_add" value="新規作成" tabindex="2" onclick='_val.pageFun.assignWork.updateWorkAssign("add")'><input type="button" name="run_change" value="変更を保存" tabindex="2" onclick='_val.pageFun.assignWork.updateWorkAssign("change")'>
         </form>
