@@ -4,6 +4,7 @@ $(function(){
             google.script.history.setChangeHandler(function (e) {
                 movePage(e.location.hash,"content",{state:e.state,parameters:e.location.parameters});
             });
+            new LocalDate();
         },
         openSearchWindow:function(){
             var sw = new ModalWindow({"html":[

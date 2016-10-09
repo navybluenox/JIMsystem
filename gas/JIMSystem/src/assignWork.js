@@ -4,7 +4,6 @@ $(function(){
     var formNameList = [{"name":"workListId"},{"name":"userId"},{"name":"start"},{"name":"interval"},{"name":"notice"},{"name":"note"},{"name":"disabled"}];
     _val.pageFun.assignWork = {
         onload:function(){
-            //TODO たぶんここでエラーが起きてる
             form = $("#formAssignWork_edit");
             form.find('[name="start_day"]').attr({"min":_val.config.getWorkStartDay(),"max":_val.config.getWorkEndDay()});
             form.find('[name="start_hour"]').on("change",function(e){
@@ -13,6 +12,15 @@ $(function(){
             form.find('[name="start_minute"]').attr({"min":-LocalDate.getTimeUnitAsConverted("minute"),"step":LocalDate.getTimeUnitAsConverted("minute")}).on("change",function(e){
                 LocalDate.increaseDigit(form.find('[name="start_day"]'),form.find('[name="start_hour"]'),form.find('[name="start_minute"]'));
             });
+            form.find('[name="interval"]').siblings("span").eq(0).text(LocalDate.getTimeUnitAsConverted("minute"));
+            form.find('[name="interval"]').on("change",function(e){
+                var minute = +$(e.currentTarget).val() * LocalDate.getTimeUnitAsConverted("minute");
+                form.find('[name="interval"]').siblings("span").eq(1).text([
+                    minute < 60 ? "" : "" + (minute - minute%60)/60 + "時間",
+                    minute === 0 ? "" : "" + minute%60 + "分"
+                ].join(""));
+            });
+            form.find('[name="interval"]').trigger("change");
         },onunload:function(){
 
         },updateWorkAssign:function(kind,_id){
