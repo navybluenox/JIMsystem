@@ -93,9 +93,10 @@ $(function(){
             }
             workLists = Datapiece.sort(workLists,["leaderIncharge","name"]);
             result.append(workLists.map(function(workList,index){
+                //TODO optgroupを利用する
                 return [
                     index === 0 || workLists[index].getValue("leaderIncharge") !== workLists[index-1].getValue("leaderIncharge") ? '<option value="">' + workList.getValue("leaderIncharge") + '</option>' : "",
-                    '<option value="' + workList.getValue("_id") + '">  ' + workList.getValue("nameShort") + '</option>'
+                    '<option value="' + workList.getValue("_id") + '">' + workList.getValue("nameShort") + '</option>'
                 ].join("");
             }))
 
