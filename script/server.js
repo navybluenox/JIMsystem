@@ -266,6 +266,7 @@ var Server = (function(){
                     "value":datapiece
                 });
             });
+            return this;
         }
         addData(datapieces){
             if(!Array.isArray(datapieces))  datapieces = [datapieces];
@@ -276,6 +277,7 @@ var Server = (function(){
                     "value":datapiece
                 });
             });
+            return this;
         }
         removeData(datapieces){
             if(!Array.isArray(datapieces))  datapieces = [datapieces];
@@ -286,6 +288,7 @@ var Server = (function(){
                     "value":datapiece
                 });
             });
+            return this;
         }
     };
 })();

@@ -336,6 +336,11 @@ var Datapiece = (function(){
         getCollectionInfo(){
             return this._collInfo;
         }
+        getDatapieceRelated(colName,dataName){
+            var ret =  server.getDataById(this.getValue(colName),dataName)[0];
+            if(ret === undefined)  ret = new (this.getCollectionInfo().getClass())();
+            return ret;
+        }
         static getClassByName(dataName){
             var collInfo = server.getCollectionInfoByName(dataName);
             if(collInfo === undefined)  return undefined;

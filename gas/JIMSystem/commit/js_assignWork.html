@@ -12,10 +12,16 @@ $(function(){
             _val.server.loadData("workGroup");
             form = $("#formAssignWork_edit");
             form.find('[name="workListId_azusa"],[name="workListId_name"]').on("keyup focus",function(e){
-                _val.pageFun.assignWork.searchWorkListId();
+                _val.pageFun.assignWork.searchWorkListId("workListId");
             });
             form.find('[name="userId_azusa"]').on("keyup focus",function(e){
-                _val.pageFun.assignWork.searchUserId();
+                _val.pageFun.assignWork.searchUserId("userId");
+            });
+            form.find('[name="shiftTableWork_azusa"],[name="shiftTableWork_name"]').on("keyup focus",function(e){
+                _val.pageFun.assignWork.searchWorkListId("shiftTableWork");
+            });
+            form.find('[name="shiftTableUser_azusa"]').on("keyup focus",function(e){
+                _val.pageFun.assignWork.searchUserId("shiftTableUser");
             });
             form.find('[name="start_day"]').attr({"min":_val.config.getWorkStartDay(),"max":_val.config.getWorkEndDay()});
             form.find('[name="start_hour"]').on("change",function(e){
@@ -42,15 +48,14 @@ $(function(){
                 formNameList.forEach(function(obj){
                     var el = form.find('[name="' + obj.name + '"]');
                     var key = obj.key === undefined ? obj.name : obj.key;
-                    if(obj.key === "disabled"){
+                    if(key === "disabled"){
                         setValue[key] = el.prop("checked");
-                    }else if(obj.key === "start"){
-                        setValue[key] = new LocalDate({"day":form.find('[name="start_day"]'),"hour":form.find('[name="start_hour"]'),"minute":form.find('[name="start_minute"]')});
+                    }else if(key === "start"){
+                        setValue[key] = new LocalDate({"day":form.find('[name="start_day"]').val(),"hour":form.find('[name="start_hour"]').val(),"minute":form.find('[name="start_minute"]').val()});
                     }else{
                         setValue[key] = el.val();
                     }
                 })
-                //TODO コピペしただけ
                 if(kind === "change"){
                     if(workAssignEditing === undefined){
                         alert("値を変更する人割が指定されていません\n下の「検索」から変更したい人割を選択し、フォームへ入力してください");
@@ -72,17 +77,116 @@ $(function(){
                 _val.pageFun.assignWork.searchWorkAssign();
             });
         },searchWorkAssign:function(sortFun){
+            var result = $("#formAssignWork_search_result");
+            var form_search = $("#formAssignWork_search_cond");
 
-        },searchWorkListId(){
+            result.children().remove();
+            result.append("<h3>検索結果</h3>");
+
+            var cond = {};
+            ["name","user","leader","incharge"].forEach(function(name){
+                cond[name] = form_search.find('[name="' + name + '"]').val();
+            })
+            var workAssigns = _val.server.getData("workAssign").filter(function(workAssign){
+                var flag = true;
+                if(cond.name !== ""){
+                    var workList = workAssign.getDatapieceRelated("workListId","workList");
+                    var reg_name = new RegExp(cond.name);
+                    flag = flag && (reg_name.test(workList.getValue("name")) || reg_name.test(workList.getValue("nameShort")))
+                }
+                if(cond.user !== ""){
+                    var user = workAssign.getDatapieceRelated("userId","user");
+                    var reg_leader = new RegExp(cond.leader); 
+                    flag = flag && (
+                        reg_leader.test(user.getValue("azusaSendName")) ||
+                        reg_leader.test(user.getValue("nameLast") + user.getValue("nameFirst")) ||
+                        reg_leader.test(user.getValue("nameLastPhonetic") + user.getValue("nameFirstPhonetic"))
+                    );
+                }
+                if(cond.leader !== ""){
+                    var leader = workAssign.getDatapieceRelated("workListId","workList").getDatapieceRelated("leaderId","user");
+                    var reg_leader = new RegExp(cond.leader); 
+                    flag = flag && (
+                        reg_leader.test(leader.getValue("azusaSendName")) ||
+                        reg_leader.test(leader.getValue("nameLast") + leader.getValue("nameFirst")) ||
+                        reg_leader.test(leader.getValue("nameLastPhonetic") + leader.getValue("nameFirstPhonetic"))
+                    );
+                }
+                if(cond.incharge !== ""){
+                    flag = flag && (new RegExp(cond.incharge)).test(workAssign.getDatapieceRelated("workListId","workList").getValue("leaderIncharge"));
+                }
+                return flag;
+            });
+
+            if(sortFun !== undefined && typeof sortFun === "function"){
+                workAssigns =  sortFun(workAssigns);
+            }else{
+                workAssigns.sort(function(a,b){
+                    var aSortId = a.getDatapieceRelated("userId","user").getValue("sortId");
+                    var bSortId = a.getDatapieceRelated("userId","user").getValue("sortId");
+                    if(aSortId === bSortId){
+                        return a.getValue("start").getTime() - b.getValue("start").getTime();
+                    }else{
+                        return aSortId - bSortId;
+                    }
+                });
+            }
+
+            var fun_fillForm = function(workAssign){
+                formNameList.forEach(function(obj){
+                    var el = form.find('[name="' + obj.name + '"]');
+                    var key = obj.key === undefined ? obj.name : obj.key;
+                    if(key === "disabled"){
+                        el.prop("checked",workAssign.getValue(key));
+                    }else if(key === "start"){
+                        form.find('[name="start_day"]').val(workAssign.getValue(key).getDays());
+                        form.find('[name="start_hour"]').val(workAssign.getValue(key).getHours());
+                        form.find('[name="start_minute"]').val(workAssign.getValue(key).getMinutes());
+                    }else{
+                        el.val(workAssign.getValue(key));
+                    }
+                });
+                form.find('[name="workListId_name"]').val(workAssign.getDatapieceRelated("workListId","workList").getValue("name"));
+                form.find('[name="userId_azusa"]').val(workAssign.getDatapieceRelated("userId","user").getValue("azusaSendName"));
+            }
+
+            var table = createTable(result,workAssigns,["edit","workList","user","time","notice"],function(cellObj){
+                var workAssign = cellObj.rowData;
+                if(cellObj.column === "edit"){
+                    var buttons = $('<input type="button" value="フォームに入力"><input type="button" value="削除">').appendTo(cellObj.el);
+                    buttons.eq(0).on("click",function(e){fun_fillForm(workAssign);workAssignEditing = workAssign;});
+                    buttons.eq(1).on("click",function(e){_val.pageFun.assignWork.updateWorkAssign("remove",workAssign.getValue("_id"));});
+                }else{
+                    var str;
+                    switch(cellObj.column){
+                        case "workList":
+                            str = workAssign.getDatapieceRelated("workListId","workList").getValue("name");
+                            break;
+                        case "user":
+                            var user = workAssign.getDatapieceRelated("userId","user");
+                            str = user.getValue("nameLast") + " " + user.getValue("nameFirst");
+                            break;
+                        case "time":
+                            str = workAssign.getValue("start").toString() + "から" + workAssign.getValue("start").addTimeUnit(workAssign.getValue("interval")).toString({hideDay:true}) + "まで";
+                            break;
+                        case "notice":
+                            str = workAssign.getValue(cellObj.column);
+                            break;
+                    }
+                    cellObj.el.text(str);
+                }
+            },{"header":["edit","人割名","従事者氏名","時間","注意事項"]});
+            table.el.css({"margin":"3em"});
+        },searchWorkListId:function(namePrefix){
             var workLists = _val.server.getData("workList");
-            var result = form.find('[name="workListId_result"]');
-            var azusa = form.find('[name="workListId_azusa"]').val();
-            var name = form.find('[name="workListId_name"]').val();
+            var result = form.find('[name="' + namePrefix + '_searchResult"]');
+            var azusa = form.find('[name="' + namePrefix + '_azusa"]').val();
+            var name = form.find('[name="' + namePrefix + '_name"]').val();
             result.children().remove()
             if(azusa !== ""){
                 workLists = workLists.filter(function(workList){
-                    var user = _val.server.getDataById(workList.getValue("leaderId"),"user")[0];
-                    return user !== undefined && (new RegExp(azusa)).test(user.getValue("azusaSendName"));
+                    var user = workList.getDatapieceRelated("leaderId","user");
+                    return (new RegExp(azusa)).test(user.getValue("azusaSendName"));
                 })
             }
             if(name !== ""){
@@ -91,19 +195,27 @@ $(function(){
                     return reg.test(workList.getValue("name")) || reg.test(workList.getValue("nameShort"));
                 })
             }
-            workLists = Datapiece.sort(workLists,["leaderIncharge","name"]);
-            result.append(workLists.map(function(workList,index){
-                //TODO optgroupを利用する
+            var incharges = workLists.map(function(workList){return workList.getValue("leaderIncharge")}).filter(function(v,i,s){return i === s.indexOf(v)}).sort(function(a,b){return a.charCodeAt() - b.charCodeAt()});
+            result.append(incharges.map(function(incharge){
+                var _workLists = workLists.filter(function(workList){return workList.getValue("leaderIncharge") === incharge});
+                _workLists = Datapiece.sort(_workLists,["nameShort"]);
                 return [
-                    index === 0 || workLists[index].getValue("leaderIncharge") !== workLists[index-1].getValue("leaderIncharge") ? '<option value="">' + workList.getValue("leaderIncharge") + '</option>' : "",
-                    '<option value="' + workList.getValue("_id") + '">' + workList.getValue("nameShort") + '</option>'
-                ].join("");
-            }))
-
-        },searchUserId(){
+                    '<optgroup label="' + incharge + '">',
+                    _workLists.map(function(workList){
+                        return '<option value="' + workList.getValue("_id") + '">' + workList.getValue("nameShort") + '</option>'
+                    }).join(""),
+                    '</optgroup>'
+                ].join("")
+            }));
+            _val.pageFun.assignWork.setWorkListId(namePrefix);
+        },setWorkListId:function(namePrefix){
+            var id = form.find('[name="' + namePrefix + '_searchResult"]').val();
+            var target = form.find('[name="' + namePrefix + '"]');
+            target.val(id);
+        },searchUserId:function(namePrefix){
             var users = _val.server.getData("user");
-            var result = form.find('[name="userId_result"]');
-            var azusa = form.find('[name="userId_azusa"]').val();
+            var result = form.find('[name="' + namePrefix + '_searchResult"]');
+            var azusa = form.find('[name="' + namePrefix + '_azusa"]').val();
             result.children().remove()
             if(azusa !== ""){
                 users = users.filter(function(user){
@@ -114,6 +226,11 @@ $(function(){
             result.append(users.map(function(user){
                 return '<option value="' + user.getValue("_id") +  '">' + user.getValue("nameLast") + " " + user.getValue("nameFirst") + '</option>';
             }).join(""));
+            _val.pageFun.assignWork.setUserId(namePrefix);
+        },setUserId:function(namePrefix){
+            var id = form.find('[name="' + namePrefix + '_searchResult"]').val();
+            var target = form.find('[name="' + namePrefix + '"]');
+            target.val(id);
         }
     };
 });{}

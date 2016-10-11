@@ -10,14 +10,14 @@
                     <td><table><tbody>
                         <tr><td>統括の配送名：</td><td><input type="text" name="workListId_azusa" tabindex="2"></td></tr>
                         <tr><td>人割名：</td><td><input type="text" name="workListId_name" tabindex="2"></td></tr>
-                        <tr><td></td><td><select name="workListId_result" tabindex="2"></select></td></tr>
+                        <tr><td></td><td><select name="workListId_searchResult" tabindex="2" onchange='_val.pageFun.assignWork.setWorkListId("workListId")'></select></td></tr>
                     </tbody></table></td>
                 </tr><tr>
                     <td>従事者のUserID</td>
                     <td><input type="text" name="userId" tabindex="-1"></td>
                     <td><table><tbody>
                         <tr><td>配送名：</td><td><input type="text" name="userId_azusa" tabindex="2"></td></tr>
-                        <tr><td></td><td><select name="userId_result" tabindex="2"></select></td></tr>
+                        <tr><td></td><td><select name="userId_searchResult" tabindex="2" onchange='_val.pageFun.assignWork.setUserId("userId");'></select></td></tr>
                     </tbody></table></td>
                 </tr><tr>
                     <td>開始時間</td>
@@ -30,11 +30,18 @@
                 </tr><tr>
                     <td>人割別人割</td>
                     <td><table><thead></thead><tbody></tbody></table><input type="hidden" name="shiftTableWork"></td>
-                    <td></td>
+                    <td><table><tbody>
+                        <tr><td>統括の配送名：</td><td><input type="text" name="shiftTableWork_azusa" tabindex="2"></td></tr>
+                        <tr><td>人割名：</td><td><input type="text" name="shiftTableWork_name" tabindex="2"></td></tr>
+                        <tr><td></td><td><select name="shiftTableWork_searchResult" tabindex="2" onchange='_val.pageFun.assignWork.setWorkListId("shiftTableWork")'></select></td></tr>
+                    </tbody></table></td>
                 </tr><tr>
                     <td>従事者の人割</td>
                     <td><table><thead></thead><tbody></tbody></table><input type="hidden" name="shiftTableUser"></td>
-                    <td></td>
+                    <td><table><tbody>
+                        <tr><td>配送名：</td><td><input type="text" name="shiftTableUser_azusa" tabindex="2"></td></tr>
+                        <tr><td></td><td><select name="shiftTableUser_searchResult" tabindex="2" onchange='_val.pageFun.assignWork.setUserId("shiftTableUser");'></select></td></tr>
+                    </tbody></table></td>
                 </tr><tr>
                     <td>情報</td>
                     <td colspan="2"><div></div><input type="hidden" name="infomation"></td>
@@ -59,6 +66,10 @@
         <h2>検索</h2>
         <form id="formAssignWork_search_cond">
             <table class="tableform"><tbody>
+                <tr><td>人割名</td><td><input type="text" name="name" tabindex="2" onkeydown="if(event.keyCode === 13){_val.pageFun.assignWork.searchWorkAssign();return false;}"></td></tr>
+                <tr><td>従事者の氏名・配送名</td><td><input type="text" name="user" tabindex="2" onkeydown="if(event.keyCode === 13){_val.pageFun.assignWork.searchWorkAssign();return false;}"></td></tr>
+                <tr><td>統括の氏名・配送名</td><td><input type="text" name="leader" tabindex="2" onkeydown="if(event.keyCode === 13){_val.pageFun.assignWork.searchWorkAssign();return false;}"></td></tr>
+                <tr><td>統括の担当略称</td><td><input type="text" name="incharge" tabindex="2" onkeydown="if(event.keyCode === 13){_val.pageFun.assignWork.searchWorkAssign();return false;}"></td></tr>
             </tbody></table>
             <input type="button" name="run" value="検索" tabindex="2" onclick="_val.pageFun.assignWork.searchWorkAssign();">
         </form>

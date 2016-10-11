@@ -172,6 +172,7 @@ $(function(){
                 workList.getValue("@detail").forEach(function(detailObj){
                     _val.pageFun.editWorkList.addSection(detailObj);
                 })
+                form.find('[name="searchId"]').val(workList.getDatapieceRelated("leaderId","user").getValue("azusaSendName"));
             }
 
             var table = createTable(result,workLists,["edit","leaderIncharge","leaderId","name","caption"],function(cellObj){
