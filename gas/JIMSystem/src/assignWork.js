@@ -79,8 +79,8 @@ $(function(){
             var name = form.find('[name="workListId_name"]').val();
             if(azusa !== ""){
                 workLists = workLists.filter(function(workList){
-                    var user = _val.server.getDataById(workList.getValue("leaderId"),"user");
-                    return (new RegExp(azusa)).test(user.getValue("azusaSendName"));
+                    var user = _val.server.getDataById(workList.getValue("leaderId"),"user")[0];
+                    return user !== undefined && (new RegExp(azusa)).test(user.getValue("azusaSendName"));
                 })
             }
             if(name !== ""){
