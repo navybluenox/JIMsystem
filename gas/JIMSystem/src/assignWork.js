@@ -77,6 +77,7 @@ $(function(){
             var result = form.find('[name="workListId_result"]');
             var azusa = form.find('[name="workListId_azusa"]').val();
             var name = form.find('[name="workListId_name"]').val();
+            result.children().remove()
             if(azusa !== ""){
                 workLists = workLists.filter(function(workList){
                     var user = _val.server.getDataById(workList.getValue("leaderId"),"user")[0];
@@ -93,7 +94,7 @@ $(function(){
             result.append(workLists.map(function(workList,index){
                 return [
                     index === 0 || workLists[index].getValue("leaderIncharge") !== workLists[index-1].getValue("leaderIncharge") ? '<option value="">' + workList.getValue("leaderIncharge") + '</option>' : "",
-                    '<option value="' + workList.getValue("_id") + '">' + workList.getValue("nameShort") + '</option>'
+                    '<option value="' + workList.getValue("_id") + '">  ' + workList.getValue("nameShort") + '</option>'
                 ].join("");
             }))
 
@@ -101,6 +102,7 @@ $(function(){
             var users = _val.server.getData("user");
             var result = form.find('[name="userId_result"]');
             var azusa = form.find('[name="userId_azusa"]').val();
+            result.children().remove()
             if(azusa !== ""){
                 users = users.filter(function(user){
                     return (new RegExp(azusa)).test(user.getValue("azusaSendName"));
@@ -108,7 +110,7 @@ $(function(){
             }
             users = Datapiece.sort(users,"sortId");
             result.append(users.map(function(user){
-                return '<option value="' + user.getValue("_id") +  '">' + user.getValue("name_last") + " " + user.getValue("name_first") + '</option>';
+                return '<option value="' + user.getValue("_id") +  '">' + user.getValue("nameLast") + " " + user.getValue("nameFirst") + '</option>';
             }).join(""));
         }
     };
