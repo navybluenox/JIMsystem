@@ -21,18 +21,18 @@ $(function(){
             });
             if(type === "rgb"){
                 ["r","g","b"].forEach(function(key){
-                    value[key] = el[key].val();
+                    value[key] = +el[key].val();
                 });
                 max = Math.max(value.r,value.g,value.b);
                 min = Math.min(value.r,value.g,value.b);
                 if(max === min){
                     value.h = 0;
                 }else if(value.r === max){
-                    value.h = Math.floor(60 * (value.g - value.b) / (max - min));
+                    value.h = Math.round(60 * (value.g - value.b) / (max - min));
                 }else if(value.g === max){
-                    value.h = Math.floor(60 * (value.b - value.r) / (max - min) + 120);
+                    value.h = Math.round(60 * (value.b - value.r) / (max - min) + 120);
                 }else if(value.b === max){
-                    value.h = Math.floor(60 * (value.r - value.g) / (max - min) + 240);
+                    value.h = Math.round(60 * (value.r - value.g) / (max - min) + 240);
                 }
                 while(value.h < 0){
                     value.h += 360;
@@ -42,47 +42,47 @@ $(function(){
                 if(max === min){
                     value.s = 0;
                 }else if(cnt < 128){
-                    value.s = Math.floor(100 * (max - min)/(max + min));
+                    value.s = Math.round(100 * (max - min)/(max + min));
                 }else{
-                    value.s = Math.floor(100 * (max - min)/(510 - max - min));
+                    value.s = Math.round(100 * (max - min)/(510 - max - min));
                 }
-                value.l = Math.floor(100*cnt/255);
+                value.l = Math.round(100*cnt/255);
 
             }else if(type === "hsl"){
                 ["h","s","l"].forEach(function(key){
-                    value[key] = el[key].val();
+                    value[key] = +el[key].val();
                 });
                 if(value.l<50){
-                    max = Math.floor(2.55*value.l*(1 + value.s/100));
-                    min = Math.floor(2.55*value.l*(1 - value.s/100));
+                    max = Math.round(2.55*value.l*(1 + value.s/100));
+                    min = Math.round(2.55*value.l*(1 - value.s/100));
                 }else{
-                    max = Math.floor(2.55*(value.l*(1 - value.s/100) + value.s));
-                    min = Math.floor(2.55*(value.l*(1 + value.s/100) - value.s));
+                    max = Math.round(2.55*(value.l*(1 - value.s/100) + value.s));
+                    min = Math.round(2.55*(value.l*(1 + value.s/100) - value.s));
                 }
                 if(value.h < 60*1){
                     value.r = max;
-                    value.g = Math.floor((value.h/60)*(max-min) + min);
+                    value.g = Math.round((value.h/60)*(max-min) + min);
                     value.b = min;
                 }else if(value.h < 60*2){
-                    value.r = Math.floor(((120-value.h)/60)*(max-min) + min);
+                    value.r = Math.round(((120-value.h)/60)*(max-min) + min);
                     value.g = max;
                     value.b = min;
                 }else if(value.h < 60*3){
                     value.r = min;
                     value.g = max;
-                    value.b = Math.floor(((value.h-120)/60)*(max-min) + min);
+                    value.b = Math.round(((value.h-120)/60)*(max-min) + min);
                 }else if(value.h < 60*4){
                     value.r = min;
-                    value.g = Math.floor(((240-value.h)/60)*(max-min) + min);
+                    value.g = Math.round(((240-value.h)/60)*(max-min) + min);
                     value.b = max;
                 }else if(value.h < 60*5){
-                    value.r = Math.floor(((value.h-240)/60)*(max-min) + min);
+                    value.r = Math.round(((value.h-240)/60)*(max-min) + min);
                     value.g = min;
                     value.b = max;
                 }else{
                     value.r = max;
                     value.g = min;
-                    value.b = Math.floor(((360-value.h)/60)*(max-min) + min);
+                    value.b = Math.round(((360-value.h)/60)*(max-min) + min);
                 }
             }
             ["r","g","b","h","s","l"].forEach(function(key){
