@@ -38,7 +38,9 @@ $(function(){
                 }
                 value.h = value.h % 360;
                 var cnt = (max + min)/2;
-                if(cnt < 128){
+                if(max === min){
+                    value.s = 0;
+                }else if(cnt < 128){
                     value.s = Math.floor(100 * (max - min)/(max + min));
                 }else{
                     value.s = Math.floor(100 * (max - min)/(510 - max - min));
@@ -94,7 +96,7 @@ $(function(){
             if(g16.length === 1) g16 = "0" + g16;
             if(b16.length === 1) b16 = "0" + b16;
             form.find('[name="color_code"]').val("#" + r16 + g16 + b16);
-            form.find('[name="color_sample"]').css("background",form.find('[name="color_code"]').val());
+            form.find('[name="color_sample"]').parent().css("background",form.find('[name="color_code"]').val());
         }
     };
 });

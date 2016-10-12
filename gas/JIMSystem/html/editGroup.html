@@ -13,7 +13,7 @@
                 <tr><td>カラーグループ</td><td><input type="checkbox" name="isColorGroup"></td><td></td></tr>
                 <tr><td>背景色</td><td><input type="text" name="backgroundColor"></td><td>#FFFFFF形式で入力してください</td></tr>
                 <tr><td>フォント色</td><td><input type="text" name="fontColor"></td><td>#FFFFFF形式で入力してください</td></tr>
-                <tr><td>カラーコード</td><td><input type="text" name="color_code"></td><td><input type="text" name="color_sample"></td></tr>
+                <tr><td>カラーコード</td><td><input type="text" name="color_code"></td><td><input type="hidden" name="color_sample"></td></tr>
                 <tr><td>RGB</td><td><table><tbody>
                     <tr><td>R</td><td><input type="number" name="color_sample_r" value="0" min="0" max="255" oninput='_val.pageFun.editGroup.convertColor("rgb")'><input type="range" value="0" min="0" max="255" name="color_sample_r_range" oninput='$(this).siblings("[type=\"number\"]").val($(this).val());_val.pageFun.editGroup.convertColor("rgb")'></td></tr>
                     <tr><td>G</td><td><input type="number" name="color_sample_g" value="0" min="0" max="255" oninput='_val.pageFun.editGroup.convertColor("rgb")'><input type="range" value="0" min="0" max="255" name="color_sample_g_range" oninput='$(this).siblings("[type=\"number\"]").val($(this).val());_val.pageFun.editGroup.convertColor("rgb")'></td></tr>
