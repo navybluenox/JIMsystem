@@ -41,20 +41,32 @@
         {"_id":"ymVPEGRrhpTG7SLf","created":"2016-07-18T08:00:00.000Z","updated":"2016-07-18T08:00:00.000Z","name":"shiftTableUser","fileId":"0B88bKUOZP4-AUmVlb3VjbmE3cEU","column":{
             "_id":"string",
             "created":"date",
-            "updated":"date"
+            "updated":"date",
+            "userId":"string",
+            "memberNum":"number",
+            "content":[{"day":"number","timeIndex":"number","memberIndex":"number","interval":"number","name":"string","backgroundColor":"string","fontColor":"string"}]
         },"columnName":{
             "_id":"データID",
             "created":"作成日時",
-            "updated":"更新日時"
+            "updated":"更新日時",
+            "userId":"UserID",
+            "memberNum":"メンバー数",
+            "content":[{"_name":"内容","day":"n日目","timeIndex":"番号","memberIndex":"メンバー番号","interval":"時間の長さ","name":"人割名","backgroundColor":"背景色","fontColor":"フォント色"}]
         }},
         {"_id":"pFsbSQKFhL9EMQK8","created":"2016-07-18T08:00:00.000Z","updated":"2016-07-18T08:00:00.000Z","name":"shiftTableWork","fileId":"0B88bKUOZP4-AWVlBZGF3ODlwWHc","column":{
             "_id":"string",
             "created":"date",
-            "updated":"date"
+            "updated":"date",
+            "workListId":"string",
+            "memberNum":"number",
+            "content":[{"detailIndex":"number","timeIndex":"number","memberIndex":"number","interval":"number","name":"string","backgroundColor":"string","fontColor":"string"}]
         },"columnName":{
             "_id":"データID",
             "created":"作成日時",
-            "updated":"更新日時"
+            "updated":"更新日時",
+            "workListId":"WorkListID",
+            "memberNum":"メンバー数",
+            "content":[{"_name":"内容","detailIndex":"セクションID","timeIndex":"番号","memberIndex":"メンバー番号","interval":"時間の長さ","name":"人割名","backgroundColor":"背景色","fontColor":"フォント色"}]
         }},
         {"_id":"JJUwBcLNunQ9YXXB","created":"2016-07-18T08:00:00.000Z","updated":"2016-07-18T08:00:00.000Z","name":"user","fileId":"0B88bKUOZP4-AVHpNNXdDZVV2YzA","column":{
             "_id":"string",
