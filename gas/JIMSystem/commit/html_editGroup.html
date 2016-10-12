@@ -1,0 +1,41 @@
+<article>
+    <h1></h1>
+    <section>
+        <h2>グループ編集</h2>
+        <select id="editGroup_kind">
+            <option value="workGroup">workGroup</option>
+            <option value="workGroup">userGroup</option>
+        </select>
+        <form id="formEditGroup">
+            <table class="tableform"><tbody>
+                <tr><td>グループ名</td><td><input type="text" name="name"></td><td></td></tr>
+                <tr><td>メンバー</td><td><input type="hidden" name="member"></td><td></td></tr>
+                <tr><td>カラーグループ</td><td><input type="checkbox" name="isColorGroup"></td><td></td></tr>
+                <tr><td>背景色</td><td><input type="text" name="backgroundColor"></td><td>#FFFFFF形式で入力してください</td></tr>
+                <tr><td>フォント色</td><td><input type="text" name="fontColor"></td><td>#FFFFFF形式で入力してください</td></tr>
+                <tr><td>カラーコード</td><td><input type="text" name="color_code"></td><td><input type="text" name="color_sample"></td></tr>
+                <tr><td>RGB</td><td><table><tbody>
+                    <tr><td>R</td><td><input type="number" name="color_sample_r" value="0" min="0" max="255" oninput='_val.pageFun.editGroup.convertColor("rgb")'><input type="range" value="0" min="0" max="255" name="color_sample_r_range" oninput='$(this).siblings("[type=\"number\"]").val($(this).val());_val.pageFun.editGroup.convertColor("rgb")'></td></tr>
+                    <tr><td>G</td><td><input type="number" name="color_sample_g" value="0" min="0" max="255" oninput='_val.pageFun.editGroup.convertColor("rgb")'><input type="range" value="0" min="0" max="255" name="color_sample_g_range" oninput='$(this).siblings("[type=\"number\"]").val($(this).val());_val.pageFun.editGroup.convertColor("rgb")'></td></tr>
+                    <tr><td>B</td><td><input type="number" name="color_sample_b" value="0" min="0" max="255" oninput='_val.pageFun.editGroup.convertColor("rgb")'><input type="range" value="0" min="0" max="255" name="color_sample_b_range" oninput='$(this).siblings("[type=\"number\"]").val($(this).val());_val.pageFun.editGroup.convertColor("rgb")'></td></tr>
+                </tbody></table></td><td></td></tr>
+                <tr><td>HSL</td><td><table><tbody>
+                    <tr><td>H</td><td><input type="number" name="color_sample_h" value="0" min="0" max="360" oninput='_val.pageFun.editGroup.convertColor("hsl")'><input type="range" value="0" min="0" max="360" name="color_sample_h_range" oninput='$(this).siblings("[type=\"number\"]").val($(this).val());_val.pageFun.editGroup.convertColor("hsl")'></td></tr>
+                    <tr><td>S</td><td><input type="number" name="color_sample_s" value="0" min="0" max="100" oninput='_val.pageFun.editGroup.convertColor("hsl")'><input type="range" value="0" min="0" max="100" name="color_sample_s_range" oninput='$(this).siblings("[type=\"number\"]").val($(this).val());_val.pageFun.editGroup.convertColor("hsl")'></td></tr>
+                    <tr><td>L</td><td><input type="number" name="color_sample_l" value="0" min="0" max="100" oninput='_val.pageFun.editGroup.convertColor("hsl")'><input type="range" value="0" min="0" max="100" name="color_sample_l_range" oninput='$(this).siblings("[type=\"number\"]").val($(this).val());_val.pageFun.editGroup.convertColor("hsl")'></td></tr>
+                </tbody></table></td><td></td></tr>
+            </tbody></table>
+            <input type="button" name="run_add" value="新規作成" tabindex="2" onclick='_val.pageFun.editGroup.updateGroup("add")'><input type="button" name="run_change" value="変更を保存" tabindex="2" onclick='_val.pageFun.editGroup.updateGroup("change")'>
+        </form>
+    </section>
+    <section>
+        <h2>検索</h2>
+        <form id="formEditGroup_search_cond">
+            <table class="tableform"><tbody>
+                <tr><td>人割名</td><td><input type="text" name="name" tabindex="2" onkeydown="if(event.keyCode === 13){_val.pageFun.editGroup.searchGroup();return false;}"></td></tr>
+            </tbody></table>
+            <input type="button" name="run" value="検索" tabindex="2" onclick="_val.pageFun.editGroup.searchGroup();">
+        </form>
+        <div id="formEditGroup_search_result"></div>
+    </section>
+</article>
