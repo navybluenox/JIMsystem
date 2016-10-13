@@ -158,6 +158,7 @@ baseServer.js
 
 var Datapiece = (function(){
     var server;
+    var config;
     return class Datapiece {
         constructor(datapieceObj,dataName,option){
             if(option === undefined)  option = {};
@@ -165,6 +166,10 @@ var Datapiece = (function(){
             if(server === undefined){
                 //Serverオブジェクトを変える場合にはここを書き換える
                 server = _val.server;
+            }
+            if(config === undefined){
+                //SystemConfigオブジェクトを変える場合にはここを書き換える
+                config = _val.config;                
             }
             this._data = {};
             this._dataName = dataName;
@@ -340,6 +345,14 @@ var Datapiece = (function(){
             var ret =  server.getDataById(this.getValue(colName),dataName)[0];
             if(ret === undefined)  ret = new (this.getCollectionInfo().getClass())();
             return ret;
+        }
+        static getServer(){
+            //Datapiece系クラスで使う専用
+            return server;
+        }
+        static getConfig(){
+            //Datapiece系クラスで使う専用
+            return config;
         }
         static getClassByName(dataName){
             var collInfo = server.getCollectionInfoByName(dataName);
@@ -538,12 +551,24 @@ class User extends Datapiece{
         super(datapieceObj,"user",option);
     }
     getBackgroundColor(){
-        return "#FFFFFF";
-        //return UserGroup.getColorByUserId(this.getValues("_id"),"background");
+        return UserGroup.getColorByUserId(this.getValues("_id"),"background");
     }
     getFontColor(){
-        return "#000000";
-        //return UserGroup.getColorByUserId(this.getValues("_id"),"font");
+        return UserGroup.getColorByUserId(this.getValues("_id"),"font");
+    }
+    getShiftTableData(start,end){
+        //{"userId":"","rowNum":"","content":[{"workAssignId":"","workListId":"","workName":"","rowIndex":"","index":"","interval":"","start":"","end":"","backgroundColor":"","fontColor":"","":"","":"","":"",}]}
+        var that = this;
+        if(start === undefined)  start = new LocalDate({"day":Datapiece.getConfig().getWorkStartDay()});
+        if(end === undefined)  end = new LocalDate({"day":Datapiece.getConfig().getWorkEndDay()+1});
+        var workAssigns = Datapiece.getServer().getData("workAssign").filter(function(workAssign){return workAssign.getValue("userId") === that.getValue("_id")});
+        //TODO
+    }
+    getShiftTableElement(mode){
+        //mode=[table,tr]
+    }
+    getShiftTableUser(){
+        //convert to ShiftTableUser
     }
 }
 
@@ -552,12 +577,13 @@ class UserGroup extends Datapiece{
         super(datapieceObj,"userGroup",option);
     }
     static getColorByUserId(id,kind){
-        return _val.server.getData("userGroup")
+        var userGroup = Datapiece.getServer().getData("userGroup")
             .filter(function(userGroup){
                 return userGroup.getValue("isColorGroup")
             }).find(function(userGroup){
                 return userGroup.getValue("member") === id
-            }).getValue(kind + "Color");
+            });
+        return userGroup === undefined ? (kind === "background" ? "#FFFFFF" : (kind === "font" ? "#000000" : "#FFFFFF")) : userGroup.getValue(kind + "Color");
     }
 }
 
@@ -572,13 +598,14 @@ class WorkGroup extends Datapiece{
         super(datapieceObj,"workGroup",option);
     }
     static getColorByWorkListId(id,kind){
-        return _val.server.getData("workGroup")
+        var workGroup = Datapiece.getServer().getData("workGroup")
             .filter(function(userGroup){
                 return userGroup.getValue("isColorGroup")
             }).find(function(userGroup){
                 return userGroup.getValue("member") === id
-            }).getValue(kind + "Color");
-    }
+            })
+         return workGroup === undefined ? (kind === "background" ? "#FFFFFF" : (kind === "font" ? "#000000" : "#FFFFFF")) : workGroup.getValue(kind + "Color");
+   }
 }
 
 class WorkList extends Datapiece{
@@ -612,12 +639,10 @@ class WorkList extends Datapiece{
         })
     }
     getBackgroundColor(){
-        return "#FFFFFF";
-        //return WorkGroup.getColorByUserId(this.getValues("_id"),"background");
+        return WorkGroup.getColorByUserId(this.getValues("_id"),"background");
     }
     getFontColor(){
-        return "#000000";
-        //return WorkGroup.getColorByUserId(this.getValues("_id"),"font");
+        return WorkGroup.getColorByUserId(this.getValues("_id"),"font");
     }
 }
 

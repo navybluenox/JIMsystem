@@ -1,18 +1,24 @@
 <article>
-    <h1></h1>
+    <h1>>グループ編集</h1>
     <section>
-        <h2>グループ編集</h2>
-        <select id="editGroup_kind">
+        <h2>編集</h2>
+        <div style="margin:3em;">グループ選択<select id="editGroup_kind" onchange='_val.pageFun.editGroup.setMemberList();_val.pageFun.editGroup.searchGroup();_val.pageFun.editGroup.clearEditing()'>
+            <option value=""></option>
             <option value="workGroup">workGroup</option>
-            <option value="workGroup">userGroup</option>
-        </select>
+            <option value="userGroup">userGroup</option>
+        </select></div>
         <form id="formEditGroup">
             <table class="tableform"><tbody>
                 <tr><td>グループ名</td><td><input type="text" name="name"></td><td></td></tr>
-                <tr><td>メンバー</td><td><input type="hidden" name="member"></td><td></td></tr>
+                <tr><td>メンバー</td><td><table><tbody>
+                    <tr><td><select name="member_list" multiple></select></td><td><select name="member_selected" multiple></select></td></tr>
+                    <tr><td>リスト</td><td>選択済み</td></tr>
+                    <tr><td><input type="button" name="member_add" value="→追加" onclick='_val.pageFun.editGroup.moveMember("add")'></td><td><input type="button" name="member_remove" value="←削除" onclick='_val.pageFun.editGroup.moveMember("remove")'></td></tr>
+                </tbody></table><input type="hidden" name="member"></td><td></td></tr>
                 <tr><td>カラーグループ</td><td><input type="checkbox" name="isColorGroup"></td><td></td></tr>
-                <tr><td>背景色</td><td><input type="text" name="backgroundColor"></td><td>#FFFFFF形式で入力してください</td></tr>
-                <tr><td>フォント色</td><td><input type="text" name="fontColor"></td><td>#FFFFFF形式で入力してください</td></tr>
+                <tr><td>背景色</td><td><input type="text" name="backgroundColor" oninput='_val.pageFun.editGroup.setColorSample()'></td><td>カラーサンプル</td></tr>
+                <tr><td>フォント色</td><td><input type="text" name="fontColor" oninput='_val.pageFun.editGroup.setColorSample()'></td><td>#FFFFFF形式で入力してください</td></tr>
+                <tr><td colspan="3" style="text-align:center;">色編集</td></tr>
                 <tr><td>カラーコード</td><td><input type="text" name="color_code"></td><td><input type="hidden" name="color_sample"></td></tr>
                 <tr><td>RGB</td><td><table><tbody>
                     <tr><td>R</td><td><input type="number" name="color_sample_r" value="0" min="0" max="255" oninput='_val.pageFun.editGroup.convertColor("rgb")'><input type="range" value="0" min="0" max="255" name="color_sample_r_range" oninput='$(this).siblings("[type=\"number\"]").val($(this).val());_val.pageFun.editGroup.convertColor("rgb")'></td></tr>

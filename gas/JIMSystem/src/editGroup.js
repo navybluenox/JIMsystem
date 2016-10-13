@@ -5,7 +5,10 @@ $(function(){
     var getCollName = function(){return $("#editGroup_kind").val()};
     _val.pageFun.editGroup = {
         onload:function(){
-            //TODO
+            _val.server.loadData("user");
+            _val.server.loadData("workList");
+            _val.server.loadData("userGroup");
+            _val.server.loadData("workGroup");
             form = $("#formEditGroup");
         },onunload:function(){
         
@@ -20,8 +23,10 @@ $(function(){
                     if(key === "isColorGroup"){
                         setValue[key] = el.prop("checked");
                     }else if(key === "member"){
-                        //TODO
-                        setValue[key] = [];
+                        var el = form.find('[name="member_selected"]');
+                        setValue[key] = el.val();
+                    }else if(key === "backgroundColor" || key === "fontColor"){
+                        setValue[key] = /^#[0-9A-Fa-f]{6}$/.test(el.val()) ? el.val().toUpperCase() : "";                        
                     }else{
                         setValue[key] = el.val();
                     }
@@ -50,6 +55,12 @@ $(function(){
         },searchGroup:function(sortFun){
             var result = $("#formEditGroup_search_result");
             var form_search = $("#formEditGroup_search_cond");
+
+            if(getCollName() === ""){
+                alert("検索するグループを選択してください。");
+                $("#editGroup_kind").focus();
+                return;
+            }
 
             result.children().remove();
             result.append("<h3>検索結果</h3>");
@@ -82,7 +93,12 @@ $(function(){
                     if(key === "isColorGroup"){
                         el.prop("checked",group.getValue(key));
                     }else if(key === "member"){
-                        //TODO
+                        _val.pageFun.editGroup.setMemberList();
+                        var el = form.find('[name="member_list"]').find(group.getValue("member").map(function(m){
+                            return '[value="' + m + '"]'
+                        }).join(","));
+                        el.attr("selected","selected");
+                        form.find('[name="member_add"]').trigger("click");
                     }else{
                         el.val(group.getValue(key));
                     }
@@ -93,22 +109,59 @@ $(function(){
                 var group = cellObj.rowData;
                 if(cellObj.column === "edit"){
                     var buttons = $('<input type="button" value="フォームに入力"><input type="button" value="削除">').appendTo(cellObj.el);
-                    buttons.eq(0).on("click",function(e){fun_fillForm(group);editing = group;});
+                    buttons.eq(0).on("click",function(e){fun_fillForm(group);editing = group;_val.pageFun.editGroup.setColorSample();});
                     buttons.eq(1).on("click",function(e){_val.pageFun.editGroup.updateGroup("remove",group.getValue("_id"));});
                 }else{
                     var str;
                     switch(cellObj.column){
                         case "name":
-                            str = cellObj.value;
+                            str = group.getValue("name");
                             break;
                         case "isColorGroup":
-                            str = (cellObj.value ? "Yes" : "No");
+                            str = (group.getValue("isColorGroup") ? "Yes" : "No");
                             break;
                     }
                     cellObj.el.text(str);
                 }
             },{"header":["edit","グループ名","カラーグループ"]});
             table.el.css({"margin":"3em"});
+        },setMemberList:function(){
+            var target_list = form.find('[name="member_list"]');
+            var target_selected = form.find('[name="member_selected"]');
+            target_list.children().remove();
+            target_selected.children().remove();
+            var dataName;
+            if(getCollName() === "userGroup"){
+                dataName = "user";
+            }else if(getCollName() === "workGroup"){
+                dataName = "workList";
+            }
+            var data = _val.server.getData(dataName);
+
+            target_list.append(Datapiece.sort(data,(dataName === "user" ? ["sortId"] : (dataName === "workList" ? ["leaderIncharge","nameShort"] : []))).map(function(dp){
+                if(dataName === "user"){
+                    return '<option value="' + dp.getValue("_id") + '">' + dp.getValue("nameLast") + " " + dp.getValue("nameFirst") + '</option>';
+                }else if(dataName === "workList"){
+                    return '<option value="' + dp.getValue("_id") + '">' + dp.getValue("nameShort") + '</option>';
+                }
+            }).join(""));
+            target_list.attr("size",Math.min(data.length,20)).find("option").css({"text-align":"left"});
+            target_selected.attr("size",2).find("option").css({"text-align":"left"});
+        },moveMember:function(type){
+            var target_list = form.find('[name="member_list"]');
+            var target_selected = form.find('[name="member_selected"]');
+            var move;
+
+            if(type === "add"){
+                move = target_list.find("option:selected");
+                target_selected.append(move);
+            }else if(type === "remove"){
+                move = target_selected.find("option:selected");
+                target_list.append(move);                
+            }
+            target_list.attr("size",Math.min(target_list.find("option").length,20));
+            target_selected.attr("size",Math.min(target_selected.find("option").length,20));
+
         },convertColor:function(type){
             var el = {},value = {};
             var max,min;
@@ -196,6 +249,11 @@ $(function(){
             if(b16.length === 1) b16 = "0" + b16;
             form.find('[name="color_code"]').val("#" + r16 + g16 + b16);
             form.find('[name="color_sample"]').parent().css("background",form.find('[name="color_code"]').val());
+        },setColorSample:function(){
+            var target = form.find('[name="backgroundColor"]').closest("tr").children("td").eq(2);
+            target.css({"background":form.find('[name="backgroundColor"]').val(),"color":form.find('[name="fontColor"]').val()});
+        },clearEditing:function(){
+            editing = undefined;
         }
     };
 });
