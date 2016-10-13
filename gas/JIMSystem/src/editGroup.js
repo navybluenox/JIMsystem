@@ -5,6 +5,7 @@ $(function(){
     var getCollName = function(){return $("#editGroup_kind").val()};
     _val.pageFun.editGroup = {
         onload:function(){
+            //TODO
             form = $("#formEditGroup");
         },onunload:function(){
         
