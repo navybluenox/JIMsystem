@@ -32,7 +32,12 @@
         <h2>検索</h2>
         <form id="formEditGroup_search_cond">
             <table class="tableform"><tbody>
-                <tr><td>人割名</td><td><input type="text" name="name" tabindex="2" onkeydown="if(event.keyCode === 13){_val.pageFun.editGroup.searchGroup();return false;}"></td></tr>
+                <tr><td>グループ名</td><td><input type="text" name="groupName" tabindex="2" onkeydown="if(event.keyCode === 13){_val.pageFun.editGroup.searchGroup();return false;}"></td></tr>
+                <tr><td>カラーグループであるか</td><td><select name="isColorGroup" tabindex="2" onchange="if(event.keyCode === 13){_val.pageFun.editGroup.searchGroup();return false;}">
+                    <option value=""></option>
+                    <option value="y">Yes</option>
+                    <option value="n">No</option>
+                </select></td></tr>
             </tbody></table>
             <input type="button" name="run" value="検索" tabindex="2" onclick="_val.pageFun.editGroup.searchGroup();">
         </form>

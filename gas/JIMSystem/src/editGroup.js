@@ -1,15 +1,113 @@
 $(function(){
     var form;
     var formNameList = [{"name":"name"},{"name":"member"},{"name":"isColorGroup"},{"name":"backgroundColor"},{"name":"fontColor"}];
+    var editing;
+    var getCollName = function(){return $("#editGroup_kind").val()};
     _val.pageFun.editGroup = {
         onload:function(){
             form = $("#formEditGroup");
         },onunload:function(){
         
-        },updateGroup:function(){
+        },updateGroup:function(kind,_id){
+            var group;
+            var setValue = {};
+            var GroupClass = Datapiece.getClassByName(getCollName());
+            if(kind === "add" || kind === "change"){
+                formNameList.forEach(function(obj){
+                    var el = form.find('[name="' + obj.name + '"]');
+                    var key = obj.key === undefined ? obj.name : obj.key;
+                    if(key === "isColorGroup"){
+                        setValue[key] = el.prop("checked");
+                    }else if(key === "member"){
+                        //TODO
+                        setValue[key] = [];
+                    }else{
+                        setValue[key] = el.val();
+                    }
+                })
+                if(kind === "change"){
+                    if(editing === undefined){
+                        alert("値を変更する人割が指定されていません\n下の「検索」から変更したい人割を選択し、フォームへ入力してください");
+                        return;
+                    }
+                    setValue._id = editing.getValue("_id");
+                }
+                group = (new GroupClass()).setValues(setValue);
+                if(kind === "add"){
+                    _val.server.addData(group);
+                }else{
+                    _val.server.changeData(group);
+                }
+            }else if(kind === "remove"){
+                group = new GroupClass({"_id":_id});
+                _val.server.removeData(group);
+            }
+            _val.server.sendUpdateQueue().then(function(){
+                _val.pageFun.editGroup.searchGroup();
+            });
 
-        },searchGroup:function(){
+        },searchGroup:function(sortFun){
+            var result = $("#formEditGroup_search_result");
+            var form_search = $("#formEditGroup_search_cond");
 
+            result.children().remove();
+            result.append("<h3>検索結果</h3>");
+
+            var cond = {};
+            ["groupName","isColorGroup"].forEach(function(name){
+                cond[name] = form_search.find('[name="' + name + '"]').val();
+            })
+            var groups = _val.server.getData(getCollName()).filter(function(group){
+                var flag = true;
+                if(cond.groupName !== ""){
+                    flag = flag && (new RegExp(cond.groupName)).test(group.getValue("name"));
+                }
+                if(cond.isColorGroup !== ""){
+                    flag = flag && ((cond.isColorGroup === "y") === group.getValue("isColorGroup"));
+                }
+                return flag;
+            });
+
+            if(sortFun !== undefined && typeof sortFun === "function"){
+                groups =  sortFun(groups);
+            }else{
+                groups = Datapiece.sort(groups,["isColorGroup","name"]);
+            }
+
+            var fun_fillForm = function(group){
+                formNameList.forEach(function(obj){
+                    var el = form.find('[name="' + obj.name + '"]');
+                    var key = obj.key === undefined ? obj.name : obj.key;
+                    if(key === "isColorGroup"){
+                        el.prop("checked",group.getValue(key));
+                    }else if(key === "member"){
+                        //TODO
+                    }else{
+                        el.val(group.getValue(key));
+                    }
+                });
+            }
+
+            var table = createTable(result,groups,["edit","name","isColorGroup"],function(cellObj){
+                var group = cellObj.rowData;
+                if(cellObj.column === "edit"){
+                    var buttons = $('<input type="button" value="フォームに入力"><input type="button" value="削除">').appendTo(cellObj.el);
+                    buttons.eq(0).on("click",function(e){fun_fillForm(group);editing = group;});
+                    buttons.eq(1).on("click",function(e){_val.pageFun.editGroup.updateGroup("remove",group.getValue("_id"));});
+                }else{
+                    var str;
+                    switch(cellObj.column){
+                        case "name":
+                            str = cellObj.value;
+                            break;
+                        case "isColorGroup":
+                            str = (cellObj.value ? "Yes" : "No");
+                            break;
+                    }
+                    cellObj.el.text(str);
+                }
+            },{"header":["edit","グループ名","カラーグループ"]});
+            table.el.css({"margin":"3em"});
         },convertColor:function(type){
             var el = {},value = {};
             var max,min;

@@ -39,7 +39,6 @@ $(function(){
             });
             form.find('[name="interval"]').trigger("change");
         },onunload:function(){
-
         },updateWorkAssign:function(kind,_id){
             var workAssign;
             var setValue = {};
