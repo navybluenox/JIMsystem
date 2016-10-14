@@ -131,8 +131,9 @@ var Server = (function(){
             return this.loadData(collInfo,option,true);
         }
         loadDataAll(){
+            var that = this;
             return Promise.all(cache.collectionInfo.map(function(collInfo){
-                return this.loadData(collInfo);
+                return that.loadData(collInfo);
             }));
         }
         reloadDataAll(){
@@ -335,7 +336,7 @@ var LoadingAlert = (function(){
             function setPosition(){
                 var margin = 20;
                 that._div.css({
-                    "left":"" + margin + "px",
+                    "right":"" + margin + "px",
                     "top":"" + ($(window).height() - that._div.outerWidth() - margin) + "px"
                 })
             }

@@ -25,17 +25,27 @@ $(function(){
             });
             form.find('[name="start_day"],[name="end_day"]').attr({"min":_val.config.getWorkStartDay(),"max":_val.config.getWorkEndDay()});
             form.find('[name="start_minute"],[name="end_minute"]').attr({"min":-LocalDate.getTimeUnitAsConverted("minute"),"step":LocalDate.getTimeUnitAsConverted("minute")})
-            form.find('[name="start_hour"],[name="start_minute"]').on("change",function(e){
+            form.find('[name="start_day"],[name="start_hour"],[name="start_minute"]').on("change",function(e){
                 LocalDate.increaseDigit(form.find('[name="start_day"]'),form.find('[name="start_hour"]'),form.find('[name="start_minute"]'));
-            });
-            form.find('[name="end_hour"],[name="end_minute"]').on("change",function(e){
-                LocalDate.increaseDigit(form.find('[name="end_day"]'),form.find('[name="end_hour"]'),form.find('[name="end_minute"]'));
+                var start = new LocalDate({"day":+form.find('[name="start_day"]').val(),"hour":+form.find('[name="start_hour"]').val(),"minute":+form.find('[name="start_minute"]').val()});
+                var end = new LocalDate({"day":+form.find('[name="end_day"]').val(),"hour":+form.find('[name="end_hour"]').val(),"minute":+form.find('[name="end_minute"]').val()});
+                if(start.getTime() >= end.getTime()){
+                    form.find('[name="interval"]').val(1);
+                }else{
+                    form.find('[name="interval"]').val(start.getDiff(end,"timeunit"));
+                }
+                form.find('[name="interval"]').trigger("change");
             });
             form.find('[name="end_day"],[name="end_hour"],[name="end_minute"]').on("change",function(e){
-                //TODO 事故ってる
-                var end = new LocalDate({"day":+form.find('[name="end_day"]').val(),"hour":+form.find('[name="end_hour"]').val(),"minute":+form.find('[name="end_minute"]').val()});
+                LocalDate.increaseDigit(form.find('[name="end_day"]'),form.find('[name="end_hour"]'),form.find('[name="end_minute"]'));
                 var start = new LocalDate({"day":+form.find('[name="start_day"]').val(),"hour":+form.find('[name="start_hour"]').val(),"minute":+form.find('[name="start_minute"]').val()});
-                form.find('[name="interval"]').val(start.getDiff(end,"timeUnit")).trigger("change");
+                var end = new LocalDate({"day":+form.find('[name="end_day"]').val(),"hour":+form.find('[name="end_hour"]').val(),"minute":+form.find('[name="end_minute"]').val()});
+                if(start.getTime() >= end.getTime()){
+                    form.find('[name="interval"]').val(1);
+                }else{
+                    form.find('[name="interval"]').val(start.getDiff(end,"timeunit"));
+                }
+                form.find('[name="interval"]').trigger("change");
             });
 
             form.find('[name="interval"]').siblings("span").eq(0).text(LocalDate.getTimeUnitAsConverted("minute"));
@@ -151,19 +161,16 @@ $(function(){
                         el.prop("checked",workAssign.getValue(key));
                     }else if(key === "start"){
                         var start = workAssign.getValue("start");
-                        var end = workAssign.getValue("end");
                         form.find('[name="start_day"]').val(start.getDays());
                         form.find('[name="start_hour"]').val(start.getHours());
                         form.find('[name="start_minute"]').val(start.getMinutes());
-                        form.find('[name="end_day"]').val(end.getDays());
-                        form.find('[name="end_hour"]').val(end.getHours());
-                        form.find('[name="end_minute"]').val(end.getMinutes());
                     }else{
                         el.val(workAssign.getValue(key));
                     }
                 });
                 form.find('[name="workListId_name"]').val(workAssign.getDatapieceRelated("workListId","workList").getValue("name"));
                 form.find('[name="userId_azusa"]').val(workAssign.getDatapieceRelated("userId","user").getValue("azusaSendName"));
+                form.find('[name="interval"]').trigger("change");
             }
 
             var table = createTable(result,workAssigns,["edit","workList","user","time","notice"],function(cellObj){

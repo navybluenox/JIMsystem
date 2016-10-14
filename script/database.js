@@ -322,8 +322,9 @@ var Datapiece = (function(){
             return this;
         }
         //消すかも
-        getValues(){
-            return this._data;
+        getValues(newCopy){
+            if(newCopy === undefined)  newCopy = false;
+            return newCopy ? JSON.parse(JSON.stringify(this._data)) : this._data;
         }
         getValue(colName){
             if(typeof colName !== "string")  return undefined;
@@ -347,7 +348,7 @@ var Datapiece = (function(){
             return ret;
         }
         copy(){
-            return (new (Datapiece.getClassByName(this.getDataName()))()).setValues(JSON.parse(JSON.stringify(this.getValues())),{"overwrite":true});
+            return (new (Datapiece.getClassByName(this.getDataName()))()).setValues(this.getValues(true),{"overwrite":true});
         }
         static getServer(){
             //Datapiece系クラスで使う専用
@@ -427,7 +428,7 @@ var Datapiece = (function(){
                 }
             case "localdate":
                 if(classof(value) === "localdate"){
-                    return value;
+                    return value.copy();
                 }else{
                     return new LocalDate(value);
                 }
@@ -560,7 +561,7 @@ class User extends Datapiece{
         return UserGroup.getColorByUserId(this.getValues("_id"),"font");
     }
     getShiftTableAsData(start,end){
-        //{"userId":"","workNum":"","content":[{"workAssignId":"","workListId":"","workName":"","workIndex":"","index":"","interval":"","start":"","end":"","backgroundColor":"","fontColor":""}]}
+        //{"userId":"","workNum":"","content":[{"workAssignId":"","workListId":"","workName":"","workIndex":"","timeIndex":"","interval":"","start":"","end":"","backgroundColor":"","fontColor":""}]}
         var that = this;
         if(start === undefined)  start = new LocalDate({"day":Datapiece.getConfig().getWorkStartDay()});
         if(end === undefined)  end = new LocalDate({"day":Datapiece.getConfig().getWorkEndDay()+1});
@@ -568,20 +569,21 @@ class User extends Datapiece{
             return (
                 workAssign.getValue("userId") === that.getValue("_id") &&
                 workAssign.getValue("end").getTime() > start.getTime() &&
-                workAssign.getValue("start").getTime() > end.getTime()                
+                workAssign.getValue("start").getTime() < end.getTime()                
             );
         }).map(function(workAssign){
             var ret = workAssign.copy();
             if(ret.getValue("start").getTime() < start.getTime()){
-                ret.setValue("start",start);
+                ret.setValue("interval",ret.getValue("interval") - ret.getValue("start").getDiff(start,"timeunit"))
+                ret.setValue("start",start.copy());
             }
             if(ret.getValue("end").getTime() > end.getTime()){
-                ret.setValue("end",end);
+                ret.setValue("end",end.copy());
             }
             return ret;
         }).filter(function(workAssign){return workAssign.getValue("interval") !== 0});
         var lists = [];
-        var ret = {"userId":this.getValue("_id"),"workNum":0,"content":[]};
+        var ret = {"userId":this.getValue("_id"),"workNum":0,"tableStartTime":start.copy(),"tableEndTime":end.copy(),"content":[]};
         workAssigns.forEach(function(workAssign){
             var workIndex = 0;
             while(lists[workIndex] === undefined || getVacant(lists[workIndex]).length !== workAssign.getValue("interval")){
@@ -595,7 +597,7 @@ class User extends Datapiece{
                     workIndex++;
                 }
             }
-            getVacant.forEach(function(obj){
+            getVacant(lists[workIndex]).forEach(function(obj){
                 obj.hasWork = true;
             });
             ret.content.push({
@@ -604,8 +606,8 @@ class User extends Datapiece{
                 "workName":workAssign.getDatapieceRelated("workListId","workList").getValue("nameShort"),
                 "workIndex":workIndex,
                 "interval":workAssign.getValue("interval"),
-                "start":workAssign.getValue("start"),
-                "end":workAssign.getValue("end"),
+                "start":workAssign.getValue("start").copy(),
+                "end":workAssign.getValue("end").copy(),
                 "backgroundColor":workAssign.getDatapieceRelated("workListId","workList").getBackgroundColor(),
                 "fontColor":workAssign.getDatapieceRelated("workListId","workList").getFontColor()
             });
@@ -627,22 +629,64 @@ class User extends Datapiece{
                 return a.workIndex - b.workIndex;
             }
         });
-        var nowIndex = 0, nowWorkIndex = 0;
+        var timeIndex = 0, nowWorkIndex = 0;
         ret.content.forEach(function(obj){
             if(nowWorkIndex !== obj.workIndex){
-                nowIndex = 0;
+                timeIndex = 0;
                 nowWorkIndex = obj.workIndex;
             }
-            obj.index = nowIndex;
-            nowIndex++;
+            obj.timeIndex = timeIndex;
+            timeIndex++;
         });
         return ret;
     }
-    getShiftTableAsElement(mode){
-        //mode=[table,tr]
+    getShiftTableAsElement(mode,start,end){
+        //tr table
+        //tableは時間のヘッダーも作る
+        //TODO 縦（i.e. 転置行列）も作る
+        var data = this.getShiftTableAsData(start,end);
+        var rowContents = [];
+        for(var i=0; i<data.workNum; i++){
+            rowContents[i] = data.content.filter(function(obj){return obj.workIndex === i});
+        }
+        var trs = $(repeatString("<tr></tr>",data.workNum));
+        var _tdMatrix = [];
+        rowContents.forEach(function(_rowContent,rowIndex){
+            var rowContent = _rowContent.slice();
+            var insert;
+            _tdMatrix = []
+            for(var i=_rowContent.length-1; i>=0; i--){
+                insert = [];
+                for(var j=0,l=_rowContent[i].end.getDiff(i===_rowContent.length-1?end:_rowContent[i+1].end, "timeunit"); j<l; j++){
+                    insert[j] = {"start":_rowContent[i].end.copy().addTimeUnit(j),"workListId":"_blank"};
+                }
+                rowContent.splice(i,0,insert);
+            }
+            console.log("rowContent",rowContent);
+        });
+
+        
     }
     getShiftTableUser(){
-        //convert to ShiftTableUser
+        var setValue = {"userId":this.getValue("_id"),"content":[],"workNum":[]};
+        var data;
+        for(var day=LocalDate.getWorkStartDay(); day<=LocalDate.getWorkEndDay; day++){
+            data = this.getShiftTableAsData(LocalDate.getWorkTime(day,"start"),LocalDate.getWorkTime(day,"end"));
+            setValue.content = setValue.content.concat(data.content.map(function(obj){
+                return {
+                    "day":day,
+                    "startTimeUnitNum":data.tableStartTime.getDiff(obj.start,"timeunit"),
+                    "timeIndex":obj.timeIndex,
+                    "workIndex":obj.workIndex,
+                    "interval":obj.interval,
+                    "name":obj.workName,
+                    "backgroundColor":obj.backgroundColor,
+                    "fontColor":obj.fontColor
+                }
+            }));
+            setValue.workNum.push({"day":day,"num":data.workNum});
+        }
+        return new ShiftTableUser(setValue);
     }
 }
 
@@ -672,9 +716,9 @@ class WorkAssign extends Datapiece{
                 if(that.getValue("start") === undefined){
                     that.setValue("start",value);
                 }else if(that.getValue("start").getDiff(value,"timeunit") >= 0){
-                    that.setvalue("interval",that.getValue("start").getDiff(value,"timeunit"))
+                    that.setValue("interval",that.getValue("start").getDiff(value,"timeunit"))
                 }else{
-                    that.setvalue("interval",0);
+                    that.setValue("interval",0);
                 }
             }
         });
@@ -727,10 +771,10 @@ class WorkList extends Datapiece{
         })
     }
     getBackgroundColor(){
-        return WorkGroup.getColorByUserId(this.getValues("_id"),"background");
+        return WorkGroup.getColorByWorkListId(this.getValues("_id"),"background");
     }
     getFontColor(){
-        return WorkGroup.getColorByUserId(this.getValues("_id"),"font");
+        return WorkGroup.getColorByWorkListId(this.getValues("_id"),"font");
     }
 }
 

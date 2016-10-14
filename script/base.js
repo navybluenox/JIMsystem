@@ -229,9 +229,21 @@ var LocalDate = (function(){
         static getOpenTime(day,kind){
             return config.getOpenTime(day,kind);
         }
+        static getOpenStartDay(){
+            return config.getOpenStartDay();
+        }
+        static getOpenEndDay(){
+            return config.getOpenEndDay();            
+        }
         static getWorkTime(day,kind){
             return config.getWorkTime(day,kind);
         }
+        static getWorkStartDay(){
+            return config.getWorkStartDay();
+        }
+        static getWorkEndDay(){
+            return config.getWorkEndDay();            
+        }        
         static increaseDigit(dayEl,hourEl,minuteEl){
             var unit = LocalDate.getTimeUnitAsConverted("minute");
             if(+minuteEl.val() === -unit || +minuteEl.val() === 60){

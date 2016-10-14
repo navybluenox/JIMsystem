@@ -51,8 +51,9 @@ $(function(){
                     el_column.append(
                         Object.keys(_val.server.getCollectionInfoByName(dataName).getValue("column")).map(function(column){
                             return '<option value="' + column + '">' + column + '</option>';
-                        })
-                    )
+                        }).join("")
+                    );
+                    el.find('[name="search"]').trigger("click");
                 })
             });
 
@@ -86,6 +87,7 @@ $(function(){
                 var result = el.find('[name="resultField"]');
                 _val.server.loadData(dataName).then(function(){
                     data = _val.server.getData(dataName).filter(function(dp){
+                        if(column === "") return true;
                         var value = dp.getValue(column);
                         switch(type){
                             case "string":
@@ -101,6 +103,7 @@ $(function(){
                                 return;
                         }
                     }).sort(function(a,b){
+                        if(column === "") return 0;
                         var valueA = a.getValue(column);
                         var valueB = b.getValue(column);
                         switch(type){
