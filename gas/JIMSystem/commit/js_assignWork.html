@@ -151,8 +151,7 @@ $(function(){
                         el.prop("checked",workAssign.getValue(key));
                     }else if(key === "start"){
                         var start = workAssign.getValue("start");
-                        var end = start;//workAssign.getValue("end");
-                        //TODO startがintervalだけ進んだ時間になっている
+                        var end = workAssign.getValue("end");
                         form.find('[name="start_day"]').val(start.getDays());
                         form.find('[name="start_hour"]').val(start.getHours());
                         form.find('[name="start_minute"]').val(start.getMinutes());
@@ -184,7 +183,7 @@ $(function(){
                             str = user.getValue("nameLast") + " " + user.getValue("nameFirst");
                             break;
                         case "time":
-                            str = workAssign.getValue("start").toString() + "から" + workAssign.getValue("start").addTimeUnit(workAssign.getValue("interval")).toString({hideDay:true}) + "まで";
+                            str = workAssign.getValue("start").toString() + "から" + workAssign.getValue("start").copy().addTimeUnit(workAssign.getValue("interval")).toString({hideDay:true}) + "まで";
                             break;
                         case "notice":
                             str = workAssign.getValue(cellObj.column);
