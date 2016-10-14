@@ -583,7 +583,7 @@ class User extends Datapiece{
             return ret;
         }).filter(function(workAssign){return workAssign.getValue("interval") !== 0});
         var lists = [];
-        var ret = {"userId":this.getValue("_id"),"workNum":0,"tableStartTime":start.copy(),"tableEndTime":end.copy(),"content":[]};
+        var ret = {"userId":this.getValue("_id"),"workNum":0,"tableStartTime":start.copy(),"tableInterval":start.getDiff(end,"timeunit"),"content":[]};
         workAssigns.forEach(function(workAssign){
             var workIndex = 0;
             while(lists[workIndex] === undefined || getVacant(lists[workIndex]).length !== workAssign.getValue("interval")){
@@ -602,14 +602,14 @@ class User extends Datapiece{
             });
             ret.content.push({
                 "workAssignId":workAssign.getValue("_id"),
-                "workListId":workAssign.getValue("workListId"),
-                "workName":workAssign.getDatapieceRelated("workListId","workList").getValue("nameShort"),
+                //"workListId":workAssign.getValue("workListId"),
+                //"workName":workAssign.getDatapieceRelated("workListId","workList").getValue("nameShort"),
                 "workIndex":workIndex,
                 "interval":workAssign.getValue("interval"),
                 "start":workAssign.getValue("start").copy(),
-                "end":workAssign.getValue("end").copy(),
-                "backgroundColor":workAssign.getDatapieceRelated("workListId","workList").getBackgroundColor(),
-                "fontColor":workAssign.getDatapieceRelated("workListId","workList").getFontColor()
+                //"end":workAssign.getValue("end").copy(),
+                //"backgroundColor":workAssign.getDatapieceRelated("workListId","workList").getBackgroundColor(),
+                //"fontColor":workAssign.getDatapieceRelated("workListId","workList").getFontColor()
             });
             function getVacant(list){
                 if(list == undefined)  return undefined;
@@ -655,14 +655,31 @@ class User extends Datapiece{
             var rowContent = _rowContent.slice();
             var insert;
             _tdMatrix = []
-            for(var i=_rowContent.length-1; i>=0; i--){
+            if(_rowContent.length === 0){
                 insert = [];
-                for(var j=0,l=_rowContent[i].end.getDiff(i===_rowContent.length-1?end:_rowContent[i+1].end, "timeunit"); j<l; j++){
-                    insert[j] = {"start":_rowContent[i].end.copy().addTimeUnit(j),"workListId":"_blank"};
+                for(var j=0,l=start.getDiff(end, "timeunit"); j<l; j++){
+                    insert[j] = {"start":start.copy().addTimeUnit(j),"workAssignId":"_blank"};
                 }
-                rowContent.splice(i,0,insert);
+                rowContent = [insert];
+            }else{
+                for(var i=_rowContent.length-1; i>=0; i--){
+                    insert = [];
+                    for(var j=0,l=_rowContent[i].start.copy().addTimeUnit(_rowContent[i].interval).getDiff(i===_rowContent.length-1 ? end : _rowContent[i+1].start, "timeunit"); j<l; j++){
+                        insert[j] = {"start":_rowContent[i].start.copy().addTimeUnit(_rowContent[i].interval + j),"workAssignId":"_blank"};
+                    }
+                    rowContent.splice(i+1,0,insert);
+                }
+                insert = [];
+                for(var j=0,l=start.getDiff(_rowContent[0].start, "timeunit"); j<l; j++){
+                    insert[j] = {"start":start.copy().addTimeUnit(j),"workAssignId":"_blank"};
+                }
+                rowContent.splice(0,0,insert);
             }
-            console.log("rowContent",rowContent);
+            rowContent = rowContent.reduce(function(prev,curt){
+                return prev.concat(Array.isArray(curt) ? curt : [curt]);
+            });
+            //TODO
+            console.log("rowContent",rowContent.map(function(obj){return {time:obj.start.toString(),workAssignId:obj.workAssignId}}));
         });
 
         
@@ -673,15 +690,16 @@ class User extends Datapiece{
         for(var day=LocalDate.getWorkStartDay(); day<=LocalDate.getWorkEndDay; day++){
             data = this.getShiftTableAsData(LocalDate.getWorkTime(day,"start"),LocalDate.getWorkTime(day,"end"));
             setValue.content = setValue.content.concat(data.content.map(function(obj){
+                var workAssign = Datapiece.getServer().getDataById(obj.workAssignId,"workAssign")[0];
                 return {
                     "day":day,
                     "startTimeUnitNum":data.tableStartTime.getDiff(obj.start,"timeunit"),
                     "timeIndex":obj.timeIndex,
                     "workIndex":obj.workIndex,
                     "interval":obj.interval,
-                    "name":obj.workName,
-                    "backgroundColor":obj.backgroundColor,
-                    "fontColor":obj.fontColor
+                    "name":workAssign.getDatapieceRelated("workListId","workList").getValue("nameShort"),
+                    "backgroundColor":workAssign.getDatapieceRelated("workListId","workList").getBackgroundColor(),
+                    "fontColor":workAssign.getDatapieceRelated("workListId","workList").getFontColor()
                 }
             }));
             setValue.workNum.push({"day":day,"num":data.workNum});
