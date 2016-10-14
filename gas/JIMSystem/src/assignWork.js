@@ -22,13 +22,21 @@ $(function(){
             form.find('[name="shiftTableUser_azusa"]').on("keyup focus",function(e){
                 _val.pageFun.assignWork.searchUserId("shiftTableUser");
             });
-            form.find('[name="start_day"]').attr({"min":_val.config.getWorkStartDay(),"max":_val.config.getWorkEndDay()});
-            form.find('[name="start_hour"]').on("change",function(e){
+            form.find('[name="start_day"],[name="end_day"]').attr({"min":_val.config.getWorkStartDay(),"max":_val.config.getWorkEndDay()});
+            form.find('[name="start_minute"],[name="end_minute"]').attr({"min":-LocalDate.getTimeUnitAsConverted("minute"),"step":LocalDate.getTimeUnitAsConverted("minute")})
+            form.find('[name="start_hour"],[name="start_minute"]').on("change",function(e){
                 LocalDate.increaseDigit(form.find('[name="start_day"]'),form.find('[name="start_hour"]'),form.find('[name="start_minute"]'));
             });
-            form.find('[name="start_minute"]').attr({"min":-LocalDate.getTimeUnitAsConverted("minute"),"step":LocalDate.getTimeUnitAsConverted("minute")}).on("change",function(e){
-                LocalDate.increaseDigit(form.find('[name="start_day"]'),form.find('[name="start_hour"]'),form.find('[name="start_minute"]'));
+            form.find('[name="end_hour"],[name="end_minute"]').on("change",function(e){
+                LocalDate.increaseDigit(form.find('[name="end_day"]'),form.find('[name="end_hour"]'),form.find('[name="end_minute"]'));
             });
+            form.find('[name="end_day"],[name="end_hour"],[name="end_minute"]').on("change",function(e){
+                //TODO 事故ってる
+                var end = new LocalDate({"day":+form.find('[name="end_day"]').val(),"hour":+form.find('[name="end_hour"]').val(),"minute":+form.find('[name="end_minute"]').val()});
+                var start = new LocalDate({"day":+form.find('[name="start_day"]').val(),"hour":+form.find('[name="start_hour"]').val(),"minute":+form.find('[name="start_minute"]').val()});
+                form.find('[name="interval"]').val(start.getDiff(end,"timeUnit")).trigger("change");
+            });
+
             form.find('[name="interval"]').siblings("span").eq(0).text(LocalDate.getTimeUnitAsConverted("minute"));
             form.find('[name="interval"]').on("change",function(e){
                 var minute = +$(e.currentTarget).val() * LocalDate.getTimeUnitAsConverted("minute");
@@ -36,6 +44,10 @@ $(function(){
                     minute < 60 ? "" : "" + (minute - minute%60)/60 + "時間",
                     minute === 0 ? "" : "" + minute%60 + "分"
                 ].join(""));
+                var end = (new LocalDate({"day":+form.find('[name="start_day"]').val(),"hour":+form.find('[name="start_hour"]').val(),"minute":+form.find('[name="start_minute"]').val()})).addTimeUnit(+form.find('[name="interval"]').val());
+                form.find('[name="end_day"]').val(end.getDays());
+                form.find('[name="end_hour"]').val(end.getHours());
+                form.find('[name="end_minute"]').val(end.getMinutes());
             });
             form.find('[name="interval"]').trigger("change");
         },onunload:function(){
@@ -137,9 +149,15 @@ $(function(){
                     if(key === "disabled"){
                         el.prop("checked",workAssign.getValue(key));
                     }else if(key === "start"){
-                        form.find('[name="start_day"]').val(workAssign.getValue(key).getDays());
-                        form.find('[name="start_hour"]').val(workAssign.getValue(key).getHours());
-                        form.find('[name="start_minute"]').val(workAssign.getValue(key).getMinutes());
+                        var start = workAssign.getValue("start");
+                        var end = start;//workAssign.getValue("end");
+                        //TODO startがintervalだけ進んだ時間になっている
+                        form.find('[name="start_day"]').val(start.getDays());
+                        form.find('[name="start_hour"]').val(start.getHours());
+                        form.find('[name="start_minute"]').val(start.getMinutes());
+                        form.find('[name="end_day"]').val(end.getDays());
+                        form.find('[name="end_hour"]').val(end.getHours());
+                        form.find('[name="end_minute"]').val(end.getMinutes());
                     }else{
                         el.val(workAssign.getValue(key));
                     }

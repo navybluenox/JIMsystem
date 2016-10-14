@@ -13,7 +13,10 @@ $(function(){
             form = $("#formEditWorkList_edit");
             detailTable = form.find('table.workList_detail_table');
             //set events
-            var dr = new DelayRun(function(){
+            $(window).on("resize.detailNumberTableWidthLimit",function(e){
+                dr_window.runLater(e);
+            })
+            var dr_window = new DelayRun(function(e){
                 var sectionNum = +detailTable.find('[name="detail_sectionNum"]').val();
                 var numberArray;
                 detailNumberTableWidthLimit = $(window).width() * 0.4;
@@ -23,9 +26,6 @@ $(function(){
                     }
                 }
             });
-            $(window).on("resize.detailNumberTableWidthLimit",function(e){
-                dr.runLater();
-            })
             detailTable.on("click",'[name^="detail_addAllNumber"]',function(e){
                 var trigger = $(e.currentTarget);
                 var target = detailTable.find('[name^=detail_number_' + trigger.attr("name").replace(/^detail_addAllNumber_/,"") + ']');
@@ -42,6 +42,9 @@ $(function(){
                 _val.pageFun.editWorkList.changeButtonColor(trigger,trigger.val());
             });
             detailTable.on("change",'[name^="detail_interval"]',function(e){
+                dr_interval.runLater(e);
+            });
+            var dr_interval = new DelayRun(function(e){
                 var trigger = $(e.currentTarget);
                 var detailIndex = +trigger.attr("name").replace(/^detail_interval_/,"");
                 var numberArray = that.getDetailNumber(detailIndex);
@@ -53,11 +56,18 @@ $(function(){
                     numberArray.length = +trigger.val();
                 }
                 that.makeDetailNumberTable(detailIndex,numberArray);
-            });            
+            });
             detailTable.on("change",'[name^="detail_start"]',function(e){
+                dr_start.runLater(e);
+            });
+            var dr_start = new DelayRun(function(e){
                 var trigger = $(e.currentTarget);
                 var detailIndex = +trigger.attr("name").replace(/^detail_start_(?:day|hour|minute)_/,"");
                 var numberArray = that.getDetailNumber(detailIndex);
+                var hour = detailTable.find('[name="detail_start_hour_' + detailIndex + '"]');
+                var day = detailTable.find('[name="detail_start_day_' + detailIndex + '"]');
+                var minute = detailTable.find('[name="detail_start_minute_' + detailIndex + '"]');
+                LocalDate.increaseDigit(day,hour,minute);
                 that.makeDetailNumberTable(detailIndex,numberArray);
             });
             detailTable.on("click",'[name^="detail_remove"]',function(e){
@@ -66,21 +76,6 @@ $(function(){
                 var target = trigger.closest("tr");
                 target.css({"display":"none"});
                 trigger.val("done");
-            });
-            detailTable.on("change",'[name^="detail_start_hour"]',function(e){
-                var trigger = $(e.currentTarget);
-                var detailIndex = +trigger.attr("name").replace(/^detail_start_hour_/,"");
-                var day = detailTable.find('[name="detail_start_day_' + detailIndex + '"]');
-                var minute = detailTable.find('[name="detail_start_minute_' + detailIndex + '"]');
-                LocalDate.increaseDigit(day,trigger,minute);
-            });
-            detailTable.on("change",'[name^="detail_start_minute"]',function(e){
-                var trigger = $(e.currentTarget);
-                var unit = LocalDate.getTimeUnitAsConverted("minute");
-                var detailIndex = +trigger.attr("name").replace(/^detail_start_minute_/,"");
-                var hour = detailTable.find('[name="detail_start_hour_' + detailIndex + '"]');
-                var day = detailTable.find('[name="detail_start_day_' + detailIndex + '"]');
-                LocalDate.increaseDigit(day,hour,trigger);
             });
         },onunload:function(){
             $(window).off("resize.detailNumberTableWidthLimit");
@@ -258,7 +253,8 @@ $(function(){
 
             var td1s = tr1.children();
             var td2s = tr2.children();
-            var span = detailTable.find('[name="detail_interval_' + detailIndex + '"]').siblings("span");
+            var spanInterval = detailTable.find('[name="detail_interval_' + detailIndex + '"]').siblings("span");
+            var spanEnd = detailTable.find('[name="detail_start_day_' + detailIndex + '"]').siblings("span");
             var timeUnitsPerHour = 60/LocalDate.getTimeUnitAsConverted("minute");
             var endTime = startTime.copy().addTimeUnit(unitNum);
 
@@ -267,10 +263,11 @@ $(function(){
             if(endTime.getMinutes() !== 0){
                 td1s.last().attr("colspan",timeUnitsPerHour*endTime.getMinutes()/60);
             }
-            span.text([
+            spanInterval.text([
                 unitNum < timeUnitsPerHour ? "" : "" + (unitNum - unitNum%timeUnitsPerHour)/timeUnitsPerHour + "時間",
                 unitNum%timeUnitsPerHour === 0 ? "" : "" + ((unitNum%timeUnitsPerHour) * LocalDate.getTimeUnitAsConverted("minute")) + "分"
             ].join(""));
+            spanEnd.text("終了時間：" + endTime.getDifferentialHours(startTime) + "時" + endTime.getMinutes() + "分");
 
             targetTable.closest("td").css({"width":detailNumberTableWidthLimit + "px"});
             targetTable.css({"border":"1px #000000 solid","border-collapse":"collapse"});
@@ -290,10 +287,13 @@ $(function(){
             var tr = $("<tr><td>" + [
                 '<input type="button" name="detail_remove_' + detailNum + '" value="remove">',
                 '<input type="button" name="detail_addAllNumber_' + detailNum + '" value="all">',[
-                    '<input type="number" name="detail_start_day_' + detailNum + '" value="' + detailObj.start.getDays() + '" max="' + _val.config.getWorkEndDay() + '" min="' + _val.config.getWorkStartDay() + '">日目',
-                    '<input type="number" name="detail_start_hour_' + detailNum + '" value="' + detailObj.start.getHours() + '" max="24" min="-1">時',
-                    '<input type="number" name="detail_start_minute_' + detailNum + '" value="' + detailObj.start.getMinutes() + '" max="60" min="-' + LocalDate.getTimeUnitAsConverted("minute") + '" step="' + LocalDate.getTimeUnitAsConverted("minute") +'">分'
-                ].join(""),[
+                    [
+                        '<input type="number" name="detail_start_day_' + detailNum + '" value="' + detailObj.start.getDays() + '" max="' + _val.config.getWorkEndDay() + '" min="' + _val.config.getWorkStartDay() + '">日目',
+                        '<input type="number" name="detail_start_hour_' + detailNum + '" value="' + detailObj.start.getHours() + '" max="24" min="-1">時',
+                        '<input type="number" name="detail_start_minute_' + detailNum + '" value="' + detailObj.start.getMinutes() + '" max="60" min="-' + LocalDate.getTimeUnitAsConverted("minute") + '" step="' + LocalDate.getTimeUnitAsConverted("minute") +'">分'
+                    ].join(""),
+                    '<span></span>'
+                ].join("\n"),[
                     '<input type="number" name="detail_interval_' + detailNum + '" value="' + detailObj.number.length + '" min="0">×' + LocalDate.getTimeUnitAsConverted("minute") + '分間',
                     '<span></span>'
                 ].join("\n"),
@@ -307,7 +307,7 @@ $(function(){
             tr.find("table").closest("td").css({"display":"inline-block","overflow":"auto"});
             tr.find('[type="button"]').css({"min-width":"initial"});
             tr.find('[name^="detail_addAllNumber"]').css({"padding":"0 1em"});
-            tr.find('[name^="detail_start"]').css({"width":"3em"}).closest("td").css({"white-space":"nowrap"});
+            tr.find('[name^="detail_start"]').css({"width":"3em"}).closest("td").css({"white-space":"pre"});
             tr.find('[name^="detail_number"]').css({"width":"3em"});
             tr.find('[name^="detail_interval"]').css({"width":"3em"}).closest("td").css({"white-space":"pre"});
 

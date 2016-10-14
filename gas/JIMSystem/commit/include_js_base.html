@@ -298,7 +298,42 @@ var LocalDate = (function(){
         getMinutes(){return this.getTimeObj().minute};
         getSeconds(){return this.getTimeObj().second};
         getMillseconds(){return this.getTimeObj().millsecond};
-        getDifferentialHours(standard){return this.getHours() + (this.getDays() - standard)*24}
+        getDifferentialHours(standard){
+            if(standard instanceof LocalDate)  standard = standard.getDays();
+            return this.getHours() + (this.getDays() - standard)*24
+        }
+        getAsTimeUnits(){return (this.getTime() - this.getTime()%LocalDate.getTimeUnit())/LocalDate.getTimeUnit()}
+        getAsDate(){
+            return new Date(LocalDate.getStandardTime().getTime() + this._localTime);
+        }
+        getDiff(localdate,type){
+            var diff = localdate.getTime() - this.getTime();
+            var unit;
+            switch(type){
+                case "day":
+                    unit = 24*60*60*1000;
+                    break;
+                case "hour":
+                    unit = 60*60*1000;
+                    break;
+                case "minute":
+                    unit = 60*1000;
+                    break;
+                case "second":
+                    unit = 1000;
+                    break;
+                case "millsecond":
+                    unit = 1;
+                    break;
+                case "timeunit":
+                    unit = LocalDate.getTimeUnit();
+                    break;
+                default:
+                    unit = 1;
+                    break;
+            }
+            return (diff - diff%unit)/unit;
+        }
         addTime(time){this._localTime += time; return this;}
         addDays(days){this.addTime(days * 24*60*60*1000); return this;};
         addHours(hours){this.addTime(hours * 60*60*1000); return this;};
@@ -306,9 +341,6 @@ var LocalDate = (function(){
         addSeconds(seconds){this.addTime(seconds * 1000); return this;};
         addMillseconds(millseconds){this.addTime(millseconds); return this;};
         addTimeUnit(timeUnits){this.addTime(timeUnits * LocalDate.getTimeUnit()); return this;};
-        getAsDate(){
-            return new Date(LocalDate.getStandardTime().getTime() + this._localTime);
-        }
         toJSON(){
             return "local_" + this.getTime();
         }
@@ -376,16 +408,16 @@ class DelayRun{
         this._fun = callback;
         this._timeout = (timeout === undefined ? 50 : timeout);
     }
-    runNow(){
-        this._fun();
+    runNow(argu){
+        this._fun(argu);
     }
-    runLater(){
+    runLater(argu){
         var that = this;
         if(this._to === undefined || this._to === null){
             clearTimeout(this._to);
         }
         this._to = setTimeout(function(){
-            that.runNow();
+            that.runNow(argu);
         },this._timeout);
     }
 }
