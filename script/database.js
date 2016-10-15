@@ -380,7 +380,6 @@ var Datapiece = (function(){
             if(reverse === undefined) reverse = [];
             var colInfo = server.getCollectionInfoByName(dataName);
             return datapieces.slice().sort(function(a,b){
-                //TODO
                 var ret;
                 colName.find(function(c,index){
                     var type = colInfo.getValue("column." + c);
@@ -582,6 +581,7 @@ class User extends Datapiece{
             }
             return ret;
         }).filter(function(workAssign){return workAssign.getValue("interval") !== 0});
+
         var lists = [];
         var ret = {"userId":this.getValue("_id"),"workNum":0,"tableStartTime":start.copy(),"tableInterval":start.getDiff(end,"timeunit"),"content":[]};
         workAssigns.forEach(function(workAssign){
@@ -650,7 +650,6 @@ class User extends Datapiece{
         for(var i=0; i<data.workNum; i++){
             rowContents[i] = data.content.filter(function(obj){return obj.workIndex === i});
         }
-        var trs = $(repeatString("<tr></tr>",data.workNum));
         var _tdMatrix = [];
         rowContents.forEach(function(_rowContent,rowIndex){
             var rowContent = _rowContent.slice();
@@ -684,24 +683,97 @@ class User extends Datapiece{
                 if(cell.workAssignId === "_blank"){
                     td.css({
                         "background":"#FFFFFF",
-                        "color":"#000000"
-                    })
+                        "color":"#000000",
+                        "border":"1px solid #000000",
+                        "border-style": (trans ? "dashed solid" : "solid dashed")
+                    });
+
+                    if(cell.start.getMinutes() === 0){
+                        td.css((trans ? {"border-top-style":"solid"} : {"border-left-style":"solid"}));
+                    }
+                    td.data({"start":cell.start.getTime()});
                 }else{
                     var workAssign = Datapiece.getServer().getDataById(cell.workAssignId,"workAssign");
                     var workList = workAssign.getDatapieceRelated("workListId","workList");
                     td.text(workList.getValue("nameShort")).css({
                         "background":workList.getBackgroundColor(),
-                        "color":workList.getFontColor()
-                    })
+                        "color":workList.getFontColor(),
+                        "border":"1px solid #000000"
+                    });
+                    td.attr(trans ? "rowspan" :"colspan",cell.interval).addClass("hasWork");
+                    td.data({"workassignid":cell.workAssign,"start":cell.start.getTime()});
                 }
 
                 return td;
             });
-            //TODO
-            console.log("rowContent",rowContent.map(function(obj){return {time:obj.start.toString(),workAssignId:obj.workAssignId}}));
         });
 
-        
+        var timeScales = [];
+        (function(){
+            //make header
+            var t;
+            for(var i=0,l=data.tableInterval; i<l; i++){
+                t = data.tableStartTime.copy().addTimeUnit(i);
+                if(i === 0 || t.getMinutes() === 0){
+                    timeScales.push(t);
+                }
+            }
+            var tableEnd = data.tableStartTime.copy().addTimeUnit(data.tableInterval);
+            timeScales = timeScales.map(function(time,index){
+                var span;
+                if(time.getMinutes() !== 0){
+                    span = data.tableStartTime.getDiff(time,"timeunit");
+                }else if(time.getDiff(tableEnd,"minute") < 60){
+                    span = time.getDiff(tableEnd,"timeunit");
+                }else{
+                    span = 60 / LocalDate.getTimeUnitAsConverted("minute");
+                }
+                var td = $("<td></td>");
+                td.text("" + time.getHours() + "時").css({
+                    "color":"#000000",
+                    "border":"1px solid #000000",
+                    "background":(index%2===0 ? "#7FFFD4" : "#66CDAA"),
+                    "text-align":"left"
+                }).attr(trans ? "rowspan" :"colspan",span).addClass("timeScale");
+                return td;
+            });
+        })();
+        _tdMatrix = timeScales.concat(_tdMatrix);
+
+        var tdMatrix;
+        if(trans){
+            //transpose
+            tdMatrix = [];
+            _tdMatrix.forEach(function(tds){
+                tds.forEach(function(td,tdIndex){
+                    if(tdMatrix[tdIndex] === undefined){
+                        tdMatrix[tdIndex] = [];
+                    }
+                    tdMatrix[tdIndex].push(td);
+                });
+            })
+        }else{
+            tdMatrix = _tdMatrix.slice();
+        }
+        var trs = $(repeatString("<tr></tr>",tdMatrix.length));
+        tdMatrix.forEach(function(tds,rowIndex){
+            var tr = trs.eq(rowIndex);
+            tds.forEach(function(td,cellIndex){
+                tr.append(td);
+                if(typeof callback === "function"){
+                    callback({"td":td,"rowIndex":rowIndex,"cellIndex":cellIndex});
+                }
+            })
+        })
+        var result;
+        if(mode === "table"){
+            result = $("<table><tbody></tbody></table>");
+            result.find("tbody").append(trs);
+        }else if(mode === "tr"){
+            result = trs;
+        }
+
+        return result;
     }
     getShiftTableUser(){
         var setValue = {"userId":this.getValue("_id"),"content":[],"workNum":[]};
