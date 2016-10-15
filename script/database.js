@@ -678,7 +678,7 @@ class User extends Datapiece{
             rowContent = rowContent.reduce(function(prev,curt){
                 return prev.concat(Array.isArray(curt) ? curt : [curt]);
             });
-            _tdMatrix[rowIndex] = rowcontent.map(function(cell,cellIndex){
+            _tdMatrix[rowIndex] = rowContent.map(function(cell,cellIndex){
                 var td = $("<td></td>");
                 if(cell.workAssignId === "_blank"){
                     td.css({
@@ -693,7 +693,7 @@ class User extends Datapiece{
                     }
                     td.data({"start":cell.start.getTime()});
                 }else{
-                    var workAssign = Datapiece.getServer().getDataById(cell.workAssignId,"workAssign");
+                    var workAssign = Datapiece.getServer().getDataById(cell.workAssignId,"workAssign")[0];
                     var workList = workAssign.getDatapieceRelated("workListId","workList");
                     td.text(workList.getValue("nameShort")).css({
                         "background":workList.getBackgroundColor(),
@@ -703,7 +703,7 @@ class User extends Datapiece{
                     td.attr(trans ? "rowspan" :"colspan",cell.interval).addClass("hasWork");
                     td.data({"workassignid":cell.workAssign,"start":cell.start.getTime()});
                 }
-
+                //td.css({"border-collapse":"collapse"});
                 return td;
             });
         });
@@ -733,12 +733,13 @@ class User extends Datapiece{
                     "color":"#000000",
                     "border":"1px solid #000000",
                     "background":(index%2===0 ? "#7FFFD4" : "#66CDAA"),
-                    "text-align":"left"
+                    "text-align":"left",
+                    "border-collapse":"collapse"
                 }).attr(trans ? "rowspan" :"colspan",span).addClass("timeScale");
                 return td;
             });
         })();
-        _tdMatrix = timeScales.concat(_tdMatrix);
+        _tdMatrix = [timeScales].concat(_tdMatrix);
 
         var tdMatrix;
         if(trans){
@@ -768,6 +769,7 @@ class User extends Datapiece{
         var result;
         if(mode === "table"){
             result = $("<table><tbody></tbody></table>");
+            result.css({"border-collapse":"collapse","border":"1px solid #000000"});
             result.find("tbody").append(trs);
         }else if(mode === "tr"){
             result = trs;
