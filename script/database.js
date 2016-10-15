@@ -640,10 +640,11 @@ class User extends Datapiece{
         });
         return ret;
     }
-    getShiftTableAsElement(mode,start,end){
+    getShiftTableAsElement(start,end,mode,trans,callback){
         //tr table
         //tableは時間のヘッダーも作る
         //TODO 縦（i.e. 転置行列）も作る
+        if(trans === undefined)  trans = false;
         var data = this.getShiftTableAsData(start,end);
         var rowContents = [];
         for(var i=0; i<data.workNum; i++){
@@ -654,7 +655,7 @@ class User extends Datapiece{
         rowContents.forEach(function(_rowContent,rowIndex){
             var rowContent = _rowContent.slice();
             var insert;
-            _tdMatrix = []
+            _tdMatrix[rowIndex] = []
             if(_rowContent.length === 0){
                 insert = [];
                 for(var j=0,l=start.getDiff(end, "timeunit"); j<l; j++){
@@ -677,6 +678,24 @@ class User extends Datapiece{
             }
             rowContent = rowContent.reduce(function(prev,curt){
                 return prev.concat(Array.isArray(curt) ? curt : [curt]);
+            });
+            _tdMatrix[rowIndex] = rowcontent.map(function(cell,cellIndex){
+                var td = $("<td></td>");
+                if(cell.workAssignId === "_blank"){
+                    td.css({
+                        "background":"#FFFFFF",
+                        "color":"#000000"
+                    })
+                }else{
+                    var workAssign = Datapiece.getServer().getDataById(cell.workAssignId,"workAssign");
+                    var workList = workAssign.getDatapieceRelated("workListId","workList");
+                    td.text(workList.getValue("nameShort")).css({
+                        "background":workList.getBackgroundColor(),
+                        "color":workList.getFontColor()
+                    })
+                }
+
+                return td;
             });
             //TODO
             console.log("rowContent",rowContent.map(function(obj){return {time:obj.start.toString(),workAssignId:obj.workAssignId}}));
