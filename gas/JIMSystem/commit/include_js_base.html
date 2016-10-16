@@ -367,9 +367,10 @@ var LocalDate = (function(){
             ["hideSecond","hideMillsecond"].forEach(function(v){
                 if(option[v] === undefined)  option[v] = true;
             });
+            if(option.userDiffHours === undefined)  option.userDiffHours = false;
             return [
                 option.hideDay ? "" : this.getDays() + "日目",
-                option.hideHour ? "" : this.getHours() + "時",
+                option.hideHour ? "" : (option.userDiffHours === false ? this.getHours() : this.getDifferentialHours(option.userDiffHours)) + "時",
                 option.hideMinute ? "" : this.getMinutes() + "分",
                 option.hideSecond ? "" : this.getSeconds() + "秒",
                 option.hideMillsecond ? "" : this.getMillseconds() + "ミリ秒"                

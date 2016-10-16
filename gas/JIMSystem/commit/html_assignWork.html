@@ -41,10 +41,12 @@
                     </tbody></table></td>
                 </tr><tr>
                     <td>従事者の人割</td>
-                    <td><table><thead></thead><tbody></tbody></table><input type="hidden" name="shiftTableUser"></td>
+                    <td style="padding:0;"><div></div><input type="hidden" name="shiftTableUser"></td>
                     <td><table><tbody>
                         <tr><td>配送名：</td><td><input type="text" name="shiftTableUser_azusa" tabindex="2"></td></tr>
-                        <tr><td></td><td><select name="shiftTableUser_searchResult" tabindex="2" onchange='_val.pageFun.assignWork.setUserId("shiftTableUser");'></select></td></tr>
+                        <tr><td></td><td><select name="shiftTableUser_searchResult" tabindex="2" onchange='_val.pageFun.assignWork.setUserId("shiftTableUser");_val.pageFun.assignWork.showShiftTableUser();'></select></td></tr>
+                        <tr><td>表示する日：</td><td><select name="shiftTableUser_day" onchange='_val.pageFun.assignWork.showShiftTableUser()'></select></td></tr>
+                        <tr><td>フォームの人割を表示：</td><td><input type="button" name="shiftTableUser_showFormWA" value="Yes" onclick='var el=$(this);if(el.val()==="Yes"){el.val("No");}else{el.val("Yes");} _val.pageFun.assignWork.showShiftTableUser()'></td></tr>
                     </tbody></table></td>
                 </tr><tr>
                     <td>情報</td>

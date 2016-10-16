@@ -560,12 +560,27 @@ class User extends Datapiece{
     getFontColor(){
         return UserGroup.getColorByUserId(this.getValues("_id"),"font");
     }
-    getShiftTableAsData(start,end){
+    getShiftTableAsData(start,end,extraWorkAssign){
         //{"userId":"","workNum":"","content":[{"workAssignId":"","workListId":"","workName":"","workIndex":"","timeIndex":"","interval":"","start":"","end":"","backgroundColor":"","fontColor":""}]}
+        if(extraWorkAssign === undefined)  extraWorkAssign = [];
+        if(!Array.isArray(extraWorkAssign))  extraWorkAssign = [extraWorkAssign];
+
         var that = this;
         if(start === undefined)  start = new LocalDate({"day":Datapiece.getConfig().getWorkStartDay()});
         if(end === undefined)  end = new LocalDate({"day":Datapiece.getConfig().getWorkEndDay()+1});
-        var workAssigns = Datapiece.getServer().getData("workAssign").filter(function(workAssign){
+
+        var workAssigns = Datapiece.getServer().getData("workAssign");
+        var extraIds = extraWorkAssign.map(function(workAssign){
+            if(workAssign.getValue("_id") === undefined){
+                workAssign.setValue("_id","_extra");
+            }
+            return workAssign.getValue("_id")
+        });
+        workAssigns = workAssigns.filter(function(workAssign){
+            return !inArray(extraIds,workAssign.getValue("_id"));
+        }).concat(extraWorkAssign);
+
+        workAssigns = workAssigns.filter(function(workAssign){
             return (
                 workAssign.getValue("userId") === that.getValue("_id") &&
                 workAssign.getValue("end").getTime() > start.getTime() &&
@@ -641,12 +656,17 @@ class User extends Datapiece{
         });
         return ret;
     }
-    getShiftTableAsElement(start,end,mode,trans,callback){
+    getShiftTableAsElement(start,end,option){
+        //option = {"mode":["tr","table"],"trans":[true,false],"callback":function,"extraWorkAssign":[WorkAssign]}
         //tr table
         //tableは時間のヘッダーも作る
         //TODO 縦（i.e. 転置行列）も作る
-        if(trans === undefined)  trans = false;
-        var data = this.getShiftTableAsData(start,end);
+        if(option === undefined)  option = {};
+        if(option.mode === undefined)  option.mode = "table";
+        if(option.trans === undefined)  option.trans = false;
+        if(option.extraWorkAssign === undefined)  option.extraWorkAssign = [];
+
+        var data = this.getShiftTableAsData(start,end,option.extraWorkAssign);
         var rowContents = [];
         for(var i=0; i<data.workNum; i++){
             rowContents[i] = data.content.filter(function(obj){return obj.workIndex === i});
@@ -686,22 +706,25 @@ class User extends Datapiece{
                         "background":"#FFFFFF",
                         "color":"#000000",
                         "border":"1px solid #000000",
-                        "border-style": (trans ? "dashed solid" : "solid dashed")
+                        "border-style": (option.trans ? "dashed solid" : "solid dashed")
                     });
 
                     if(cell.start.getMinutes() === 0){
-                        td.css((trans ? {"border-top-style":"solid"} : {"border-left-style":"solid"}));
+                        td.css((option.trans ? {"border-top-style":"solid"} : {"border-left-style":"solid"}));
                     }
                     td.data({"start":cell.start.getTime()});
                 }else{
                     var workAssign = Datapiece.getServer().getDataById(cell.workAssignId,"workAssign")[0];
+                    if(workAssign === undefined){
+                        workAssign = option.extraWorkAssign.find(function(workAssign){return workAssign.getValue("_id") === cell.workAssignId});
+                    }
                     var workList = workAssign.getDatapieceRelated("workListId","workList");
                     td.text(workList.getValue("nameShort")).css({
                         "background":workList.getBackgroundColor(),
                         "color":workList.getFontColor(),
                         "border":"1px solid #000000"
                     });
-                    td.attr(trans ? "rowspan" :"colspan",cell.interval).addClass("hasWork");
+                    td.attr(option.trans ? "rowspan" :"colspan",cell.interval).addClass("hasWork");
                     td.data({"workassignid":cell.workAssign,"start":cell.start.getTime()});
                 }
                 //td.css({"border-collapse":"collapse"});
@@ -734,45 +757,50 @@ class User extends Datapiece{
                     "color":"#000000",
                     "border":"1px solid #000000",
                     "background":(index%2===0 ? "#7FFFD4" : "#66CDAA"),
-                    "text-align":"left",
+                    "text-align":(option.trans ? "" : "left"),
                     "border-collapse":"collapse"
-                }).attr(trans ? "rowspan" :"colspan",span).addClass("timeScale");
+                }).attr(option.trans ? "rowspan" :"colspan",span).addClass("timeScale");
                 return td;
             });
         })();
         _tdMatrix = [timeScales].concat(_tdMatrix);
 
         var tdMatrix;
-        if(trans){
-            //transpose
+        if(option.trans){
+            //option.transpose
             tdMatrix = [];
             _tdMatrix.forEach(function(tds){
+                var skip = 0;
                 tds.forEach(function(td,tdIndex){
-                    if(tdMatrix[tdIndex] === undefined){
-                        tdMatrix[tdIndex] = [];
+                    if(tdMatrix[tdIndex+skip] === undefined){
+                        tdMatrix[tdIndex+skip] = [];
                     }
-                    tdMatrix[tdIndex].push(td);
+                    tdMatrix[tdIndex+skip].push(td);
+                    if(td.attr("rowspan") !== undefined && td.attr("rowspan") > 1){
+                        skip += +td.attr("rowspan") - 1;
+                    }
                 });
             })
         }else{
             tdMatrix = _tdMatrix.slice();
         }
+
         var trs = $(repeatString("<tr></tr>",tdMatrix.length));
         tdMatrix.forEach(function(tds,rowIndex){
             var tr = trs.eq(rowIndex);
             tds.forEach(function(td,cellIndex){
                 tr.append(td);
-                if(typeof callback === "function"){
-                    callback({"td":td,"rowIndex":rowIndex,"cellIndex":cellIndex});
+                if(typeof option.callback === "function"){
+                    option.callback({"td":td,"rowIndex":rowIndex,"cellIndex":cellIndex});
                 }
             })
         })
         var result;
-        if(mode === "table"){
+        if(option.mode === "table"){
             result = $("<table><tbody></tbody></table>");
             result.css({"border-collapse":"collapse","border":"1px solid #000000"});
             result.find("tbody").append(trs);
-        }else if(mode === "tr"){
+        }else if(option.mode === "tr"){
             result = trs;
         }
 
