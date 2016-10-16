@@ -45,6 +45,7 @@ $(function(){
             form.find('[name="start_day"],[name="end_day"]').attr({"min":_val.config.getWorkStartDay(),"max":_val.config.getWorkEndDay()});
             form.find('[name="start_minute"],[name="end_minute"]').attr({"min":-LocalDate.getTimeUnitAsConverted("minute"),"step":LocalDate.getTimeUnitAsConverted("minute")})
             form.find('[name="start_day"],[name="start_hour"],[name="start_minute"],[name="end_day"],[name="end_hour"],[name="end_minute"]').on("change",function(e){
+                //TODO バグってる
                 var kind = $(e.currentTarget).attr("name").replace(/^(start|end)_(?:day|hour|minute)$/,"$1");
                 LocalDate.increaseDigit(form.find('[name="' + kind + '_day"]'),form.find('[name="' + kind + '_hour"]'),form.find('[name="' + kind + '_minute"]'));
                 var start = new LocalDate({"day":+form.find('[name="start_day"]').val(),"hour":+form.find('[name="start_hour"]').val(),"minute":+form.find('[name="start_minute"]').val()});
