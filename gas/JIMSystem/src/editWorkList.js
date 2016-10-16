@@ -1,14 +1,15 @@
 $(function(){
-    var workListEditing;
+    var pageFun;
     var form;
     var formNameList = [{"name":"name"},{"name":"nameShort"},{"name":"leaderId"},{"name":"leaderIncharge"},{"name":"description"},{"name":"condition"},{"name":"caption"},{"name":"note"},{"name":"asAssined"}];
+    var editing;
     var detailTable;
     var detailNumberTableWidthLimit;
     _val.pageFun.editWorkList = {
         onload:function(){
-            var that =  _val.pageFun.editWorkList;
             _val.server.loadData("user");
             _val.server.loadData("workList");
+            pageFun = _val.pageFun.editWorkList;
             form = $("#formEditWorkList_edit");
             detailTable = form.find('table.workList_detail_table');
             //set events
@@ -21,7 +22,7 @@ $(function(){
                 detailNumberTableWidthLimit = $(window).width() * 0.4;
                 for(var i=0,l=sectionNum;i<l;i++){
                     if(detailTable.find('[name="detail_remove_' + i + '"]').val() !== "done"){
-                        that.makeDetailNumberTable(i,that.getDetailNumber(i));
+                        pageFun.makeDetailNumberTable(i,pageFun.getDetailNumber(i));
                     }
                 }
             });
@@ -38,7 +39,7 @@ $(function(){
                 }else if(sign === "down" && trigger.val() > 1){
                     trigger.val(+trigger.val() - 1);
                 }
-                _val.pageFun.editWorkList.changeButtonColor(trigger,trigger.val());
+                pageFun.changeButtonColor(trigger,trigger.val());
             });
             detailTable.on("change",'[name^="detail_interval"]',function(e){
                 dr_interval.runLater(e);
@@ -46,7 +47,7 @@ $(function(){
             var dr_interval = new DelayRun(function(e){
                 var trigger = $(e.currentTarget);
                 var detailIndex = +trigger.attr("name").replace(/^detail_interval_/,"");
-                var numberArray = that.getDetailNumber(detailIndex);
+                var numberArray = pageFun.getDetailNumber(detailIndex);
                 if(+trigger.val() > numberArray.length){
                     while(numberArray.length !== +trigger.val()){
                         numberArray.push(1);
@@ -54,7 +55,7 @@ $(function(){
                 }else if(+trigger.val() < numberArray.length){
                     numberArray.length = +trigger.val();
                 }
-                that.makeDetailNumberTable(detailIndex,numberArray);
+                pageFun.makeDetailNumberTable(detailIndex,numberArray);
             });
             detailTable.on("change",'[name^="detail_start"]',function(e){
                 dr_start.runLater(e);
@@ -62,12 +63,12 @@ $(function(){
             var dr_start = new DelayRun(function(e){
                 var trigger = $(e.currentTarget);
                 var detailIndex = +trigger.attr("name").replace(/^detail_start_(?:day|hour|minute)_/,"");
-                var numberArray = that.getDetailNumber(detailIndex);
+                var numberArray = pageFun.getDetailNumber(detailIndex);
                 var hour = detailTable.find('[name="detail_start_hour_' + detailIndex + '"]');
                 var day = detailTable.find('[name="detail_start_day_' + detailIndex + '"]');
                 var minute = detailTable.find('[name="detail_start_minute_' + detailIndex + '"]');
                 LocalDate.increaseDigit(day,hour,minute);
-                that.makeDetailNumberTable(detailIndex,numberArray);
+                pageFun.makeDetailNumberTable(detailIndex,numberArray);
             });
             detailTable.on("click",'[name^="detail_remove"]',function(e){
                 var trigger = $(e.currentTarget);
@@ -86,26 +87,26 @@ $(function(){
                     var el = form.find('[name="' + obj.name + '"]');
                     var key = obj.key === undefined ? obj.name : obj.key;
                     if(obj.key === "asAssined"){
-                        setValue[key] = el.prop("checked");
+                        setValue[key] = (el.val() === "Yes");
                     }else{
                         setValue[key] = el.val();
                     }
-                })
+                });
                 setValue["@detail"] = [];
                 var skip = detailTable.find('[name="detail_remove"]').filter('[val="done"]').map(function(i,el){return +$(el).attr("name").replace(/^detail_remove_/,"")}).get();
                 for(var i=0,l=+detailTable.find('[name="detail_sectionNum"]').val();i<l;i++){
                     if(!inArray(skip,i)){
-                        setValue["@detail"][i] = {"start":_val.pageFun.editWorkList.getDetailStart(i),"number":_val.pageFun.editWorkList.getDetailNumber(i)};
+                        setValue["@detail"][i] = {"start":pageFun.getDetailStart(i),"number":pageFun.getDetailNumber(i)};
                     }
                 }
                 setValue["@detail"] = setValue["@detail"].filter(function(v){return v !== undefined});
 
                 if(kind === "change"){
-                    if(workListEditing === undefined){
+                    if(editing === undefined){
                         alert("値を変更する人割が指定されていません\n下の「検索」から変更したい人割を選択し、フォームへ入力してください");
                         return;
                     }
-                    setValue._id = workListEditing.getValue("_id");
+                    setValue._id = editing.getValue("_id");
                 }
                 workList = (new WorkList()).setValues(setValue);
                 if(kind === "add"){
@@ -118,7 +119,7 @@ $(function(){
                 _val.server.removeData(workList);
             }
             _val.server.sendUpdateQueue().then(function(){
-                _val.pageFun.editWorkList.searchWorkList();
+                pageFun.searchWorkList();
             });
         },searchWorkList:function(sortFun){
             var result = $("#formEditWorkList_search_result");
@@ -159,12 +160,17 @@ $(function(){
             var fun_fillForm = function(workList){
                 formNameList.forEach(function(obj){
                     var el = form.find('[name="' + obj.name + '"]');
-                    el.val(workList.getValue(obj.key === undefined ? obj.name : obj.key));
-                })
+                    var key = obj.key === undefined ? obj.name : obj.key;
+                    if(obj.key === "asAssined"){
+                        el.val(workList.getValue(key) ? "Yes" : "No");
+                    }else{
+                        el.val(workList.getValue(key));
+                    }
+                });
                 detailTable.find("tbody > tr").not(":last-child").remove();
                 detailTable.find('[name="detail_sectionNum"]').val(0);
                 workList.getValue("@detail").forEach(function(detailObj){
-                    _val.pageFun.editWorkList.addSection(detailObj);
+                    pageFun.addSection(detailObj);
                 })
                 form.find('[name="searchId"]').val(workList.getDatapieceRelated("leaderId","user").getValue("azusaSendName"));
             }
@@ -173,8 +179,8 @@ $(function(){
                 var workList = cellObj.rowData;
                 if(cellObj.column === "edit"){
                     var buttons = $('<input type="button" value="フォームに入力"><input type="button" value="削除">').appendTo(cellObj.el);
-                    buttons.eq(0).on("click",function(e){fun_fillForm(workList);workListEditing = workList;});
-                    buttons.eq(1).on("click",function(e){_val.pageFun.editWorkList.updateWorkList("remove",workList.getValue("_id"));});
+                    buttons.eq(0).on("click",function(e){fun_fillForm(workList);editing = workList;});
+                    buttons.eq(1).on("click",function(e){pageFun.updateWorkList("remove",workList.getValue("_id"));});
                 }else{
                     var str;
                     switch(cellObj.column){
@@ -203,7 +209,7 @@ $(function(){
             }else{
                 target.val(users.map(function(user){return user.getValue("_id") + "(" + user.getValue("azusaSendName") + ")"}).join(","));
             }
-            _val.pageFun.editWorkList.searchInchrageByUserId();
+            pageFun.searchInchrageByUserId();
         },searchInchrageByUserId:function(){
             var target = form.find('[name="searchIncharge"]');
             var value = form.find('[name="leaderId"]').val();
@@ -222,7 +228,7 @@ $(function(){
             var targetTable = detailTable.find('[name="detail_interval_' + detailIndex + '"]').closest("tr").find("table");
             var tr1 = targetTable.find("tbody > tr").eq(0);
             var tr2 = targetTable.find("tbody > tr").eq(1);
-            var startTime = _val.pageFun.editWorkList.getDetailStart(detailIndex);
+            var startTime = pageFun.getDetailStart(detailIndex);
             var unitNum = numberArray.length;
 
             tr1.children().remove();
@@ -243,7 +249,7 @@ $(function(){
                     }else{
                         td1.remove();
                     }
-                    _val.pageFun.editWorkList.changeButtonColor(
+                    pageFun.changeButtonColor(
                         $('<input type="button" name="detail_number_' + detailIndex + '_' + numIndex + '" value="'+ num +'">').appendTo(td2),
                         num
                     );
@@ -310,7 +316,7 @@ $(function(){
             tr.find('[name^="detail_number"]').css({"width":"3em"});
             tr.find('[name^="detail_interval"]').css({"width":"3em"}).closest("td").css({"white-space":"pre"});
 
-            _val.pageFun.editWorkList.makeDetailNumberTable(detailNum,detailObj.number);
+            pageFun.makeDetailNumberTable(detailNum,detailObj.number);
             detailTable.find('[name="detail_sectionNum"]').val(+detailTable.find('[name="detail_sectionNum"]').val() + 1);
 
         },getDetailStart:function(detailIndex){

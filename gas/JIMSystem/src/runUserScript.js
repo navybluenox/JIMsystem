@@ -1,10 +1,12 @@
 $(function(){
+    var pageFun;
     _val.pageFun.runUserScript = {
         onload:function(){
+            pageFun = _val.pageFun.runUserScript;
             var textarea = $("#formRunUserScript textarea");
             textarea.on("keydown",function(e){
                 if(e.ctrlKey && e.keyCode === 13){
-                    _val.pageFun.runUserScript.runScript();
+                    pageFun.runScript();
                 }
                 if(e.ctrlKey && e.shiftKey && e.keyCode === 83){
                     localStorage.setItem("userScript",textarea.val());

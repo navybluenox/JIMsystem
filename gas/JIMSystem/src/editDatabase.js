@@ -1,6 +1,8 @@
 $(function(){
+    var pageFun;
     _val.pageFun.editDatabase = {
         onload:function(){
+            pageFun = _val.pageFun.editDatabase;
             _val.server.getData("collectionInfo")
             .filter(function(collObj){
                 return !inArray(["shiftTableUser","shiftTableWork","workAssign","workNotAssigned","systemConfig","collectionInfo"],collObj.getValue("name"));
@@ -312,7 +314,7 @@ $(function(){
 
             server.sendUpdateQueue()
             .then(function(){
-                _val.pageFun.editDatabase.showTable();
+                pageFun.showTable();
             });
         }
     };

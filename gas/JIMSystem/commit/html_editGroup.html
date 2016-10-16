@@ -1,23 +1,33 @@
 <article>
-    <h1>>グループ編集</h1>
+    <h1>グループ編集</h1>
     <section>
         <h2>編集</h2>
-        <div style="margin:3em;">グループ選択<select id="editGroup_kind" onchange='_val.pageFun.editGroup.setMemberList();_val.pageFun.editGroup.searchGroup();_val.pageFun.editGroup.clearEditing()'>
+        <div style="margin:3em;">グループ選択<select id="editGroup_kind" onchange='_val.pageFun.editGroup.onSelectKindChanged();'>
             <option value=""></option>
             <option value="workGroup">workGroup</option>
             <option value="userGroup">userGroup</option>
         </select></div>
         <form id="formEditGroup">
             <table class="tableform"><tbody>
-                <tr><td>グループ名</td><td><input type="text" name="name"></td><td></td></tr>
+                <tr><td colspan="3" style="text-align:center;">基本情報</td></tr>
+                <tr><td>グループ名</td><td><input type="text" name="name" tabindex="2"></td><td></td></tr>
                 <tr><td>メンバー</td><td><table><tbody>
-                    <tr><td><select name="member_list" multiple></select></td><td><select name="member_selected" multiple></select></td></tr>
+                    <tr><td><select name="member_list" multiple tabindex="2"></select></td><td><select name="member_selected" multiple tabindex="2"></select></td></tr>
                     <tr><td>リスト</td><td>選択済み</td></tr>
-                    <tr><td><input type="button" name="member_add" value="→追加" onclick='_val.pageFun.editGroup.moveMember("add")'></td><td><input type="button" name="member_remove" value="←削除" onclick='_val.pageFun.editGroup.moveMember("remove")'></td></tr>
+                    <tr><td><input type="button" name="member_add" value="→追加" tabindex="2" onclick='_val.pageFun.editGroup.moveMember("add")'></td><td><input type="button" name="member_remove" value="←削除" tabindex="2" onclick='_val.pageFun.editGroup.moveMember("remove")'></td></tr>
                 </tbody></table><input type="hidden" name="member"></td><td></td></tr>
-                <tr><td>カラーグループ</td><td><input type="checkbox" name="isColorGroup"></td><td></td></tr>
-                <tr><td>背景色</td><td><input type="text" name="backgroundColor" oninput='_val.pageFun.editGroup.setColorSample()'></td><td>カラーサンプル</td></tr>
-                <tr><td>フォント色</td><td><input type="text" name="fontColor" oninput='_val.pageFun.editGroup.setColorSample()'></td><td>#FFFFFF形式で入力してください</td></tr>
+                <tr class="userGroupOnly"><td colspan="3" style="text-align:center;">MemberOrderGroup</td></tr>
+                <tr class="userGroupOnly"><td>人割内序列の指定用のグループか</td><td><input type="button" name="isMemberOrderGroup" value="No" tabindex="2" onclick='var el=$(this);if(el.val()==="Yes"){el.val("No");}else{el.val("Yes");_val.pageFun.editGroup.setNamePrefix("mo_");}'></td><td></td></tr>
+                <tr class="userGroupOnly"><td>序列を指定する人割のID</td><td><input type="text" name="memberOrderWorkListId"></td><td><table><tbody>
+                        <tr><td>統括の配送名：</td><td><input type="text" name="memberOrderWorkListId_azusa" tabindex="2"></td></tr>
+                        <tr><td>人割名：</td><td><input type="text" name="memberOrderWorkListId_name" tabindex="2"></td></tr>
+                        <tr><td></td><td><select name="memberOrderWorkListId_searchResult" tabindex="2" onchange='_val.pageFun.editGroup.setWorkListId("memberOrderWorkListId")'></select></td></tr>
+                    </tbody></table></td></tr>
+                <tr class="userGroupOnly"><td>人割内の序列</td><td><input type="number" name="memberOrderNumber" value="1" tabindex="2" min="0"></td><td></td></tr>
+                <tr><td colspan="3" style="text-align:center;">ColorGroup</td></tr>
+                <tr><td>色を指定するグループか</td><td><input type="button" name="isColorGroup" value="No" tabindex="2" onclick='var el=$(this);if(el.val()==="Yes"){el.val("No");}else{el.val("Yes");_val.pageFun.editGroup.setNamePrefix("c_");}'></td><td></td></tr>
+                <tr><td>背景色</td><td><input type="text" name="backgroundColor" tabindex="2" oninput='_val.pageFun.editGroup.setColorSample()'></td><td>カラーサンプル</td></tr>
+                <tr><td>フォント色</td><td><input type="text" name="fontColor" tabindex="2" oninput='_val.pageFun.editGroup.setColorSample()'></td><td>#FFFFFF形式で入力してください</td></tr>
                 <tr><td colspan="3" style="text-align:center;">色編集</td></tr>
                 <tr><td>カラーコード</td><td><input type="text" name="color_code"></td><td><input type="hidden" name="color_sample"></td></tr>
                 <tr><td>RGB</td><td><table><tbody>
@@ -41,8 +51,13 @@
                 <tr><td>グループ名</td><td><input type="text" name="groupName" tabindex="2" onkeydown="if(event.keyCode === 13){_val.pageFun.editGroup.searchGroup();return false;}"></td></tr>
                 <tr><td>カラーグループであるか</td><td><select name="isColorGroup" tabindex="2" onchange="if(event.keyCode === 13){_val.pageFun.editGroup.searchGroup();return false;}">
                     <option value=""></option>
-                    <option value="y">Yes</option>
-                    <option value="n">No</option>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                </select></td></tr>
+                <tr><td>メンバーオーダーグループであるか</td><td><select name="isMemberOrderGroup" tabindex="2" onchange="if(event.keyCode === 13){_val.pageFun.editGroup.searchGroup();return false;}">
+                    <option value=""></option>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
                 </select></td></tr>
             </tbody></table>
             <input type="button" name="run" value="検索" tabindex="2" onclick="_val.pageFun.editGroup.searchGroup();">

@@ -15,6 +15,9 @@ $(function(){
                     '<div>検索ワード<input type="text" name="keyword"></div>',
                     '<div><input type="button" name="search" value="検索"></div>',
                     '<div><input type="button" name="cancel" value="終了"></div>',
+                    '<div>※表のリンクにカーソルを合わせると、データを表示できます。</div>',
+                    '<div>※表のリンクをクリックすると、表示するデータを固定できます。</div>',
+                    '<div>※データのリンクをクリックすると、内容がクリップボードにコピーされます。</div>',
                 '</div>',
                 '<div name="resultField" style="max-width:30%;"></div>',
                 '<div name="dataField" style="width:50%;"></div>'
@@ -123,21 +126,22 @@ $(function(){
                         }
                     }).map(function(v){return v.getValues(v)});
                     el.find('[name="resultField"]').children().remove();
-                    createTable(el.find('[name="resultField"]'),data,["_id",column],function(cellObj){
+                    var _table = createTable(el.find('[name="resultField"]'),data,["_id",column],function(cellObj){
                         if(cellObj.column === "_id"){
-                            $('<a herf="#">' + cellObj.value + "</a>").appendTo(cellObj.$el).on("mouseover",function(e){
-                                showData(cellObj.value);
-                            }).on("click",function(e){
-                                showData(cellObj.value);
-                            })
+                            cellObj.$el.append('<a herf="#_id">' + cellObj.value + "</a>");
                         }else if(cellObj.column === column){
                             cellObj.$el.text(cellObj.value);
-                        }else if(cellObj.column === "button"){
-                            $('<input type="button" value="show→">').appendTo(cellObj.$el).on("click",function(e){
-                                showData(cellObj.value);
-                            })
                         }
+                    }).el;
+                    _table.on("mouseover.openSearchWindow_idList",'a[herf="#_id"]',function(e){
+                        var a = $(e.currentTarget);
+                        showData(a.text());
+                    }).on("click",'a[herf="#_id"]',function(e){
+                        var a = $(e.currentTarget);
+                        showData(a.text());
+                        _table.off("mouseover.openSearchWindow_idList",'a[herf="#_id"]');
                     });
+
                     function showData(_id){
                         var parent = el.find('[name="dataField"]');
                         parent.children().remove();

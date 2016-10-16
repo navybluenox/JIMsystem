@@ -1,5 +1,6 @@
 <script>
 $(function(){
+    var pageFun;
     var editing;
     var form;
     var formNameList = [{"name":"workListId"},{"name":"userId"},{"name":"start"},{"name":"interval"},{"name":"notice"},{"name":"note"},{"name":"disabled"}];
@@ -11,17 +12,19 @@ $(function(){
             _val.server.loadData("userGroup");
             _val.server.loadData("workGroup");
             form = $("#formAssignWork_edit");
+            pageFun = _val.pageFun.assignWork;
+
             form.find('[name="workListId_azusa"],[name="workListId_name"]').on("keyup focus",function(e){
-                _val.pageFun.assignWork.searchWorkListId("workListId");
+                pageFun.searchWorkListId("workListId");
             });
             form.find('[name="userId_azusa"]').on("keyup focus",function(e){
-                _val.pageFun.assignWork.searchUserId("userId");
+                pageFun.searchUserId("userId");
             });
             form.find('[name="shiftTableWork_azusa"],[name="shiftTableWork_name"]').on("keyup focus",function(e){
-                _val.pageFun.assignWork.searchWorkListId("shiftTableWork");
+                pageFun.searchWorkListId("shiftTableWork");
             });
             form.find('[name="shiftTableUser_azusa"]').on("keyup focus",function(e){
-                _val.pageFun.assignWork.searchUserId("shiftTableUser");
+                pageFun.searchUserId("shiftTableUser");
             });
             (function(){
                 var startDay = LocalDate.getWorkStartDay();
@@ -37,12 +40,13 @@ $(function(){
                 }
             })();
             form.find('[name="shiftTableUser_day"]').on("change",function(e){
-                _val.pageFun.assignWork.showShiftTableUser();
+                pageFun.showShiftTableUser();
             });
             form.find('[name="start_day"],[name="end_day"]').attr({"min":_val.config.getWorkStartDay(),"max":_val.config.getWorkEndDay()});
             form.find('[name="start_minute"],[name="end_minute"]').attr({"min":-LocalDate.getTimeUnitAsConverted("minute"),"step":LocalDate.getTimeUnitAsConverted("minute")})
-            form.find('[name="start_day"],[name="start_hour"],[name="start_minute"]').on("change",function(e){
-                LocalDate.increaseDigit(form.find('[name="start_day"]'),form.find('[name="start_hour"]'),form.find('[name="start_minute"]'));
+            form.find('[name="start_day"],[name="start_hour"],[name="start_minute"],[name="end_day"],[name="end_hour"],[name="end_minute"]').on("change",function(e){
+                var kind = $(e.currentTarget).attr("name").replace(/^(start|end)_(?:day|hour|minute)$/,"$1");
+                LocalDate.increaseDigit(form.find('[name="' + kind + '_day"]'),form.find('[name="' + kind + '_hour"]'),form.find('[name="' + kind + '_minute"]'));
                 var start = new LocalDate({"day":+form.find('[name="start_day"]').val(),"hour":+form.find('[name="start_hour"]').val(),"minute":+form.find('[name="start_minute"]').val()});
                 var end = new LocalDate({"day":+form.find('[name="end_day"]').val(),"hour":+form.find('[name="end_hour"]').val(),"minute":+form.find('[name="end_minute"]').val()});
                 if(start.getTime() >= end.getTime()){
@@ -50,18 +54,7 @@ $(function(){
                 }else{
                     form.find('[name="interval"]').val(start.getDiff(end,"timeunit"));
                 }
-                form.find('[name="interval"]').trigger("change");
-            });
-            form.find('[name="end_day"],[name="end_hour"],[name="end_minute"]').on("change",function(e){
-                LocalDate.increaseDigit(form.find('[name="end_day"]'),form.find('[name="end_hour"]'),form.find('[name="end_minute"]'));
-                var start = new LocalDate({"day":+form.find('[name="start_day"]').val(),"hour":+form.find('[name="start_hour"]').val(),"minute":+form.find('[name="start_minute"]').val()});
-                var end = new LocalDate({"day":+form.find('[name="end_day"]').val(),"hour":+form.find('[name="end_hour"]').val(),"minute":+form.find('[name="end_minute"]').val()});
-                if(start.getTime() >= end.getTime()){
-                    form.find('[name="interval"]').val(1);
-                }else{
-                    form.find('[name="interval"]').val(start.getDiff(end,"timeunit"));
-                }
-                form.find('[name="interval"]').trigger("change");
+                form.find('[name="shiftTableUser_day"]').val(start.getDays());
             });
 
             form.find('[name="interval"]').siblings("span").eq(0).text(LocalDate.getTimeUnitAsConverted("minute"));
@@ -76,13 +69,42 @@ $(function(){
                 form.find('[name="end_hour"]').val(end.getHours());
                 form.find('[name="end_minute"]').val(end.getMinutes());
             });
+            form.find('[name="memberOrder_useWorkGroup"]').on("click",function(e){
+                var button = $(e.currentTarget);
+                var target = $('[name="memberOrder"]');
+
+                if(button.val()==="Yes"){
+                    button.val("No");
+                    target.attr("tabindex","2").prop("disable",false);
+                }else{
+                    button.val("Yes");
+                    target.attr("tabindex","-1").prop("disable",true);
+                    var workListId = form.find('[name="workListId"]');
+                    var userId = form.find('[name="userId"]');
+                    var userGroup = _val.server.getData("userGroup").find(function(userGroup){
+                        return (
+                            userGroup.getValue("memberOrderWorkListId") === workListId &&
+                            inArray(userGroup.getValue("member"),userId)
+                        );
+                    });
+                    target.val(userGroup === undefined ? 0 : userGroup.getValue("memberOrderNumber"));
+                }
+            });
+
+            form.on("change",'input[type="button"],input[type="text"],input[type="checkbox"],select',function(e){
+                //TODO
+                pageFun.getFormData();
+                form.find(".extra").focus();
+            });
+
+
             form.find('[name="interval"]').trigger("change");
         },onunload:function(){
         },updateWorkAssign:function(kind,_id){
             var workAssign;
             var setValue = {};
             if(kind === "add" || kind === "change"){
-                workAssign = _val.pageFun.assignWork.getFormData();
+                workAssign = pageFun.getFormData();
                 if(kind === "change"){
                     if(editing === undefined){
                         alert("値を変更する人割が指定されていません\n下の「検索」から変更したい人割を選択し、フォームへ入力してください");
@@ -100,7 +122,7 @@ $(function(){
                 _val.server.removeData(workAssign);
             }
             _val.server.sendUpdateQueue().then(function(){
-                _val.pageFun.assignWork.searchWorkAssign();
+                pageFun.searchWorkAssign();
             });
         },searchWorkAssign:function(sortFun){
             var result = $("#formAssignWork_search_result");
@@ -163,7 +185,7 @@ $(function(){
                     var el = form.find('[name="' + obj.name + '"]');
                     var key = obj.key === undefined ? obj.name : obj.key;
                     if(key === "disabled"){
-                        el.prop("checked",workAssign.getValue(key));
+                        el.val(workAssign.getValue(key) ? "Yes" : "No");
                     }else if(key === "start"){
                         var start = workAssign.getValue("start");
                         form.find('[name="start_day"]').val(start.getDays());
@@ -183,7 +205,7 @@ $(function(){
                 if(cellObj.column === "edit"){
                     var buttons = $('<input type="button" value="フォームに入力"><input type="button" value="削除">').appendTo(cellObj.el);
                     buttons.eq(0).on("click",function(e){fun_fillForm(workAssign);editing = workAssign;});
-                    buttons.eq(1).on("click",function(e){_val.pageFun.assignWork.updateWorkAssign("remove",workAssign.getValue("_id"));});
+                    buttons.eq(1).on("click",function(e){pageFun.updateWorkAssign("remove",workAssign.getValue("_id"));});
                 }else{
                     var str;
                     switch(cellObj.column){
@@ -235,7 +257,7 @@ $(function(){
                     '</optgroup>'
                 ].join("")
             }));
-            _val.pageFun.assignWork.setWorkListId(namePrefix);
+            pageFun.setWorkListId(namePrefix);
         },setWorkListId:function(namePrefix){
             var id = form.find('[name="' + namePrefix + '_searchResult"]').val();
             var target = form.find('[name="' + namePrefix + '"]');
@@ -254,7 +276,7 @@ $(function(){
             result.append(users.map(function(user){
                 return '<option value="' + user.getValue("_id") +  '">' + user.getValue("nameLast") + " " + user.getValue("nameFirst") + '</option>';
             }).join(""));
-            _val.pageFun.assignWork.setUserId(namePrefix);
+            pageFun.setUserId(namePrefix);
         },setUserId:function(namePrefix){
             var id = form.find('[name="' + namePrefix + '_searchResult"]').val();
             var target = form.find('[name="' + namePrefix + '"]');
@@ -266,7 +288,7 @@ $(function(){
             var day = +form.find('[name="shiftTableUser_day"]').val();
             var start = LocalDate.getWorkTime(day,"start");
             var end = LocalDate.getWorkTime(day,"end");
-            var extra = _val.pageFun.assignWork.getFormData();
+            var extra = pageFun.getFormData();
             if(editing !== undefined){
                 extra.setValue("_id",editing.getValue("_id"));
             }
@@ -281,7 +303,7 @@ $(function(){
                 var el = form.find('[name="' + obj.name + '"]');
                 var key = obj.key === undefined ? obj.name : obj.key;
                 if(key === "disabled"){
-                    setValue[key] = el.prop("checked");
+                    setValue[key] = (el.val() === "Yes");
                 }else if(key === "start"){
                     setValue[key] = new LocalDate({"day":form.find('[name="start_day"]').val(),"hour":form.find('[name="start_hour"]').val(),"minute":form.find('[name="start_minute"]').val()});
                 }else{

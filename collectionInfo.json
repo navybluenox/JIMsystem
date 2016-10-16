@@ -113,7 +113,10 @@
             "member":["string"],
             "isColorGroup":"boolean",
             "backgroundColor":"string",
-            "fontColor":"string"
+            "fontColor":"string",
+            "isMemberOrderGroup":"boolean",
+            "memberOrderWorkListId":"string",
+            "memberOrderNumber":"number"
         },"columnName":{
             "_id":"データID",
             "created":"作成日時",
@@ -122,7 +125,10 @@
             "member":["グループメンバーのUserID"],
             "isColorGroup":"カラー指定用のグループか",
             "backgroundColor":"背景色",
-            "fontColor":"フォント色"
+            "fontColor":"フォント色",
+            "isMemberOrderGroup":"人割内序列の指定用のグループか",
+            "memberOrderWorkListId":"序列を指定する人割のWorkListID",
+            "memberOrderNumber":"人割内の序列"
         }},
         {"_id":"TfKSdngFPNKGmdym","created":"2016-07-18T08:00:00.000Z","updated":"2016-07-18T08:00:00.000Z","name":"workAssign","fileId":"0B88bKUOZP4-AVE9PcGYtbm00SDA","column":{
             "_id":"string",
@@ -134,6 +140,7 @@
             "interval":"number",
             "notice":"string",
             "note":"string",
+            "memberOrder":"number",
             "disabled":"boolean"
         },"columnName":{
             "_id":"データID",
@@ -145,6 +152,7 @@
             "interval":"従事時間",
             "notice":"個別の注意事項",
             "note":"メモ書き",
+            "memberOrder":"人割内の序列",
             "disabled":"無効にするか"
         }},
         {"_id":"6beicmYizLdWEcDS","created":"2016-07-18T08:00:00.000Z","updated":"2016-07-18T08:00:00.000Z","name":"workGroup","fileId":"0B88bKUOZP4-ARFFxdGRCeEJlQnc","column":{

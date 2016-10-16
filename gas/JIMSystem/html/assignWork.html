@@ -45,8 +45,8 @@
                     <td><table><tbody>
                         <tr><td>配送名：</td><td><input type="text" name="shiftTableUser_azusa" tabindex="2"></td></tr>
                         <tr><td></td><td><select name="shiftTableUser_searchResult" tabindex="2" onchange='_val.pageFun.assignWork.setUserId("shiftTableUser");_val.pageFun.assignWork.showShiftTableUser();'></select></td></tr>
-                        <tr><td>表示する日：</td><td><select name="shiftTableUser_day" onchange='_val.pageFun.assignWork.showShiftTableUser()'></select></td></tr>
-                        <tr><td>フォームの人割を表示：</td><td><input type="button" name="shiftTableUser_showFormWA" value="Yes" onclick='var el=$(this);if(el.val()==="Yes"){el.val("No");}else{el.val("Yes");} _val.pageFun.assignWork.showShiftTableUser()'></td></tr>
+                        <tr><td>表示する日：</td><td><select name="shiftTableUser_day" tabindex="2" onchange='_val.pageFun.assignWork.showShiftTableUser()'></select></td></tr>
+                        <tr><td>フォームの人割を表示：</td><td><input type="button" name="shiftTableUser_showFormWA" value="Yes" tabindex="2" onclick='var el=$(this);if(el.val()==="Yes"){el.val("No");}else{el.val("Yes");} _val.pageFun.assignWork.showShiftTableUser()'></td></tr>
                     </tbody></table></td>
                 </tr><tr>
                     <td>情報</td>
@@ -60,9 +60,16 @@
                     <td><textarea name="note" tabindex="2"></textarea></td>
                     <td></td>
                 </tr><tr>
+                    <td>人割内の序列</td>
+                    <td><input type="number" name="memberOrder" value="0" tabindex="2" min="0"></td>
+                    <td style="white-space:pre-line;">WorkGroupで指定された値（memberOrder）を優先する：<input type="button" name="memberOrder_useWorkGroup" value="Yes" tabindex="2">
+                        人割を表示する際に、同一人割内で上位として表示したい場合に使用される優先度。
+                        ※ 0:優先しない、1以上:小さいほど優先度が高い</td>
+                </tr><tr>
                     <td>無効にする</td>
-                    <td><input type="checkbox" name="disabled" tabindex="2" onkeydown='if(event.keyCode===13){$(this).prop("checked",!$(this).prop("checked"));return false;}'></td>
-                    <td>この人割を一時的に無効にする。※システムの動作が鈍くなるため、不要な人割は消すこと！</td>
+                    <td><input type="button" name="disabled" value="No" tabindex="2" onclick='var el=$(this);if(el.val()==="Yes"){el.val("No");}else{el.val("Yes");}'></td>
+                    <td style="white-space:pre-line;">この人割を一時的に無効にする。
+                        ※ システムの動作が鈍くなるため、不要な人割は消すこと！</td>
                 </tr>
             </tbody></table>
             <input type="button" name="run_add" value="新規作成" tabindex="2" onclick='_val.pageFun.assignWork.updateWorkAssign("add")'><input type="button" name="run_change" value="変更を保存" tabindex="2" onclick='_val.pageFun.assignWork.updateWorkAssign("change")'>

@@ -18,7 +18,7 @@
                 <tr><td>人割条件</td><td><textarea name="condition" tabindex="2"></textarea></td><td>人割の氏名や人数などの担当の要求</td></tr>
                 <tr><td>業務説明文</td><td><textarea name="caption" tabindex="2"></textarea></td><td>JIMシステムなどで一般委員向けに表示する説明文</td></tr>
                 <tr><td>メモ書き</td><td><textarea name="note" tabindex="2"></textarea></td><td></td></tr>
-                <tr><td>割り振り済み扱いにする</td><td><input type="checkbox" name="asAssined" tabindex="2" onkeydown='if(event.keyCode===13){$(this).prop("checked",!$(this).prop("checked"));return false;}'></td><td>未割り振り人割から除外</td></tr>
+                <tr><td>割り振り済み扱いにする</td><td><input type="button" name="asAssined" value="No" tabindex="2" onclick='var el=$(this);if(el.val()==="Yes"){el.val("No");}else{el.val("Yes");}'></td><td>未割り振り人割から除外</td></tr>
             </tbody></table>
             <input type="button" name="run_add" value="新規作成" tabindex="2" onclick='_val.pageFun.editWorkList.updateWorkList("add")'><input type="button" name="run_change" value="変更を保存" tabindex="2" onclick='_val.pageFun.editWorkList.updateWorkList("change")'>
         </form>

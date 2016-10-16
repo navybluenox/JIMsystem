@@ -278,8 +278,9 @@ var Datapiece = (function(){
         }
         setNewId(overwrite){
             if(overwrite === undefined) overwrite = false;
-            if(!overwrite && this.getValue("_id") !== undefined) return this;
-            this.setValues({"_id":Datapiece.getNewId(this.getDataName())});
+            if(overwrite || this.getValue("_id") === undefined){
+                this.setValues({"_id":Datapiece.getNewId(this.getDataName())});
+            }
             return this;
         }
         setDefaultValue(){
@@ -322,7 +323,6 @@ var Datapiece = (function(){
             this.setValues(fun(data,colObj),{overwrite:true});
             return this;
         }
-        //消すかも
         getValues(newCopy){
             if(newCopy === undefined)  newCopy = false;
             return newCopy ? JSON.parse(JSON.stringify(this._data)) : this._data;
@@ -344,7 +344,7 @@ var Datapiece = (function(){
             return this._collInfo;
         }
         getDatapieceRelated(colName,dataName){
-            var ret =  server.getDataById(this.getValue(colName),dataName)[0];
+            var ret = server.getDataById(this.getValue(colName),dataName)[0];
             if(ret === undefined)  ret = new (Datapiece.getClassByName(dataName))();
             return ret;
         }
@@ -575,7 +575,7 @@ class User extends Datapiece{
                 workAssign.setValue("_id","_extra");
             }
             return workAssign.getValue("_id")
-        });
+        }).filter(function(v,i,s){return s.indexOf(v) === i});
         workAssigns = workAssigns.filter(function(workAssign){
             return !inArray(extraIds,workAssign.getValue("_id"));
         }).concat(extraWorkAssign);
@@ -583,8 +583,9 @@ class User extends Datapiece{
         workAssigns = workAssigns.filter(function(workAssign){
             return (
                 workAssign.getValue("userId") === that.getValue("_id") &&
+                !workAssign.getValue("disabled") &&
                 workAssign.getValue("end").getTime() > start.getTime() &&
-                workAssign.getValue("start").getTime() < end.getTime()                
+                workAssign.getValue("start").getTime() < end.getTime()
             );
         }).map(function(workAssign){
             var ret = workAssign.copy();
@@ -618,14 +619,10 @@ class User extends Datapiece{
             });
             ret.content.push({
                 "workAssignId":workAssign.getValue("_id"),
-                //"workListId":workAssign.getValue("workListId"),
-                //"workName":workAssign.getDatapieceRelated("workListId","workList").getValue("nameShort"),
                 "workIndex":workIndex,
                 "interval":workAssign.getValue("interval"),
                 "start":workAssign.getValue("start").copy(),
-                //"end":workAssign.getValue("end").copy(),
-                //"backgroundColor":workAssign.getDatapieceRelated("workListId","workList").getBackgroundColor(),
-                //"fontColor":workAssign.getDatapieceRelated("workListId","workList").getFontColor()
+                "extra":(inArray(extraIds,workAssign.getValue("_id")) ? true : false)
             });
             function getVacant(list){
                 if(list == undefined)  return undefined;
@@ -725,9 +722,11 @@ class User extends Datapiece{
                         "border":"1px solid #000000"
                     });
                     td.attr(option.trans ? "rowspan" :"colspan",cell.interval).addClass("hasWork");
-                    td.data({"workassignid":cell.workAssign,"start":cell.start.getTime()});
+                    td.data({"workassignid":cell.workAssign,"start":cell.start.getTime(),"extra":cell.extra});
+                    if(cell.extra){
+                        td.css("border","3px solid red").addClass("extra");
+                    }
                 }
-                //td.css({"border-collapse":"collapse"});
                 return td;
             });
         });
