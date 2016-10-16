@@ -44,13 +44,16 @@ $(function(){
             form.find('[name="start_day"],[name="end_day"]').attr({"min":_val.config.getWorkStartDay(),"max":_val.config.getWorkEndDay()});
             form.find('[name="start_minute"],[name="end_minute"]').attr({"min":-LocalDate.getTimeUnitAsConverted("minute"),"step":LocalDate.getTimeUnitAsConverted("minute")})
             form.find('[name="start_day"],[name="start_hour"],[name="start_minute"],[name="end_day"],[name="end_hour"],[name="end_minute"]').on("change",function(e){
-                //TODO バグってる
                 var kind = $(e.currentTarget).attr("name").replace(/^(start|end)_(?:day|hour|minute)$/,"$1");
                 LocalDate.increaseDigit(form.find('[name="' + kind + '_day"]'),form.find('[name="' + kind + '_hour"]'),form.find('[name="' + kind + '_minute"]'));
                 var start = new LocalDate({"day":+form.find('[name="start_day"]').val(),"hour":+form.find('[name="start_hour"]').val(),"minute":+form.find('[name="start_minute"]').val()});
                 var end = new LocalDate({"day":+form.find('[name="end_day"]').val(),"hour":+form.find('[name="end_hour"]').val(),"minute":+form.find('[name="end_minute"]').val()});
                 if(start.getTime() >= end.getTime()){
                     form.find('[name="interval"]').val(1);
+                    end = start.copy().addTimeUnit(+form.find('[name="interval"]').val());
+                    form.find('[name="end_day"]').val(end.getDays());
+                    form.find('[name="end_hour"]').val(end.getHours());
+                    form.find('[name="end_minute"]').val(end.getMinutes());
                 }else{
                     form.find('[name="interval"]').val(start.getDiff(end,"timeunit"));
                 }
@@ -75,10 +78,10 @@ $(function(){
 
                 if(button.val()==="Yes"){
                     button.val("No");
-                    target.attr("tabindex","2").prop("disable",false);
+                    target.attr("tabindex","2").prop("disabled",false).css("background","");
                 }else{
                     button.val("Yes");
-                    target.attr("tabindex","-1").prop("disable",true);
+                    target.attr("tabindex","-1").prop("disabled",true).css("background","#E0E0E0");
                     var workListId = form.find('[name="workListId"]');
                     var userId = form.find('[name="userId"]');
                     var userGroup = _val.server.getData("userGroup").find(function(userGroup){
