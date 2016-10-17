@@ -90,12 +90,25 @@ $(function(){
                 }
             });
 
-            form.on("change",'input[type="button"],input[type="text"],input[type="checkbox"],select',function(e){
-                //TODO
+            form.on("change",'input[type="button"],input[type="text"],input[type="checkbox"],input[type="number"],select',function(e){
                 pageFun.getFormData();
+                pageFun.showShiftTableUser();
                 form.find(".extra").focus();
             });
 
+            form.find('[name="shiftTableUser"]').siblings("div").on({"mouseenter":function(e){
+                var target = $(e.currentTarget);
+                target.css({"border-width":"3px"});
+                console.log("target",target);
+                console.log("data",target.data());
+            },"mouseleave":function(e){
+                var target = $(e.currentTarget);
+                if(target.hasClass("extra")){
+                    target.css({"border-width":"2px"});
+                }else{
+                    target.css({"border-width":"1px"});
+                }
+            }},"td.shiftTableContent");
 
             form.find('[name="interval"]').trigger("change");
             form.find('[name="memberOrder_useWorkGroup"]').trigger("click").trigger("click");
@@ -198,12 +211,11 @@ $(function(){
                         el.val(workAssign.getValue(key));
                     }
                 });
-                editing = workAssign.copy(true).addEventListener(editing.getEventListener());
+                editing = workAssign.copy().addEventListener(editing.getEventListener());
                 if(copy){
                     editing.setValue("_id","");
                 }
                 editing.triggerEvent("change");
-
                 form.find('[name="shiftTableUser_day"]').val(workAssign.getValue("start").getDays());
                 form.find('[name="workListId_name"],[name="shiftTableWork_name"]').val(workAssign.getDatapieceRelated("workListId","workList").getValue("name"));
                 form.find('[name="userId_azusa"],[name="shiftTableUser_azusa"]').val(workAssign.getDatapieceRelated("userId","user").getValue("azusaSendName"));
@@ -311,6 +323,8 @@ $(function(){
 
             target.children().remove();
             target.append(table);
+            var width = $(window).width()*0.5;
+            target.css({"max-width":width,"overflow":"auto"})
         },setMemberOrder:function(){
             var workListId = form.find('[name="workListId"]').val();
             var userId = form.find('[name="userId"]').val();

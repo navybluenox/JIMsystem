@@ -360,7 +360,7 @@ var Datapiece = (function(){
                     var type = event.split(".")[0];
                     var nameSpace = event.split(".").splice(1);
                     Array.prototype.push.apply(ret,that._event.filter(function(e){
-                        return e.type === type && nameSpace.every(function(s){return inArray(e.nameSpace,s)});
+                        return (type === e.type || type === "" || type === "*") && nameSpace.every(function(s){return inArray(e.nameSpace,s)});
                     }));
                 });
             }
@@ -380,14 +380,15 @@ var Datapiece = (function(){
                 if(events.nameSpace !== undefined){
                     nameSpace = events.nameSpace;
                     if(Array.isArray(nameSpace)){
-                        nameSpace = events.nameSpace.join(".");
+                        nameSpace = nameSpace.join(".");
                     }
-                    type = events.nameSpace.split(" ").map(function(nameSpace){
+                    type = nameSpace.split(" ").map(function(nameSpace){
                         return events.type + (nameSpace !== "" ? "." + nameSpace : "");
                     }).join(" ");
                 }
-                this.addEventListener(type,handler);
+                this.addEventListener(type,events.handler);
             }else{
+                if(events === undefined)  events = "";
                 events.split(" ").forEach(function(event){
                     var type = event.split(".")[0];
                     var nameSpace = event.split(".").splice(1);
@@ -406,12 +407,14 @@ var Datapiece = (function(){
                 var type = event.split(".")[0];
                 var nameSpace = event.split(".").splice(1);
                 that._event = that._event.filter(function(e){
-                    return !(e.type === type && nameSpace.every(function(s){return inArray(e.nameSpace,s)}));
+                    return !((type === e.type || type === "" || type === "*") && nameSpace.every(function(s){return inArray(e.nameSpace,s)}));
                 });
             });
             return this;
         }
         triggerEvent(events){
+            //setValue,setValuesで何回も呼ばれるため、省略
+            if(this._event.length === 0)  return this;
             var that = this;
             this.getEventListener(events).filter(function(e){
                 return e.handler !== undefined
@@ -425,7 +428,7 @@ var Datapiece = (function(){
             var ret = (new (Datapiece.getClassByName(this.getDataName()))()).setValues(this.getValues(true),{"overwrite":true});
             if(copyHandler){
                 this.getEventListener().forEach(function(e){
-                    ret.addEventListener(e.type + e.nameSpace.join("."), e.handler);
+                    ret.addEventListener(e.type + (e.nameSpace.length !== 0 ? "." + e.nameSpace.join(".") : ""), e.handler);
                 });
             }
             return ret;
@@ -735,8 +738,6 @@ class User extends Datapiece{
     getShiftTableAsElement(start,end,option){
         //option = {"mode":["tr","table"],"trans":[true,false],"callback":function,"extraWorkAssign":[WorkAssign]}
         //tr table
-        //tableは時間のヘッダーも作る
-        //TODO 縦（i.e. 転置行列）も作る
         if(option === undefined)  option = {};
         if(option.mode === undefined)  option.mode = "table";
         if(option.trans === undefined)  option.trans = false;
@@ -788,7 +789,7 @@ class User extends Datapiece{
                     if(cell.start.getMinutes() === 0){
                         td.css((option.trans ? {"border-top-style":"solid"} : {"border-left-style":"solid"}));
                     }
-                    td.data({"start":cell.start.getTime()});
+                    td.data({"start":cell.start.getTime(),"background":"#FFFFFF"});
                 }else{
                     var workAssign = Datapiece.getServer().getDataById(cell.workAssignId,"workAssign")[0];
                     if(workAssign === undefined){
@@ -798,14 +799,16 @@ class User extends Datapiece{
                     td.text(workList.getValue("nameShort")).css({
                         "background":workList.getBackgroundColor(),
                         "color":workList.getFontColor(),
-                        "border":"1px solid #000000"
+                        "border":"1px solid #000000",
+                        "text-align":"center"
                     });
                     td.attr(option.trans ? "rowspan" :"colspan",cell.interval).addClass("hasWork");
-                    td.data({"workassignid":cell.workAssign,"start":cell.start.getTime(),"extra":cell.extra});
+                    td.data({"workassignid":cell.workAssign.getValue("_id"),"start":cell.start.getTime(),"background":workList.getBackgroundColor(),"extra":cell.extra});
                     if(cell.extra){
-                        td.css("border","3px solid red").addClass("extra");
+                        td.css("border","2px solid red").addClass("extra");
                     }
                 }
+                td.css({"min-width":"1em"}).addClass("shiftTableContent");
                 return td;
             });
         });
@@ -835,8 +838,9 @@ class User extends Datapiece{
                     "color":"#000000",
                     "border":"1px solid #000000",
                     "background":(index%2===0 ? "#7FFFD4" : "#66CDAA"),
-                    "text-align":(option.trans ? "" : "left"),
-                    "border-collapse":"collapse"
+                    "text-align":(option.trans ? "" : "center"),
+                    "border-collapse":"collapse",
+                    "min-width":"4em"
                 }).attr(option.trans ? "rowspan" :"colspan",span).addClass("timeScale");
                 return td;
             });
