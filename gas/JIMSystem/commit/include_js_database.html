@@ -643,6 +643,12 @@ class User extends Datapiece{
     getFontColor(){
         return UserGroup.getColorByUserId(this.getValues("_id"),"font");
     }
+    getWorkAssigns(){
+        var that = this;
+        return Datapiece.getServer().getData("workAssign").filter(function(workAssign){
+            return workAssign.getValue("userId") === that.getValue("_id") && !workAssign.getValue("disabled");
+        });
+    }
     getShiftTableAsData(start,end,extraWorkAssign){
         //{"userId":"","workNum":"","content":[{"workAssignId":"","workListId":"","workName":"","workIndex":"","timeIndex":"","interval":"","start":"","end":"","backgroundColor":"","fontColor":""}]}
         if(extraWorkAssign === undefined)  extraWorkAssign = [];
@@ -652,7 +658,7 @@ class User extends Datapiece{
         if(start === undefined)  start = new LocalDate({"day":Datapiece.getConfig().getWorkStartDay()});
         if(end === undefined)  end = new LocalDate({"day":Datapiece.getConfig().getWorkEndDay()+1});
 
-        var workAssigns = Datapiece.getServer().getData("workAssign");
+        var workAssigns = this.getWorkAssigns();
         var extraIds = extraWorkAssign.map(function(workAssign){
             if(workAssign.getValue("_id") === undefined){
                 workAssign.setValue("_id","_extra");
@@ -778,8 +784,9 @@ class User extends Datapiece{
                 return prev.concat(Array.isArray(curt) ? curt : [curt]);
             });
             _tdMatrix[rowIndex] = rowContent.map(function(cell,cellIndex){
-                var td = $("<td></td>");
+                var td = $("<td><span></span></td>");
                 if(cell.workAssignId === "_blank"){
+                    td.children("span").text(" ");
                     td.css({
                         "background":"#FFFFFF",
                         "color":"#000000",
@@ -790,26 +797,27 @@ class User extends Datapiece{
                     if(cell.start.getMinutes() === 0){
                         td.css((option.trans ? {"border-top-style":"solid"} : {"border-left-style":"solid"}));
                     }
-                    td.data({"start":cell.start.getTime(),"background":"#FFFFFF"});
+                    td.data({"start":cell.start.getTime(),"interval":1,"workIndex":rowIndex});
                 }else{
                     var workAssign = Datapiece.getServer().getDataById(cell.workAssignId,"workAssign")[0];
                     if(workAssign === undefined){
                         workAssign = option.extraWorkAssign.find(function(workAssign){return workAssign.getValue("_id") === cell.workAssignId});
                     }
                     var workList = workAssign.getDatapieceRelated("workListId","workList");
-                    td.text(workList.getValue("nameShort")).css({
+                    td.children("span").text(workList.getValue("nameShort"));
+                    td.css({
                         "background":workList.getBackgroundColor(),
                         "color":workList.getFontColor(),
                         "border":"1px solid #000000",
                         "text-align":"center"
                     });
                     td.attr(option.trans ? "rowspan" :"colspan",cell.interval).addClass("hasWork");
-                    td.data({"workassignid":cell.workAssign.getValue("_id"),"start":cell.start.getTime(),"background":workList.getBackgroundColor(),"extra":cell.extra});
+                    td.data({"workassignid":cell.workAssignId,"start":cell.start.getTime(),"interval":cell.interval,"workIndex":rowIndex,"extra":cell.extra});
                     if(cell.extra){
                         td.css("border","2px solid red").addClass("extra");
                     }
                 }
-                td.css({"min-width":"1em"}).addClass("shiftTableContent");
+                td.css({"min-width":"1em"}).addClass("shiftTableContent").children("span").css({"padding":"1ex 0.5em","white-space":"pre","display":"block"});
                 return td;
             });
         });
@@ -826,13 +834,13 @@ class User extends Datapiece{
             }
             var tableEnd = data.tableStartTime.copy().addTimeUnit(data.tableInterval);
             timeScales = timeScales.map(function(time,index){
-                var span;
+                var timeSpan;
                 if(time.getMinutes() !== 0){
-                    span = data.tableStartTime.getDiff(time,"timeunit");
+                    timeSpan = data.tableStartTime.getDiff(time,"timeunit");
                 }else if(time.getDiff(tableEnd,"minute") < 60){
-                    span = time.getDiff(tableEnd,"timeunit");
+                    timeSpan = time.getDiff(tableEnd,"timeunit");
                 }else{
-                    span = 60 / LocalDate.getTimeUnitAsConverted("minute");
+                    timeSpan = 60 / LocalDate.getTimeUnitAsConverted("minute");
                 }
                 var td = $("<td></td>");
                 td.text("" + time.getHours() + "時").css({
@@ -841,8 +849,9 @@ class User extends Datapiece{
                     "background":(index%2===0 ? "#7FFFD4" : "#66CDAA"),
                     "text-align":(option.trans ? "" : "center"),
                     "border-collapse":"collapse",
-                    "min-width":"4em"
-                }).attr(option.trans ? "rowspan" :"colspan",span).addClass("timeScale");
+                    "min-width":"4em",
+                    "padding":"1ex 0"
+                }).attr(option.trans ? "rowspan" :"colspan",timeSpan).addClass("timeScale");
                 return td;
             });
         })();
@@ -910,6 +919,42 @@ class User extends Datapiece{
             setValue.workNum.push({"day":day,"num":data.workNum});
         }
         return new ShiftTableUser(setValue);
+    }
+    getPreviousWork(workAssign){
+        if(workAssign instanceof WorkAssign){
+            workAssign = workAssign.copy();
+        }else{
+            workAssign = Datapiece.getServer().getDataById(workAssign,"workAssign");
+        }
+        if(workAssign.getValue("userId") !== this.getValue("_id"))  return new WorkAssign();
+
+        var workAssigns = Datapiece.sort(this.getWorkAssigns(),["start"]);
+        var targetIndex = workAssigns.findIndex(function(_workAssign){
+            return _workAssign.getValue("_id") === workAssign.getValue("_id");
+        });
+        if(targetIndex <= 0)  return new WorkAssign();
+        return workAssigns[targetIndex - 1];
+    }
+    getNextWork(workAssign){
+        if(workAssign instanceof WorkAssign){
+            workAssign = workAssign.copy();
+        }else{
+            workAssign = Datapiece.getServer().getDataById(workAssign,"workAssign");
+        }
+        if(workAssign.getValue("userId") !== this.getValue("_id"))  return new WorkAssign();
+
+        var workAssigns = Datapiece.sort(this.getWorkAssigns(),["start"]);
+        var targetIndex = workAssigns.findIndex(function(_workAssign){
+            return _workAssign.getValue("_id") === workAssign.getValue("_id");
+        });
+        if(targetIndex === -1 || targetIndex === workAssign.length - 1)  return new WorkAssign();
+        return workAssigns[targetIndex + 1];
+    }
+    static getFreeUsers(start,end){
+        var users = Datapiece.getServer().getData("user");
+        return users.filter(function(user){
+            return user.getShiftTableAsData(start,end).content.length === 0;
+        });
     }
 }
 

@@ -145,14 +145,30 @@ var Server = (function(){
                 return that.reloadData(collInfo);
             }));
         }
-        getData(dataName,newCopy){
-            if(newCopy === undefined)  newCopy = true;
+        getData(dataName,newCopy,preventSkip){
+            if(newCopy === undefined || newCopy === null)  newCopy = true;
             if(cache[dataName] === undefined)  return [];
+            if(preventSkip === undefined || preventSkip === null)  preventSkip = false;
+            var result;
             if(newCopy){
-                return cache[dataName].slice();
+                result = cache[dataName].slice();
             }else{
-                return cache[dataName];
+                result = cache[dataName];
             }
+            if(!preventSkip){
+                //原則として無視するデータをdataNameごとに指定
+                switch(dataName){
+                    case "user":
+                        result = result.filter(function(datapiece){return datapiece.getValue("isAvailable")});
+                        break;
+                    case "workAssign":
+                        result = result.filter(function(datapiece){return !datapiece.getValue("disabled")});
+                        break;
+                    default:
+                        break;
+                }
+            }
+            return result;
         }
         getDataById(ids,dataName,newCopy){
             if(!Array.isArray(ids))  ids = [ids];

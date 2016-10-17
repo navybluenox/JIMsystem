@@ -63,8 +63,7 @@ class ModalWindow{
             {key:"html",value:""},
             {key:"callback",value:function(){}},
             {key:"disableClickBackground",value:false},
-            {key:"parent",value:document.getElementById("modalWindow")},
-            //{key:"",value:""},
+            {key:"parent",value:document.getElementById("modalWindow")}
         ].forEach(function(obj){
             if(option[obj.key] === undefined){
                 option[obj.key] = obj.value;
@@ -76,6 +75,7 @@ class ModalWindow{
         this.$el.append($(option.html));
         this.positionLeft = 1/2;
         this.positionTop = 1/2;
+        this.onResize = function(){};
 
         this.$el.css("display","none");
 
@@ -95,13 +95,14 @@ class ModalWindow{
             "left":"0",
             "width":"100%",
             "height":"120%",
-            "background-color":"rgba(0,0,0,0.75)"
+            "opacity":"0.75",
+            "background":"#000000"
         };
         this.positionFun = function(){
             var $window = $(window);
-            this.$el.css({
-                left:($window.width()*this.positionLeft - this.$el.outerWidth()/2) + "px",
-                top:($window.height()*this.positionTop - this.$el.outerHeight()/2) + "px"
+            that.$el.css({
+                left:($window.width()*that.positionLeft - that.$el.outerWidth()/2) + "px",
+                top:($window.height()*that.positionTop - that.$el.outerHeight()/2) + "px"
             });
         }
 
@@ -119,12 +120,13 @@ class ModalWindow{
         }
 
         if(typeof option.callback === "function"){
-            option.callback(this.$el,this.$background)
+            option.callback(this.$el,this.$background);
         }
 
         var dr = new DelayRun(function(){
             that.keepPosition();
             that.applyContentStyle();
+            that.onResize(that);
         });
         $(window).on("resize.modalWindow",function(){
             dr.runLater();
@@ -178,9 +180,15 @@ class ModalWindow{
     }
     setPosition(fun){
         if(typeof fun === "function"){
-            this.positionFun = cssObj;
+            this.positionFun = fun;
         }
         return this;
+    }
+    setHandlerOnResize(fun){
+        if(typeof fun === "function"){
+            this.onResize = fun;
+        }
+        return this;        
     }
 }
 

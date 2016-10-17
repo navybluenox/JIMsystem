@@ -74,7 +74,7 @@ $(function(){
             ["groupName","isColorGroup","isMemberOrderGroup"].forEach(function(name){
                 cond[name] = form_search.find('[name="' + name + '"]').val();
             })
-            var groups = _val.server.getData(getCollName()).filter(function(group){
+            var groups = _val.server.getData(getCollName(),null,true).filter(function(group){
                 var flag = true;
                 if(cond.groupName !== ""){
                     flag = flag && (new RegExp(cond.groupName)).test(group.getValue("name"));

@@ -133,7 +133,7 @@ $(function(){
             ["name","leader","incharge"].forEach(function(name){
                 cond[name] = form_search.find('[name="' + name + '"]').val();
             })
-            var workLists = _val.server.getData("workList").filter(function(workList){
+            var workLists = _val.server.getData("workList",null,true).filter(function(workList){
                 var flag = true;
                 if(cond.name !== ""){
                     var reg_name = new RegExp(cond.name);
