@@ -2,6 +2,7 @@ $(function(){
     var pageFun;
     _val.pageFun.runUserScript = {
         onload:function(){
+            _val.server.loadDataAll();
             pageFun = _val.pageFun.runUserScript;
             var textarea = $("#formRunUserScript textarea");
             textarea.on("keydown",function(e){

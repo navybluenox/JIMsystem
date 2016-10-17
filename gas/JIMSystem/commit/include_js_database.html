@@ -174,6 +174,7 @@ var Datapiece = (function(){
             }
             this._data = {};
             this._dataName = dataName;
+            this._event = [];
             if(option.init === true){
                 //executed from start.js
                 if(datapieceObj !== undefined){
@@ -257,6 +258,7 @@ var Datapiece = (function(){
                         return castType(dpObj,colObj);
                 }
             }
+            this.triggerEvent("change");
             return this;
         }
         //非推奨
@@ -274,6 +276,7 @@ var Datapiece = (function(){
                 }
                 this._data[colName] = castType(value,colType);
             }
+            this.triggerEvent("change");
             return this;
         }
         setNewId(overwrite){
@@ -348,8 +351,85 @@ var Datapiece = (function(){
             if(ret === undefined)  ret = new (Datapiece.getClassByName(dataName))();
             return ret;
         }
-        copy(){
-            return (new (Datapiece.getClassByName(this.getDataName()))()).setValues(this.getValues(true),{"overwrite":true});
+        getEventListener(events){
+            var that = this;
+            var ret = [];
+            if(events === undefined || events === ""){
+                ret = this._event.slice();
+            }else{
+                events.split(" ").forEach(function(event){
+                    var type = event.split(".")[0];
+                    var nameSpace = event.split(".").splice(1);
+                    Array.prototype.push.apply(ret,that._event.filter(function(e){
+                        return e.type === type && nameSpace.every(function(s){return inArray(e.nameSpace,s)});
+                    }));
+                });
+            }
+            return ret;
+        }
+        addEventListener(events,handler){
+            //events === String 
+            //events === Array -> eventObjs(Array)
+            //events === Object -> eventObj(Obj)
+            var that = this;
+            if(classof(events) === "array"){
+                events.forEach(function(event){
+                    that.addEventListener(event);
+                });
+            }else if(classof(events) === "object"){
+                var nameSpace,type;
+                if(events.nameSpace !== undefined){
+                    nameSpace = events.nameSpace;
+                    if(Array.isArray(nameSpace)){
+                        nameSpace = events.nameSpace.join(".");
+                    }
+                    type = events.nameSpace.split(" ").map(function(nameSpace){
+                        return events.type + (nameSpace !== "" ? "." + nameSpace : "");
+                    }).join(" ");
+                }
+                this.addEventListener(type,handler);
+            }else{
+                events.split(" ").forEach(function(event){
+                    var type = event.split(".")[0];
+                    var nameSpace = event.split(".").splice(1);
+                    var obj = {"type":type,"nameSpace":nameSpace};
+                    if(typeof handler === "function"){
+                        obj.handler = handler;
+                    }
+                    that._event.push(obj);
+                });
+            }
+            return this;
+        }
+        removeEventListener(events){
+            var that = this;
+            events.split(" ").forEach(function(event){
+                var type = event.split(".")[0];
+                var nameSpace = event.split(".").splice(1);
+                that._event = that._event.filter(function(e){
+                    return !(e.type === type && nameSpace.every(function(s){return inArray(e.nameSpace,s)}));
+                });
+            });
+            return this;
+        }
+        triggerEvent(events){
+            var that = this;
+            this.getEventListener(events).filter(function(e){
+                return e.handler !== undefined
+            }).forEach(function(e){
+                e.handler({"type":e.type,"nameSpace":e.nameSpace,"handler":e.handler,"target":that});
+            });
+            return this;
+        }
+        copy(copyHandler){
+            if(copyHandler === undefined)  copyHandler = false;
+            var ret = (new (Datapiece.getClassByName(this.getDataName()))()).setValues(this.getValues(true),{"overwrite":true});
+            if(copyHandler){
+                this.getEventListener().forEach(function(e){
+                    ret.addEventListener(e.type + e.nameSpace.join("."), e.handler);
+                });
+            }
+            return ret;
         }
         static getServer(){
             //Datapiece系クラスで使う専用
