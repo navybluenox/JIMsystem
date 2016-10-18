@@ -2,7 +2,7 @@ $(function(){
     var pageFun;
     var editing;
     var form;
-    var formNameList = [{"name":"workListId"},{"name":"userId"},{"name":"start"},{"name":"interval"},{"name":"notice"},{"name":"note"},{"name":"disabled"}];
+    var formNameList = [{"name":"workListId"},{"name":"userId"},{"name":"start"},{"name":"interval"},{"name":"notice"},{"name":"note"},{"name":"memberOrder"},{"name":"disabled"}];
     _val.pageFun.assignWork = {
         onload:function(){
             _val.server.loadData("user");
@@ -181,6 +181,8 @@ $(function(){
                     //1
                 },function(e){
                     //2
+                },function(e){
+                    //3
                     if(workAssigns.length === 0){
                         alert("選択範囲に人割がありません。");
                         return;
@@ -209,8 +211,6 @@ $(function(){
                     cm1.getContent().find("li").css({"padding":"0 1em"});
                     cm.remove();
                 },function(e){
-                    //3
-                },function(e){
                     //4
                     if(workAssigns.length === 0){
                         alert("選択範囲に人割がありません。");
@@ -230,6 +230,7 @@ $(function(){
                     }
                     _val.server.removeData(workAssigns).sendUpdateQueue().then(function(){
                         pageFun.showShiftTableUser();
+                        pageFun.searchWorkAssign();
                     });
                     cm.remove();
                 },function(e){

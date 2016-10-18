@@ -645,33 +645,31 @@ class User extends Datapiece{
     getWorkAssigns(){
         var that = this;
         return Datapiece.getServer().getData("workAssign").filter(function(workAssign){
-            return workAssign.getValue("userId") === that.getValue("_id") && !workAssign.getValue("disabled");
+            return workAssign.getValue("userId") === that.getValue("_id");
         });
     }
     getShiftTableAsData(start,end,extraWorkAssign){
         //{"userId":"","workNum":"","content":[{"workAssignId":"","workListId":"","workName":"","workIndex":"","timeIndex":"","interval":"","start":"","end":"","backgroundColor":"","fontColor":""}]}
-        if(extraWorkAssign === undefined)  extraWorkAssign = [];
-        if(!Array.isArray(extraWorkAssign))  extraWorkAssign = [extraWorkAssign];
-
         var that = this;
         if(start === undefined)  start = new LocalDate({"day":Datapiece.getConfig().getWorkStartDay()});
         if(end === undefined)  end = new LocalDate({"day":Datapiece.getConfig().getWorkEndDay()+1});
 
-        var workAssigns = this.getWorkAssigns();
-        var extraIds = extraWorkAssign.map(function(workAssign){
+        if(extraWorkAssign === undefined)  extraWorkAssign = [];
+        if(!Array.isArray(extraWorkAssign))  extraWorkAssign = [extraWorkAssign];
+        extraWorkAssign = extraWorkAssign.filter(function(workAssign){
             if(workAssign.getValue("_id") === undefined){
                 workAssign.setValue("_id","_extra");
             }
+            return workAssign.getValue("userId") === that.getValue("_id");
+        });
+        var extraIds = extraWorkAssign.map(function(workAssign){
             return workAssign.getValue("_id")
         }).filter(function(v,i,s){return s.indexOf(v) === i});
-        workAssigns = workAssigns.filter(function(workAssign){
-            return !inArray(extraIds,workAssign.getValue("_id"));
-        }).concat(extraWorkAssign);
 
-        workAssigns = workAssigns.filter(function(workAssign){
+        var workAssigns = this.getWorkAssigns().filter(function(workAssign){
+            return !inArray(extraIds,workAssign.getValue("_id"));
+        }).concat(extraWorkAssign).filter(function(workAssign){
             return (
-                workAssign.getValue("userId") === that.getValue("_id") &&
-                !workAssign.getValue("disabled") &&
                 workAssign.getValue("end").getTime() > start.getTime() &&
                 workAssign.getValue("start").getTime() < end.getTime()
             );
@@ -1042,6 +1040,278 @@ class WorkList extends Datapiece{
     }
     getFontColor(){
         return WorkGroup.getColorByWorkListId(this.getValues("_id"),"font");
+    }
+    getWorkAssigns(){
+        var that = this;
+        return Datapiece.getServer().getData("workAssign").filter(function(workAssign){
+            return workAssign.getValue("workListId") === that.getValue("_id");
+        });
+    }
+    getShiftTableAsData(start,end,extraWorkAssign){
+        //{"workListId":"","workNum":"","content":[{"workAssignId":"","userId":"","workName":"","workIndex":"","timeIndex":"","interval":"","start":"","end":"","backgroundColor":"","fontColor":""}]}
+        var that = this;
+        if(start === undefined)  start = new LocalDate({"day":Datapiece.getConfig().getWorkStartDay()});
+        if(end === undefined)  end = new LocalDate({"day":Datapiece.getConfig().getWorkEndDay()+1});
+
+        if(extraWorkAssign === undefined)  extraWorkAssign = [];
+        if(!Array.isArray(extraWorkAssign))  extraWorkAssign = [extraWorkAssign];
+        extraWorkAssign = extraWorkAssign.filter(function(workAssign){
+            if(workAssign.getValue("_id") === undefined){
+                workAssign.setValue("_id","_extra");
+            }
+            return workAssign.getValue("workListId") === that.getValue("_id");
+        });
+        var extraIds = extraWorkAssign.map(function(workAssign){
+            return workAssign.getValue("_id")
+        }).filter(function(v,i,s){return s.indexOf(v) === i});
+
+        var workAssigns = this.getWorkAssigns().filter(function(workAssign){
+            return !inArray(extraIds,workAssign.getValue("_id"));
+        }).concat(extraWorkAssign).filter(function(workAssign){
+            return (
+                workAssign.getValue("end").getTime() > start.getTime() &&
+                workAssign.getValue("start").getTime() < end.getTime()
+            );
+        }).map(function(workAssign){
+            var ret = workAssign.copy();
+            if(ret.getValue("start").getTime() < start.getTime()){
+                ret.setValue("interval",ret.getValue("interval") - ret.getValue("start").getDiff(start,"timeunit"))
+                ret.setValue("start",start.copy());
+            }
+            if(ret.getValue("end").getTime() > end.getTime()){
+                ret.setValue("end",end.copy());
+            }
+            return ret;
+        }).filter(function(workAssign){return workAssign.getValue("interval") !== 0});
+
+        workAssigns.sort(function(a,b){
+            if(a.getValue("memberOrder") === b.getValue("memberOrder") || (a.getValue("memberOrder") <= 0 && b.getValue("memberOrder") <= 0)){
+                if(a.getValue("start").getTime() === b.getValue("start").getTime()){
+                    return -(a.getValue("interval") - b.getValue("interval"));
+                }else{
+                    return a.getValue("start").getTime() - b.getValue("start").getTime();
+                }
+            }else{
+                if(a.getValue("memberOrder") <= 0){
+                    return 1;
+                }else if(b.getValue("memberOrder") <= 0){
+                    return -1;
+                }else{
+                    return a.getValue("memberOrder") - b.getValue("memberOrder");
+                }
+            }
+        });
+
+        var lists = [];
+        var ret = {"workListId":this.getValue("_id"),"workNum":0,"tableStartTime":start.copy(),"tableInterval":start.getDiff(end,"timeunit"),"content":[]};
+        workAssigns.forEach(function(workAssign){
+            var workIndex = 0;
+            while(lists[workIndex] === undefined || getVacant(lists[workIndex]).length !== workAssign.getValue("interval")){
+                if(lists[workIndex] === undefined){
+                    lists[workIndex] = [];
+                    ret.workNum = lists.length;
+                    for(var i=0,l=start.getDiff(end,"timeunit");i<l;i++){
+                        lists[workIndex][i] = {"time":start.copy().addTimeUnit(i),"hasWork":false};
+                    }
+                }else{
+                    workIndex++;
+                }
+            }
+            getVacant(lists[workIndex]).forEach(function(obj){
+                obj.hasWork = true;
+            });
+            ret.content.push({
+                "workAssignId":workAssign.getValue("_id"),
+                "workIndex":workIndex,
+                "interval":workAssign.getValue("interval"),
+                "start":workAssign.getValue("start").copy(),
+                "extra":(inArray(extraIds,workAssign.getValue("_id")) ? true : false)
+            });
+            function getVacant(list){
+                if(list == undefined)  return undefined;
+                return list.filter(function(obj){
+                    return (
+                        !obj.hasWork &&
+                        obj.time.getTime() >= workAssign.getValue("start").getTime() &&
+                        obj.time.getTime() < workAssign.getValue("end").getTime()
+                    );
+                })
+            }
+        });
+        ret.content.sort(function(a,b){
+            if(a.workIndex === b.workIndex){
+                return a.start.getTime() - b.start.getTime();
+            }else{
+                return a.workIndex - b.workIndex;
+            }
+        });
+        var timeIndex = 0, nowWorkIndex = 0;
+        ret.content.forEach(function(obj){
+            if(nowWorkIndex !== obj.workIndex){
+                timeIndex = 0;
+                nowWorkIndex = obj.workIndex;
+            }
+            obj.timeIndex = timeIndex;
+            timeIndex++;
+        });
+        return ret;
+    }
+    //TODO なんかおかしい
+    getShiftTableAsElement(start,end,option){
+        //option = {"mode":["tr","table"],"trans":[true,false],"callback":function,"extraWorkAssign":[WorkAssign]}
+        //tr table
+        if(option === undefined)  option = {};
+        if(option.mode === undefined)  option.mode = "table";
+        if(option.trans === undefined)  option.trans = false;
+        if(option.extraWorkAssign === undefined)  option.extraWorkAssign = [];
+
+        var data = this.getShiftTableAsData(start,end,option.extraWorkAssign);
+        var rowContents = [];
+        for(var i=0; i<data.workNum; i++){
+            rowContents[i] = data.content.filter(function(obj){return obj.workIndex === i});
+        }
+        var _tdMatrix = [];
+        rowContents.forEach(function(_rowContent,rowIndex){
+            var rowContent = _rowContent.slice();
+            var insert;
+            _tdMatrix[rowIndex] = []
+            if(_rowContent.length === 0){
+                insert = [];
+                for(var j=0,l=start.getDiff(end, "timeunit"); j<l; j++){
+                    insert[j] = {"start":start.copy().addTimeUnit(j),"workAssignId":"_blank"};
+                }
+                rowContent = [insert];
+            }else{
+                for(var i=_rowContent.length-1; i>=0; i--){
+                    insert = [];
+                    for(var j=0,l=_rowContent[i].start.copy().addTimeUnit(_rowContent[i].interval).getDiff(i===_rowContent.length-1 ? end : _rowContent[i+1].start, "timeunit"); j<l; j++){
+                        insert[j] = {"start":_rowContent[i].start.copy().addTimeUnit(_rowContent[i].interval + j),"workAssignId":"_blank"};
+                    }
+                    rowContent.splice(i+1,0,insert);
+                }
+                insert = [];
+                for(var j=0,l=start.getDiff(_rowContent[0].start, "timeunit"); j<l; j++){
+                    insert[j] = {"start":start.copy().addTimeUnit(j),"workAssignId":"_blank"};
+                }
+                rowContent.splice(0,0,insert);
+            }
+            rowContent = rowContent.reduce(function(prev,curt){
+                return prev.concat(Array.isArray(curt) ? curt : [curt]);
+            });
+            _tdMatrix[rowIndex] = rowContent.map(function(cell,cellIndex){
+                var td = $("<td><span></span></td>");
+                if(cell.workAssignId === "_blank"){
+                    td.children("span").text(" ");
+                    td.css({
+                        "background":"#FFFFFF",
+                        "color":"#000000",
+                        "border":"1px solid #000000",
+                        "border-style": (option.trans ? "dashed solid" : "solid dashed")
+                    });
+
+                    if(cell.start.getMinutes() === 0){
+                        td.css((option.trans ? {"border-top-style":"solid"} : {"border-left-style":"solid"}));
+                    }
+                    td.data({"start":cell.start.getTime(),"interval":1,"workIndex":rowIndex});
+                }else{
+                    var workAssign = Datapiece.getServer().getDataById(cell.workAssignId,"workAssign")[0];
+                    if(workAssign === undefined){
+                        workAssign = option.extraWorkAssign.find(function(workAssign){return workAssign.getValue("_id") === cell.workAssignId});
+                    }
+                    var user = workAssign.getDatapieceRelated("userId","user");
+                    td.children("span").text(user.getValue("nameLast") + " " + user.getValue("nameFirst"));
+                    td.css({
+                        "background":user.getBackgroundColor(),
+                        "color":user.getFontColor(),
+                        "border":"1px solid #000000",
+                        "text-align":"center"
+                    });
+                    td.attr(option.trans ? "rowspan" :"colspan",cell.interval).addClass("hasWork");
+                    td.data({"workassignid":cell.workAssignId,"start":cell.start.getTime(),"interval":cell.interval,"workIndex":rowIndex,"extra":cell.extra});
+                    if(cell.extra){
+                        td.css("border","2px solid red").addClass("extra");
+                    }
+                }
+                td.css({"min-width":"1em"}).addClass("shiftTableContent").children("span").css({"padding":"1ex 0.5em","white-space":"pre","display":"block","cursor":"pointer"});
+                return td;
+            });
+        });
+
+        var timeScales = [];
+        (function(){
+            //make header
+            var t;
+            for(var i=0,l=data.tableInterval; i<l; i++){
+                t = data.tableStartTime.copy().addTimeUnit(i);
+                if(i === 0 || t.getMinutes() === 0){
+                    timeScales.push(t);
+                }
+            }
+            var tableEnd = data.tableStartTime.copy().addTimeUnit(data.tableInterval);
+            timeScales = timeScales.map(function(time,index){
+                var timeSpan;
+                if(time.getMinutes() !== 0){
+                    timeSpan = data.tableStartTime.getDiff(time,"timeunit");
+                }else if(time.getDiff(tableEnd,"minute") < 60){
+                    timeSpan = time.getDiff(tableEnd,"timeunit");
+                }else{
+                    timeSpan = 60 / LocalDate.getTimeUnitAsConverted("minute");
+                }
+                var td = $("<td></td>");
+                td.text("" + time.getHours() + "時").css({
+                    "color":"#000000",
+                    "border":"1px solid #000000",
+                    "background":(index%2===0 ? "#7FFFD4" : "#66CDAA"),
+                    "text-align":(option.trans ? "" : "center"),
+                    "border-collapse":"collapse",
+                    "min-width":"4em",
+                    "padding":"1ex 0"
+                }).attr(option.trans ? "rowspan" :"colspan",timeSpan).addClass("timeScale");
+                return td;
+            });
+        })();
+        _tdMatrix = [timeScales].concat(_tdMatrix);
+
+        var tdMatrix;
+        if(option.trans){
+            //option.transpose
+            tdMatrix = [];
+            _tdMatrix.forEach(function(tds){
+                var skip = 0;
+                tds.forEach(function(td,tdIndex){
+                    if(tdMatrix[tdIndex+skip] === undefined){
+                        tdMatrix[tdIndex+skip] = [];
+                    }
+                    tdMatrix[tdIndex+skip].push(td);
+                    if(td.attr("rowspan") !== undefined && td.attr("rowspan") > 1){
+                        skip += +td.attr("rowspan") - 1;
+                    }
+                });
+            })
+        }else{
+            tdMatrix = _tdMatrix.slice();
+        }
+
+        var trs = $(repeatString("<tr></tr>",tdMatrix.length));
+        tdMatrix.forEach(function(tds,rowIndex){
+            var tr = trs.eq(rowIndex);
+            tds.forEach(function(td,cellIndex){
+                tr.append(td);
+                if(typeof option.callback === "function"){
+                    option.callback({"td":td,"rowIndex":rowIndex,"cellIndex":cellIndex});
+                }
+            })
+        })
+        var result;
+        if(option.mode === "table"){
+            result = $("<table><tbody></tbody></table>");
+            result.css({"border-collapse":"collapse","border":"1px solid #000000"});
+            result.find("tbody").append(trs);
+        }else if(option.mode === "tr"){
+            result = trs;
+        }
+
+        return result;
     }
 }
 
