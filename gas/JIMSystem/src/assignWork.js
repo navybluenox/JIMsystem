@@ -140,62 +140,103 @@ $(function(){
                         target.children("span").wrap(wrapper);
                     }
                     target.addClass("selectedCell");
-
-                    //TODO　いずれは右クリックメニューに移す
-                    start = new LocalDate(target.data("start"));
-                    end = new LocalDate({"day":form.find('[name="end_day"]').val(),"hour":form.find('[name="end_hour"]').val(),"minute":form.find('[name="end_minute"]').val()});
-                    form.find('[name="start_day"]').val(start.getDays());
-                    form.find('[name="start_hour"]').val(start.getHours());
-                    form.find('[name="start_minute"]').val(start.getMinutes());
-                    if(start.getDiff(end,"timeunit") <= 0){
-                        end = start.copy().addTimeUnit(1);
-                        form.find('[name="end_day"]').val(end.getDays());
-                        form.find('[name="end_hour"]').val(end.getHours());
-                        form.find('[name="end_minute"]').val(end.getMinutes());
-                        form.find('[name="interval"]').val(1);
-                    }else{
-                        form.find('[name="interval"]').val(start.getDiff(end,"timeunit"));
-                    }
                 }
             });
 
             form.find('[name="shiftTableUser"]').siblings("div").on("contextmenu","td.selectedCell",function(e){
                 var div = form.find('[name="shiftTableUser"]').siblings("div");
-                var tds = div.find("td.selectedCell");
-                var pointerX = e.screenX;
-                var pointerY = e.screenY;
+                var selectedCells = div.find("td.selectedCell");
+                var workAssigns = selectedCells.filter(".hasWork").map(function(i,el){
+                    return _val.server.getDataById($(el).data("workassignid"),"workAssign")[0];
+                }).get();
+                var start,end;
 
-                var mw = new ModalWindow({"html":[
-                    '<table><tbody>',
-                    '<tr><div class="list">この時間に設定</div></tr>',
-                    '<tr><div class="list">この時間に担当できる委員を表示</div></tr>',
-                    '<tr><div class="list">この時間の未割り振り業務を表示</div></tr>',
-                    '<tr><div class="list">この人割を編集</div></tr>',
-                    '<tr><div class="list">この人割を削除</div></tr>',
-                    '</tbody></table>'
-                ].join(""),"callback":function(div,background,that){
-                    background.css({"background":"#FFFFFF","opacity":"0"});
-                    div.css({"border":"1px solid #000000"}).find().css({"padding":0,"margin":0});
-                    div.find("div.list").css({
-                        "text-align":"center",
-                        "padding":"1ex 1.5em",
-                        "background":"#FFFFFF",
+                selectedCells.map(function(i,_el){
+                    var el = $(_el);
+                    var start_el = new LocalDate(el.data("start"));
+                    var end_el = start_el.copy().addTimeUnit(el.data("interval"));
+                    if(start === undefined || start.getTime() > start_el.getTime())  start = start_el;
+                    if(end === undefined || end.getTime() < end_el.getTime())  end = end_el;
+                });
+
+                var cm = new ContextMenu(e,[
+                    "この時間をフォームに設定",
+                    "この時間に人割を入れる（未実装）",
+                    "この人割を他の人割と入れ替える（未実装）",
+                    "この人割を他の委員に変える",
+                    "この人割をフォームに入力",
+                    "この人割を削除",
+                    "選択を解除"
+                ],[function(e){
+                    //0
+                    form.find('[name="start_day"]').val(start.getDays());
+                    form.find('[name="start_hour"]').val(start.getHours());
+                    form.find('[name="start_minute"]').val(start.getMinutes());
+                    form.find('[name="end_day"]').val(end.getDays());
+                    form.find('[name="end_hour"]').val(end.getHours());
+                    form.find('[name="end_minute"]').val(end.getMinutes());
+                    form.find('[name="interval"]').val(start.getDiff(end,"timeunit")).trigger("change");
+                    cm.remove();
+                },function(e){
+                    //1
+                },function(e){
+                    //2
+                    if(workAssigns.length === 0){
+                        alert("選択範囲に人割がありません。");
+                        return;
+                    }else if(workAssigns.length > 1){
+                        alert("選択範囲に複数の人割があります。\n一つのみ選択してください。");
+                        return;                        
+                    }
+                    var workAssign = workAssigns[0];
+                    var cm1 = new ContextMenu(
+                        e,[{"text":"候補","value":""}].concat(User.getFreeUsers(workAssign.getValue("start"),workAssign.getValue("end")).map(function(user){
+                            return {
+                                "text":user.getValue("nameLast") + " " + user.getValue("nameFirst"),
+                                "value":user.getValue("_id")
+                            };
+                        })),function(e){
+                            var userId = e.data.value;
+                            if(userId === "")  return;
+                            pageFun.fillForm(workAssign.copy().setValue("userId",userId));
+                            pageFun.updateWorkAssign("change");
+                            cm1.remove();
+
+                        },{
+                            "maxHeight":"400px"
+                        }
+                    );
+                    cm1.getContent().find("li").css({"padding":"0 1em"});
+                    cm.remove();
+                },function(e){
+                    //3
+                },function(e){
+                    //4
+                    if(workAssigns.length === 0){
+                        alert("選択範囲に人割がありません。");
+                        return;
+                    }else if(workAssigns.length > 1){
+                        alert("選択範囲に複数の人割があります。\n一つのみ選択してください。");
+                        return;                        
+                    }
+                    var workAssign = workAssigns[0];
+                    pageFun.fillForm(workAssign);
+                    cm.remove();
+                },function(e){
+                    //5
+                    if(workAssigns.length === 0){
+                        alert("選択範囲に人割がありません。");
+                        return;
+                    }
+                    _val.server.removeData(workAssigns).sendUpdateQueue().then(function(){
+                        pageFun.showShiftTableUser();
                     });
-                    div.on({"mouseenter":function(e){
-                        $(e.currentTarget).css({"background":"#44AEEA"});
-                    },"mouseleave":function(e){
-                        $(e.currentTarget).css({"background":"#FFFFFF"});
-                    }},"div.list")
-                }});
-                mw.setPosition(function(that){
-                    var el = that.$el;
-                    el.css({
-                        "left":pointerX + "px",
-                        "top":pointerY + "px"
-                    })
-                }).setBackgroundStyle({"background":"#FFFFFF","opacity":0});
-                mw.keepPosition();
-                
+                    cm.remove();
+                },function(e){
+                    //6
+                    selectedCells.removeClass("selectedCell").find("span").unwrap();
+                    cm.remove();
+                }]);
                 return false;
             });
 
@@ -225,10 +266,8 @@ $(function(){
             }else if(kind === "remove"){
                 _val.server.removeData(new WorkAssign({"_id":_id}));
             }
-            _val.server.sendUpdateQueue().then(function(){
+            return _val.server.sendUpdateQueue().then(function(){
                 pageFun.searchWorkAssign();
-                //TODO
-                console.log("editing",editing);
             });
         },searchWorkAssign:function(sortFun){
             var result = $("#formAssignWork_search_result");
@@ -286,42 +325,12 @@ $(function(){
                 });
             }
 
-            var fun_fillForm = function(workAssign,copy){
-                formNameList.forEach(function(obj){
-                    var el = form.find('[name="' + obj.name + '"]');
-                    var key = obj.key === undefined ? obj.name : obj.key;
-                    if(key === "disabled"){
-                        el.val(workAssign.getValue(key) ? "Yes" : "No");
-                    }else if(key === "start"){
-                        var start = workAssign.getValue("start");
-                        form.find('[name="start_day"]').val(start.getDays());
-                        form.find('[name="start_hour"]').val(start.getHours());
-                        form.find('[name="start_minute"]').val(start.getMinutes());
-                    }else{
-                        el.val(workAssign.getValue(key));
-                    }
-                });
-                editing = workAssign.copy().addEventListener(editing.getEventListener());
-                if(copy){
-                    editing.setValue("_id","");
-                }
-                editing.triggerEvent("change");
-                form.find('[name="shiftTableUser_day"]').val(workAssign.getValue("start").getDays());
-                form.find('[name="workListId_name"],[name="shiftTableWork_name"]').val(workAssign.getDatapieceRelated("workListId","workList").getValue("name"));
-                form.find('[name="userId_azusa"],[name="shiftTableUser_azusa"]').val(workAssign.getDatapieceRelated("userId","user").getValue("azusaSendName"));
-                form.find('[name="workListId_name"],[name="shiftTableWork_name"],[name="userId_azusa"],[name="shiftTableUser_azusa"]').trigger("keyup");
-                form.find('[name="shiftTableUser_searchResult"]').val(workAssign.getValue("userId"));
-                form.find('[name="shiftTableWork_searchResult"]').val(workAssign.getValue("workListId"));
-                form.find('[name="interval"]').trigger("change");
-                form.find('[name="shiftTableUser_searchResult"],[name="shiftTableWork_searchResult"]').trigger("change");
-            }
-
             var table = createTable(result,workAssigns,["edit","workList","user","time","notice"],function(cellObj){
                 var workAssign = cellObj.rowData;
                 if(cellObj.column === "edit"){
                     var buttons = $('<input type="button" value="これを編集"><input type="button" value="コピーして編集"><input type="button" value="削除">').appendTo(cellObj.el);
-                    buttons.eq(0).on("click",function(e){fun_fillForm(workAssign,false);});
-                    buttons.eq(1).on("click",function(e){fun_fillForm(workAssign,true);});
+                    buttons.eq(0).on("click",function(e){pageFun.fillForm(workAssign,false);});
+                    buttons.eq(1).on("click",function(e){pageFun.fillForm(workAssign,true);});
                     buttons.eq(2).on("click",function(e){pageFun.updateWorkAssign("remove",workAssign.getValue("_id"));});
                 }else{
                     var str;
@@ -440,6 +449,34 @@ $(function(){
             });
             editing.setValues(setValue);
             return editing;
+        },fillForm:function(workAssign,copy){
+            formNameList.forEach(function(obj){
+                var el = form.find('[name="' + obj.name + '"]');
+                var key = obj.key === undefined ? obj.name : obj.key;
+                if(key === "disabled"){
+                    el.val(workAssign.getValue(key) ? "Yes" : "No");
+                }else if(key === "start"){
+                    var start = workAssign.getValue("start");
+                    form.find('[name="start_day"]').val(start.getDays());
+                    form.find('[name="start_hour"]').val(start.getHours());
+                    form.find('[name="start_minute"]').val(start.getMinutes());
+                }else{
+                    el.val(workAssign.getValue(key));
+                }
+            });
+            editing = workAssign.copy().addEventListener(editing.getEventListener());
+            if(copy){
+                editing.setValue("_id","");
+            }
+            editing.triggerEvent("change");
+            form.find('[name="shiftTableUser_day"]').val(workAssign.getValue("start").getDays());
+            form.find('[name="workListId_name"],[name="shiftTableWork_name"]').val(workAssign.getDatapieceRelated("workListId","workList").getValue("name"));
+            form.find('[name="userId_azusa"],[name="shiftTableUser_azusa"]').val(workAssign.getDatapieceRelated("userId","user").getValue("azusaSendName"));
+            form.find('[name="workListId_name"],[name="shiftTableWork_name"],[name="userId_azusa"],[name="shiftTableUser_azusa"]').trigger("keyup");
+            form.find('[name="shiftTableUser_searchResult"]').val(workAssign.getValue("userId"));
+            form.find('[name="shiftTableWork_searchResult"]').val(workAssign.getValue("workListId"));
+            form.find('[name="interval"]').trigger("change");
+            form.find('[name="shiftTableUser_searchResult"],[name="shiftTableWork_searchResult"]').trigger("change");
         }
     };
 });

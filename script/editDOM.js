@@ -62,6 +62,7 @@ class ModalWindow{
             {key:"html",value:""},
             {key:"callback",value:function(){}},
             {key:"disableClickBackground",value:false},
+            {key:"fadeInSpeed",value:"slow"},
             {key:"parent",value:document.getElementById("modalWindow")}
         ].forEach(function(obj){
             if(option[obj.key] === undefined){
@@ -79,12 +80,12 @@ class ModalWindow{
         this.$el.css("display","none");
 
         this.contentStyle = {
-            width:"60%",
-            margin:"0",
-            padding:"1ex 1em",
-            border:"2px solid #aaa",
-            background:"#fff",
-            position:"fixed",
+            "width":"60%",
+            "margin":"0",
+            "padding":"1ex 1em",
+            "border":"2px solid #aaa",
+            "background":"#fff",
+            "position":"fixed",
             "z-index":"2"
         };
         this.backgroundStyle = {
@@ -110,7 +111,11 @@ class ModalWindow{
         this.applyBackgroundStyle();
         this.$background.fadeIn("fast");
         this.keepPosition();
-        this.$el.fadeIn("slow");
+        if(option.fadeInSpeed === "notime"){
+            this.$el.show();
+        }else{
+            this.$el.fadeIn(option.fadeInSpeed);
+        }
 
         if(!option.disableClickBackground){
             this.$background.off("click").on("click",function(e){
@@ -189,6 +194,12 @@ class ModalWindow{
         }
         return this;        
     }
+    getContent(){
+        return this.$el;
+    }
+    getBackground(){
+        return this.$background;
+    }
 }
 
 function createTable(parent,data,columns,callback,option){
@@ -260,3 +271,73 @@ function createTable(parent,data,columns,callback,option){
     return {"$table":$table,"el":$table,"styleFun":setTableStyle};
 }
 
+var ContextMenu = (function(){
+    //ContextMenu pluginを参考に作成
+    //http://www.trendskitchens.co.nz/jquery/contextmenu/    
+    return class ContextMenu extends ModalWindow{
+        constructor(position,items,bindings,option){
+            if(position.x === undefined && position.y === undefined){
+                position = {"x":position.pageX,"y":position.pageY};
+            }
+            items = items.map(function(item){
+                if(typeof item === "string"){
+                    return {"text":item}
+                }else{
+                    return item
+                }
+            });
+            option = option || {};
+            option.fadeInSpeed = option.fadeInSpeed || "notime";
+            option.html = option.html || [
+                "<ul>",
+                items.map(function(item){return "<li>" + item.text + "</li>"}).join(""),
+                "</ul>"
+            ].join("");
+            option.maxHeight = option.maxHeight || "";
+            option.overflow = option.overflow || "auto";
+
+            super(option);
+
+            var that = this;
+            this.getContent().find("ul").css({"background":"#EFEFEF","border":"1px solid #999999","listStyle":"none","padding":"2px","margin":"0"})
+            this.getContent().find("li").css({
+                "min-width":"20em",
+                "text-align":"left",
+                "padding":"5px 1em",
+                "background":"#FFFFFF",
+                "display":"block",
+                "cursor":"default",
+                "background":"transparent",
+                "border-bottom":"1px solid #999999"
+            }).hover(function(e){
+                $(e.currentTarget).css({"background":"#44AEEA"});
+            },function(e){
+                $(e.currentTarget).css({"background":"transparent"});
+            });
+            this.setPosition(function(that){
+                var el = that.$el;
+                el.css({
+                    "left":position.x + "px",
+                    "top":position.y + "px"
+                })
+            })
+            this.setBackgroundStyle({"background":"transparent"}).setContentStyle({
+                "position":"absolute","padding":"0","border":"","width":"",
+                "max-height":option.maxHeight,"overflow":option.overflow
+            });
+            this.keepPosition();
+
+            if(Array.isArray(bindings)){
+                bindings.forEach(function(binding,index){
+                    if(!binding)  return;
+                    that.getContent().find("li").eq(index).on("click",{"index":index,"text":items[index].text,"value":items[index].value},binding);
+                });
+            }else if(typeof bindings === "function"){
+                for(var index=0,l=items.length; index<l; index++){
+                    that.getContent().find("li").eq(index).on("click",{"index":index,"text":items[index].text,"value":items[index].value},bindings);
+                }
+            }
+
+        }
+    }
+})();

@@ -449,7 +449,7 @@ var Datapiece = (function(){
         }
         static getNewId(dataName){
             var result;
-            var idList = server.getData(dataName).map(function(data){return data.getValue("_id")});
+            var idList = server.getData(dataName,null,true).map(function(data){return data.getValue("_id")});
             do{
                 result = makeRandomStr(16,{"number":true, "alphaLower":true, "alphaUpper":true});
             }while(inArray(idList,result))
@@ -817,7 +817,7 @@ class User extends Datapiece{
                         td.css("border","2px solid red").addClass("extra");
                     }
                 }
-                td.css({"min-width":"1em"}).addClass("shiftTableContent").children("span").css({"padding":"1ex 0.5em","white-space":"pre","display":"block"});
+                td.css({"min-width":"1em"}).addClass("shiftTableContent").children("span").css({"padding":"1ex 0.5em","white-space":"pre","display":"block","cursor":"pointer"});
                 return td;
             });
         });

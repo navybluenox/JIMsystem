@@ -87,8 +87,8 @@ $(function(){
                 var keyword = el.find('[name="keyword"]').val();
                 var data;
                 var result = el.find('[name="resultField"]');
-                _val.server.loadData(dataName,null,true).then(function(){
-                    data = _val.server.getData(dataName).filter(function(dp){
+                _val.server.loadData(dataName).then(function(){
+                    data = _val.server.getData(dataName,null,true).filter(function(dp){
                         if(column === "") return true;
                         var value = dp.getValue(column);
                         switch(type){

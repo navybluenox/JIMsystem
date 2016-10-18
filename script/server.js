@@ -188,6 +188,17 @@ var Server = (function(){
                 this._pendingQueue = [];
                 return Promise.resolve();
             };
+
+            //TODO
+            //ここはそのうち消す
+            if(!confirm([
+                "データを上書きします",
+                "よろしいですか？",
+                "（誤爆しなくなったら消します）"
+            ].join("\n"))){
+                this._pendingQueue = [];
+                return Promise.resolve();
+            }
             
             var that = this;
             var nowTime;
@@ -241,7 +252,7 @@ var Server = (function(){
                 while(queueList.length > 0){
                     queue = queueList.pop();
                     dataName = queue.value.getDataName();
-                    data = that.getData(dataName,false);
+                    data = that.getData(dataName,false,true);
                     switch(queue.kind){
                         case "change":
                             dataId = queue.value.getValue("_id");
@@ -257,6 +268,7 @@ var Server = (function(){
                             dataIndex = data.findIndex(function(dp){
                                 return dp.getValue("_id") === dataId;
                             });
+                            data[dataIndex].setValue("_id","");
                             data.splice(dataIndex,1);
                             break;
                     }
