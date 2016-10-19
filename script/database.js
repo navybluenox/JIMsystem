@@ -692,9 +692,9 @@ var Datapiece = (function(){
                     .children("span").css({"padding":"1ex 0.5em","white-space":"pre","display":"block","cursor":"pointer","box-sizing":"border-box"}).map(function(i,_el){
                         var el = $(_el);
                         if(option.trans){
-                            el.css({"min-height":cellHeightPerInterval * td.data("interval") + "ex"});
+                            el.css({"height":cellHeightPerInterval * td.data("interval") + "ex"});
                         }else{
-                            el.css({"min-width":cellWidthPerInterval * td.data("interval") + "em"});
+                            el.css({"width":cellWidthPerInterval * td.data("interval") + "em"});
                         }
                     });
                     return td;
@@ -730,9 +730,9 @@ var Datapiece = (function(){
                         "padding":"1ex 0"
                     }).attr(option.trans ? "rowspan" :"colspan",timeSpan).addClass("timeScale");
                     if(option.trans){
-                        td.css({"min-height":cellHeightPerInterval * timeSpan + "ex"});
+                        td.css({"height":cellHeightPerInterval * timeSpan + "ex"});
                     }else{
-                        td.css({"min-width":cellWidthPerInterval * timeSpan + "em"});
+                        td.css({"width":cellWidthPerInterval * timeSpan + "em"});
                     }
                     return td;
                 });
