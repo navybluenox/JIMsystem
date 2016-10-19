@@ -729,6 +729,11 @@ var Datapiece = (function(){
                         "text-align":(option.trans ? "" : "center"),
                         "padding":"1ex 0"
                     }).attr(option.trans ? "rowspan" :"colspan",timeSpan).addClass("timeScale");
+                    if(option.trans){
+                        td.css({"min-height":cellHeightPerInterval * timeSpan + "ex"});
+                    }else{
+                        td.css({"min-width":cellWidthPerInterval * timeSpan + "em"});
+                    }
                     return td;
                 });
             })();
