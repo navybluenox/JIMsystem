@@ -97,14 +97,16 @@ $(function(){
                 form.find(".extra").focus();
             });
 
+            //TODO　ロジックを組みなおす
             form.find('[name="shiftTableUser"]').siblings("div").on({"mouseenter":function(e){
                 var target = $(e.currentTarget);
+                if(target.find("div.overlay").length > 0)  return;
                 var wrapper = $("<div></div>").css({"background":"#FFC21A","opacity":"0.5","z-index":"1"}).addClass("overlay");
                 target.children("div").wrap(wrapper);
             },"mouseleave":function(e){
                 var target = $(e.currentTarget);
                 if(target.children("div:not(.freezeOverlay)").length > 0){
-                    target.find("div div").unwrap(".overlay");
+                    target.find("div.overlay div").unwrap();
                 }
             }},"td.shiftTableContent");
 
@@ -124,24 +126,23 @@ $(function(){
                         );
                     }).map(function(index,_el){
                         var el = $(_el);
-                        var wrapper = $("<div></div>").css({"background":"#FFC21A","opacity":"0.5","z-index":"1"}).addClass("overlay");
+                        var wrapper = $("<div></div>").css({/*"background":"#FFC21A","opacity":"0.5",*/"z-index":"1"}).addClass("overlay");
                         el.children("div").wrap(wrapper);
                         el.addClass("selectedCell");
                     });
-                    div.find("td.selectedCell").children("div").addClass("freezeOverlay");
                 }else{
                     //それ以外のクリックで1つ目のセルを選択
-                    div.find("td.selectedCell").removeClass("selectedCell").find("div div").unwrap(".overlay");
+                    div.find("td.selectedCell").removeClass("selectedCell").find("div.overlay div").unwrap();
 
                     var target = $(e.currentTarget);
-                    if(target.children("div").length === 1){
-                        target.children("div").addClass("freezeOverlay");
-                    }else{
-                        var wrapper = $("<div></div>").css({"background":"#FFC21A","opacity":"0.5","z-index":"1"}).addClass("overlay freezeOverlay");
-                        target.children("div").wrap(wrapper);
+                    var wrapper = $("<div></div>").css({/*"background":"#FFC21A","opacity":"0.5",*/"z-index":"1"}).addClass("overlay");
+                    wrapper.css({"border":"2px solid #000000"}).addClass("freezeOverlay");
+                    target.children("div").wrap(wrapper);
                     }
                     target.addClass("selectedCell");
-                }
+                div.find("td.selectedCell").children("div").addClass("freezeOverlay").css({"border":"2px solid #000000","border-left-width":"0","border-right-width":"0"});
+                div.find("td.selectedCell").children("div").last().css("border-right-width","2px");
+                div.find("td.selectedCell").children("div").first().css("border-left-width","2px");
             });
 
             form.find('[name="shiftTableUser"]').siblings("div").on("contextmenu","td.selectedCell",function(e){
@@ -236,7 +237,7 @@ $(function(){
                     cm.remove();
                 },function(e){
                     //6
-                    selectedCells.removeClass("selectedCell").find("div div").unwrap(".overlay");
+                    selectedCells.removeClass("selectedCell").find("div div").unwrap();
                     cm.remove();
                 }]);
                 return false;

@@ -692,7 +692,7 @@ var Datapiece = (function(){
                         td.attr(option.trans ? "rowspan" :"colspan",cell.interval).addClass("hasWork");
                         td.data({"workassignid":cell.workAssignId,"start":cell.start.getTime(),"interval":cell.interval,"workIndex":rowIndex,"extra":cell.extra});
                         if(cell.extra){
-                            td.children("div").css("border","2px solid red").addClass("extra");
+                            td.children("div").css("border","2px solid #FF0000").addClass("extra");
                         }
                     }
                     td.addClass("shiftTableContent").css({"padding":"0","margin":"0"})
