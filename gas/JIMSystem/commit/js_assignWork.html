@@ -100,11 +100,11 @@ $(function(){
             form.find('[name="shiftTableUser"]').siblings("div").on({"mouseenter":function(e){
                 var target = $(e.currentTarget);
                 var wrapper = $("<div></div>").css({"background":"#FFC21A","opacity":"0.5","z-index":"1"}).addClass("overlay");
-                target.children("span").wrap(wrapper);
+                target.children("div").wrap(wrapper);
             },"mouseleave":function(e){
                 var target = $(e.currentTarget);
                 if(target.children("div:not(.freezeOverlay)").length > 0){
-                    target.find("div span").unwrap(".overlay");
+                    target.find("div div").unwrap(".overlay");
                 }
             }},"td.shiftTableContent");
 
@@ -125,20 +125,20 @@ $(function(){
                     }).map(function(index,_el){
                         var el = $(_el);
                         var wrapper = $("<div></div>").css({"background":"#FFC21A","opacity":"0.5","z-index":"1"}).addClass("overlay");
-                        el.children("span").wrap(wrapper);
+                        el.children("div").wrap(wrapper);
                         el.addClass("selectedCell");
                     });
                     div.find("td.selectedCell").children("div").addClass("freezeOverlay");
                 }else{
                     //それ以外のクリックで1つ目のセルを選択
-                    div.find("td.selectedCell").removeClass("selectedCell").find("div span").unwrap(".overlay");
+                    div.find("td.selectedCell").removeClass("selectedCell").find("div div").unwrap(".overlay");
 
                     var target = $(e.currentTarget);
                     if(target.children("div").length === 1){
                         target.children("div").addClass("freezeOverlay");
                     }else{
                         var wrapper = $("<div></div>").css({"background":"#FFC21A","opacity":"0.5","z-index":"1"}).addClass("overlay freezeOverlay");
-                        target.children("span").wrap(wrapper);
+                        target.children("div").wrap(wrapper);
                     }
                     target.addClass("selectedCell");
                 }
@@ -236,7 +236,7 @@ $(function(){
                     cm.remove();
                 },function(e){
                     //6
-                    selectedCells.removeClass("selectedCell").find("span").unwrap(".overlay");
+                    selectedCells.removeClass("selectedCell").find("div div").unwrap(".overlay");
                     cm.remove();
                 }]);
                 return false;

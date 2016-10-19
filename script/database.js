@@ -608,8 +608,15 @@ var Datapiece = (function(){
             //UserとWorkListでほぼ共通なのでまとめた
             //option = {"mode":["tr","table"],"trans":[true,false],"callback":function,"extraWorkAssign":[WorkAssign]}
             //tr table
-            var cellWidthPerInterval = 2;  //em
-            var cellHeightPerInterval = 4;  //ex
+            var cellWidthPerInterval = {"value":2,"unit":"em"};
+            var cellHeightPerInterval = {"value":4,"unit":"ex"};
+
+            var cellWidth = function(interval){
+                return "" + (cellWidthPerInterval.value * interval) + cellWidthPerInterval.unit;
+            }
+            var cellHeight = function(interval){
+                return "" + (cellHeightPerInterval.value * interval) + cellHeightPerInterval.unit;
+            }
 
             if(option === undefined)  option = {};
             if(option.mode === undefined)  option.mode = "table";
@@ -651,9 +658,9 @@ var Datapiece = (function(){
                     return prev.concat(Array.isArray(curt) ? curt : [curt]);
                 });
                 _tdMatrix[rowIndex] = rowContent.map(function(cell,cellIndex){
-                    var td = $("<td><span></span></td>");
+                    var td = $("<td><div></div></td>");
                     if(cell.workAssignId === "_blank"){
-                        td.children("span").text(" ");
+                        td.children("div").text(" ");
                         td.css({
                             "background":"#FFFFFF",
                             "color":"#000000",
@@ -672,9 +679,9 @@ var Datapiece = (function(){
                         }
                         var datapiece = workAssign.getDatapieceRelated(idName,dataName);
                         if(dataName === "user"){
-                            td.children("span").text(datapiece.getValue("nameLast") + " " + datapiece.getValue("nameFirst"));
+                            td.children("div").text(datapiece.getValue("nameLast") + " " + datapiece.getValue("nameFirst"));
                         }else if(dataName === "workList"){
-                            td.children("span").text(datapiece.getValue("nameShort"));
+                            td.children("div").text(datapiece.getValue("nameShort"));
                         }
                         td.css({
                             "background":datapiece.getBackgroundColor(),
@@ -689,12 +696,12 @@ var Datapiece = (function(){
                         }
                     }
                     td.addClass("shiftTableContent").css({"padding":"0","margin":"0"})
-                    .children("span").css({"padding":"1ex 0.5em","white-space":"pre","display":"block","cursor":"pointer","box-sizing":"border-box"}).map(function(i,_el){
+                    .children("div").css({"padding":"1ex 0.5em","white-space":"pre","cursor":"pointer","box-sizing":"border-box"}).map(function(i,_el){
                         var el = $(_el);
                         if(option.trans){
-                            el.css({"height":cellHeightPerInterval * td.data("interval") + "ex"});
+                            el.css({"height":cellHeight(td.data("interval"))});
                         }else{
-                            el.css({"width":cellWidthPerInterval * td.data("interval") + "em"});
+                            el.css({"width":cellWidth(td.data("interval"))});
                         }
                     });
                     return td;
@@ -721,18 +728,18 @@ var Datapiece = (function(){
                     }else{
                         timeSpan = 60 / LocalDate.getTimeUnitAsConverted("minute");
                     }
-                    var td = $("<td></td>");
-                    td.text("" + time.getHours() + "時").css({
-                        "color":"#000000",
+                    var td = $("<td><div></div></td>");
+                    td.attr(option.trans ? "rowspan" :"colspan",timeSpan).addClass("timeScale").css({
+                        "padding":"0","margin":"0",
                         "border":"1px solid #000000",
+                        "color":"#000000",
                         "background":(index%2===0 ? "#7FFFD4" : "#66CDAA"),
-                        "text-align":(option.trans ? "" : "center"),
-                        "padding":"1ex 0"
-                    }).attr(option.trans ? "rowspan" :"colspan",timeSpan).addClass("timeScale");
+                        "text-align":(option.trans ? "" : "center")
+                    }).children("div").text("" + time.getHours() + "時");
                     if(option.trans){
-                        td.css({"height":cellHeightPerInterval * timeSpan + "ex"});
+                        td.children("div").css({"height":cellHeight(timeSpan)});
                     }else{
-                        td.css({"width":cellWidthPerInterval * timeSpan + "em"});
+                        td.children("div").css({"width":cellWidth(timeSpan)});
                     }
                     return td;
                 });
