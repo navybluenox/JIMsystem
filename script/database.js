@@ -609,7 +609,7 @@ var Datapiece = (function(){
             //option = {"mode":["tr","table"],"trans":[true,false],"callback":function,"extraWorkAssign":[WorkAssign]}
             //tr table
             var cellWidthPerInterval = {"value":2,"unit":"em"};
-            var cellHeightPerInterval = {"value":4,"unit":"ex"};
+            var cellHeightPerInterval = {"value":3,"unit":"ex"};
 
             var cellWidth = function(interval){
                 return "" + (cellWidthPerInterval.value * interval) + cellWidthPerInterval.unit;
@@ -692,16 +692,19 @@ var Datapiece = (function(){
                         td.attr(option.trans ? "rowspan" :"colspan",cell.interval).addClass("hasWork");
                         td.data({"workassignid":cell.workAssignId,"start":cell.start.getTime(),"interval":cell.interval,"workIndex":rowIndex,"extra":cell.extra});
                         if(cell.extra){
-                            td.css("border","2px solid red").addClass("extra");
+                            td.children("div").css("border","2px solid red").addClass("extra");
                         }
                     }
                     td.addClass("shiftTableContent").css({"padding":"0","margin":"0"})
-                    .children("div").css({"padding":"1ex 0.5em","white-space":"pre","cursor":"pointer","box-sizing":"border-box"}).map(function(i,_el){
+                    .children("div").css({"padding":"1ex 0.5em","white-space":"pre","cursor":"pointer","box-sizing":"border-box"});
+                    td.map(function(i,_el){
                         var el = $(_el);
                         if(option.trans){
                             el.css({"height":cellHeight(td.data("interval"))});
+                            el.children("div").css({"height":cellHeight(td.data("interval"))});
                         }else{
                             el.css({"width":cellWidth(td.data("interval"))});
+                            el.children("div").css({"width":cellWidth(td.data("interval"))});
                         }
                     });
                     return td;
@@ -737,8 +740,10 @@ var Datapiece = (function(){
                         "text-align":(option.trans ? "" : "center")
                     }).children("div").text("" + time.getHours() + "時");
                     if(option.trans){
-                        td.children("div").css({"height":cellHeight(timeSpan)});
+                        td.css({"height":cellHeight(timeSpan)});
+                        td.children("div").css({"height":cellHeight(timeSpan)})
                     }else{
+                        td.css({"width":cellWidth(timeSpan)});
                         td.children("div").css({"width":cellWidth(timeSpan)});
                     }
                     return td;
