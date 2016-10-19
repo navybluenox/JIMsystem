@@ -691,10 +691,10 @@ var Datapiece = (function(){
                     td.addClass("shiftTableContent").css({"padding":"0","margin":"0"})
                     .children("span").css({"padding":"1ex 0.5em","white-space":"pre","display":"block","cursor":"pointer","box-sizing":"border-box"}).map(function(i,_el){
                         var el = $(_el);
-                        if(trans){
-                            el.css({"min-height":cellHeightPerInterval + "ex"});
+                        if(option.trans){
+                            el.css({"min-height":cellHeightPerInterval * td.data("interval") + "ex"});
                         }else{
-                            el.css({"min-width":cellWidthPerInterval + "em"});
+                            el.css({"min-width":cellWidthPerInterval * td.data("interval") + "em"});
                         }
                     });
                     return td;
@@ -1092,7 +1092,7 @@ class WorkList extends Datapiece{
         return Datapiece.getShiftTableAsData(this,this.getDataName(),start,end,extraWorkAssign);
     }
     getShiftTableAsElement(start,end,option){
-        return Datapiece.getShiftTableAsElement(this,this.getDataName(),start,end,extraWorkAssign);        
+        return Datapiece.getShiftTableAsElement(this,this.getDataName(),start,end,option);        
     }
 }
 
