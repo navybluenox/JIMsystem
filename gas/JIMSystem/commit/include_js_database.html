@@ -678,11 +678,13 @@ var Datapiece = (function(){
                         if(workAssign === undefined){
                             workAssign = option.extraWorkAssign.find(function(workAssign){return workAssign.getValue("_id") === cell.workAssignId});
                         }
-                        var datapiece = workAssign.getDatapieceRelated(idName,dataName);
+                        var datapiece;
                         if(dataName === "user"){
-                            td.children("div").text(datapiece.getValue("nameLast") + " " + datapiece.getValue("nameFirst"));
-                        }else if(dataName === "workList"){
+                            datapiece = workAssign.getDatapieceRelated("workListId","workList");
                             td.children("div").text(datapiece.getValue("nameShort"));
+                        }else if(dataName === "workList"){
+                            datapiece = workAssign.getDatapieceRelated("userId","user");
+                            td.children("div").text(datapiece.getValue("nameLast") + " " + datapiece.getValue("nameFirst"));
                         }
                         td.css({
                             "background":datapiece.getBackgroundColor(),
@@ -751,6 +753,10 @@ var Datapiece = (function(){
                 });
             })();
             _tdMatrix = [timeScales].concat(_tdMatrix);
+
+            //TODO
+            //WorkListのみ、各時間の上限数と現在の割り振り数のヘッダーを入れる
+            //option.assignedNum
 
             var tdMatrix;
             if(option.trans){
@@ -1047,6 +1053,16 @@ class WorkAssign extends Datapiece{
             }
         });
     }
+    getWorkListSectionNumber(){
+        var workList = this.getDatapieceRelated("workListId","workList");
+        if(workList === undefined)  return this;
+        var time = this.getValue("start");
+        return workList.getValue("@detail").findIndex(function(section){
+            var start = section.start;
+            var end = start.copy().addTimeUnit(section.number.length);
+            return time.getTime() >= start.getTime() && time.getTime() < end.getTime();
+        });
+    }
 }
 
 class WorkGroup extends Datapiece{
@@ -1112,6 +1128,7 @@ class WorkList extends Datapiece{
     getShiftTableAsElement(start,end,option){
         return Datapiece.getShiftTableAsElement(this,this.getDataName(),start,end,option);        
     }
+    //TODO getWorkNotAssigned(start,end,option)
 }
 
 class WorkNotAssigned extends Datapiece{

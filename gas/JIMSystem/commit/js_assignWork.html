@@ -43,8 +43,12 @@ $(function(){
                     form.find('[name="shiftTableUser_day"]').append(option);
                 }
             })();
+
             form.find('[name="shiftTableUser_day"]').on("change",function(e){
                 pageFun.showShiftTableUser();
+            });
+            form.find('[name="shiftTableWork_section"]').on("change",function(e){
+                pageFun.showShiftTableWork();
             });
             form.find('[name="start_day"],[name="end_day"]').attr({"min":_val.config.getWorkStartDay(),"max":_val.config.getWorkEndDay()});
             form.find('[name="start_minute"],[name="end_minute"]').attr({"min":-LocalDate.getTimeUnitAsConverted("minute"),"step":LocalDate.getTimeUnitAsConverted("minute")})
@@ -94,55 +98,51 @@ $(function(){
             form.on("change",'input[type="button"],input[type="text"],input[type="checkbox"],input[type="number"],select',function(e){
                 pageFun.getFormData();
                 pageFun.showShiftTableUser();
+                pageFun.showShiftTableWork();
                 form.find(".extra").focus();
             });
 
-            //TODO　ロジックを組みなおす
             form.find('[name="shiftTableUser"]').siblings("div").on({"mouseenter":function(e){
                 var target = $(e.currentTarget);
-                if(target.find("div.overlay").length > 0)  return;
-                var wrapper = $("<div></div>").css({"background":"#FFC21A","opacity":"0.5","z-index":"1"}).addClass("overlay");
-                target.children("div").wrap(wrapper);
+                if(target.find("div.overlay").length === 0){
+                    var wrapper = $("<div></div>").css({"z-index":"1"}).addClass("overlay");
+                    target.children("div").wrap(wrapper);
+                }
+                target.find("div.overlay").css({"background":"rgba(255,194,26,0.5)"});
             },"mouseleave":function(e){
                 var target = $(e.currentTarget);
-                if(target.children("div:not(.freezeOverlay)").length > 0){
-                    target.find("div.overlay div").unwrap();
-                }
+                target.find("div.overlay").css({"background":"rgba(255,255,255,0)"});
+                target.find("div.overlay:not(.freezeOverlay) > div").unwrap();
             }},"td.shiftTableContent");
 
             form.find('[name="shiftTableUser"]').siblings("div").on("click","td.shiftTableContent",function(e){
                 var target = $(e.currentTarget);
-                var div = form.find('[name="shiftTableUser"]').siblings("div");
+                var parentDiv = form.find('[name="shiftTableUser"]').siblings("div");
                 var start,end;
-                if(div.find("td.selectedCell").length === 1 && div.find("td.selectedCell").data("workIndex") === target.data("workIndex")){
+                if(parentDiv.find("td.selectedCell").length === 1 && parentDiv.find("td.selectedCell").data("workIndex") === target.data("workIndex")){
                     //二回目のクリックで範囲選択
-                    var targetAnother = div.find("td.selectedCell");
-                    div.find("td.shiftTableContent").filter(function(index,_el){
+                    var targetAnother = parentDiv.find("td.selectedCell");
+                    parentDiv.find("td.shiftTableContent").filter(function(index,_el){
                         var el = $(_el);
                         return (
                             el.data("workIndex") === target.data("workIndex") &&
-                            !el.hasClass("selectedCell") &&
                             (el.data("start") - target.data("start"))*(el.data("start") - targetAnother.data("start")) <= 0
                         );
-                    }).map(function(index,_el){
-                        var el = $(_el);
-                        var wrapper = $("<div></div>").css({/*"background":"#FFC21A","opacity":"0.5",*/"z-index":"1"}).addClass("overlay");
-                        el.children("div").wrap(wrapper);
-                        el.addClass("selectedCell");
-                    });
+                    }).addClass("selectedCell");
+                    parentDiv.find("td.selectedCell > div").not(".overlay").wrap($("<div></div>").css({"z-index":"1"}).addClass("overlay"));
+
                 }else{
                     //それ以外のクリックで1つ目のセルを選択
-                    div.find("td.selectedCell").removeClass("selectedCell").find("div.overlay div").unwrap();
+                    parentDiv.find("td.selectedCell").removeClass("selectedCell").find("div.overlay > div").unwrap();
 
                     var target = $(e.currentTarget);
-                    var wrapper = $("<div></div>").css({/*"background":"#FFC21A","opacity":"0.5",*/"z-index":"1"}).addClass("overlay");
-                    wrapper.css({"border":"2px solid #000000"}).addClass("freezeOverlay");
-                    target.children("div").wrap(wrapper);
-                    }
+                    target.children("div").wrap($("<div></div>").css({"z-index":"1"}).addClass("overlay"));
                     target.addClass("selectedCell");
-                div.find("td.selectedCell").children("div").addClass("freezeOverlay").css({"border":"2px solid #000000","border-left-width":"0","border-right-width":"0"});
-                div.find("td.selectedCell").children("div").last().css("border-right-width","2px");
-                div.find("td.selectedCell").children("div").first().css("border-left-width","2px");
+                }
+
+                parentDiv.find("td.selectedCell > div.overlay").addClass("freezeOverlay").css({"background":"rgba(255,255,255,0)","border":"2px solid #FF9E1F","border-left-width":"0","border-right-width":"0"});
+                parentDiv.find("td.selectedCell > div.overlay").last().css("border-right-width","2px");
+                parentDiv.find("td.selectedCell > div.overlay").first().css("border-left-width","2px");
             });
 
             form.find('[name="shiftTableUser"]').siblings("div").on("contextmenu","td.selectedCell",function(e){
@@ -232,6 +232,7 @@ $(function(){
                     }
                     _val.server.removeData(workAssigns).sendUpdateQueue().then(function(){
                         pageFun.showShiftTableUser();
+                        pageFun.showShiftTableWork();
                         pageFun.searchWorkAssign();
                     });
                     cm.remove();
@@ -419,14 +420,46 @@ $(function(){
             var day = +form.find('[name="shiftTableUser_day"]').val();
             var start = LocalDate.getWorkTime(day,"start");
             var end = LocalDate.getWorkTime(day,"end");
-            pageFun.getFormData();
 
+            pageFun.getFormData();
             var table = user.getShiftTableAsElement(start,end,{"mode":"table","extraWorkAssign":(form.find('[name="shiftTableUser_showFormWA"]').val()==="Yes" ? [editing] : [])});
 
             target.children().remove();
             target.append(table);
             var width = $(window).width()*0.5;
-            target.css({"max-width":width,"overflow":"auto"})
+            target.css({"max-width":width,"overflow":"auto"});
+        },showShiftTableWork:function(){
+            var target = form.find('[name="shiftTableWork"]').siblings("div");
+            var workList = _val.server.getDataById(form.find('[name="shiftTableWork_searchResult"]').val(),"workList")[0];
+            if(workList === undefined)  return;
+            var sectionNum = +form.find('[name="shiftTableWork_section"]').val();
+            var detail = workList.getValue("@detail")[sectionNum];
+            var start = detail.start.copy();
+            var end = start.copy().addTimeUnit(detail.number.length);
+            pageFun.getFormData();
+            var table = workList.getShiftTableAsElement(start,end,{"mode":"table","extraWorkAssign":(form.find('[name="shiftTableWork_showFormWA"]').val()==="Yes" ? [editing] : [])});
+
+            target.children().remove();
+            target.append(table);
+            var width = $(window).width()*0.5;
+            target.css({"max-width":width,"overflow":"auto"});
+        },setWorkListSection:function(){
+            var target = form.find('[name="shiftTableWork_section"]');
+            var workList = _val.server.getDataById(form.find('[name="shiftTableWork_searchResult"]').val(),"workList")[0];
+
+            target.children().remove();
+
+            var details = workList.getValue("@detail");
+            details.forEach(function(detail,detailIndex){
+                var start = detail.start;
+                target.append([
+                    '<option value="' + detailIndex + '">',
+                    start.getDays() + "日目 ",
+                    start.toString({"hideDay":true}) + "から",
+                    start.copy().addTimeUnit(detail.number.length).toString({"hideDay":true,"userDiffHours":start}) + "まで",
+                    '</option>'
+                ].join(""));
+            });
         },setMemberOrder:function(){
             var workListId = form.find('[name="workListId"]').val();
             var userId = form.find('[name="userId"]').val();
@@ -476,8 +509,13 @@ $(function(){
             form.find('[name="workListId_name"],[name="shiftTableWork_name"]').val(workAssign.getDatapieceRelated("workListId","workList").getValue("name"));
             form.find('[name="userId_azusa"],[name="shiftTableUser_azusa"]').val(workAssign.getDatapieceRelated("userId","user").getValue("azusaSendName"));
             form.find('[name="workListId_name"],[name="shiftTableWork_name"],[name="userId_azusa"],[name="shiftTableUser_azusa"]').trigger("keyup");
+
             form.find('[name="shiftTableUser_searchResult"]').val(workAssign.getValue("userId"));
             form.find('[name="shiftTableWork_searchResult"]').val(workAssign.getValue("workListId"));
+
+            form.find('[name="shiftTableWork_searchResult"]').trigger("change");
+            form.find('[name="shiftTableWork_section"]').val(workAssign.getWorkListSectionNumber());
+
             form.find('[name="interval"]').trigger("change");
             form.find('[name="shiftTableUser_searchResult"],[name="shiftTableWork_searchResult"]').trigger("change");
         }

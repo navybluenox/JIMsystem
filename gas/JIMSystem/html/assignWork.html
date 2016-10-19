@@ -37,11 +37,13 @@
                     <td></td>
                 </tr><tr>
                     <td>人割別人割</td>
-                    <td><table><thead></thead><tbody></tbody></table><input type="hidden" name="shiftTableWork"></td>
+                    <td style="padding:0;"><div></div><input type="hidden" name="shiftTableWork"></td>
                     <td><table><tbody>
                         <tr><td>統括の配送名：</td><td><input type="text" name="shiftTableWork_azusa" tabindex="2"></td></tr>
                         <tr><td>人割名：</td><td><input type="text" name="shiftTableWork_name" tabindex="2"></td></tr>
-                        <tr><td></td><td><select name="shiftTableWork_searchResult" tabindex="2" onchange='_val.pageFun.assignWork.setWorkListId("shiftTableWork")'></select></td></tr>
+                        <tr><td></td><td><select name="shiftTableWork_searchResult" tabindex="2" onchange='_val.pageFun.assignWork.setWorkListId("shiftTableWork");_val.pageFun.assignWork.setWorkListSection();_val.pageFun.assignWork.showShiftTableWork();'></select></td></tr>
+                        <tr><td>表示するセクション：</td><td><select name="shiftTableWork_section" tabindex="2" onchange='_val.pageFun.assignWork.showShiftTableWork()'></select></td></tr>
+                        <tr><td>フォームの人割を表示：</td><td><input type="button" name="shiftTableWork_showFormWA" value="Yes" tabindex="2" onclick='var el=$(this);if(el.val()==="Yes"){el.val("No");}else{el.val("Yes");} _val.pageFun.assignWork.showShiftTableWork()'></td></tr>
                     </tbody></table></td>
                 </tr><tr>
                     <td>従事者の人割</td>

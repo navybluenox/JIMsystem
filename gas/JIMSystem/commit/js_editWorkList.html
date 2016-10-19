@@ -100,7 +100,7 @@ $(function(){
                         setValue["@detail"][i] = {"start":pageFun.getDetailStart(i),"number":pageFun.getDetailNumber(i)};
                     }
                 }
-                setValue["@detail"] = setValue["@detail"].filter(function(v){return v !== undefined});
+                setValue["@detail"] = setValue["@detail"].filter(function(v){return v !== undefined}).sort(function(a,b){return a.start.getTime() - b.start.getTime()});
 
                 if(kind === "change"){
                     if(editing === undefined){
