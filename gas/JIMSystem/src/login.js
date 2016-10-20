@@ -41,6 +41,7 @@ $(function(){
                 },100);
             }).then(function(){
                 mw.fadeOut();
+                $("#pass").focus();
             });
         },
         sendPass:function(){

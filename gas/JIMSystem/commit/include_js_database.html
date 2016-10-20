@@ -1090,7 +1090,7 @@ class WorkList extends Datapiece{
                     var ret = {};
                     Object.keys(obj).forEach(function(key){
                         if(key === "number"){
-                            ret[key] = obj[key].split(",");
+                            ret[key] = obj[key].split(",").map(function(n){return +n});
                         }else{
                             ret[key] = obj[key];
                         }
@@ -1128,7 +1128,31 @@ class WorkList extends Datapiece{
     getShiftTableAsElement(start,end,option){
         return Datapiece.getShiftTableAsElement(this,this.getDataName(),start,end,option);        
     }
-    //TODO getWorkNotAssigned(start,end,option)
+    getDiffFromRequired(start,end){
+        var result = [];
+        var workAssigns = this.getWorkAssigns();
+
+        var time,num_required,num_assigned;
+        for(var i=0,l=start.getDiff(end,"timeunit");i<l;i++){
+            time = start.copy().addTimeUnit(i);
+            num_required = 0;
+            this.getValue("@detail").map(function(section){
+                var diff = section.start.getDiff(time,"timeunit");
+                if(diff >= 0 && diff < section.number.length){
+                    num_required += section.number[diff];
+                }
+            });
+            num_assigned = workAssigns.filter(function(workAssign){
+                return (
+                    time.getTime() >= workAssign.getValue("start").getTime() &&
+                    time.getTime() < workAssign.getValue("end").getTime()
+                );
+            }).length;
+            result.push({"time":time,"diff":num_required - num_assigned});
+        }
+        return result;
+    }
+
 }
 
 class WorkNotAssigned extends Datapiece{

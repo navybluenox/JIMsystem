@@ -99,7 +99,8 @@ $(function(){
                 pageFun.getFormData();
                 pageFun.showShiftTableUser();
                 pageFun.showShiftTableWork();
-                form.find(".extra").focus();
+                //TODO scroll
+                form.find('[name="shiftTableWork"]').focus();
             });
 
             form.find('[name="shiftTableUser"]').siblings("div").on({"mouseenter":function(e){
@@ -347,7 +348,7 @@ $(function(){
                             str = user.getValue("nameLast") + " " + user.getValue("nameFirst");
                             break;
                         case "time":
-                            str = workAssign.getValue("start").toString() + "から" + workAssign.getValue("start").copy().addTimeUnit(workAssign.getValue("interval")).toString({hideDay:true}) + "まで";
+                            str = workAssign.getValue("start").toString() + "から" + workAssign.getValue("end").toString({hideDay:true}) + "まで";
                             break;
                         case "notice":
                             str = workAssign.getValue(cellObj.column);
