@@ -34,6 +34,7 @@ $(function(){
             var form = $("#formRunUserScript");
             var content = form.find("textarea").val();
             var div = $("#formRunUserScript_div");
+            var server = _val.server;
             eval(content);
         }
     };

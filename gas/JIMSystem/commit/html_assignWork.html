@@ -1,15 +1,15 @@
-TODO advancedSettingを非表示にする
 <article>
     <h1>人割作成</h1>
     <section>
         <h2>新規作成・変更</h2>
+        <div style="margin:1em 3em;">詳細設定を表示する：<input type="button" tabindex="-1" value="No" onclick='var el=$(this);if(el.val()==="Yes"){el.val("No");$(".advancedSetting").css("display","none")}else{el.val("Yes");$(".advancedSetting").css("display","")}'></div>
         <form id="formAssignWork_edit">
             <table class="tableform"><tbody>
-                <tr>
+                <tr class="advancedSetting" style="display:none;">
                     <td>編集中の人割のID</td>
                     <td><input type="text" name="editing" tabindex="-1" disabled></td>
                     <td>編集不可</td>
-                </tr><tr>
+                </tr><tr class="advancedSetting" style="display:none;">
                     <td>人割ID</td>
                     <td><input type="text" name="workListId" tabindex="-1"></td>
                     <td><table><tbody>
@@ -17,22 +17,22 @@ TODO advancedSettingを非表示にする
                         <tr><td>人割名：</td><td><input type="text" name="workListId_name" tabindex="2"></td></tr>
                         <tr><td></td><td><select name="workListId_searchResult" tabindex="2" onchange='_val.pageFun.assignWork.setWorkListId("workListId")'></select></td></tr>
                     </tbody></table></td>
-                </tr><tr>
+                </tr><tr class="advancedSetting" style="display:none;">
                     <td>従事者のUserID</td>
                     <td><input type="text" name="userId" tabindex="-1"></td>
                     <td><table><tbody>
                         <tr><td>配送名：</td><td><input type="text" name="userId_azusa" tabindex="2"></td></tr>
                         <tr><td></td><td><select name="userId_searchResult" tabindex="2" onchange='_val.pageFun.assignWork.setUserId("userId");'></select></td></tr>
                     </tbody></table></td>
-                </tr><tr>
+                </tr><tr class="advancedSetting" style="display:none;">
                     <td>開始時間</td>
                     <td><input type="number" name="start_day" tabindex="2" value="0" style="width:3em;">日目<input type="number" name="start_hour" tabindex="2" max="24" min="-1" value="0" style="width:3em;">時<input type="number" name="start_minute" max="60" tabindex="2" value="0" style="width:3em;">分</td>
                     <td></td>
-                </tr><tr>
+                </tr><tr class="advancedSetting" style="display:none;">
                     <td>終了時間</td>
                     <td><input type="number" name="end_day" tabindex="2" value="0" style="width:3em;">日目<input type="number" name="end_hour" tabindex="2" max="24" min="-1" value="0" style="width:3em;">時<input type="number" name="end_minute" max="60" tabindex="2" value="0" style="width:3em;">分</td>
                     <td></td>
-                </tr><tr>
+                </tr><tr class="advancedSetting" style="display:none;">
                     <td>従事時間</td>
                     <td><input type="number" name="interval" tabindex="2" min="1" value="1" style="width:3em;">×<span></span>分 == <span></span></td>
                     <td></td>
@@ -66,13 +66,13 @@ TODO advancedSettingを非表示にする
                     <td>メモ書き</td>
                     <td><textarea name="note" tabindex="2"></textarea></td>
                     <td></td>
-                </tr><tr>
+                </tr><tr class="advancedSetting" style="display:none;">
                     <td>人割内の序列</td>
                     <td><input type="number" name="memberOrder" value="0" tabindex="-1" min="0" disabled style="background:#E0E0E0;"></td>
                     <td style="white-space:pre-line;">WorkGroupで指定された値（memberOrder）を優先する：<input type="button" name="memberOrder_useWorkGroup" value="Yes" tabindex="2">
                         人割を表示する際に、同一人割内で上位として表示したい場合に使用される優先度。
                         ※ 0:優先しない、1以上:小さいほど優先度が高い</td>
-                </tr><tr>
+                </tr><tr class="advancedSetting" style="display:none;">
                     <td>無効にする</td>
                     <td><input type="button" name="disabled" value="No" tabindex="2" onclick='var el=$(this);if(el.val()==="Yes"){el.val("No");}else{el.val("Yes");}'></td>
                     <td style="white-space:pre-line;">この人割を一時的に無効にする。

@@ -226,6 +226,7 @@ var Server = (function(){
                             queue.value
                                 .setValues({"created":nowTime})
                                 .setValues({"updated":nowTime})
+                                //TODO!!!! delete
                                 .setNewId(true)
                                 .setDefaultValue();
                             return queue;

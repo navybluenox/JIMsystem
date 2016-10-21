@@ -344,4 +344,23 @@ var ContextMenu = (function(){
     }
 })();
 
+function downloadTextFile(text,fileName){
+    var blob = new Blob([text],{
+        type:"plain/text",
+        endings:"native"
+    });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = fileName;
+    a.target = "_blank";
+    a.hidden = true;
+    a.style.display = "none";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+}
+
+
+
 </script>
