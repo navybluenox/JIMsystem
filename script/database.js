@@ -618,18 +618,24 @@ var Datapiece = (function(){
                 return "" + (cellHeightPerInterval.value * interval) + cellHeightPerInterval.unit;
             }
 
-            if(option === undefined)  option = {};
-            if(option.mode === undefined)  option.mode = "table";
-            if(option.trans === undefined)  option.trans = false;
-            if(option.extraWorkAssign === undefined)  option.extraWorkAssign = [];
+            option = option || {};
+            option.mode = option.mode || "table";
+            option.trans = option.trans || false;
+            option.extraWorkAssign = option.extraWorkAssign || [];
+            option.diffFormRequired = option.diffFormRequired || true;
+
             var idName = dataName + "Id";
 
             var data = that.getShiftTableAsData(start,end,option.extraWorkAssign);
             var rowContents = [];
-            for(var i=0; i<data.workNum; i++){
+            for(var i=0,l=Math.max(data.workNum,(dataName === "workList" ? that.getDiffFromRequired(start,end,true).reduce(function(prev,curt){return Math.max(prev,curt.diff)},0) : 0)); i<l; i++){
                 rowContents[i] = data.content.filter(function(obj){return obj.workIndex === i});
             }
             var _tdMatrix = [];
+            if(dataName === "workList"){
+                //後ろの blank -> vacancy の変更で使用する
+                var _requires = that.getDiffFromRequired(start,end,true).map(function(v){return v.diff});
+            }
             rowContents.forEach(function(_rowContent,rowIndex){
                 var rowContent = _rowContent.slice();
                 var insert;
@@ -637,20 +643,20 @@ var Datapiece = (function(){
                 if(_rowContent.length === 0){
                     insert = [];
                     for(var j=0,l=start.getDiff(end, "timeunit"); j<l; j++){
-                        insert[j] = {"start":start.copy().addTimeUnit(j),"workAssignId":"_blank"};
+                        insert[j] = {"start":start.copy().addTimeUnit(j),"workAssignId":"_vacancy"};
                     }
                     rowContent = [insert];
                 }else{
                     for(var i=_rowContent.length-1; i>=0; i--){
                         insert = [];
                         for(var j=0,l=_rowContent[i].start.copy().addTimeUnit(_rowContent[i].interval).getDiff(i===_rowContent.length-1 ? end : _rowContent[i+1].start, "timeunit"); j<l; j++){
-                            insert[j] = {"start":_rowContent[i].start.copy().addTimeUnit(_rowContent[i].interval + j),"workAssignId":"_blank"};
+                            insert[j] = {"start":_rowContent[i].start.copy().addTimeUnit(_rowContent[i].interval + j),"workAssignId":"_vacancy"};
                         }
                         rowContent.splice(i+1,0,insert);
                     }
                     insert = [];
                     for(var j=0,l=start.getDiff(_rowContent[0].start, "timeunit"); j<l; j++){
-                        insert[j] = {"start":start.copy().addTimeUnit(j),"workAssignId":"_blank"};
+                        insert[j] = {"start":start.copy().addTimeUnit(j),"workAssignId":"_vacancy"};
                     }
                     rowContent.splice(0,0,insert);
                 }
@@ -659,7 +665,8 @@ var Datapiece = (function(){
                 });
                 _tdMatrix[rowIndex] = rowContent.map(function(cell,cellIndex){
                     var td = $("<td><div></div></td>");
-                    if(cell.workAssignId === "_blank"){
+                    if(cell.workAssignId === "_vacancy"){
+                        //TODO WorkListの場合、入れられないところもある
                         td.children("div").text(" ");
                         td.css({
                             "background":"#FFFFFF",
@@ -667,11 +674,16 @@ var Datapiece = (function(){
                             "border":"1px solid #000000",
                             "border-style": (option.trans ? "dashed solid" : "solid dashed")
                         });
-
                         if(cell.start.getMinutes() === 0){
                             td.css((option.trans ? {"border-top-style":"solid"} : {"border-left-style":"solid"}));
                         }
-                        td.data({"start":cell.start.getTime(),"interval":1,"workIndex":rowIndex});
+                        if(dataName === "workList"){
+                            if(rowIndex >= _requires[cellIndex]){
+                                td.css({"background":"#E8E8E8"});
+                                cell.workAssignId = "_blank";
+                            }
+                        }
+                        td.data({"workassignid":cell.workAssignId,"start":cell.start.getTime(),"interval":1,"workIndex":rowIndex});
                     }else{
                         var workAssign = Datapiece.getServer().getDataById(cell.workAssignId,"workAssign")[0];
                         if(workAssign === undefined){
@@ -713,6 +725,38 @@ var Datapiece = (function(){
                 });
             });
 
+            if(option.diffFormRequired && dataName === "workList"){
+                var requires = _requires.slice();
+                var diffs = that.getDiffFromRequired(start,end).map(function(v){return v.diff});
+
+                [requires,diffs].forEach(function(array,index,s){
+                    array = array.map(function(diff){
+                        var td = $("<td><div></div></td>");
+                        td.addClass(index === 0 ? "requireNum" : "diffNum").css({
+                            "padding":"0","margin":"0",
+                            "border":"1px solid #000000",
+                            "color":"#000000",
+                            "background":WorkList.getBackgroundColorByNumber(diff),
+                            "text-align":(option.trans ? "" : "center")
+                        }).children("div").text("" + diff);
+                        if(option.trans){
+                            td.css({"height":cellHeight(timeSpan)});
+                            td.children("div").css({"height":cellHeight(1)})
+                        }else{
+                            td.css({"width":cellWidth(1)});
+                            td.children("div").css({"width":cellWidth(1)});
+                        }
+                        return td;
+                    });
+                    if(index === 0){
+                        requires = array;
+                    }else{
+                        diffs = array;
+                    }
+                });
+                _tdMatrix = [requires,diffs].concat(_tdMatrix);
+            }
+
             var timeScales = [];
             (function(){
                 //make header
@@ -752,10 +796,6 @@ var Datapiece = (function(){
                 });
             })();
             _tdMatrix = [timeScales].concat(_tdMatrix);
-
-            //TODO
-            //WorkListのみ、各時間の上限数と現在の割り振り数のヘッダーを入れる
-            //option.assignedNum
 
             var tdMatrix;
             if(option.trans){
@@ -1127,9 +1167,10 @@ class WorkList extends Datapiece{
     getShiftTableAsElement(start,end,option){
         return Datapiece.getShiftTableAsElement(this,this.getDataName(),start,end,option);        
     }
-    getDiffFromRequired(start,end){
+    getDiffFromRequired(start,end,diffFromZero){
         var result = [];
         var workAssigns = this.getWorkAssigns();
+        diffFromZero = diffFromZero || false;
 
         var time,num_required,num_assigned;
         for(var i=0,l=start.getDiff(end,"timeunit");i<l;i++){
@@ -1141,17 +1182,39 @@ class WorkList extends Datapiece{
                     num_required += section.number[diff];
                 }
             });
-            num_assigned = workAssigns.filter(function(workAssign){
-                return (
-                    time.getTime() >= workAssign.getValue("start").getTime() &&
-                    time.getTime() < workAssign.getValue("end").getTime()
-                );
-            }).length;
+            if(diffFromZero){
+                num_assigned = 0;
+            }else{
+                num_assigned = workAssigns.filter(function(workAssign){
+                    return (
+                        time.getTime() >= workAssign.getValue("start").getTime() &&
+                        time.getTime() < workAssign.getValue("end").getTime()
+                    );
+                }).length;
+            }
             result.push({"time":time,"diff":num_required - num_assigned});
         }
         return result;
     }
-
+    static getBackgroundColorByNumber(num){
+        if(num > 0){
+            var hue = [200,140,60,30];
+            var lightness = [90,80,70,60,50];
+            var n = (num > 20 ? 20 : num) - 1;
+            return "hsl(" + hue[(n-n%5)/5] + ", 100%, " + lightness[n%5] + "%)";
+        }else{
+            return "#CCCCCC";
+        }
+    }
+    static getNotAssignedAtInterval(start,end){
+        var workLists = Datapiece.getServer().getData("workList");
+        return workLists.filter(function(workList){
+            if(workList.getValue("asAssigned")) return false;
+            return workList.getDiffFromRequired(start,end).every(function(obj){
+                return obj.diff > 0;
+            })
+        });
+    }
 }
 
 class WorkNotAssigned extends Datapiece{

@@ -335,13 +335,8 @@ $(function(){
                 ret[index] = +el.val();
             });
             return ret;
-        },changeButtonColor:function(el,_num){
-            var hue = [200,140,60,30];
-            var lightness = [90,80,70,60,50];
-            var num = (_num > 20 ? 20 : _num) - 1;
-            var backgroundColor = "hsl(" + hue[(num-num%5)/5] + ", 100%, " + lightness[num%5] + "%)";
-            var fontColor = "#000000";
-            $(el).css({"background":backgroundColor,"color":fontColor,"text-decoration": _num%5 === 0 ? "underline" : ""});
+        },changeButtonColor:function(el,num){
+            $(el).css({"background":Worklist.getBackgroundColorByNumber(num),"color":"#000000","text-decoration": _num%5 === 0 ? "underline" : ""});
         }
     };
 });

@@ -1,3 +1,4 @@
+TODO advancedSettingを非表示にする
 <article>
     <h1>人割作成</h1>
     <section>
@@ -41,18 +42,18 @@
                     <td><table><tbody>
                         <tr><td>統括の配送名：</td><td><input type="text" name="shiftTableWork_azusa" tabindex="2"></td></tr>
                         <tr><td>人割名：</td><td><input type="text" name="shiftTableWork_name" tabindex="2"></td></tr>
-                        <tr><td></td><td><select name="shiftTableWork_searchResult" tabindex="2" onchange='_val.pageFun.assignWork.setWorkListId("shiftTableWork");_val.pageFun.assignWork.setWorkListSection();_val.pageFun.assignWork.showShiftTableWork();'></select></td></tr>
-                        <tr><td>表示するセクション：</td><td><select name="shiftTableWork_section" tabindex="2" onchange='_val.pageFun.assignWork.showShiftTableWork()'></select></td></tr>
-                        <tr><td>フォームの人割を表示：</td><td><input type="button" name="shiftTableWork_showFormWA" value="Yes" tabindex="2" onclick='var el=$(this);if(el.val()==="Yes"){el.val("No");}else{el.val("Yes");} _val.pageFun.assignWork.showShiftTableWork()'></td></tr>
+                        <tr><td></td><td><select name="shiftTableWork_searchResult" tabindex="2" onchange='_val.pageFun.assignWork.setWorkListId("shiftTableWork");_val.pageFun.assignWork.setWorkListSection();'></select></td></tr>
+                        <tr><td>表示するセクション：</td><td><select name="shiftTableWork_section" tabindex="2"></select></td></tr>
+                        <tr><td>フォームの人割を表示：</td><td><input type="button" name="shiftTableWork_showFormWA" value="Yes" tabindex="2" onclick='var el=$(this);if(el.val()==="Yes"){el.val("No");}else{el.val("Yes");}'></td></tr>
                     </tbody></table></td>
                 </tr><tr>
                     <td>従事者の人割</td>
                     <td style="padding:0;"><div></div><input type="hidden" name="shiftTableUser"></td>
                     <td><table><tbody>
                         <tr><td>配送名：</td><td><input type="text" name="shiftTableUser_azusa" tabindex="2"></td></tr>
-                        <tr><td></td><td><select name="shiftTableUser_searchResult" tabindex="2" onchange='_val.pageFun.assignWork.setUserId("shiftTableUser");_val.pageFun.assignWork.showShiftTableUser();'></select></td></tr>
-                        <tr><td>表示する日：</td><td><select name="shiftTableUser_day" tabindex="2" onchange='_val.pageFun.assignWork.showShiftTableUser()'></select></td></tr>
-                        <tr><td>フォームの人割を表示：</td><td><input type="button" name="shiftTableUser_showFormWA" value="Yes" tabindex="2" onclick='var el=$(this);if(el.val()==="Yes"){el.val("No");}else{el.val("Yes");} _val.pageFun.assignWork.showShiftTableUser()'></td></tr>
+                        <tr><td></td><td><select name="shiftTableUser_searchResult" tabindex="2" onchange='_val.pageFun.assignWork.setUserId("shiftTableUser");'></select></td></tr>
+                        <tr><td>表示する日：</td><td><select name="shiftTableUser_day" tabindex="2"></select></td></tr>
+                        <tr><td>フォームの人割を表示：</td><td><input type="button" name="shiftTableUser_showFormWA" value="Yes" tabindex="2" onclick='var el=$(this);if(el.val()==="Yes"){el.val("No");}else{el.val("Yes");}'></td></tr>
                     </tbody></table></td>
                 </tr><tr>
                     <td>情報</td>
@@ -67,7 +68,7 @@
                     <td></td>
                 </tr><tr>
                     <td>人割内の序列</td>
-                    <td><input type="number" name="memberOrder" value="0" tabindex="2" min="0"></td>
+                    <td><input type="number" name="memberOrder" value="0" tabindex="-1" min="0" disabled style="background:#E0E0E0;"></td>
                     <td style="white-space:pre-line;">WorkGroupで指定された値（memberOrder）を優先する：<input type="button" name="memberOrder_useWorkGroup" value="Yes" tabindex="2">
                         人割を表示する際に、同一人割内で上位として表示したい場合に使用される優先度。
                         ※ 0:優先しない、1以上:小さいほど優先度が高い</td>

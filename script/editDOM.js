@@ -304,7 +304,7 @@ var ContextMenu = (function(){
                 "min-width":"20em",
                 "text-align":"left",
                 "padding":"5px 1em",
-                "background":"#FFFFFF",
+                //"background":"#FFFFFF",
                 "display":"block",
                 "cursor":"default",
                 "background":"transparent",
@@ -327,15 +327,16 @@ var ContextMenu = (function(){
             });
             this.keepPosition();
 
-            if(Array.isArray(bindings)){
-                bindings.forEach(function(binding,index){
-                    if(!binding)  return;
-                    that.getContent().find("li").eq(index).on("click",{"index":index,"text":items[index].text,"value":items[index].value},binding);
-                });
-            }else if(typeof bindings === "function"){
+            if(typeof bindings === "function"){
                 for(var index=0,l=items.length; index<l; index++){
-                    that.getContent().find("li").eq(index).on("click",{"index":index,"text":items[index].text,"value":items[index].value},bindings);
+                    that.getContent().find("li").eq(index).on("click",{"key":items[index].key,"text":items[index].text,"value":items[index].value},bindings);
                 }
+            }else if(classof(bindings) === "object"){
+                Object.keys(bindings).forEach(function(key){
+                    var index = items.findIndex(function(item){return item.key === key});
+                    if(typeof bindings[key] !== "function" || index === -1)  return;
+                    that.getContent().find("li").eq(index).on("click",{"key":key,"text":items[index].text,"value":items[index].value},bindings[key]);
+                });
             }
 
         }
