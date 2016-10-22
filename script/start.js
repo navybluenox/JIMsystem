@@ -55,6 +55,7 @@
             console.log("In order to change running mode, edit values, both 'mode' and 'collectionInfoFileId' on 'baseConfig.json'");
         }).then(function(){
             _val.server = new Server();
+            Datapiece.initialize({"server":_val.server});
             _val.server.onReady(function(that){
                 _val.server.loadData("systemConfig")
                 .then(function(v){
@@ -66,6 +67,8 @@
                             return v1.getValue("modeName") === _val.baseConfig.defaultMode;
                         });
                     }
+                    Datapiece.initialize({"config":_val.config});
+                    LocalDate.initialize({"config":_val.config});
                     console.log("_val",_val);
                 });
             })

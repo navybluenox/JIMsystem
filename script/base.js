@@ -162,8 +162,6 @@ var LocalDate = (function(){
     var config;
     return class LocalDate {
         constructor(timeValue){
-            //SystemConfigが変わる場合にはここを書き換える
-            if(config === undefined)  config = _val.config;
             var targetTime;
             var standardTime = LocalDate.getStandardTime();
             switch(typeof timeValue){
@@ -215,6 +213,10 @@ var LocalDate = (function(){
                     targetTime = new Date(timeValue);
                     this._localTime = targetTime.getTime() - standardTime.getTime();
             }
+        }
+        static initialize(settings){
+            if(settings === undefined || typeof settings !== "object" || settings === null)  return;
+            config = config || settings.config;
         }
         static getStandardTime(){
             return new Date(config.getValue("content.base.standardTime"));

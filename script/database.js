@@ -163,14 +163,6 @@ var Datapiece = (function(){
         constructor(datapieceObj,dataName,option){
             if(option === undefined)  option = {};
             var that = this;
-            if(server === undefined){
-                //Serverオブジェクトを変える場合にはここを書き換える
-                server = _val.server;
-            }
-            if(config === undefined){
-                //SystemConfigオブジェクトを変える場合にはここを書き換える
-                config = _val.config;                
-            }
             this._data = {};
             this._dataName = dataName;
             this._event = [];
@@ -327,6 +319,7 @@ var Datapiece = (function(){
         }
         getValues(newCopy){
             if(newCopy === undefined)  newCopy = false;
+            if(typeof newCopy !== "boolean")  throw new Error("Datapiece.prototype.getValues()の引数に真偽値以外が渡されています");
             return newCopy ? JSON.parse(JSON.stringify(this._data)) : this._data;
         }
         getValue(colName){
@@ -432,6 +425,11 @@ var Datapiece = (function(){
                 });
             }
             return ret;
+        }
+        static initialize(settings){
+            if(settings === undefined || typeof settings !== "object" || settings === null)  return;
+            server = server || settings.server;
+            config = config || settings.config;
         }
         static getServer(){
             //Datapiece系クラスで使う専用
@@ -987,10 +985,10 @@ class User extends Datapiece{
         super(datapieceObj,"user",option);
     }
     getBackgroundColor(){
-        return UserGroup.getColorByUserId(this.getValues("_id"),"background");
+        return UserGroup.getColorByUserId(this.getValue("_id"),"background");
     }
     getFontColor(){
-        return UserGroup.getColorByUserId(this.getValues("_id"),"font");
+        return UserGroup.getColorByUserId(this.getValue("_id"),"font");
     }
     getWorkAssigns(){
         var that = this;
@@ -1073,7 +1071,7 @@ class UserGroup extends Datapiece{
             .filter(function(userGroup){
                 return userGroup.getValue("isColorGroup")
             }).find(function(userGroup){
-                return userGroup.getValue("member") === id
+                return inArray(userGroup.getValue("member"),id);
             });
         return userGroup === undefined ? (kind === "background" ? "#FFFFFF" : (kind === "font" ? "#000000" : "#FFFFFF")) : userGroup.getValue(kind + "Color");
     }
@@ -1115,11 +1113,11 @@ class WorkGroup extends Datapiece{
     }
     static getColorByWorkListId(id,kind){
         var workGroup = Datapiece.getServer().getData("workGroup")
-            .filter(function(userGroup){
-                return userGroup.getValue("isColorGroup")
-            }).find(function(userGroup){
-                return userGroup.getValue("member") === id
-            })
+        .filter(function(workGroup){
+            return workGroup.getValue("isColorGroup")
+        }).find(function(workGroup){
+            return inArray(workGroup.getValue("member"),id);
+        });
          return workGroup === undefined ? (kind === "background" ? "#FFFFFF" : (kind === "font" ? "#000000" : "#FFFFFF")) : workGroup.getValue(kind + "Color");
    }
 }
@@ -1155,10 +1153,10 @@ class WorkList extends Datapiece{
         })
     }
     getBackgroundColor(){
-        return WorkGroup.getColorByWorkListId(this.getValues("_id"),"background");
+        return WorkGroup.getColorByWorkListId(this.getValue("_id"),"background");
     }
     getFontColor(){
-        return WorkGroup.getColorByWorkListId(this.getValues("_id"),"font");
+        return WorkGroup.getColorByWorkListId(this.getValue("_id"),"font");
     }
     getWorkAssigns(){
         var that = this;
