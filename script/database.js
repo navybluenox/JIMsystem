@@ -729,7 +729,7 @@ var Datapiece = (function(){
                 var diffs = that.getDiffFromRequired(start,end).map(function(v){return v.diff});
 
                 [requires,diffs].forEach(function(array,index,s){
-                    array = array.map(function(diff){
+                    array = array.map(function(diff,diffIndex){
                         var td = $("<td><div></div></td>");
                         td.addClass(index === 0 ? "requireNum" : "diffNum").css({
                             "padding":"0","margin":"0",
@@ -737,7 +737,13 @@ var Datapiece = (function(){
                             "color":"#000000",
                             "background":WorkList.getBackgroundColorByNumber(diff),
                             "text-align":(option.trans ? "" : "center")
-                        }).children("div").text("" + diff);
+                        }).data({"time":start.copy().addTimeUnit(diffIndex).getTime(),"diff":diff})
+                        .children("div")
+                            .text("" + diff)
+                            .css({"cursor":"pointer"});
+                        if(that.getValue("asAssigned")){
+                            td.children("div").css("text-decoration","line-through");
+                        }
                         if(option.trans){
                             td.css({"height":cellHeight(timeSpan)});
                             td.children("div").css({"height":cellHeight(1)})

@@ -86,12 +86,20 @@
         <h2>検索</h2>
         <form id="formAssignWork_search_cond">
             <table class="tableform"><tbody>
-                <tr><td>人割名</td><td><input type="text" name="name" tabindex="2" onkeydown="if(event.keyCode === 13){_val.pageFun.assignWork.searchWorkAssign();return false;}"></td></tr>
-                <tr><td>従事者の氏名・配送名</td><td><input type="text" name="user" tabindex="2" onkeydown="if(event.keyCode === 13){_val.pageFun.assignWork.searchWorkAssign();return false;}"></td></tr>
-                <tr><td>統括の氏名・配送名</td><td><input type="text" name="leader" tabindex="2" onkeydown="if(event.keyCode === 13){_val.pageFun.assignWork.searchWorkAssign();return false;}"></td></tr>
-                <tr><td>統括の担当略称</td><td><input type="text" name="incharge" tabindex="2" onkeydown="if(event.keyCode === 13){_val.pageFun.assignWork.searchWorkAssign();return false;}"></td></tr>
+                <tr><td>人割名</td><td><input type="text" name="name" tabindex="2" onkeyup='if(event.keyCode === 13){_val.pageFun.assignWork.searchWorkAssign();$("[name=\"page\"]").val(0);return false;}'></td></tr>
+                <tr><td>従事者の氏名・配送名</td><td><input type="text" name="user" tabindex="2" onkeyup='if(event.keyCode === 13){_val.pageFun.assignWork.searchWorkAssign();$("[name=\"page\"]").val(0);return false;}'></td></tr>
+                <tr><td>統括の氏名・配送名</td><td><input type="text" name="leader" tabindex="2" onkeyup='if(event.keyCode === 13){_val.pageFun.assignWork.searchWorkAssign();$("[name=\"page\"]").val(0);return false;}'></td></tr>
+                <tr><td>統括の担当略称</td><td><input type="text" name="incharge" tabindex="2" onkeyup='if(event.keyCode === 13){_val.pageFun.assignWork.searchWorkAssign();$("[name=\"page\"]").val(0);return false;}'></td></tr>
+                <tr><td>表示件数</td><td><select name="showNumber" tabindex="-1">
+                    <option value="10">10件</option>
+                    <option value="50" selected>50件</option>
+                    <option value="200">200件</option>
+                    <option value="0">全て</option>
+                </select>
+                </td></tr>
+                <tr><td></td><td><input type="number" name="page" value="0" min="0">ページ目</td></tr>
             </tbody></table>
-            <input type="button" name="run" value="検索" tabindex="2" onclick="_val.pageFun.assignWork.searchWorkAssign();">
+            <input type="button" name="run" value="検索" tabindex="2" onclick='_val.pageFun.assignWork.searchWorkAssign();$("[name=\"page\"]").val(0);'>
         </form>
         <div id="formAssignWork_search_result"></div>
     </section>
