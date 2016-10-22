@@ -335,20 +335,17 @@ $(function(){
                 var tableKind = div.siblings("input").attr("name").replace(/^shiftTable/,"").toLowerCase();
                 tableKind = (tableKind === "work" ? "workList" : tableKind);
                 var selectedCells = div.find("td.selectedCell");
-                var workList = _val.server.getDataById(form.find('[name="shiftTableWork_searchResult"]').val(),"workList");
+                var workList = _val.server.getDataById(form.find('[name="shiftTableWork_searchResult"]').val(),"workList")[0];
                 var sectionNum = +form.find('[name="shiftTableWork_section"]').val();
-                var index = workList.getValue("@detail")[sectionNum].start.getDiff(start,"timeunit");
-
                 var start,end;
                 selectedCells.map(function(i,_el){
                     var el = $(_el);
-                    var time = new LocalDate(el.data("time"));
-                    if(start === undefined || start.getTime() > time.getTime())  start = time;
-                    if(end === undefined || end.getTime() < time.getTime())  end = time;
+                    var t = new LocalDate(el.data("time"));
+                    if(start === undefined || start.getTime() > t.getTime())  start = t;
+                    if(end === undefined || end.getTime() < t.getTime())  end = t;
                 });
                 end = end.copy().addTimeUnit(1);
-console.log("start",start)
-console.log("end",end)
+                var index = workList.getValue("@detail")[sectionNum].start.getDiff(start,"timeunit");
 
                 var cm = new ContextMenu(e,[
                     {"key":"setTimeOfForm","text":"この時間をフォームに設定"},
@@ -394,8 +391,6 @@ console.log("end",end)
                         );
                         cm1.getContent().find("li").css({"padding":"0 1em"});
                         cm.remove();
-                        function update(id){
-                        }
                     },"changeWorkListNum":function(e){
                         var cm1 = new ContextMenu(e,[
                             {"text":"","value":""},
@@ -416,15 +411,14 @@ console.log("end",end)
                                     if(sections[sectionNum].number[i] < 0)  sections[sectionNum].number[i] = 0;
                                 }
                             }
-                            workList.setValue("@detail",sections);
-                        _val.server.changeData(workList).sendUpdateQueue().then(function(){
-                            pageFun.reshowShiftTable();
-                        });
-                    },{
-                            "maxHeight":"400px"
-                        })
+                            _val.server.changeData(workList.copy().setValue("@detail",sections)).sendUpdateQueue().then(function(){
+                                pageFun.reshowShiftTable();
+                            });
+                            cm1.remove();
+                        },{"maxHeight":"400px"});
+                        cm.remove();
                     },"changeWorkListAsAssinged":function(e){
-                        _val.server.changeData(workList.setValue("asAssigned",!workList.getValue("asAssigned"))).sendUpdateQueue().then(function(){
+                        _val.server.changeData(workList.copy().setValue("asAssigned",!workList.getValue("asAssigned"))).sendUpdateQueue().then(function(){
                             pageFun.reshowShiftTable();
                         });
                         cm.remove();
@@ -487,16 +481,16 @@ console.log("end",end)
                 }
                 if(cond.user !== ""){
                     var user = workAssign.getDatapieceRelated("userId","user");
-                    var reg_leader = new RegExp(cond.leader); 
+                    var reg_user = new RegExp(cond.user);
                     flag = flag && (
-                        reg_leader.test(user.getValue("azusaSendName")) ||
-                        reg_leader.test(user.getValue("nameLast") + user.getValue("nameFirst")) ||
-                        reg_leader.test(user.getValue("nameLastPhonetic") + user.getValue("nameFirstPhonetic"))
+                        reg_user.test(user.getValue("azusaSendName")) ||
+                        reg_user.test(user.getValue("nameLast") + user.getValue("nameFirst")) ||
+                        reg_user.test(user.getValue("nameLastPhonetic") + user.getValue("nameFirstPhonetic"))
                     );
                 }
                 if(cond.leader !== ""){
                     var leader = workAssign.getDatapieceRelated("workListId","workList").getDatapieceRelated("leaderId","user");
-                    var reg_leader = new RegExp(cond.leader); 
+                    var reg_leader = new RegExp(cond.leader);
                     flag = flag && (
                         reg_leader.test(leader.getValue("azusaSendName")) ||
                         reg_leader.test(leader.getValue("nameLast") + leader.getValue("nameFirst")) ||
@@ -508,7 +502,6 @@ console.log("end",end)
                 }
                 return flag;
             });
-
             if(sortFun !== undefined && typeof sortFun === "function"){
                 workAssigns =  sortFun(workAssigns);
             }else{
