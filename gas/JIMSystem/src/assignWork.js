@@ -1,3 +1,4 @@
+//TODO workcolorがおかしい
 $(function(){
     var pageFun;
     var editing;
@@ -326,9 +327,6 @@ $(function(){
                 });
                 return false;
             });
-
-            //TODO 時間軸右クリックでメニュー
-            //　WorkListの時間・人数を変える
             form.find('[name="shiftTableUser"],[name="shiftTableWork"]').siblings("div").on("contextmenu","td.selectedCell.requireNum,td.selectedCell.diffNum",function(e){
                 var div = $(e.delegateTarget);
                 var time = new LocalDate($(e.currentTarget).data("time"));
