@@ -667,7 +667,6 @@ var Datapiece = (function(){
                 _tdMatrix[rowIndex] = rowContent.map(function(cell,cellIndex){
                     var td = $("<td><div></div></td>");
                     if(cell.workAssignId === "_vacancy"){
-                        //TODO WorkListの場合、入れられないところもある
                         td.children("div").text(" ");
                         td.css({
                             "background":"#FFFFFF",
@@ -785,7 +784,7 @@ var Datapiece = (function(){
                         "color":"#000000",
                         "background":(index%2===0 ? "#7FFFD4" : "#66CDAA"),
                         "text-align":(option.trans ? "" : "center")
-                    }).children("div").text("" + time.getHours() + "時");
+                    }).children("div").text("" + time.getHours() + "時").data({"time":time.getTime()});
                     if(option.trans){
                         td.css({"height":cellHeight(timeSpan)});
                         td.children("div").css({"height":cellHeight(timeSpan)})

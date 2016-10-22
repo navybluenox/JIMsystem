@@ -336,7 +336,7 @@ $(function(){
             });
             return ret;
         },changeButtonColor:function(el,num){
-            $(el).css({"background":WorkList.getBackgroundColorByNumber(num),"color":"#000000","text-decoration": _num%5 === 0 ? "underline" : ""});
+            $(el).css({"background":WorkList.getBackgroundColorByNumber(num),"color":"#000000","text-decoration": num%5 === 0 ? "underline" : ""});
         }
     };
 });

@@ -89,7 +89,6 @@ $(function(){
                 pageFun.showShiftTableUser();
                 pageFun.showShiftTableWork();
                 //TODO scroll
-                form.find('[name="shiftTableWork"]').focus();
             });
             form.on("input",'input[type="text"],input[type="checkbox"],input[type="number"],select',function(e){
                 dr.runLater();
@@ -309,6 +308,9 @@ $(function(){
                 return false;
             });
 
+            //TODO 時間軸右クリックでメニュー
+            //　WorkListの時間・人数を変える
+
             pageFun.showIntervalTime();
             pageFun.setMemberOrder();
         },onunload:function(){
@@ -335,9 +337,10 @@ $(function(){
                 _val.server.removeData(new WorkAssign({"_id":_id}));
             }
             return _val.server.sendUpdateQueue().then(function(){
-                pageFun.reshowShiftTable(setData)
+                pageFun.reshowShiftTable(setData);
             });
         },searchWorkAssign:function(sortFun){
+            //TODO 検索結果の表示を、10件、100件、200件、ALLに設定する
             var result = $("#formAssignWork_search_result");
             var form_search = $("#formAssignWork_search_cond");
 
@@ -541,43 +544,47 @@ $(function(){
             form.find('[name="end_hour"]').val(end.getHours());
             form.find('[name="end_minute"]').val(end.getMinutes());            
         },showShiftTableUser:function(){
-            var target = form.find('[name="shiftTableUser"]').siblings("div");
-            var user = _val.server.getDataById(form.find('[name="shiftTableUser_searchResult"]').val(),"user")[0];            
-            if(user === undefined)  return;
-            var day = +form.find('[name="shiftTableUser_day"]').val();
-            var start = LocalDate.getWorkTime(day,"start");
-            var end = LocalDate.getWorkTime(day,"end");
+            return Promise.resolve().then(function(){
+                var target = form.find('[name="shiftTableUser"]').siblings("div");
+                var user = _val.server.getDataById(form.find('[name="shiftTableUser_searchResult"]').val(),"user")[0];            
+                if(user === undefined)  return;
+                var day = +form.find('[name="shiftTableUser_day"]').val();
+                var start = LocalDate.getWorkTime(day,"start");
+                var end = LocalDate.getWorkTime(day,"end");
 
-            pageFun.getFormData();
-            var table = user.getShiftTableAsElement(start,end,{"mode":"table","extraWorkAssign":(form.find('[name="shiftTableUser_showFormWA"]').val()==="Yes" ? [editing] : [])});
+                pageFun.getFormData();
+                var table = user.getShiftTableAsElement(start,end,{"mode":"table","extraWorkAssign":(form.find('[name="shiftTableUser_showFormWA"]').val()==="Yes" ? [editing] : [])});
 
-            target.children().remove();
-            target.append(table);
-            var width = $(window).width()*0.5;
-            target.css({"max-width":width,"overflow":"auto"});
+                target.children().remove();
+                target.append(table);
+                var width = $(window).width()*0.5;
+                target.css({"max-width":width,"overflow":"auto"});
+            });
         },showShiftTableWork:function(){
-            var target = form.find('[name="shiftTableWork"]').siblings("div");
-            var workList = _val.server.getDataById(form.find('[name="shiftTableWork_searchResult"]').val(),"workList")[0];
-            if(workList === undefined)  return;
-            var sectionNum = +form.find('[name="shiftTableWork_section"]').val();
-            var detail = workList.getValue("@detail")[sectionNum];
-            var start = detail.start.copy();
-            var end = start.copy().addTimeUnit(detail.number.length);
-            pageFun.getFormData();
-            var table = workList.getShiftTableAsElement(start,end,{"mode":"table","extraWorkAssign":(form.find('[name="shiftTableWork_showFormWA"]').val()==="Yes" ? [editing] : [])});
+            return Promise.resolve().then(function(){
+                var target = form.find('[name="shiftTableWork"]').siblings("div");
+                var workList = _val.server.getDataById(form.find('[name="shiftTableWork_searchResult"]').val(),"workList")[0];
+                if(workList === undefined)  return;
+                var sectionNum = +form.find('[name="shiftTableWork_section"]').val();
+                var detail = workList.getValue("@detail")[sectionNum];
+                var start = detail.start.copy();
+                var end = start.copy().addTimeUnit(detail.number.length);
+                pageFun.getFormData();
+                var table = workList.getShiftTableAsElement(start,end,{"mode":"table","extraWorkAssign":(form.find('[name="shiftTableWork_showFormWA"]').val()==="Yes" ? [editing] : [])});
 
-            target.children().remove();
-            target.append(table);
-            var width = $(window).width()*0.5;
-            target.css({"max-width":width,"overflow":"auto"});
+                target.children().remove();
+                target.append(table);
+                var width = $(window).width()*0.5;
+                target.css({"max-width":width,"overflow":"auto"});
+            });
         },reshowShiftTable:function(setData){
             pageFun.searchWorkAssign();
             pageFun.setWorkListSection();
-            pageFun.showShiftTableUser();
-            pageFun.showShiftTableWork();
             if(setData !== undefined){
                 form.find('[name="shiftTableWork_section"]').val(setData.getWorkListSectionNumber());
             }
+            pageFun.showShiftTableUser();
+            pageFun.showShiftTableWork();
         },setWorkListSection:function(){
             var target = form.find('[name="shiftTableWork_section"]');
             var workList = _val.server.getDataById(form.find('[name="shiftTableWork_searchResult"]').val(),"workList")[0];
