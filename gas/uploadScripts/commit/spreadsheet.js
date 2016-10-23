@@ -13,19 +13,23 @@
         引数
 */
 
+function loadSheetDataFromDrive(fileId,sheetName){
+    //TODO
+    //二次元配列を送るだけ
+    //解釈・パースなどはクライアント側で行う
+}
+
 function getRangeWithContents(sheet,row,column,rowNumber,columnName){
-    if(row == null){row = 1;}
-    if(column == null){column = 1;}
+    //TODO rename row -> rowForCheck, column -> columnForCheck
+    row = row || 1;
+    column = row || 1;
+    rowNumber = rowNumber || 0;
     
     var allContents = sheet.getRange(row,column,sheet.getMaxRows(),sheet.getMaxColumns()).getValues();
     var toprow = allContents[0];
     var columns,rows;
 
-    if(rowNumber != null){
-        columns = allContents[rowNumber];
-    }else{
-        columns = allContents[0];
-    }
+    columns = allContents[rowNumber];
     if(columnName != null){
         rows = allContents.map(function(a){
             return a[toprow.indexOf(columnName)];

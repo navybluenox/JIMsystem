@@ -32,11 +32,17 @@
         {"_id":"eWy3mSJZ49DxUQTH","created":"2016-07-18T08:00:00.000Z","updated":"2016-07-18T08:00:00.000Z","name":"fileInfo","fileId":"0B88bKUOZP4-Ac01lZHQ5cUo0SGM","column":{
             "_id":"string",
             "created":"date",
-            "updated":"date"
+            "updated":"date",
+            "name":"string",
+            "fileId":"string",
+            "fileType":"string"
         },"columnName":{
             "_id":"データID",
             "created":"作成日時",
-            "updated":"更新日時"
+            "updated":"更新日時",
+            "name":"ファイル名",
+            "fileId":"ファイルID",
+            "fileType":"ファイルの種別"
         }},
         {"_id":"ymVPEGRrhpTG7SLf","created":"2016-07-18T08:00:00.000Z","updated":"2016-07-18T08:00:00.000Z","name":"shiftTableUser","fileId":"0B88bKUOZP4-AUmVlb3VjbmE3cEU","column":{
             "_id":"string",

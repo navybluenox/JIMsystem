@@ -1,4 +1,3 @@
-//TODO workcolorがおかしい
 $(function(){
     var pageFun;
     var editing;
