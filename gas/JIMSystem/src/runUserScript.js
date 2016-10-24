@@ -9,12 +9,13 @@ $(function(){
                 if(e.ctrlKey && e.keyCode === 13){
                     pageFun.runScript();
                 }
-                if(e.ctrlKey && e.shiftKey && e.keyCode === 83){
+                if(e.ctrlKey && e.keyCode === 83){
                     localStorage.setItem("userScript",textarea.val());
                     var el = $("<p>保存しました</p>").appendTo($("#formRunUserScript"));
                     setTimeout(function(){
                         el.remove();
-                    },3000)
+                    },3000);
+                    return false;
                 }
             })
             var script = localStorage.getItem("userScript");

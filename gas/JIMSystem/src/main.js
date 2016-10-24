@@ -123,7 +123,7 @@ $(function(){
                             default:
                                 return 0;
                         }
-                    }).map(function(v){return v.getValues(v)});
+                    }).map(function(v){return v.getValues()});
                     el.find('[name="resultField"]').children().remove();
                     var _table = createTable(el.find('[name="resultField"]'),data,["_id",column],function(cellObj){
                         if(cellObj.column === "_id"){

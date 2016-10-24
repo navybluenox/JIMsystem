@@ -56,6 +56,7 @@
         }).then(function(){
             _val.server = new Server();
             Datapiece.initialize({"server":_val.server});
+            Spreadsheet.initialize({"server":_val.server});
             _val.server.onReady(function(that){
                 _val.server.loadData("systemConfig")
                 .then(function(v){

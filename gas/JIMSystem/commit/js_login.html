@@ -34,7 +34,7 @@ $(function(){
             mw.setContentStyle({"font-size":"2em","font-weight":"bold","width":"auto"});
             new Promise(function(resolve){
                 var s = setInterval(function(){
-                    if(_val && _val.server && _val.server instanceof Server && _val.server.isReady()){
+                    if(_val && _val.server && _val.server instanceof Server && _val.server.isReady() && _val.server.isLoadedData("systemConfig")){
                         clearInterval(s);
                         resolve();
                         return;

@@ -3,7 +3,7 @@ var Spreadsheet = (function(){
     var server;
     return class Spreadsheet{
         constructor(fileName,sheetName,columnType){
-            this._fileInfo = server.getData("fileInfo").find(function(fileInfo){return fileInfo.getValue("name") === fileName});
+            this._fileInfo = Spreadsheet.getServerserver().getData("fileInfo").find(function(fileInfo){return fileInfo.getValue("name") === fileName});
             this._sheetName = sheetName;
             this._columnType = columnType;
         }
@@ -34,9 +34,16 @@ var Spreadsheet = (function(){
         hasData(){
             return this._data === undefined;
         }
-        static convertDataFromArrayToHash(arrays,type){
+        static initialize(settings){
+            if(settings === undefined || typeof settings !== "object" || settings === null)  return;
+            server = server || settings.server;
+        }
+        static getServer(){
+            return server;
+        }
+        static convertDataFromArrayToHash(hashes,type){
             var columnNames = hashes[0];
-            var contents = hashes.splice(1,values.length);
+            var contents = hashes.splice(1,hashes.length);
             var templateHash = {};
 
             columnNames.forEach(function(columnName){
@@ -47,7 +54,14 @@ var Spreadsheet = (function(){
                     if(index === keys.length-1){
                         lookAt[key] = "";
                     }else{
-                        lookAt[key] = {};
+                        if(lookAt[key] === undefined){
+                            if(Number.isNaN(+keys[index+1])){
+                                lookAt[key] = {};
+                            }else{
+                                lookAt[key] = [];
+                            }
+                        }
+                        lookAt = lookAt[key];
                     }
                 });
                 $.extend(true,templateHash,obj);
@@ -55,7 +69,7 @@ var Spreadsheet = (function(){
             type = type || $({},templateHash);
 
             return contents.map(function(row){
-                var result = $.extend({},templateHash);
+                var result = $.extend(true,{},templateHash);
 
                 row.forEach(function(cell,cellIndex){
                     var keys = columnNames[cellIndex].split(".");
@@ -63,7 +77,9 @@ var Spreadsheet = (function(){
                     var lookAt_type = type;
                     keys.forEach(function(key,index){
                         if(index === keys.length-1){
-                            if(lookAt_type[key] === "other"){
+                            if(cell === ""){
+                                delete lookAt_result[key];
+                            }else if(lookAt_type[key] === "other"){
                                 try{
                                     lookAt_result[key] = JSON.parse(cell);
                                 }catch(e){
@@ -73,8 +89,8 @@ var Spreadsheet = (function(){
                                 lookAt_result[key] = castType(cell,lookAt_type[key]);
                             }
                         }else{
-                            lookAt_result[key] = lookAt_result;
-                            lookAt_type[key] = lookAt_type;
+                            lookAt_result = lookAt_result[key];
+                            lookAt_type = lookAt_type[key.replace(/\d/g,"0")];
                         }
                     });
                 });
@@ -105,8 +121,8 @@ var Spreadsheet = (function(){
                     });
                     return ret;
                 }
-                while(order.some(function(v){return classof(v) !== "string"})){
-                    order = order.reduce(function(prev,curt){
+                while(keyList.some(function(v){return classof(v) !== "string"})){
+                    keyList = keyList.reduce(function(prev,curt){
                         if(!Array.isArray(curt))  curt = [curt];
                         return prev.concat(curt);
                     },[]);
@@ -133,7 +149,7 @@ var Spreadsheet = (function(){
                 keyList.sort(function(a,b){return a.charCodeAt() - b.charCodeAt()});
             }
 
-            return hashes.map(function(hash){
+            return [keyList].concat(hashes.map(function(hash){
                 return keyList.map(function(_keys){
                     var keys = _keys.split(".");
                     var lookAt_result = hash;
@@ -143,14 +159,14 @@ var Spreadsheet = (function(){
                         lookAt_type = (lookAt_type === undefined || lookAt_type === "" ? "" : lookAt_type[key.replace(/\d/g,"0")] );
                     });
                     if(lookAt_result === undefined){
-                        return undefined;
+                        return "";
                     }else if(lookAt_type === "other"){
                         return JSON.stringify(lookAt_result);
                     }else{
                         return castIntoString(castType(lookAt_result,lookAt_type))
                     }
                 });
-            });
+            }));
         }
     }
 })();

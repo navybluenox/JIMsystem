@@ -423,8 +423,8 @@ function castType(value,type){
                     minute = +p5;
                     second = +p6;
                 });
-                var date = new Date(year,month-1,hour,minute,second);
-                date.setMinutes(date.getMinutes() + date.getTimezoneOffset());
+                var date = new Date(year,month-1,day,hour,minute,second);
+                //date.setMinutes(date.getMinutes() + date.getTimezoneOffset());
                 return date;
             }else{
                 return new Date(value);

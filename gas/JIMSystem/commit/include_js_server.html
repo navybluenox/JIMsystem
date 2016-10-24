@@ -32,8 +32,6 @@ var Server = (function(){
             this._eventHandler = {
                 ready:[]
             };
-            //delete!! リリース前に必ず消す
-            this._cache = cache;
             //delete!!!
             if(Object.keys(cache).length === 0){
                 runServerFun("Script.loadDataFromDrive",[collectionInfoFileId,"data"])
