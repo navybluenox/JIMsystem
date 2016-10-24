@@ -1,5 +1,7 @@
 "use strict";
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
 //  ---About This---
 /*
 名前
@@ -10,7 +12,7 @@
     スプレッドシートを編集するためのスクリプトです
 
 定義一覧
-    getRangeWithContents(sheet,row,column,rowNumber,columnName)
+    getRangeWithContents(sheet,row,column,rowForCheckColumn,columnName)
         説明
         引数
 */
@@ -21,75 +23,98 @@ function loadSheetDataFromDrive(fileId, sheetName) {
     //解釈・パースなどはクライアント側で行う
 }
 
-function getRangeWithContents(sheet, row, column, rowNumber, columnName) {
-    //TODO rename row -> rowForCheck, column -> columnForCheck
-    row = row || 1;
-    column = row || 1;
-    rowNumber = rowNumber || 0;
+function getRangeWithContents(sheet, rowStartIndex, columnStartIndex, rowIndexOfColumns, columnName) {
+    rowStartIndex = rowStartIndex || 0;
+    columnStartIndex = columnStartIndex || 0;
+    rowIndexOfColumns = rowIndexOfColumns || 0;
 
-    var allContents = sheet.getRange(row, column, sheet.getMaxRows(), sheet.getMaxColumns()).getValues();
-    var toprow = allContents[0];
-    var columns, rows;
-
-    columns = allContents[rowNumber];
-    if (columnName != null) {
-        rows = allContents.map(function (a) {
-            return a[toprow.indexOf(columnName)];
-        });
-    } else {
-        rows = allContents.map(function (a) {
-            return a[0];
-        });
-    }
-    columns = columns.filter(function (v) {
+    var allContents = sheet.getRange(rowStartIndex, columnStartIndex, sheet.getMaxRows(), sheet.getMaxColumns()).getValues();
+    var columnIndexForCheck = columnName ? allContents[0].indexOf(columnName) : 0;
+    var rowsForCheck = allContents.map(function (row) {
+        return row[columnIndexForCheck];
+    }).filter(function (v) {
         return !!v;
     });
-    rows = rows.filter(function (v) {
-        return !!v;
+    var columnsForCheck = allContents[rowIndexOfColumns].filter(function (cell) {
+        return !!cell;
     });
 
-    return sheet.getRange(row, column, rows.length, columns.length);
+    return sheet.getRange(rowStartIndex, columnStartIndex, rowsForCheck.length, columnsForCheck.length);
 }
 
-function setValuesInRange(setData, column, range) {
-    //setData = [
-    //    {columnA:dataA,columnB:dataB, ... ,columnZ:dataZ},
-    //    {columnA:dataA',columnB:dataB', ... ,columnZ:dataZ'}, ...
-    //];
-    //column = [columnA,columnB, ... columnZ];
-    //range = [Range Object];
-    if (!Array.isArray(setData)) {
-        Logger.log("Error : argument(setData) is not array");
+function getSheetValues(sheet, option) {
+    option = option || {};
+    return Script.getRangeWithContents(sheet, option.top, option.left).getValues();
+}
+
+function setSheetValues(sheet, values, option) {
+    if (!Array.isArray(values) || Array.isArray(values[0])) {
+        Logger.log("Error : values is not double array (Script.setSheetValues)");
         throw new Error();
     }
-    if (!Array.isArray(column)) {
-        Logger.log("Error : argument(setData) is not array");
-        throw new Error();
+    option = option || {};
+    option.top = option.top || 0;
+    option.left = option.left || 0;
+
+    var columnNum = sheet[0].length;
+    var rangeAll = sheet.getRange(option.top, option.left, sheet.length, columnNum);
+    var range = rangeAll.getCell(0, 0);
+
+    if (option.rowHeight) {
+        sheet.setRowHeight(option.rowHeight.index, option.rowHeight.value);
     }
-    if (range.getWidth() == 1 && range.getHeight() == 1) {
-        range = range.getSheet().getRange(range.getRow(), range.getColumn(), setData.length, column.length);
-    } else {
-        if (column.length !== range.getWidth() || setData.length !== range.getHeight()) {
-            Logger.log("Error : setData does not fit columnSize and setDataSize");
-            throw new Error();
-        }
+    if (option.columnWidth) {
+        sheet.setColumnWidth(option.columnWidth.index, option.columnWidth.value);
     }
-    var result = [];
-    setData.forEach(function (row) {
-        var piece = [];
-        for (var i = 0; i < column.length; i++) {
-            if (typeof row[column[i]] != "undefined") {
-                piece[i] = row[column[i]];
+
+    sheet.forEach(function (row, rowIndex) {
+        row.forEach(function (_cell, cellIndex) {
+            var cell = _cell && (typeof _cell === "undefined" ? "undefined" : _typeof(_cell)) === "object" ? _cell : { "value": _cell };
+            if (cell.merge) {
+                cell.merge.colSpan = cell.merge.colSpan || 1;
+                cell.merge.rowSpan = cell.merge.rowSpan || 1;
+                if (cell.merge.rowSpan !== 1 || cell.merge.colSpan !== 1) {
+                    range.offset(0, 0, cell.merge.rowSpan, cell.merge.colSpan).merge();
+                }
             }
-        }
-        result.push(piece);
+            Object.keys(cell).forEach(function (key) {
+                var value = cell[key];
+                switch (key) {
+                    case "value":
+                        range.setValue(value);
+                        return;
+                    case "background":
+                        range.setBackground(value);
+                        return;
+                    case "border":
+                        Range.prototype.setBorder.apply(range, ["top", "left", "bottom", "right", "vertical", "horizontal", "color", "style"].map(function (key) {
+                            return value[key] ? value[key] : null;
+                        }));
+                        return;
+                    case "alignHori":
+                        range.setHorizontalAlignment(value);
+                        return;
+                    case "alignVer":
+                        range.setVerticalAlignment(value);
+                        return;
+                    case "fontColor":
+                        range.setFontColor(value);
+                        return;
+                    case "fontSize":
+                        range.setFontSize(value);
+                        return;
+                    case "fontWeight":
+                        range.setFontWeight(value);
+                        return;
+                }
+            });
+            do {
+                range.offset(0, 1);
+            } while (range.isPartOfMerge());
+        });
+        range.offset(1, -columnNum);
     });
-    range.setValues(result);
-    return range;
+    return rangeAll;
 }
 
-function clearValuesOfSheet(ss, sheet) {
-    var sheetName = sheet.getName();
-    ss.deleteSheet(sheet);
-    return ss.insertSheet(sheetName);
-}
+function getSheetValuesFromClient(fileId, sheetName) {}

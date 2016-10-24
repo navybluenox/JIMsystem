@@ -402,6 +402,44 @@ function classof(val){
     }
 }
 
+function castType(value,type){
+    switch(type){
+        case "number":
+            return +value;
+        case "boolean":
+            return !!value;
+        case "string":
+            return "" + value;
+        case "date":
+            if(classof(value) === "date"){
+                return value;
+            }else if(typeof value === "string" && /^\d{4}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2}$/.test(value)){
+                var year,month,day,hour,minute,second;
+                value.replace(/^(\d{4})\/(\d{2})\/(\d{2}) (\d{2}):(\d{2}):(\d{2})$/,function(match,p1,p2,p3,p4,p5,p6){
+                    year = +p1;
+                    month = +p2;
+                    day = +p3;
+                    hour = +p4;
+                    minute = +p5;
+                    second = +p6;
+                });
+                var date = new Date(year,month-1,hour,minute,second);
+                date.setMinutes(date.getMinutes() + date.getTimezoneOffset());
+                return date;
+            }else{
+                return new Date(value);
+            }
+        case "localdate":
+            if(classof(value) === "localdate"){
+                return value.copy();
+            }else{
+                return new LocalDate(value);
+            }
+        default:
+            return value;
+    }
+}
+
 function castIntoString(val){
     switch(classof(val)){
         case "object":
@@ -412,8 +450,10 @@ function castIntoString(val){
             return "[" + val.map(function(v){return castIntoString(v)}).join(", ") + "]";
         case "date":
             return dateToValue(val).str;
+        case "localdate":
+            return val.toString();
         default:
-            return val;
+            return "" + val;
     }
 }
 

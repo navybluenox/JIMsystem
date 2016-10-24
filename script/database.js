@@ -842,30 +842,6 @@ var Datapiece = (function(){
             return result;
         }
     }
-    function castType(value,type){
-        switch(type){
-            case "number":
-                return +value;
-            case "boolean":
-                return !!value;
-            case "string":
-                return "" + value;
-            case "date":
-                if(classof(value) === "date"){
-                    return value;
-                }else{
-                    return new Date(value);
-                }
-            case "localdate":
-                if(classof(value) === "localdate"){
-                    return value.copy();
-                }else{
-                    return new LocalDate(value);
-                }
-            default:
-                return value;
-        }
-    }
     function getValueFromObjectByKey(obj,key){
         if(typeof key !== "string")  return undefined;
         var keyArray = key.split(".");
