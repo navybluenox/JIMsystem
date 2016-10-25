@@ -56,9 +56,11 @@ var Spreadsheet = (function(){
             var sheetName = this.getSheetName();
             var index = 0;
 
+            promiseChain = promiseChain.then(function(){
+                return runServerFun("Script.clearSheetFromClient",[fileId,sheetName]);
+            });
             for(var i=0,l=sendData.length; i<l; i+=numRowsPerRequest){
                 promiseChain = promiseChain.then(function(){
-console.log(index,sendData.slice().splice(0,numRowsPerRequest));
                     var p = runServerFun("Script.writeSheetValuesFromClient",[fileId,sheetName,sendData.splice(0,numRowsPerRequest),index,textOnly]);
                     index += numRowsPerRequest;
                     return p;
@@ -205,7 +207,7 @@ console.log(index,sendData.slice().splice(0,numRowsPerRequest));
 
                         if(lookAt_A === undefined)  return -1;
                         if(lookAt_B === undefined)  return 1;
-                        return lookAt_A.charCodeAt() = lookAt_B.charCodeAt();
+                        return lookAt_A.charCodeAt() - lookAt_B.charCodeAt();
                     }else{
                         return aValue - bValue;
                     }

@@ -155,3 +155,8 @@ function refreshSheetCompletely(sheet) {
     newSheet.setName(sheetName);
     return newSheet;
 }
+
+function clearSheetFromClient(fileId, sheetName) {
+    SpreadsheetApp.openById(fileId).getSheetByName(sheetName).clear();
+    return null;
+}
