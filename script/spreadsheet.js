@@ -85,8 +85,7 @@ var Spreadsheet = (function(){
                     settings.forEach(function(setting){
                         _sendData[setting] = sendData[setting].splice(0,numRowsPerRequest);
                     });
-                    optionOfWriteSheet = $(optionOfWriteSheet,{"top":index});
-                    var p = runServerFun("Script.writeSheetValuesFromClient",[fileId,sheetName,_sendData,optionOfWriteSheet]);
+                    var p = runServerFun("Script.writeSheetValuesFromClient",[fileId,sheetName,_sendData,$.extend(optionOfWriteSheet,{"top":index})]);
                     index += numRowsPerRequest;
                     return p;
                 });
