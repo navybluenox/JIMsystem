@@ -29,7 +29,7 @@ $(function(){
                 var collInfo = _val.server.getCollectionInfoByName(dataName);
                 return spreadsheet.writeSheetData(collInfo.getValue("column"),collInfo.getValue("columnOrder"));
             }).then(function(){
-                formAddData.find('[name="dataName"],[name="copyAll"],[name="copyContent"]').prop("disabled",true);
+                formAddData.find('[name="dataName"],[name="copyAll"],[name="copyColumn"]').prop("disabled",true);
             });
         }
     };

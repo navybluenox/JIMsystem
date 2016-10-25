@@ -103,7 +103,7 @@ function setSheetValues(sheet, values, option) {
                 }
             });
             do {
-                range.offset(0, 1);
+                range = range.offset(0, 1);
             } while (range.isPartOfMerge());
         });
         range.offset(1, -columnNum);
