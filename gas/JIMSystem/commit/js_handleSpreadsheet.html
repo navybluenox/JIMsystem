@@ -22,7 +22,7 @@ $(function(){
             _val.server.loadData(dataName).then(function(datapieces){
                 var content;
                 if(contentConfig === "all"){
-                    content = datapieces;
+                    content = datapieces.map(function(datapiece){return datapiece.getValues()});
                 }else if(contentConfig === "column"){
                     content = [];
                 }
