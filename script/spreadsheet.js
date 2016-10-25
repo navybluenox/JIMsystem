@@ -4,7 +4,7 @@ var Spreadsheet = (function(){
         constructor(fileName,sheetName,data){
             this._fileInfo = Spreadsheet.getServer().getData("fileInfo").find(function(fileInfo){return fileInfo.getValue("name") === fileName});
             this._sheetName = sheetName;
-            this._data = data;
+            this._data = data.slice();
         }
         copy(newSheetName){
             return new Spreadsheet(this.getFileName(), newSheetName ? newSheetName : this.getSheetName(), $.extend(true,{},this.getData()));
