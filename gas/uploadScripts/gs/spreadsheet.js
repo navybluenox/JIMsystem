@@ -33,7 +33,62 @@ function getSheetValues(sheet,option){
     return getRangeWithContents(sheet,option.top,option.left).getValues();
 }
 
-function setSheetValues(sheet,values,option){
+function setSheetValues(sheet,content,option){
+    option = option || {};
+    option.top = option.top || 0;
+    option.left = option.left || 0;
+
+    var columnNum = content[0].length;
+    var range = sheet.getRange(option.top + 1,option.left + 1,content.length,columnNum);
+
+    if(option.rowHeight){
+        sheet.setRowHeight(option.rowHeight.index,option.rowHeight.value);
+    }
+    if(option.columnWidth){
+        sheet.setColumnWidth(option.columnWidth.index,option.columnWidth.value);
+    }
+    Object.keys(content).forEach(function(setting){
+        if(setting === "border"){
+            //これだけは一気に設定できなくてどうしようもない
+            return;
+        }
+        var values = content[setting];
+        switch(setting){
+            case "text":
+                range.setValues(values);
+                break;
+            case "background":
+                range.setBackgrounds(values);
+                break;
+            case "alignHori":
+                range.setHorizontalAlignments(values);
+                break;
+            case "alignVer":
+                range.setVerticalAlignments(values);
+                break;
+            case "fontColor":
+                range.setFontColors(values);
+                break;
+            case "fontWeight":
+                range.setFontWeights(values);
+                break;
+        }
+    });
+    if(content.border !== undefined){
+        content.border.forEach(function(row,rowIndex){
+            row.forEach(function(cell,cellIndex){
+                var r = range.getCell(rowIndex+1, cellIndex+1);
+                    Range.prototype.setBorder.apply(r,
+                        ["top","left","bottom","right","vertical","horizontal","color","style"].map(function(key){return cell[key] ? cell[key] : null})
+                    );
+            });
+        });
+    }
+
+    return range;
+}
+
+/*function _setSheetValues(sheet,values,option){
     if(!Array.isArray(values) || !Array.isArray(values[0])){
         Logger.log("Error : values is not double array (Script.setSheetValues)");
         throw new Error();
@@ -105,7 +160,7 @@ function setSheetValues(sheet,values,option){
         });
     }
     return rangeAll;
-}
+}*/
 
 function readSheetValuesFromClient(fileId,sheetName){
     var spreadsheet = SpreadsheetApp.openById(fileId);
@@ -114,16 +169,25 @@ function readSheetValuesFromClient(fileId,sheetName){
     return getRangeWithContents(sheet)
 }
 
-function writeSheetValuesFromClient(fileId,sheetName,contents,startRowIndex,textOnly){
+function writeSheetValuesFromClient(fileId,sheetName,contents,option){
     var spreadsheet = SpreadsheetApp.openById(fileId);
     var sheet = spreadsheet.getSheetByName(sheetName);
-    //sheet.clear();
+
+    setSheetValues(sheet,contents,option);
+    openSpreadSheet(fileId,sheetName);
+
+    return {"fileId":fileId,"sheetName":sheet.getName()};
+}
+
+/*function _writeSheetValuesFromClient(fileId,sheetName,contents,startRowIndex,textOnly){
+    var spreadsheet = SpreadsheetApp.openById(fileId);
+    var sheet = spreadsheet.getSheetByName(sheetName);
 
     setSheetValues(sheet,contents,{"top":startRowIndex,"textOnly":textOnly});
     openSpreadSheet(fileId,sheetName);
 
     return {"fileId":fileId,"sheetName":sheet.getName()};
-}
+}*/
 
 function openSpreadSheet(fileId,sheetName){
     var spreadsheet = SpreadsheetApp.openById(fileId);

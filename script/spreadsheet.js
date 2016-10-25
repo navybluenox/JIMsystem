@@ -31,14 +31,81 @@ var Spreadsheet = (function(){
                 la.remove();
             });
         }
-        writeSheetData(columnType,columnOrder,numRowsPerRequest,textOnly){
+        writeSheetData(columnType,columnOrder,numRowsPerRequest,settings,callback,optionOfWriteSheet){
+            if(this.hasData()){
+                console.log("This spreadsheet does not have data");
+                return this;
+            }
+            numRowsPerRequest = (numRowsPerRequest === 0 || numRowsPerRequest === undefined ? this.getData().length + 1 : numRowsPerRequest);
+            var that = this;
+            settings = settings || ["text"];
+            if(typeof callback !== "function")  callback = function(value,key,rowIndex,columnIndex){return {"text":value};};
+            optionOfWriteSheet = optionOfWriteSheet || {};
+
+            var la = new LoadingAlert();
+            var contents = Spreadsheet.convertDataFromHashToArray(this.getData(),columnType,columnOrder);
+            var keys = contents[0].slice();
+
+            contents = contents.map(function(row,rowIndex){
+                return row.map(function(cell,cellIndex){
+                    return callback(cell,keys[cellIndex],rowIndex,cellIndex);
+                })
+            });
+
+            var sendData = {};
+
+            settings.forEach(function(setting){
+                sendData[setting] = contents.map(function(row){
+                    return row.map(function(cell){
+                        if(cell[setting] === undefined)  cell[setting] = null;
+                        return cell[setting];
+                    });
+                });
+            });
+
+            var startTrigger = false;
+            var promiseChain = new Promise(function(resolve){
+                var si = setInterval(function(){
+                    if(startTrigger){
+                        clearInterval(si);
+                        resolve();
+                    }
+                },50);
+            });
+            var fileId = this.getFileInfo().getValue("fileId");
+            var sheetName = this.getSheetName();
+            var index = 0;
+
+            promiseChain = promiseChain.then(function(){
+                return runServerFun("Script.clearSheetFromClient",[fileId,sheetName]);
+            });
+            for(var i=0,l=sendData.length; i<l; i+=numRowsPerRequest){
+                promiseChain = promiseChain.then(function(){
+                    var _sendData = {};
+                    settings.forEach(function(setting){
+                        _sendData[setting] = sendData[setting].splice(0,numRowsPerRequest);
+                    });
+                    var p = runServerFun("Script.writeSheetValuesFromClient",[fileId,sheetName,_sendData,$({},optionOfWriteSheet,{"top":index})]);
+                    index += numRowsPerRequest;
+                    return p;
+                });
+            }
+            promiseChain = promiseChain.then(function(v){
+                console.log("Writeing data on spreadsheet successes!");
+                la.remove();
+                return {"key":keys,"content":contents};
+            });
+            startTrigger = true;
+            return promiseChain;
+            
+        }
+        /*_writeSheetData(columnType,columnOrder,numRowsPerRequest,textOnly){
             if(this.hasData()){
                 console.log("This spreadsheet does not have data");
                 return this;
             }
             numRowsPerRequest = (numRowsPerRequest === 0 || numRowsPerRequest === undefined ? this.getData().length + 1 : numRowsPerRequest);
             textOnly = (textOnly === undefined ? true : textOnly);
-            //TODO
             var that = this;
             var la = new LoadingAlert();
             var sendData = Spreadsheet.convertDataFromHashToArray(this.getData(),columnType,columnOrder);
@@ -61,7 +128,7 @@ var Spreadsheet = (function(){
             });
             for(var i=0,l=sendData.length; i<l; i+=numRowsPerRequest){
                 promiseChain = promiseChain.then(function(){
-                    var p = runServerFun("Script.writeSheetValuesFromClient",[fileId,sheetName,sendData.splice(0,numRowsPerRequest),index,textOnly]);
+                    var p = runServerFun("Script._writeSheetValuesFromClient",[fileId,sheetName,sendData.splice(0,numRowsPerRequest),index,textOnly]);
                     index += numRowsPerRequest;
                     return p;
                 });
@@ -72,7 +139,7 @@ var Spreadsheet = (function(){
             });
             startTrigger = true;
             return promiseChain;
-        }
+        }*/
         hasData(){
             return this._data === undefined;
         }
@@ -226,7 +293,7 @@ var Spreadsheet = (function(){
                         lookAt_type = (lookAt_type === undefined || lookAt_type === "" ? "" : lookAt_type[key.replace(/^\d+$/,"0")] );
                     });
                     if(lookAt_result === undefined){
-                        return "";
+                        return null;
                     }else if(lookAt_type === "other"){
                         return JSON.stringify(lookAt_result);
                     }else{
