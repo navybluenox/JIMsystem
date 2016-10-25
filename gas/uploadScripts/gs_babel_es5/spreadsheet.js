@@ -44,7 +44,11 @@ function setSheetValues(sheet, content, option) {
     option.top = option.top || 0;
     option.left = option.left || 0;
 
-    var columnNum = content[0].length;
+    var columnNum;
+    Object.keys(content).find(function (key) {
+        columnNum = content[key][0].length;
+        return true;
+    });
     var range = sheet.getRange(option.top + 1, option.left + 1, content.length, columnNum);
 
     if (option.rowHeight) {

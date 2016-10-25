@@ -79,13 +79,14 @@ var Spreadsheet = (function(){
             promiseChain = promiseChain.then(function(){
                 return runServerFun("Script.clearSheetFromClient",[fileId,sheetName]);
             });
-            for(var i=0,l=sendData.length; i<l; i+=numRowsPerRequest){
+            for(var i=0,l=contents.length; i<l; i+=numRowsPerRequest){
                 promiseChain = promiseChain.then(function(){
                     var _sendData = {};
                     settings.forEach(function(setting){
                         _sendData[setting] = sendData[setting].splice(0,numRowsPerRequest);
                     });
-                    var p = runServerFun("Script.writeSheetValuesFromClient",[fileId,sheetName,_sendData,$({},optionOfWriteSheet,{"top":index})]);
+                    optionOfWriteSheet = $(optionOfWriteSheet,{"top":index});
+                    var p = runServerFun("Script.writeSheetValuesFromClient",[fileId,sheetName,_sendData,optionOfWriteSheet]);
                     index += numRowsPerRequest;
                     return p;
                 });
