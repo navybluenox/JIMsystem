@@ -49,6 +49,7 @@ function setSheetValues(sheet, values, option) {
     option = option || {};
     option.top = option.top || 0;
     option.left = option.left || 0;
+    option.textOnly = option.textOnly || true;
 
     var columnNum = values[0].length;
     var rangeAll = sheet.getRange(option.top + 1, option.left + 1, values.length, columnNum);
@@ -61,53 +62,57 @@ function setSheetValues(sheet, values, option) {
         sheet.setColumnWidth(option.columnWidth.index, option.columnWidth.value);
     }
 
-    values.forEach(function (row, rowIndex) {
-        row.forEach(function (_cell, cellIndex) {
-            var cell = _cell && (typeof _cell === "undefined" ? "undefined" : _typeof(_cell)) === "object" ? _cell : { "value": _cell };
-            if (cell.merge) {
-                cell.merge.colSpan = cell.merge.colSpan || 1;
-                cell.merge.rowSpan = cell.merge.rowSpan || 1;
-                if (cell.merge.rowSpan !== 1 || cell.merge.colSpan !== 1) {
-                    range = range.offset(0, 0, cell.merge.rowSpan, cell.merge.colSpan).merge();
+    if (option.textOnly) {
+        rangeAll.setValues(values);
+    } else {
+        values.forEach(function (row, rowIndex) {
+            row.forEach(function (_cell, cellIndex) {
+                var cell = _cell && (typeof _cell === "undefined" ? "undefined" : _typeof(_cell)) === "object" ? _cell : { "value": _cell };
+                if (cell.merge) {
+                    cell.merge.colSpan = cell.merge.colSpan || 1;
+                    cell.merge.rowSpan = cell.merge.rowSpan || 1;
+                    if (cell.merge.rowSpan !== 1 || cell.merge.colSpan !== 1) {
+                        range = range.offset(0, 0, cell.merge.rowSpan, cell.merge.colSpan).merge();
+                    }
                 }
-            }
-            Object.keys(cell).forEach(function (key) {
-                var value = cell[key];
-                switch (key) {
-                    case "value":
-                        range.setValue(value);
-                        return;
-                    case "background":
-                        range.setBackground(value);
-                        return;
-                    case "border":
-                        Range.prototype.setBorder.apply(range, ["top", "left", "bottom", "right", "vertical", "horizontal", "color", "style"].map(function (key) {
-                            return value[key] ? value[key] : null;
-                        }));
-                        return;
-                    case "alignHori":
-                        range.setHorizontalAlignment(value);
-                        return;
-                    case "alignVer":
-                        range.setVerticalAlignment(value);
-                        return;
-                    case "fontColor":
-                        range.setFontColor(value);
-                        return;
-                    case "fontSize":
-                        range.setFontSize(value);
-                        return;
-                    case "fontWeight":
-                        range.setFontWeight(value);
-                        return;
-                }
+                Object.keys(cell).forEach(function (key) {
+                    var value = cell[key];
+                    switch (key) {
+                        case "value":
+                            range.setValue(value);
+                            return;
+                        case "background":
+                            range.setBackground(value);
+                            return;
+                        case "border":
+                            Range.prototype.setBorder.apply(range, ["top", "left", "bottom", "right", "vertical", "horizontal", "color", "style"].map(function (key) {
+                                return value[key] ? value[key] : null;
+                            }));
+                            return;
+                        case "alignHori":
+                            range.setHorizontalAlignment(value);
+                            return;
+                        case "alignVer":
+                            range.setVerticalAlignment(value);
+                            return;
+                        case "fontColor":
+                            range.setFontColor(value);
+                            return;
+                        case "fontSize":
+                            range.setFontSize(value);
+                            return;
+                        case "fontWeight":
+                            range.setFontWeight(value);
+                            return;
+                    }
+                });
+                do {
+                    range = range.offset(0, 1);
+                } while (range.isPartOfMerge());
             });
-            do {
-                range = range.offset(0, 1);
-            } while (range.isPartOfMerge());
+            range = range.offset(1, -columnNum);
         });
-        range = range.offset(1, -columnNum);
-    });
+    }
     return rangeAll;
 }
 
@@ -118,12 +123,12 @@ function readSheetValuesFromClient(fileId, sheetName) {
     return getRangeWithContents(sheet);
 }
 
-function writeSheetValuesFromClient(fileId, sheetName, contents) {
+function writeSheetValuesFromClient(fileId, sheetName, contents, startRowIndex, textOnly) {
     var spreadsheet = SpreadsheetApp.openById(fileId);
     var sheet = spreadsheet.getSheetByName(sheetName);
     sheet.clear();
 
-    setSheetValues(sheet, contents);
+    setSheetValues(sheet, contents, { "top": startRowIndex, "textOnly": textOnly });
     openSpreadSheet(fileId, sheetName);
 
     return { "fileId": fileId, "sheetName": sheet.getName() };

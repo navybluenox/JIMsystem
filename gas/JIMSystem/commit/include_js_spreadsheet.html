@@ -32,18 +32,43 @@ var Spreadsheet = (function(){
                 la.remove();
             });
         }
-        writeSheetData(columnType,columnOrder){
+        writeSheetData(columnType,columnOrder,numRowsPerRequest,textOnly){
             if(this.hasData()){
                 console.log("This spreadsheet does not have data");
                 return this;
             }
+            numRowsPerRequest = (numRowsPerRequest === 0 || numRowsPerRequest === undefined ? this.getData().length + 1 : numRowsPerRequest);
+            textOnly = textOnly || true;
+            //TODO
             var that = this;
             var la = new LoadingAlert();
             var sendData = Spreadsheet.convertDataFromHashToArray(this.getData(),columnType,columnOrder);
-            return runServerFun("Script.writeSheetValuesFromClient",[this.getFileInfo().getValue("fileId"),this.getSheetName(),sendData]).then(function(v){
+
+            var startTrigger = false;
+            var promiseChain = new Promise(function(resolve){
+                var si = setInterval(function(){
+                    if(startTrigger){
+                        clearInterval(si);
+                        resolve();
+                    }
+                },50);
+            });
+            var sendDataPart;
+            var fileId = this.getFileInfo().getValue("fileId");
+            var sheetName = this.getSheetName();
+
+            for(var index=0,l=sendData.length; index<l; i+=numRowsPerRequest){
+                sendDataPart = sendData.splice(0,numRowsPerRequest);
+                promiseChain = promiseChain.then(function(){
+                    return runServerFun("Script.writeSheetValuesFromClient",[fileId,sheetName,sendData,index,textOnly])
+                });
+            }
+            promiseChain = promiseChain.then(function(v){
                 console.log("Writeing data on spreadsheet successes!");
                 la.remove();
             });
+            startTrigger = true;
+            return promiseChain;
         }
         hasData(){
             return this._data === undefined;
