@@ -39,7 +39,7 @@ function setSheetValues(sheet,content,option){
     option.left = option.left || 0;
 
     var columnNum = content[Object.keys(content)[0]][0].length;
-    var range = sheet.getRange(option.top + 1,option.left + 1,content.length,columnNum);
+    var range = sheet.getRange(option.top + 1,option.left + 1,content[Object.keys(content)[0]].length,columnNum);
 
     if(option.rowHeight){
         sheet.setRowHeight(option.rowHeight.index,option.rowHeight.value);
