@@ -50,7 +50,8 @@ var Spreadsheet = (function(){
                 var obj = {};
                 var lookAt = obj;
                 var keys = columnName.split(".");
-                keys.forEach(function(key,index){
+                keys.forEach(function(_key,index){
+                    var key = _key.replace(/^\d+$/,"0");
                     if(index === keys.length-1){
                         lookAt[key] = "";
                     }else{
@@ -66,20 +67,21 @@ var Spreadsheet = (function(){
                 });
                 $.extend(true,templateHash,obj);
             });
-            type = type || $({},templateHash);
+            type = type || $(true,{},templateHash);
 
-            return contents.map(function(row){
+            contents = contents.map(function(row){
                 var result = $.extend(true,{},templateHash);
-
-                row.forEach(function(cell,cellIndex){
-                    var keys = columnNames[cellIndex].split(".");
+                var pairs = row.map(function(cell,cellIndex){
+                        return {"value":cell,"keys":columnNames[cellIndex].split(".")};
+                    }).filter(function(pair){return pair.value !== ""});
+                pairs.forEach(function(pair,pairIndex){
+                    var cell = pair.value;
+                    var keys = pair.keys;
                     var lookAt_result = result;
                     var lookAt_type = type;
                     keys.forEach(function(key,index){
                         if(index === keys.length-1){
-                            if(cell === ""){
-                                delete lookAt_result[key];
-                            }else if(lookAt_type[key] === "other"){
+                            if(lookAt_type[key] === "other"){
                                 try{
                                     lookAt_result[key] = JSON.parse(cell);
                                 }catch(e){
@@ -89,13 +91,22 @@ var Spreadsheet = (function(){
                                 lookAt_result[key] = castType(cell,lookAt_type[key]);
                             }
                         }else{
+                            lookAt_type = lookAt_type[key.replace(/^\d+$/,"0")];
+                            if(lookAt_result[key] === undefined && !Number.isNaN(+key)){
+                                if(Number.isNaN(+keys[index+1])){
+                                    lookAt_result[key] = {};
+                                }else{
+                                    lookAt_result[key] = [];
+                                }
+                            }
                             lookAt_result = lookAt_result[key];
-                            lookAt_type = lookAt_type[key.replace(/\d/g,"0")];
                         }
                     });
                 });
                 return result;
             });
+
+            return contents;
         }
         static convertDataFromHashToArray(hashes,type,order){
             var hashes;
@@ -132,10 +143,10 @@ var Spreadsheet = (function(){
             if(order !== undefined){
                 keyList.sort(function(a,b){
                     var aValue = order.findIndex(function(v){
-                        return a.replace(/\d/g,"0") === v;
+                        return a.replace(/\.\d+/g,".0").replace(/^\d+$/,"0").replace(/^\d+\./,"0.") === v;
                     });
                     var bValue = order.findIndex(function(v){
-                        return b.replace(/\d/g,"0") === v;
+                        return b.replace(/\.\d+/g,".0").replace(/^\d+$/,"0").replace(/^\d+\./,"0.") === v;
                     });
                     if(aValue === -1)  aValue = order.length;
                     if(bValue === -1)  bValue = order.length;
@@ -156,7 +167,7 @@ var Spreadsheet = (function(){
                     var lookAt_type = type;
                     keys.forEach(function(key){
                         lookAt_result = (lookAt_result === undefined ? undefined : lookAt_result[key]);
-                        lookAt_type = (lookAt_type === undefined || lookAt_type === "" ? "" : lookAt_type[key.replace(/\d/g,"0")] );
+                        lookAt_type = (lookAt_type === undefined || lookAt_type === "" ? "" : lookAt_type[key.replace(/^\d+$/,"0")] );
                     });
                     if(lookAt_result === undefined){
                         return "";
