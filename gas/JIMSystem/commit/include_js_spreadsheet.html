@@ -53,14 +53,16 @@ var Spreadsheet = (function(){
                     }
                 },50);
             });
-            var sendDataPart;
             var fileId = this.getFileInfo().getValue("fileId");
             var sheetName = this.getSheetName();
+            var index = 0;
 
-            for(var index=0,l=sendData.length; index<l; index+=numRowsPerRequest){
-                sendDataPart = sendData.splice(0,numRowsPerRequest).slice();
+            for(var i=0,l=sendData.length; i<l; i+=numRowsPerRequest){
                 promiseChain = promiseChain.then(function(){
-                    return runServerFun("Script.writeSheetValuesFromClient",[fileId,sheetName,sendDataPart,index,textOnly])
+console.log(index,sendData.slice().splice(0,numRowsPerRequest));
+                    var p = runServerFun("Script.writeSheetValuesFromClient",[fileId,sheetName,sendData.splice(0,numRowsPerRequest),index,textOnly]);
+                    index += numRowsPerRequest;
+                    return p;
                 });
             }
             promiseChain = promiseChain.then(function(v){
@@ -191,6 +193,7 @@ var Spreadsheet = (function(){
                     var bValue = order.findIndex(function(v){
                         return b.replace(/\.\d+/g,".0").replace(/^\d+$/,"0").replace(/^\d+\./,"0.") === v;
                     });
+console.log("a,b",a,b,aValue,bValue);
                     if(aValue === -1)  aValue = order.length;
                     if(bValue === -1)  bValue = order.length;
                     if(aValue === bValue){

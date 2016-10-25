@@ -61,7 +61,6 @@ function setSheetValues(sheet, values, option) {
     if (option.columnWidth) {
         sheet.setColumnWidth(option.columnWidth.index, option.columnWidth.value);
     }
-
     if (option.textOnly) {
         rangeAll.setValues(values);
     } else {
