@@ -41,7 +41,7 @@ function setSheetValues(sheet,values,option){
     option = option || {};
     option.top = option.top || 0;
     option.left = option.left || 0;
-    option.textOnly = option.textOnly || true;
+    option.textOnly = (option.textOnly === undefined ? true : option.textOnly);
 
     var columnNum = values[0].length;
     var rangeAll = sheet.getRange(option.top + 1,option.left + 1,values.length,columnNum);
@@ -118,7 +118,7 @@ function readSheetValuesFromClient(fileId,sheetName){
 function writeSheetValuesFromClient(fileId,sheetName,contents,startRowIndex,textOnly){
     var spreadsheet = SpreadsheetApp.openById(fileId);
     var sheet = spreadsheet.getSheetByName(sheetName);
-    sheet.clear();
+    //sheet.clear();
 
     setSheetValues(sheet,contents,{"top":startRowIndex,"textOnly":textOnly});
     openSpreadSheet(fileId,sheetName);

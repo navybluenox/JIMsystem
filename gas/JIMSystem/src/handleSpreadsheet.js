@@ -27,7 +27,7 @@ $(function(){
                 }
                 var spreadsheet = new Spreadsheet(spreadsheetName,sheetName,content);
                 var collInfo = _val.server.getCollectionInfoByName(dataName);
-                return spreadsheet.writeSheetData(collInfo.getValue("column"),collInfo.getValue("columnOrder"),20,true);
+                return spreadsheet.writeSheetData(collInfo.getValue("column"),collInfo.getValue("columnOrder"),20,false);
             }).then(function(){
                 formAddData.find('[name="dataName"],[name="copyAll"],[name="copyColumn"]').prop("disabled",true);
             });

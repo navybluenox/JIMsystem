@@ -37,7 +37,7 @@ var Spreadsheet = (function(){
                 return this;
             }
             numRowsPerRequest = (numRowsPerRequest === 0 || numRowsPerRequest === undefined ? this.getData().length + 1 : numRowsPerRequest);
-            textOnly = textOnly || true;
+            textOnly = (textOnly === undefined ? true : textOnly);
             //TODO
             var that = this;
             var la = new LoadingAlert();
@@ -56,10 +56,10 @@ var Spreadsheet = (function(){
             var fileId = this.getFileInfo().getValue("fileId");
             var sheetName = this.getSheetName();
 
-            for(var index=0,l=sendData.length; index<l; i+=numRowsPerRequest){
-                sendDataPart = sendData.splice(0,numRowsPerRequest);
+            for(var index=0,l=sendData.length; index<l; index+=numRowsPerRequest){
+                sendDataPart = sendData.splice(0,numRowsPerRequest).slice();
                 promiseChain = promiseChain.then(function(){
-                    return runServerFun("Script.writeSheetValuesFromClient",[fileId,sheetName,sendData,index,textOnly])
+                    return runServerFun("Script.writeSheetValuesFromClient",[fileId,sheetName,sendDataPart,index,textOnly])
                 });
             }
             promiseChain = promiseChain.then(function(v){
