@@ -68,7 +68,7 @@ function setSheetValues(sheet, values, option) {
                 cell.merge.colSpan = cell.merge.colSpan || 1;
                 cell.merge.rowSpan = cell.merge.rowSpan || 1;
                 if (cell.merge.rowSpan !== 1 || cell.merge.colSpan !== 1) {
-                    range.offset(0, 0, cell.merge.rowSpan, cell.merge.colSpan).merge();
+                    range = range.offset(0, 0, cell.merge.rowSpan, cell.merge.colSpan).merge();
                 }
             }
             Object.keys(cell).forEach(function (key) {
@@ -106,7 +106,7 @@ function setSheetValues(sheet, values, option) {
                 range = range.offset(0, 1);
             } while (range.isPartOfMerge());
         });
-        range.offset(1, -columnNum);
+        range = range.offset(1, -columnNum);
     });
     return rangeAll;
 }
@@ -140,4 +140,14 @@ function openSpreadSheet(fileId, sheetName) {
     SpreadsheetApp.setActiveSpreadsheet(spreadsheet);
     SpreadsheetApp.setActiveSheet(sheet);
     return { "fileId": fileId, "sheetName": sheet.getName() };
+}
+
+function refreshSheetCompletely(sheet) {
+    var spreadsheet = sheet.getParent();
+    var sheetName = sheet.getName();
+    var sheetIndex = sheet.getIndex();
+    spreadsheet.deleteSheet(sheet);
+    var newSheet = spreadsheet.insertSheet(sheetIndex);
+    newSheet.setName(sheetName);
+    return newSheet;
 }

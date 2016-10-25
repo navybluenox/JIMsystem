@@ -101,7 +101,7 @@ var Server = (function(){
             if(reload === undefined)  reload = false;
 
             //reloadフラグがfalseで強制リロードでない&既にロードされている　→　自動でスキップ
-            if(!reload && this.isLoadedData(collInfo.getValue("name")))  return Promise.resolve(this.getData(collName));
+            if(!reload && this.isLoadedData(collInfo.getValue("name")))  return Promise.resolve(this.getData(collInfo.getValue("name")));
 
             console.log("loadData : " + collInfo.getValue("name"));
             var la = new LoadingAlert();
