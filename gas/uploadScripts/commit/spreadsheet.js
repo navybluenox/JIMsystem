@@ -88,79 +88,10 @@ function setSheetValues(sheet,content,option){
     return range;
 }
 
-/*function _setSheetValues(sheet,values,option){
-    if(!Array.isArray(values) || !Array.isArray(values[0])){
-        Logger.log("Error : values is not double array (Script.setSheetValues)");
-        throw new Error();
-    }
-    option = option || {};
-    option.top = option.top || 0;
-    option.left = option.left || 0;
-    option.textOnly = (option.textOnly === undefined ? true : option.textOnly);
-
-    var columnNum = values[0].length;
-    var rangeAll = sheet.getRange(option.top + 1,option.left + 1,values.length,columnNum);
-    var range = rangeAll.getCell(1,1);
-
-    if(option.rowHeight){
-        sheet.setRowHeight(option.rowHeight.index,option.rowHeight.value);
-    }
-    if(option.columnWidth){
-        sheet.setColumnWidth(option.columnWidth.index,option.columnWidth.value);
-    }
-    if(option.textOnly){
-        rangeAll.setValues(values);
-    }else{
-        values.forEach(function(row,rowIndex){
-            row.forEach(function(_cell,cellIndex){
-                var cell = (_cell && typeof _cell === "object" ? _cell : {"value":_cell});
-                if(cell.merge){
-                    cell.merge.colSpan = cell.merge.colSpan || 1;
-                    cell.merge.rowSpan = cell.merge.rowSpan || 1;
-                    if(cell.merge.rowSpan !== 1 || cell.merge.colSpan !== 1){
-                        range = range.offset(0,0,cell.merge.rowSpan,cell.merge.colSpan).merge();
-                    }
-                }
-                Object.keys(cell).forEach(function(key){
-                    var value = cell[key];
-                    switch(key){
-                        case "value":
-                            range.setValue(value);
-                            return;
-                        case "background":
-                            range.setBackground(value);
-                            return;
-                        case "border":
-                            Range.prototype.setBorder.apply(range,
-                                ["top","left","bottom","right","vertical","horizontal","color","style"].map(function(key){return value[key] ? value[key] : null})
-                            );
-                            return;
-                        case "alignHori":
-                            range.setHorizontalAlignment(value);
-                            return;
-                        case "alignVer":
-                            range.setVerticalAlignment(value);
-                            return;
-                        case "fontColor":
-                            range.setFontColor(value);
-                            return;
-                        case "fontSize":
-                            range.setFontSize(value);
-                            return;
-                        case "fontWeight":
-                            range.setFontWeight(value);
-                            return;
-                    }
-                })
-                do{
-                    range = range.offset(0,1);
-                }while(range.isPartOfMerge())
-            });
-            range = range.offset(1,-columnNum);
-        });
-    }
-    return rangeAll;
-}*/
+function mergeCells(fileId,sheetName,settings){
+    var spreadsheet = SpreadsheetApp.openById(fileId);
+    var sheet = spreadsheet.getSheetByName(sheetName);
+}
 
 function readSheetValuesFromClient(fileId,sheetName){
     var spreadsheet = SpreadsheetApp.openById(fileId);
@@ -178,16 +109,6 @@ function writeSheetValuesFromClient(fileId,sheetName,contents,option){
 
     return {"fileId":fileId,"sheetName":sheet.getName()};
 }
-
-/*function _writeSheetValuesFromClient(fileId,sheetName,contents,startRowIndex,textOnly){
-    var spreadsheet = SpreadsheetApp.openById(fileId);
-    var sheet = spreadsheet.getSheetByName(sheetName);
-
-    setSheetValues(sheet,contents,{"top":startRowIndex,"textOnly":textOnly});
-    openSpreadSheet(fileId,sheetName);
-
-    return {"fileId":fileId,"sheetName":sheet.getName()};
-}*/
 
 function openSpreadSheet(fileId,sheetName){
     var spreadsheet = SpreadsheetApp.openById(fileId);

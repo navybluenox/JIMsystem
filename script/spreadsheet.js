@@ -97,49 +97,11 @@ var Spreadsheet = (function(){
             });
             startTrigger = true;
             return promiseChain;
-            
         }
-        /*_writeSheetData(columnType,columnOrder,numRowsPerRequest,textOnly){
-            if(this.hasData()){
-                console.log("This spreadsheet does not have data");
-                return this;
-            }
-            numRowsPerRequest = (numRowsPerRequest === 0 || numRowsPerRequest === undefined ? this.getData().length + 1 : numRowsPerRequest);
-            textOnly = (textOnly === undefined ? true : textOnly);
-            var that = this;
-            var la = new LoadingAlert();
-            var sendData = Spreadsheet.convertDataFromHashToArray(this.getData(),columnType,columnOrder);
-
-            var startTrigger = false;
-            var promiseChain = new Promise(function(resolve){
-                var si = setInterval(function(){
-                    if(startTrigger){
-                        clearInterval(si);
-                        resolve();
-                    }
-                },50);
-            });
-            var fileId = this.getFileInfo().getValue("fileId");
-            var sheetName = this.getSheetName();
-            var index = 0;
-
-            promiseChain = promiseChain.then(function(){
-                return runServerFun("Script.clearSheetFromClient",[fileId,sheetName]);
-            });
-            for(var i=0,l=sendData.length; i<l; i+=numRowsPerRequest){
-                promiseChain = promiseChain.then(function(){
-                    var p = runServerFun("Script._writeSheetValuesFromClient",[fileId,sheetName,sendData.splice(0,numRowsPerRequest),index,textOnly]);
-                    index += numRowsPerRequest;
-                    return p;
-                });
-            }
-            promiseChain = promiseChain.then(function(v){
-                console.log("Writeing data on spreadsheet successes!");
-                la.remove();
-            });
-            startTrigger = true;
-            return promiseChain;
-        }*/
+        setMergeCell(settings){
+            //settings = {"top":[0-],"left",[0-],"height",[1-],"width",[0-]}
+            return runServerFun("Script.mergeCells",[this.getFileInfo().getValue("fileId"),this.getSheetName(),settings]);
+        }
         hasData(){
             return this._data === undefined;
         }
