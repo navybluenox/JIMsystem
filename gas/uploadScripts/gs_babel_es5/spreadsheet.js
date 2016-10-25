@@ -38,7 +38,7 @@ function getRangeWithContents(sheet, rowStartIndex, columnStartIndex, rowIndexOf
 
 function getSheetValues(sheet, option) {
     option = option || {};
-    return Script.getRangeWithContents(sheet, option.top, option.left).getValues();
+    return getRangeWithContents(sheet, option.top, option.left).getValues();
 }
 
 function setSheetValues(sheet, values, option) {
@@ -115,15 +115,15 @@ function readSheetValuesFromClient(fileId, sheetName) {
     var spreadsheet = SpreadsheetApp.openById(fileId);
     var sheet = spreadsheet.getSheetByName(sheetName);
 
-    return Script.getRangeWithContents(sheet);
+    return getRangeWithContents(sheet);
 }
 
 function writeSheetValuesFromClient(fileId, sheetName, contents) {
     var spreadsheet = SpreadsheetApp.openById(fileId);
     var sheet = spreadsheet.getSheetByName(sheetName);
 
-    Script.setSheetValues(sheet, contents);
-    Script.openSpreadSheet(fileId, sheetName);
+    setSheetValues(sheet, contents);
+    openSpreadSheet(fileId, sheetName);
 
     return { "fileId": fileId, "sheetName": sheet.getName() };
 }

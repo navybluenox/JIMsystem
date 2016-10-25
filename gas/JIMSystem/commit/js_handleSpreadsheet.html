@@ -27,7 +27,9 @@ $(function(){
                     content = [];
                 }
                 var spreadsheet = new Spreadsheet(spreadsheetName,sheetName,_val.server.getCollectionInfoByName(dataName).getValue("column"),content);
-                spreadsheet.writeSheetData();
+                return spreadsheet.writeSheetData();
+            }).then(function(){
+                formAddData.find('[name="dataName"],[name="copyAll"],[name="copyContent"]').prop("disabled",true);
             });
         }
     };
