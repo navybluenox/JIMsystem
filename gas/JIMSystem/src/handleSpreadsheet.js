@@ -25,8 +25,9 @@ $(function(){
                 }else if(contentConfig === "column"){
                     content = [];
                 }
-                var spreadsheet = new Spreadsheet(spreadsheetName,sheetName,_val.server.getCollectionInfoByName(dataName).getValue("column"),content);
-                return spreadsheet.writeSheetData();
+                var spreadsheet = new Spreadsheet(spreadsheetName,sheetName,content);
+                var collInfo = _val.server.getCollectionInfoByName(dataName);
+                return spreadsheet.writeSheetData(collInfo.getValue("column"),collInfo.getValue("columnOrder"));
             }).then(function(){
                 formAddData.find('[name="dataName"],[name="copyAll"],[name="copyContent"]').prop("disabled",true);
             });

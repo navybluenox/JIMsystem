@@ -34,7 +34,7 @@ function getSheetValues(sheet,option){
 }
 
 function setSheetValues(sheet,values,option){
-    if(!Array.isArray(values) || Array.isArray(values[0])){
+    if(!Array.isArray(values) || !Array.isArray(values[0])){
         Logger.log("Error : values is not double array (Script.setSheetValues)");
         throw new Error();
     }
@@ -42,9 +42,9 @@ function setSheetValues(sheet,values,option){
     option.top = option.top || 0;
     option.left = option.left || 0;
 
-    var columnNum = sheet[0].length;
-    var rangeAll = sheet.getRange(option.top,option.left,sheet.length,columnNum);
-    var range = rangeAll.getCell(0,0);
+    var columnNum = values[0].length;
+    var rangeAll = sheet.getRange(option.top + 1,option.left + 1,values.length,columnNum);
+    var range = rangeAll.getCell(1,1);
 
     if(option.rowHeight){
         sheet.setRowHeight(option.rowHeight.index,option.rowHeight.value);
