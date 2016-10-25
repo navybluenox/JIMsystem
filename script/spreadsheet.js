@@ -1,13 +1,17 @@
 var Spreadsheet = (function(){
     var server;
     return class Spreadsheet{
-        constructor(fileName,sheetName,columnType){
-            this._fileInfo = Spreadsheet.getServerserver().getData("fileInfo").find(function(fileInfo){return fileInfo.getValue("name") === fileName});
+        constructor(fileName,sheetName,columnType,data){
+            this._fileInfo = Spreadsheet.getServer().getData("fileInfo").find(function(fileInfo){return fileInfo.getValue("name") === fileName});
             this._sheetName = sheetName;
             this._columnType = columnType;
+            this._data = data;
         }
         copy(newSheetName){
-            return new Spreadsheet(this.getFileName(),newSheetName ? newSheetName : this.getSheetName());
+            return new Spreadsheet(this.getFileName(), newSheetName ? newSheetName : this.getSheetName(), $.extend(true,{},this.getColumnType()), $.extend(true,{},this.getData()));
+        }
+        getData(){
+            return this._data;
         }
         getFileInfo(){
             return this._fileInfo;
@@ -15,20 +19,32 @@ var Spreadsheet = (function(){
         getFileName(){
             return this.getFileInfo().getValues("name");
         }
-        getSheetData(){
-            var that = this;
-            var la = new LoadingAlert();
-            return runServerFun("Script.getSheetValuesFromClient",[this.getFileInfo().getValue("fileId"),this.getSheetName()]).then(function(v){
-                that._data = Spreadsheet.convertDataFromArrayToHash(v,that.getColumnType());
-                console.log("load spreadsheet from server success!");
-                la.remove();
-            });
-        }
         getSheetName(){
             return this._sheetName;
         }
         getColumnType(){
             return this._columnType;
+        }
+        readSheetData(){
+            var that = this;
+            var la = new LoadingAlert();
+            return runServerFun("Script.readSheetValuesFromClient",[this.getFileInfo().getValue("fileId"),this.getSheetName()]).then(function(v){
+                that._data = Spreadsheet.convertDataFromArrayToHash(v,that.getColumnType());
+                console.log("Reading data of spreadsheet from server successes!");
+                la.remove();
+            });
+        }
+        writeSheetData(){
+            if(this.hasData()){
+                console.log("This spreadsheet does not have data");
+                return this;
+            }
+            var that = this;
+            var la = new LoadingAlert();
+            return runServerFun("Script.writeSheetValuesFromClient",[this.getFileInfo().getValue("fileId"),this.getSheetName(),this.getData()]).then(function(v){
+                console.log("Writeing data on spreadsheet successes!");
+                la.remove();
+            });
         }
         hasData(){
             return this._data === undefined;

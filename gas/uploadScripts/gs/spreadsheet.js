@@ -13,11 +13,6 @@
         引数
 */
 
-function loadSheetDataFromDrive(fileId,sheetName){
-    //TODO
-    //二次元配列を送るだけ
-    //解釈・パースなどはクライアント側で行う
-}
 
 function getRangeWithContents(sheet,rowStartIndex,columnStartIndex,rowIndexOfColumns,columnName){
     rowStartIndex = rowStartIndex || 0;
@@ -108,6 +103,33 @@ function setSheetValues(sheet,values,option){
     return rangeAll;
 }
 
-function getSheetValuesFromClient(fileId,sheetName){
-    
+function readSheetValuesFromClient(fileId,sheetName){
+    var spreadsheet = SpreadsheetApp.openById(fileId);
+    var sheet = spreadsheet.getSheetByName(sheetName);
+
+    return Script.getRangeWithContents(sheet)
 }
+
+function writeSheetValuesFromClient(fileId,sheetName,contents){
+    var spreadsheet = SpreadsheetApp.openById(fileId);
+    var sheet = spreadsheet.getSheetByName(sheetName);
+
+    Script.setSheetValues(sheet,contents);
+    Script.openSpreadSheet(fileId,sheetName);
+
+    return {"fileId":fileId,"sheetName":sheet.getName()};
+}
+
+function openSpreadSheet(fileId,sheetName){
+    var spreadsheet = SpreadsheetApp.openById(fileId);
+    var sheet;
+    if(sheetName === undefined){
+        sheet = spreadsheet.getSheets[0];
+    }else{
+        sheet = spreadsheet.getSheetByName(sheetName);
+    }
+    SpreadsheetApp.setActiveSpreadsheet(spreadsheet);
+    SpreadsheetApp.setActiveSheet(sheet);
+    return {"fileId":fileId,"sheetName":sheet.getName()};
+}
+

@@ -20,6 +20,7 @@ function getPageFromServer(pageName){
 }
 
 function movePage(pageName,insertTag,option){
+    insertTag = insertTag || "content";
     //pageFunが変わる場合にはここを書き換える
     var pageFun = _val.pageFun;
     google.script.url.getLocation(function(location){
@@ -53,6 +54,15 @@ function movePage(pageName,insertTag,option){
             pageFun[pageName].onload();
         }
     });
+}
+
+function showOuterPage(url,newTab){
+    newTab = newTab || true;
+    if(newTab){
+        open(url,"_blank");
+    }else{
+        location.href = url;
+    }
 }
 
 class ModalWindow{

@@ -82,6 +82,7 @@ var Server = (function(){
             return cache[dataName] !== undefined;
         }
         loadData(collInfo,option,reload){
+            var that = this;
             //collInfo:CollectionInfo型かdataName(String型)を要求
             if(!(collInfo instanceof CollectionInfo)){
                 collInfo = this.getCollectionInfoByName(collInfo);
@@ -117,7 +118,7 @@ var Server = (function(){
                 that._loading = that._loading.filter(function(obj){return obj.id !== loadingId});
                 console.log(cache[collName]);
                 la.remove();
-                return cache[collName];
+                return that.getData(collName);
             })
             .catch(function(e){
                 that._loading = that._loading.filter(function(obj){return obj.id !== loadingId});
