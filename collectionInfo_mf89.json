@@ -111,7 +111,7 @@
             "oldIncharge":[{"_name":"過去の担当","org":"団体の略称","nth":"期","code":"担当の略称"}],
             "isRojin":"老人であるか",
             "isAvailable":"今期に参加するか"
-        },"columnOrder":["_id","created","updated","sortId","azusaId","azusaSendName","cellphone","grade","nameLast","nameFirst","nameLastPhonetic","nameFirstPhonetic","incharge.0","incharegeCode.0","oldIncharge.0.org","oldIncharge.0.nth","oldIncharge.0.code","isRojin","isAvailable"]},
+        },"columnOrder":["_id","created","updated","sortId","azusaId","azusaSendName","cellphone","grade","nameLast","nameFirst","nameLastPhonetic","nameFirstPhonetic","incharge.0","inchargeCode.0","oldIncharge.0.org","oldIncharge.0.nth","oldIncharge.0.code","isRojin","isAvailable"]},
         {"_id":"fZBpdfgWyMZdAp3W","created":"2016-07-18T08:00:00.000Z","updated":"2016-07-18T08:00:00.000Z","name":"userGroup","fileId":"0B88bKUOZP4-AQ01mUnoyTmZIUUk","column":{
             "_id":"string",
             "created":"date",

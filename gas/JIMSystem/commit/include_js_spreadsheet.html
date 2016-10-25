@@ -193,13 +193,22 @@ console.log(index,sendData.slice().splice(0,numRowsPerRequest));
                     var bValue = order.findIndex(function(v){
                         return b.replace(/\.\d+/g,".0").replace(/^\d+$/,"0").replace(/^\d+\./,"0.") === v;
                     });
-console.log("a,b",a,b,aValue,bValue);
                     if(aValue === -1)  aValue = order.length;
                     if(bValue === -1)  bValue = order.length;
                     if(aValue === bValue){
-                        return aValue - bValue;
+                        var arrayA = a.split("").reverse();
+                        var arrayB = b.split("").reverse();
+                        var lookAt_A,lookAt_B;
+                        do{
+                            lookAt_A = arrayA.pop();
+                            lookAt_B = arrayB.pop();                            
+                        }while(lookAt_A !== undefined && lookAt_B !== undefined && lookAt_A === lookAt_B)
+
+                        if(lookAt_A === undefined)  return -1;
+                        if(lookAt_B === undefined)  return 1;
+                        return lookAt_A.charCodeAt() = lookAt_B.charCodeAt();
                     }else{
-                        return a.charCodeAt() - b.charCodeAt();
+                        return aValue - bValue;
                     }
                 });
             }else{
