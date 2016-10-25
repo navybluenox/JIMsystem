@@ -61,7 +61,7 @@ function setSheetValues(sheet, values, option) {
         sheet.setColumnWidth(option.columnWidth.index, option.columnWidth.value);
     }
 
-    sheet.forEach(function (row, rowIndex) {
+    values.forEach(function (row, rowIndex) {
         row.forEach(function (_cell, cellIndex) {
             var cell = _cell && (typeof _cell === "undefined" ? "undefined" : _typeof(_cell)) === "object" ? _cell : { "value": _cell };
             if (cell.merge) {
@@ -121,6 +121,7 @@ function readSheetValuesFromClient(fileId, sheetName) {
 function writeSheetValuesFromClient(fileId, sheetName, contents) {
     var spreadsheet = SpreadsheetApp.openById(fileId);
     var sheet = spreadsheet.getSheetByName(sheetName);
+    sheet.clear();
 
     setSheetValues(sheet, contents);
     openSpreadSheet(fileId, sheetName);
