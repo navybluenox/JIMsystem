@@ -23,13 +23,19 @@ var Spreadsheet = (function(){
             return this._sheetName;
         }
 
-        readSheetData(columnType){
+        readSheetData(columnType,option){
             var that = this;
+            option = option || {};
+            option.columnOnly = option.columnOnly || false;
+            if(option.columnOnly){
+                option.height = 1;
+            }
             var la = new LoadingAlert();
-            return runServerFun("Script.readSheetValuesFromClient",[this.getFileInfo().getValue("fileId"),this.getSheetName()]).then(function(v){
+            return runServerFun("Script.readSheetValuesFromClient",[this.getFileInfo().getValue("fileId"),this.getSheetName(),option]).then(function(v){
                 that._data = Spreadsheet.convertDataFromArrayToHash(v,columnType);
                 console.log("Reading data of spreadsheet from server successes!");
                 la.remove();
+                return v;
             });
         }
         writeSheetData(columnType,columnOrder,numRowsPerRequest,settings,callback,optionOfWriteSheet){
@@ -113,9 +119,9 @@ var Spreadsheet = (function(){
         static getServer(){
             return server;
         }
-        static convertDataFromArrayToHash(hashes,type){
-            var columnNames = hashes[0];
-            var contents = hashes.splice(1,hashes.length);
+        static convertDataFromArrayToHash(arrays,type){
+            var columnNames = arrays[0];
+            var contents = arrays.splice(1,arrays.length);
             var templateHash = {};
 
             columnNames.forEach(function(columnName){

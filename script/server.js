@@ -175,9 +175,9 @@ var Server = (function(){
             });
         }
         getCollectionInfoByName(dataName){
-            return cache.collectionInfo.find(function(collInfo){
+            return this.getData("collectionInfo").find(function(collInfo){
                 return collInfo.getValue("name") === dataName;
-            });
+            }) || (new CollectionInfo());
         }
         getVersion(dataName){
             return this.getCollectionInfoByName(dataName).version;

@@ -8,10 +8,10 @@ $(function(){
             formAddData = $("#formAddToDatabase");
 
             formAddData.find('[name="dataName"]').append(
-                Datapiece.sort(_val.server.getData("collectionInfo"),"name").map(function(collInfo){
+                ['<option value=""></option>'].concat(Datapiece.sort(_val.server.getData("collectionInfo"),"name").map(function(collInfo){
                     var name = collInfo.getValue("name");
                     return '<option value="' + name + '">' + name + '</option>';
-                })
+                }))
             )
         },onunload:function(){
             pageFun = _val.pageFun.handleSpreadsheet;
@@ -37,7 +37,15 @@ $(function(){
                     }
                 );
             }).then(function(){
-                formAddData.find('[name="dataName"],[name="copyAll"],[name="copyColumn"]').prop("disabled",true);
+                //formAddData.find('[name="dataName"],[name="writeAll"],[name="writeColumn"]').prop("disabled",true);
+            });
+        },readSpreadsheet:function(spreadsheetName,sheetName){
+            var spreadsheet = new Spreadsheet(spreadsheetName,sheetName);
+            var dataName = formAddData.find('[name="dataName"]').val();
+            var column = _val.server.getCollectionInfoByName(dataName).getValue("column");
+
+            spreadsheet.readSheetData(column).then(function(){
+                console.log(spreadsheet._data);
             });
         }
     };

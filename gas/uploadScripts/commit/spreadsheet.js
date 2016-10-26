@@ -14,23 +14,24 @@
 */
 
 
-function getRangeWithContents(sheet,rowStartIndex,columnStartIndex,rowIndexOfColumns,columnName){
+function getRangeWithContents(sheet,rowStartIndex,columnStartIndex,maxHeight,rowIndexOfColumns,columnName){
     rowStartIndex = rowStartIndex || 0;
     columnStartIndex = columnStartIndex || 0;
     rowIndexOfColumns = rowIndexOfColumns || 0;
     
-    var allContents = sheet.getRange(rowStartIndex,columnStartIndex,sheet.getMaxRows(),sheet.getMaxColumns()).getValues();
+    var allContents = sheet.getRange(rowStartIndex+1,columnStartIndex+1,sheet.getMaxRows(),sheet.getMaxColumns()).getValues();
     var columnIndexForCheck = columnName ? allContents[0].indexOf(columnName) : 0;
     var rowsForCheck = allContents.map(function(row){return row[columnIndexForCheck]}).filter(function(v){return !!v});
     var columnsForCheck = allContents[rowIndexOfColumns].filter(function(cell){return !!cell});
+    maxHeight = (maxHeight ? Math.min(maxHeight,rowsForCheck.length) : rowsForCheck.length);
 
-    return sheet.getRange(rowStartIndex,columnStartIndex,rowsForCheck.length,columnsForCheck.length);
+    return sheet.getRange(rowStartIndex,columnStartIndex,maxHeight,columnsForCheck.length);
 }
 
 
 function getSheetValues(sheet,option){
     option = option || {};
-    return getRangeWithContents(sheet,option.top,option.left).getValues();
+    return getRangeWithContents(sheet,option.top,option.left,option.height).getValues();
 }
 
 function setSheetValues(sheet,content,option){
@@ -91,13 +92,18 @@ function setSheetValues(sheet,content,option){
 function mergeCells(fileId,sheetName,settings){
     var spreadsheet = SpreadsheetApp.openById(fileId);
     var sheet = spreadsheet.getSheetByName(sheetName);
+    
+    settings.forEach(function(setting){
+        var range = sheet.getRange(setting.top+1,setting.left+1,setting.width,setting,height);
+        range.merge();
+    });
 }
 
-function readSheetValuesFromClient(fileId,sheetName){
+function readSheetValuesFromClient(fileId,sheetName,option){
     var spreadsheet = SpreadsheetApp.openById(fileId);
     var sheet = spreadsheet.getSheetByName(sheetName);
 
-    return getRangeWithContents(sheet)
+    return getSheetValues(sheet,option)
 }
 
 function writeSheetValuesFromClient(fileId,sheetName,contents,option){
