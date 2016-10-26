@@ -22,7 +22,6 @@ var Spreadsheet = (function(){
         getSheetName(){
             return this._sheetName;
         }
-
         readSheetData(columnType,option){
             var that = this;
             option = option || {};
@@ -32,7 +31,9 @@ var Spreadsheet = (function(){
             }
             var la = new LoadingAlert();
             return runServerFun("Script.readSheetValuesFromClient",[this.getFileInfo().getValue("fileId"),this.getSheetName(),option]).then(function(v){
-                that._data = Spreadsheet.convertDataFromArrayToHash(v,columnType);
+                try{
+                    that._data = Spreadsheet.convertDataFromArrayToHash(v,columnType);
+                }catch(e){}
                 console.log("Reading data of spreadsheet from server successes!");
                 la.remove();
                 return v;
