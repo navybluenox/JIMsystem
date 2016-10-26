@@ -660,7 +660,7 @@ var Datapiece = (function(){
                 }
                 rowContent = rowContent.reduce(function(prev,curt){
                     return prev.concat(Array.isArray(curt) ? curt : [curt]);
-                });
+                },[]);
                 _tdMatrix[rowIndex] = rowContent.map(function(cell,cellIndex){
                     var td = $("<td><div></div></td>");
                     if(cell.workAssignId === "_vacancy"){
@@ -978,6 +978,101 @@ class User extends Datapiece{
     getShiftTableAsElement(start,end,option){
         return Datapiece.getShiftTableAsElement(this,this.getDataName(),start,end,option);        
     }
+    getShiftTableAsSpreadsheetSetting(start,end,rowIndex,leftOffset){
+        rowIndex = rowIndex || 0;
+        leftOffset = leftOffset || 0;
+        var data = this.getShiftTableAsData(start,end);
+        var _row = data.content.filter(function(obj){return obj.workIndex === 0});
+
+        var row = _row.slice();
+        if(_row.length === 0){
+            for(var j=0,l=start.getDiff(end, "timeunit"); j<l; j++){
+                row[j] = {"start":start.copy().addTimeUnit(j),"workAssignId":"_vacancy"};
+            }
+        }else{
+            var insert;
+            for(var i=_row.length-1; i>=0; i--){
+                insert = [];
+                for(var j=0,l=_row[i].start.copy().addTimeUnit(_row[i].interval).getDiff(i===_row.length-1 ? end : _row[i+1].start, "timeunit"); j<l; j++){
+                    insert[j] = {"start":_row[i].start.copy().addTimeUnit(_row[i].interval + j),"workAssignId":"_vacancy"};
+                }
+                row.splice(i+1,0,insert);
+            }
+            insert = [];
+            for(var j=0,l=start.getDiff(_row[0].start, "timeunit"); j<l; j++){
+                insert[j] = {"start":start.copy().addTimeUnit(j),"workAssignId":"_vacancy"};
+            }
+            row.splice(0,0,insert);
+        }
+        row = row.reduce(function(prev,curt){
+            return prev.concat(Array.isArray(curt) ? curt : [curt]);
+        },[]);
+
+        var mergeSetting = [];
+
+        row = row.map(function(cell){
+            var ret = {"time":cell.start.getTime(),"text":null};
+            if(cell.workAssignId !== "_vacancy" && cell.workAssignId !== "_blank"){
+                var workAssign = _val.server.getDataById(cell.workAssignId,"workAssign")[0];
+                var workList = workAssign.getDatapieceRelated("workListId","workList");
+                ret = [];
+                for(var i=0,l=workAssign.getValue("interval");i<l;i++){
+                    ret[i] = {"time":cell.start.copy().addTimeUnit(i).getTime(),"text":null};
+                }
+                ret[0] = {"time":cell.start.getTime(),"startWork":true,"text":workAssign.getValue("nameShort"),"background":workList.getBackgroundColor(),"fontColor":workList.getFontColor()};
+                ret[ret.length-1].endWork = true;
+                mergeSetting.push({"top":rowIndex,"left":data.tableStartTime.getDiff(cell.start,"timeunit") + leftOffset,"height":1,"width":workAssign.getValue("interval")});
+            }
+            return ret;
+        }).reduce(function(prev,curt){
+            return prev.concat(curt);
+        },[]).map(function(cell,cellIndex,self){
+            var time = new LocalDate(cell.time);
+            cell.border = {"top":"solid","bottom":"solid","left":"dashed"};
+            if(time.getMinutes() === 0 || cellIndex === 0 || cell.startWork || cell.endWorkNext){
+                cell.border.left = "solid";
+            }
+            if(cellIndex === self.length-1){
+                cell.border.right = "solid";
+            }
+            if(cell.endWork && cellIndex !== self.length-1){
+                self[cellIndex+1].endWorkNext = true;
+            }
+            return cell;
+        }).map(function(cell){
+            ["time","startWork","endWork","endWorkNext"].forEach(function(key){
+                if(cell[key] !== undefined){
+                    delete cell[key];
+                }
+            });
+            return cell;
+        });
+
+        /*var timeScales = [];
+        (function(){
+            //make header
+            var t;
+            for(var i=0,l=data.tableInterval; i<l; i++){
+                t = data.tableStartTime.copy().addTimeUnit(i);
+                if(i === 0 || t.getMinutes() === 0){
+                    timeScales.push({"start":t});
+                }
+            }
+            var tableEnd = data.tableStartTime.copy().addTimeUnit(data.tableInterval);
+            timeScales = timeScales.map(function(obj,index){
+                if(obj.start.getMinutes() !== 0){
+                    obj.interval = data.tableStartTime.getDiff(obj.start,"timeunit");
+                }else if(obj.start.getDiff(tableEnd,"minute") < 60){
+                    obj.interval = obj.start.getDiff(tableEnd,"timeunit");
+                }else{
+                    obj.interval = 60 / LocalDate.getTimeUnitAsConverted("minute");
+                }
+                return obj;
+            });
+        })();*/
+
+        return {"content":row,"merge":mergeSetting};
+    }    
     getShiftTableUser(){
         var setValue = {"userId":this.getValue("_id"),"content":[],"workNum":[]};
         var data;
