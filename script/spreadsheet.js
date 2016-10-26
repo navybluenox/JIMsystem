@@ -145,7 +145,7 @@ var Spreadsheet = (function(){
                 });
                 $.extend(true,templateHash,obj);
             });
-            type = type || $(true,{},templateHash);
+            type = type || $.extend(true,{},templateHash);
 
             contents = contents.map(function(row){
                 var result = $.extend(true,{},templateHash);
