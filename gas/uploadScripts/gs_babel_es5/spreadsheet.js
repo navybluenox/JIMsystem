@@ -32,7 +32,7 @@ function getRangeWithContents(sheet, rowStartIndex, columnStartIndex, maxHeight,
     });
     maxHeight = maxHeight ? Math.min(maxHeight, rowsForCheck.length) : rowsForCheck.length;
 
-    return sheet.getRange(rowStartIndex, columnStartIndex, maxHeight, columnsForCheck.length);
+    return sheet.getRange(rowStartIndex + 1, columnStartIndex + 1, maxHeight, columnsForCheck.length);
 }
 
 function getSheetValues(sheet, option) {
