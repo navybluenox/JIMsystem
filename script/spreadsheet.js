@@ -30,12 +30,11 @@ var Spreadsheet = (function(){
             }
             var la = new LoadingAlert();
             return runServerFun("Script.readSheetValuesFromClient",[this.getFileInfo().getValue("fileId"),this.getSheetName(),option]).then(function(v){
-                try{
-                    that._data = Spreadsheet.convertDataFromArrayToHash(v,columnType);
-                }catch(e){}
+                var  result = Spreadsheet.convertDataFromArrayToHash(v,columnType);
+                that._data = result.content;
                 console.log("Reading data of spreadsheet from server successes!");
                 la.remove();
-                return v;
+                return result;
             });
         }
         writeSheetData(columnType,columnOrder,numRowsPerRequest,settings,callback,optionOfWriteSheet){
@@ -184,7 +183,7 @@ var Spreadsheet = (function(){
                 return result;
             });
 
-            return contents;
+            return {"content":contents,"type":type};
         }
         static convertDataFromHashToArray(hashes,type,order){
             var hashes;
