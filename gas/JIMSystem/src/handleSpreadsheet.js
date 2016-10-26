@@ -92,6 +92,67 @@ $(function(){
                 });
                 mw.keepPosition();
             });
+        },createShiftTableUser:function(){
+            _val.server.loadData("user").then(function(users){
+                var content = users.map(function(user){
+                    return createShiftTableUser(user,start,end);
+                });
+
+
+            });
+            function createShiftTableUser(user,start,end){
+                var data = user.getShiftTableAsData(start,end);
+                var _row = data.content.filter(function(obj){return obj.workIndex === 0});
+
+                var row = _row.slice();
+                    if(_row.length === 0){
+                        for(var j=0,l=start.getDiff(end, "timeunit"); j<l; j++){
+                            row[j] = {"start":start.copy().addTimeUnit(j),"workAssignId":"_vacancy"};
+                        }
+                    }else{
+                        var insert;
+                        for(var i=_row.length-1; i>=0; i--){
+                            insert = [];
+                            for(var j=0,l=_row[i].start.copy().addTimeUnit(_row[i].interval).getDiff(i===_row.length-1 ? end : _row[i+1].start, "timeunit"); j<l; j++){
+                                insert[j] = {"start":_row[i].start.copy().addTimeUnit(_row[i].interval + j),"workAssignId":"_vacancy"};
+                            }
+                            row.splice(i+1,0,insert);
+                        }
+                        insert = [];
+                        for(var j=0,l=start.getDiff(_row[0].start, "timeunit"); j<l; j++){
+                            insert[j] = {"start":start.copy().addTimeUnit(j),"workAssignId":"_vacancy"};
+                        }
+                        row.splice(0,0,insert);
+                    }
+                    row = row.reduce(function(prev,curt){
+                        return prev.concat(Array.isArray(curt) ? curt : [curt]);
+                    });
+
+                var timeScales = [];
+                (function(){
+                    //make header
+                    var t;
+                    for(var i=0,l=data.tableInterval; i<l; i++){
+                        t = data.tableStartTime.copy().addTimeUnit(i);
+                        if(i === 0 || t.getMinutes() === 0){
+                            timeScales.push({"start":t});
+                        }
+                    }
+                    var tableEnd = data.tableStartTime.copy().addTimeUnit(data.tableInterval);
+                    timeScales = timeScales.map(function(obj,index){
+                        if(obj.start.getMinutes() !== 0){
+                            obj.interval = data.tableStartTime.getDiff(obj.start,"timeunit");
+                        }else if(obj.start.getDiff(tableEnd,"minute") < 60){
+                            obj.interval = obj.start.getDiff(tableEnd,"timeunit");
+                        }else{
+                            obj.interval = 60 / LocalDate.getTimeUnitAsConverted("minute");
+                        }
+                    });
+                })();
+
+                return {"row":row,"timeScale":timeScales};
+            }
+        
         }
     };
 });
