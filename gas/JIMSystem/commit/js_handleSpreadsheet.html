@@ -228,13 +228,14 @@ $(function(){
                         groupUsers.push({"index":indexOfHeader[i],"user":users.slice().splice(indexOfHeader[i],i === l-1 ? l : indexOfHeader[i+1] - indexOfHeader[i])});
                     }
                 })();
-                groupUsers.forEach(function(obj,objIndex){
+                groupUsers.forEach(function(obj,groupIndex){
                     var users = obj.user;
-                    var groupIndex = obj.index;
-                    table.push(makeHeader(topOffset + groupIndex + objIndex));
+                    var offset = obj.index + groupIndex + topOffset;
+                    table.push(makeHeader(offset));
+                    borderSetting.push({"range":{"top":offset,"left":leftOffset,"height":1,"width":contentWidth},"border":{"vertical":true,"style":"solid"}})
 
                     users.forEach(function(user,rowIndex){
-                        var ret = user.getShiftTableAsSpreadsheetSetting(start,end,rowIndex + topOffset + groupIndex + objIndex + 1,leftOffset);
+                        var ret = user.getShiftTableAsSpreadsheetSetting(start,end,offset + rowIndex + 1,leftOffset);
                         mergeSetting = mergeSetting.concat(ret.merge);
                         //borderSetting = borderSetting.concat(ret.border);
                         var preContent = [];

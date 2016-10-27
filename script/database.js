@@ -1020,7 +1020,7 @@ class User extends Datapiece{
                 for(var i=0,l=workAssign.getValue("interval");i<l;i++){
                     ret[i] = {"time":cell.start.copy().addTimeUnit(i).getTime(),"text":null};
                 }
-                ret[0] = {"time":cell.start.getTime(),"startWork":true,"text":workAssign.getValue("nameShort"),"background":workList.getBackgroundColor(),"fontColor":workList.getFontColor()};
+                ret[0] = {"time":cell.start.getTime(),"startWork":true,"text":workList.getValue("nameShort"),"background":workList.getBackgroundColor(),"fontColor":workList.getFontColor()};
                 ret[ret.length-1].endWork = true;
                 mergeSetting.push({"range":{"top":rowIndex,"left":data.tableStartTime.getDiff(cell.start,"timeunit") + leftOffset,"height":1,"width":workAssign.getValue("interval")}});
             }
@@ -1029,7 +1029,6 @@ class User extends Datapiece{
             return prev.concat(curt);
         },[]).map(function(cell,cellIndex,self){
             var time = new LocalDate(cell.time);
-            cell.border = {"top":"solid","bottom":"solid","left":"dashed"};
             if(time.getMinutes() === 0 || cellIndex === 0 || cell.startWork || cell.endWorkNext){
                 borderSetting.push({"range":{"top":rowIndex,"left":cellIndex,"height":1,"width":1},"border":{"style":"solid","left":true}})
             }
