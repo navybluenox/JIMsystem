@@ -136,7 +136,7 @@ $(function(){
                     //TODO
                     var indexOfHeader = users.filter(function(user){
                         return (
-                            ["CAP","ZAI","SSK","VIS","PRO","CRE","SYS"].some(function(incharge){return inArray(user.getValue("incharge"),incharge)}) ||
+                            ["CAP","ZAI","SSK","VIS","PRO","CRE","SYS"].some(function(incharge){return inArray(user.getValue("inchargeCode"),incharge)}) ||
                             ["みーと","あぜがみ"].some(function(azusaSendName){return user.getValue("azusaSendName") === azusaSendName})                        
                         )
                     }).map(function(user){

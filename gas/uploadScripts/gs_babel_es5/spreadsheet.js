@@ -85,7 +85,7 @@ function mergeCells(fileId, sheetName, settings) {
     var sheet = spreadsheet.getSheetByName(sheetName);
 
     settings.forEach(function (setting) {
-        var range = sheet.getRange(setting.range.top + 1, setting.range.left + 1, setting.range.width, setting.range.height);
+        var range = sheet.getRange(setting.range.top + 1, setting.range.left + 1, setting.range.height, setting.range.width);
         range.merge();
     });
 }
@@ -96,7 +96,7 @@ function setBorderCells(fileId, sheetName, settings) {
     var borderStyle = SpreadsheetApp.BorderStyle;
 
     settings.forEach(function (setting) {
-        var range = sheet.getRange(setting.range.top + 1, setting.range.left + 1, setting.range.width, setting.range.height);
+        var range = sheet.getRange(setting.range.top + 1, setting.range.left + 1, setting.range.height, setting.range.width);
         range.setBorder.apply(range, ["top", "left", "bottom", "right", "vertical", "horizontal", "color", "style"].map(function (key) {
             if (key === "style") {
                 if (setting.border[key] === undefined) return null;
