@@ -111,8 +111,6 @@ function setBorderCells(fileId, sheetName, settings) {
                 return setting.border[key] === undefined ? null : setting.border[key];
             }
         }));
-        //更新の衝突を防ぐため、時間をあける（クソ仕様）
-        Utilities.sleep(100);
     });
 }
 

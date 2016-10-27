@@ -107,8 +107,6 @@ function setBorderCells(fileId,sheetName,settings){
                 }
             })
         );
-        //更新の衝突を防ぐため、時間をあける（クソ仕様）
-        Utilities.sleep(100);
     });    
 }
 

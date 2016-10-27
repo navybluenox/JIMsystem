@@ -1015,7 +1015,8 @@ class User extends Datapiece{
         row = row.map(function(cell){
             var ret = {"time":cell.start.getTime(),"text":null};
             if(cell.workAssignId !== "_vacancy" && cell.workAssignId !== "_blank"){
-                var workAssign = _val.server.getDataById(cell.workAssignId,"workAssign")[0];
+                var workAssign = _val.server.getDataById(cell.workAssignId,"workAssign")[0].copy();
+                workAssign.setValue("start",cell.start.copy()).setValue("interval",cell.interval)
                 var workList = workAssign.getDatapieceRelated("workListId","workList");
                 ret = [];
                 for(var i=0,l=workAssign.getValue("interval");i<l;i++){
@@ -1045,30 +1046,6 @@ class User extends Datapiece{
             });
             return cell;
         });
-
-        /*var timeScales = [];
-        (function(){
-            //make header
-            var t;
-            for(var i=0,l=data.tableInterval; i<l; i++){
-                t = data.tableStartTime.copy().addTimeUnit(i);
-                if(i === 0 || t.getMinutes() === 0){
-                    timeScales.push({"start":t});
-                }
-            }
-            var tableEnd = data.tableStartTime.copy().addTimeUnit(data.tableInterval);
-            timeScales = timeScales.map(function(obj,index){
-                if(obj.start.getMinutes() !== 0){
-                    obj.interval = data.tableStartTime.getDiff(obj.start,"timeunit");
-                }else if(obj.start.getDiff(tableEnd,"minute") < 60){
-                    obj.interval = obj.start.getDiff(tableEnd,"timeunit");
-                }else{
-                    obj.interval = 60 / LocalDate.getTimeUnitAsConverted("minute");
-                }
-                return obj;
-            });
-        })();*/
-
         return {"content":row,"merge":mergeSetting,"border":borderSetting};
     }    
     getShiftTableUser(){
