@@ -245,6 +245,7 @@ function getAuthority() {
     GmailApp.search("azusa");
     DriveApp.getFileById("##idString##");
     FormApp.openById("##idString##");
+    PropertiesService.getUserProperties();
 }
 
 function sendAZUSA(sendName, subject, message, noLog, label) {

@@ -97,7 +97,7 @@ function setBorderCells(fileId, sheetName, settings) {
 
     settings.forEach(function (setting) {
         var range = sheet.getRange(setting.range.top + 1, setting.range.left + 1, setting.range.width, setting.range.height);
-        Range.prototype.setBorder.apply(range, ["top", "left", "bottom", "right", "vertical", "horizontal", "color", "style"].map(function (key) {
+        range.setBorder.apply(range, ["top", "left", "bottom", "right", "vertical", "horizontal", "color", "style"].map(function (key) {
             if (key === "style") {
                 if (cell.border[key] === undefined) return null;
                 if (cell.border[key] === "dotted") return borderStyle.DOTTED;
