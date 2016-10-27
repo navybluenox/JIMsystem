@@ -78,7 +78,7 @@ var Spreadsheet = (function(){
                 });
             }
             promiseChain = promiseChain.then(function(v){
-                console.log("Writeing data on spreadsheet successes!");
+                console.log("Writing data on spreadsheet successes!");
                 la.remove();
                 return contents;
             });

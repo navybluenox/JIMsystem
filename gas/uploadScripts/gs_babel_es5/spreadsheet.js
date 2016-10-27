@@ -105,9 +105,10 @@ function setBorderCells(fileId, sheetName, settings) {
                 if (setting.border[key] === "solid") return borderStyle.SOLID;
                 return null;
             } else {
-                return setting.border[key] ? setting.border[key] : null;
+                return setting.border[key] === undefined ? null : setting.border[key];
             }
         }));
+        Utilities.sleep(1000);
     });
 }
 
