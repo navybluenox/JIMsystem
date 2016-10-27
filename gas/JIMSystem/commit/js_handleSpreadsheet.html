@@ -225,7 +225,7 @@ $(function(){
                 var groupUsers = [];
                 (function(){
                     for(var i=0,l=indexOfHeader.length; i<l; i++){
-                        groupUsers.push({"index":indexOfHeader[i],"user":users.slice().splice(indexOfHeader[i],i === l-1 ? l : indexOfHeader[i+1] - indexOfHeader[i])});
+                        groupUsers.push({"index":indexOfHeader[i],"user":users.slice().splice(indexOfHeader[i],i === l-1 ? users.length : indexOfHeader[i+1] - indexOfHeader[i])});
                     }
                 })();
                 groupUsers.forEach(function(obj,groupIndex){
@@ -237,7 +237,7 @@ $(function(){
                     users.forEach(function(user,rowIndex){
                         var ret = user.getShiftTableAsSpreadsheetSetting(start,end,offset + rowIndex + 1,leftOffset);
                         mergeSetting = mergeSetting.concat(ret.merge);
-                        //borderSetting = borderSetting.concat(ret.border);
+                        borderSetting = borderSetting.concat(ret.border);
                         var preContent = [];
                         var sufContent = [];
                         preContent.push({"text":user.getValue("grade")});
@@ -250,7 +250,7 @@ $(function(){
                 });
 
                 promiseChain = promiseChain.then(function(){
-                    return spreadsheet.writeSheetData(table,["text","fontColor","fontWeight","background"/*,"alignHori","alignVer"*/],100);
+                    return spreadsheet.writeSheetData(table,["text","fontColor","fontWeight","background"/*,"fontSize","alignHori","alignVer"*/],100);
                 }).then(function(){
                     return spreadsheet.setBorderCell(borderSetting);
                 }).then(function(){

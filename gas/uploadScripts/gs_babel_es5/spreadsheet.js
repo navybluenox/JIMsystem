@@ -69,6 +69,9 @@ function setSheetValues(sheet, content, option) {
             case "alignVer":
                 range.setVerticalAlignments(values);
                 break;
+            case "fontSize":
+                range.setFontSizes(values);
+                break;
             case "fontColor":
                 range.setFontColors(values);
                 break;
@@ -109,7 +112,7 @@ function setBorderCells(fileId, sheetName, settings) {
             }
         }));
         //更新の衝突を防ぐため、時間をあける（クソ仕様）
-        Utilities.sleep(1000);
+        Utilities.sleep(100);
     });
 }
 
