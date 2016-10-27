@@ -318,6 +318,25 @@ var Server = (function(){
             });
             return this;
         }
+        static handlePropertiesService(value,type,doKind){
+            if(value === undefined || type === undefined || doKind === undefined)  return;
+            switch(doKind){
+                case "set":
+                    if(classof(value) !== "object")  return;
+                    break;
+                case "get":
+                case "delete":
+                    if(value === null){
+                        value = [];
+                    }else if(typeof value === "string"){
+                        value = [value];
+                    }else if(!Array.isArray(value)){
+                        return;
+                    }
+                    break;
+            }
+            return runServerFun("Script.handlePropertiesService",[value,type,doKind]);
+        }
     };
 })();
 

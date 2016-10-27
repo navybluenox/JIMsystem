@@ -37,7 +37,7 @@ var Spreadsheet = (function(){
                 return result;
             });
         }
-        writeSheetData(contents,numRowsPerRequest,optionOfWriteSheet){
+        writeSheetData(contents,settings,numRowsPerRequest,optionOfWriteSheet){
             var la = new LoadingAlert();
             var sendData = {};
 
@@ -105,7 +105,7 @@ var Spreadsheet = (function(){
                 })
             });
             return {
-                "promise":this.writeSheetData(contents,numRowsPerRequest,optionOfWriteSheet),
+                "promise":this.writeSheetData(contents,settings,numRowsPerRequest,optionOfWriteSheet),
                 "key":keys
             };
 

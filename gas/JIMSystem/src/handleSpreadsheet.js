@@ -93,6 +93,7 @@ $(function(){
                 mw.keepPosition();
             });
         },createShiftTableUser:function(version){
+            //TODO
             version = 0;
             _val.server.loadData("user").then(function(users){
                 var nowTime = new Date();
@@ -122,7 +123,7 @@ $(function(){
 
                 timeInfoList.forEach(function(timeInfo){
                     var table = [];
-                    var spreadsheet = new Spreadsheet("shiftTableUser",timeinfo.sheetName,table);
+                    var spreadsheet = new Spreadsheet("shiftTableUser",timeInfo.sheetName,table);
                     var mergeSetting = [];
                     var borderSetting = [];
                     var start = timeInfo.start;
@@ -135,7 +136,7 @@ $(function(){
                     var indexOfHeader = users.filter(function(user){
                         return (
                             ["CAP","ZAI","SSK","VIS","PRO","CRE","SYS"].some(function(incharge){return inArray(user.getValue("incharge"),incharge)}) ||
-                            ["みーと","あぜがみ"].some(function(azusaSendName){return inArray(user.getValue("azusaSendName"),azusaSendName)})                        
+                            ["みーと","あぜがみ"].some(function(azusaSendName){return user.getValue("azusaSendName") === azusaSendName})                        
                         )
                     }).map(function(user){
                         return users.findIndex(function(u){return u.getValue("_id") === user.getValue("_id")});
@@ -147,7 +148,6 @@ $(function(){
                     borderSetting.push({"range":{"top":0,"left":0,"height":heightAll,"width":widthAll},"border":{"style":"solid","top":true,"bottom":true,"left":true,"right":true,"vertical":true,"horizontal":true}});
                     borderSetting.push({"range":{"top":topOffset,"left":leftOffset,"height":users.length + indexOfHeader.length,"width":contentWidth},"border":{"style":"dashed","vertical":true}});
 
-                    //TODO makeTableHeader
                     (function(){
                         var workGroups = _val.server.getData("workGroup").filter(function(workGroup){return workGroup.getValue("isColorGroup")});
                         var workGroup,workGroupName;
@@ -244,11 +244,11 @@ $(function(){
                     });
 
                     promiseChain = promiseChain.then(function(){
-                        spreadsheet.writeSheetData(table,100);
+                        return spreadsheet.writeSheetData(table,["text","fontColor","fontWeight","background"/*,"alignHori","alignVer"*/],100);
                     }).then(function(){
-                        spreadsheet.setBorderCell(borderSetting);
+                        return spreadsheet.setBorderCell(borderSetting);
                     }).then(function(){
-                        spreadsheet.setMergeCell(mergeSetting);
+                        return spreadsheet.setMergeCell(mergeSetting);
                     });
 
                 });

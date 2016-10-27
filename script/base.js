@@ -288,7 +288,7 @@ var LocalDate = (function(){
         }
         getAsDateClass(){
             var targetTime = LocalDate.getStandardTime();
-            return targetTime.setMilliseconds(targetTime.getMilliseconds() + this._localTime);
+            return new Date(targetTime.getTime() + this.getTime());
         };
         getTime(){return this._localTime};
         getTimeObj(){
@@ -588,7 +588,7 @@ function ungroupArray(array, keys) {
 }
 
 function inArray(array, value){
-    if(!Array.isArray(array))  throw new Error();
+    if(!Array.isArray(array))  throw new Error("Error : The 1st argument is not array (base.js inArray)");
     return array.indexOf(value) !== -1;
 }
 

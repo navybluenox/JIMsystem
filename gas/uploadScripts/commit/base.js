@@ -389,3 +389,46 @@ function updateDatabase(fileIdStr,queues){
     updateFileToDrive(fileIdStr,JSON.stringify(database));
 }
 
+function handlePropertiesService(value,type,doKind){
+    //value
+    //set : {[names]:[values]}, get : [[names]], delete : [[names]]
+    var properties;
+    var result;
+    switch(type){
+        case "user":
+            properties = PropertiesService.getUserProperties();
+            break;
+        case "script":
+            properties = PropertiesService.getScriptProperties();
+            break;
+    }
+    switch(doKind){
+        case "set":
+            properties.setProperties(value);
+            result = null;
+            break;
+        case "get":
+            if(value.length === 0){
+                result = properties.getProperties();
+            }else{
+                result = {};
+                value.forEach(function(v){
+                    result[v] = properties.getProperty(v);
+                })
+            }
+            break;
+        case "delete":
+            if(value.length === 0){
+                properties.deleteAllProperties();
+            }else{
+                value.forEach(function(v){
+                    properties.deleteProperty(v);
+                })
+            }
+            result = null;
+            break;
+    }
+    return result;
+}
+
+
