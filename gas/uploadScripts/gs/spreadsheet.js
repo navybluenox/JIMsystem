@@ -94,13 +94,13 @@ function setBorderCells(fileId,sheetName,settings){
         range.setBorder.apply(range,
             ["top","left","bottom","right","vertical","horizontal","color","style"].map(function(key){
                 if(key === "style"){
-                    if(cell.border[key] === undefined)  return null;
-                    if(cell.border[key] === "dotted")  return borderStyle.DOTTED;
-                    if(cell.border[key] === "dashed")  return borderStyle.DASHED;
-                    if(cell.border[key] === "solid")  return borderStyle.SOLID;
+                    if(setting.border[key] === undefined)  return null;
+                    if(setting.border[key] === "dotted")  return borderStyle.DOTTED;
+                    if(setting.border[key] === "dashed")  return borderStyle.DASHED;
+                    if(setting.border[key] === "solid")  return borderStyle.SOLID;
                     return null;
                 }else{
-                    return cell.border[key] ? cell.border[key] : null;
+                    return setting.border[key] ? setting.border[key] : null;
                 }
             })
         );
