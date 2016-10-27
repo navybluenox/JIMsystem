@@ -37,27 +37,8 @@ var Spreadsheet = (function(){
                 return result;
             });
         }
-        writeSheetData(columnType,columnOrder,numRowsPerRequest,settings,callback,optionOfWriteSheet){
-            if(this.hasData()){
-                console.log("This spreadsheet does not have data");
-                return this;
-            }
-            numRowsPerRequest = (numRowsPerRequest === 0 || numRowsPerRequest === undefined ? this.getData().length + 1 : numRowsPerRequest);
-            var that = this;
-            settings = settings || ["text"];
-            if(typeof callback !== "function")  callback = function(value,key,rowIndex,columnIndex){return {"text":value};};
-            optionOfWriteSheet = optionOfWriteSheet || {};
-
+        writeSheetData(contents,numRowsPerRequest,optionOfWriteSheet){
             var la = new LoadingAlert();
-            var contents = Spreadsheet.convertDataFromHashToArray(this.getData(),columnType,columnOrder);
-            var keys = contents[0].slice();
-
-            contents = contents.map(function(row,rowIndex){
-                return row.map(function(cell,cellIndex){
-                    return callback(cell,keys[cellIndex],rowIndex,cellIndex);
-                })
-            });
-
             var sendData = {};
 
             settings.forEach(function(setting){
@@ -99,14 +80,42 @@ var Spreadsheet = (function(){
             promiseChain = promiseChain.then(function(v){
                 console.log("Writeing data on spreadsheet successes!");
                 la.remove();
-                return {"key":keys,"content":contents};
+                return contents;
             });
             startTrigger = true;
             return promiseChain;
         }
+        writeSheetMapData(columnType,columnOrder,numRowsPerRequest,settings,callback,optionOfWriteSheet){
+            if(this.hasData()){
+                console.log("This spreadsheet does not have data");
+                return this;
+            }
+            numRowsPerRequest = (numRowsPerRequest === 0 || numRowsPerRequest === undefined ? this.getData().length + 1 : numRowsPerRequest);
+            var that = this;
+            settings = settings || ["text"];
+            if(typeof callback !== "function")  callback = function(value,key,rowIndex,columnIndex){return {"text":value};};
+            optionOfWriteSheet = optionOfWriteSheet || {};
+
+            var contents = Spreadsheet.convertDataFromHashToArray(this.getData(),columnType,columnOrder);
+            var keys = contents[0].slice();
+
+            contents = contents.map(function(row,rowIndex){
+                return row.map(function(cell,cellIndex){
+                    return callback(cell,keys[cellIndex],rowIndex,cellIndex);
+                })
+            });
+            return {
+                "promise":this.writeSheetData(contents,numRowsPerRequest,optionOfWriteSheet),
+                "key":keys
+            };
+
+        }
         setMergeCell(settings){
             //settings = {"top":[0-],"left",[0-],"height",[1-],"width",[0-]}
             return runServerFun("Script.mergeCells",[this.getFileInfo().getValue("fileId"),this.getSheetName(),settings]);
+        }
+        setBorderCell(settings){
+            return runServerFun("Script.setBorderCells",[this.getFileInfo().getValue("fileId"),this.getSheetName(),settings]);            
         }
         hasData(){
             return this._data === undefined;

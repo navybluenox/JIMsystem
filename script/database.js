@@ -1009,6 +1009,7 @@ class User extends Datapiece{
         },[]);
 
         var mergeSetting = [];
+        var borderSetting = [];
 
         row = row.map(function(cell){
             var ret = {"time":cell.start.getTime(),"text":null};
@@ -1021,7 +1022,7 @@ class User extends Datapiece{
                 }
                 ret[0] = {"time":cell.start.getTime(),"startWork":true,"text":workAssign.getValue("nameShort"),"background":workList.getBackgroundColor(),"fontColor":workList.getFontColor()};
                 ret[ret.length-1].endWork = true;
-                mergeSetting.push({"top":rowIndex,"left":data.tableStartTime.getDiff(cell.start,"timeunit") + leftOffset,"height":1,"width":workAssign.getValue("interval")});
+                mergeSetting.push({"range":{"top":rowIndex,"left":data.tableStartTime.getDiff(cell.start,"timeunit") + leftOffset,"height":1,"width":workAssign.getValue("interval")}});
             }
             return ret;
         }).reduce(function(prev,curt){
@@ -1030,10 +1031,7 @@ class User extends Datapiece{
             var time = new LocalDate(cell.time);
             cell.border = {"top":"solid","bottom":"solid","left":"dashed"};
             if(time.getMinutes() === 0 || cellIndex === 0 || cell.startWork || cell.endWorkNext){
-                cell.border.left = "solid";
-            }
-            if(cellIndex === self.length-1){
-                cell.border.right = "solid";
+                borderSetting.push({"range":{"top":rowIndex,"left":cellIndex,"height":1,"width":1},"border":{"style":"solid","left":true}})
             }
             if(cell.endWork && cellIndex !== self.length-1){
                 self[cellIndex+1].endWorkNext = true;
@@ -1071,7 +1069,7 @@ class User extends Datapiece{
             });
         })();*/
 
-        return {"content":row,"merge":mergeSetting};
+        return {"content":row,"merge":mergeSetting,"border":borderSetting};
     }    
     getShiftTableUser(){
         var setValue = {"userId":this.getValue("_id"),"content":[],"workNum":[]};

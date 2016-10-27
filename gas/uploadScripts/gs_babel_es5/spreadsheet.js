@@ -55,10 +55,6 @@ function setSheetValues(sheet, content, option) {
         sheet.setColumnWidth(option.columnWidth.index, option.columnWidth.value);
     }
     Object.keys(content).forEach(function (setting) {
-        if (setting === "border") {
-            //これだけは一気に設定できなくてどうしようもない
-            return;
-        }
         var values = content[setting];
         switch (setting) {
             case "text":
@@ -81,17 +77,6 @@ function setSheetValues(sheet, content, option) {
                 break;
         }
     });
-    if (content.border !== undefined) {
-        content.border.forEach(function (row, rowIndex) {
-            row.forEach(function (cell, cellIndex) {
-                var r = range.getCell(rowIndex + 1, cellIndex + 1);
-                Range.prototype.setBorder.apply(r, ["top", "left", "bottom", "right", "vertical", "horizontal", "color", "style"].map(function (key) {
-                    return cell[key] ? cell[key] : null;
-                }));
-            });
-        });
-    }
-
     return range;
 }
 
@@ -100,8 +85,29 @@ function mergeCells(fileId, sheetName, settings) {
     var sheet = spreadsheet.getSheetByName(sheetName);
 
     settings.forEach(function (setting) {
-        var range = sheet.getRange(setting.top + 1, setting.left + 1, setting.width, setting, height);
+        var range = sheet.getRange(setting.range.top + 1, setting.range.left + 1, setting.range.width, setting.range.height);
         range.merge();
+    });
+}
+
+function setBorderCells(fileId, sheetName, settings) {
+    var spreadsheet = SpreadsheetApp.openById(fileId);
+    var sheet = spreadsheet.getSheetByName(sheetName);
+    var borderStyle = SpreadsheetApp.BorderStyle;
+
+    settings.forEach(function (setting) {
+        var range = sheet.getRange(setting.range.top + 1, setting.range.left + 1, setting.range.width, setting.range.height);
+        Range.prototype.setBorder.apply(range, ["top", "left", "bottom", "right", "vertical", "horizontal", "color", "style"].map(function (key) {
+            if (key === "style") {
+                if (cell.border[key] === undefined) return null;
+                if (cell.border[key] === "dotted") return borderStyle.DOTTED;
+                if (cell.border[key] === "dashed") return borderStyle.DASHED;
+                if (cell.border[key] === "solid") return borderStyle.SOLID;
+                return null;
+            } else {
+                return cell.border[key] ? cell.border[key] : null;
+            }
+        }));
     });
 }
 

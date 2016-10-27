@@ -616,6 +616,7 @@ function dateToValue(date) {
     ret.day = ["日", "月", "火", "水", "木", "金", "土"][date.getDay()];
     ret.str = "" + [ret.year, add_zero(ret.month), add_zero(ret.date)].join("/") + " " + [add_zero(ret.hour), add_zero(ret.minute), add_zero(ret.second)].join(":");
     ret.str1 = "" + [add_zero(ret.month), add_zero(ret.date)].join("/") + "（" + ret.day + "）" + " " + [add_zero(ret.hour), add_zero(ret.minute)].join(":");
+    ret.str2 = "" + ret.month + "月" + ret.date + "日（" + ret.day + "）";
     return ret;
 
     function add_zero(num) {
