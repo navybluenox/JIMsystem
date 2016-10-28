@@ -121,7 +121,6 @@ $(function(){
                         }
                     },100);
                 });
-                var promiseChain_parallelism = [];
 
                 (function(){
                     var obj;
@@ -185,9 +184,13 @@ $(function(){
                             var row = [];
                             for(var cellIndex=0,l=leftOffset + contentWidth + 1; cellIndex<l; cellIndex++){
                                 if(rowIndex === 0 && cellIndex === 0){
+                                    row.push({});
+                                    mergeSetting.push({"range":{"top":rowIndex,"left":cellIndex,"height":1,"width":leftOffset}});
+                                    borderSetting.push({"range":{"top":rowIndex,"left":cellIndex,"height":1,"width":widthAll},"border":{"top":false,"right":false,"left":false,"vertical":false}});
+                                    
+                                }else if(rowIndex === 0 && cellIndex === leftOffset){
                                     row.push(setDefaultCellSetting({"text":_val.config.getValue("content.kind") + _val.config.getValue("content.nth") + "当日人割","fontWeight":"bold","fontSize":16}));
-                                    mergeSetting.push({"range":{"top":0,"left":0,"height":1,"width":widthAll}});
-                                    borderSetting.push({"range":{"top":0,"left":0,"height":1,"width":widthAll},"border":{"top":false,"right":false,"left":false}});
+                                    mergeSetting.push({"range":{"top":rowIndex,"left":cellIndex,"height":1,"width":widthAll - leftOffset}});
                                 }else if(rowIndex === 1 && cellIndex === 0){
                                     row.push(setDefaultCellSetting({"text":"白枠は本部待機です。","fontWeight":"bold","fontSize":16}));
                                     mergeSetting.push({"range":{"top":rowIndex,"left":cellIndex,"width":leftOffset,"height":2}});
@@ -273,19 +276,20 @@ $(function(){
                         });
                     });
 
-                    promiseChain_parallelism.push(Promise.all([
-                        spreadsheet.writeSheetData(table,["text","fontColor","fontWeight","fontFamily","background","fontSize","alignHori","alignVer"],100),
-                        spreadsheet.setBorderCell(borderSetting),
-                        spreadsheet.setCellSize(sizeSetting),
-                        spreadsheet.setFreezeCell({"row":topOffset,"column":leftOffset})
-                    ]).then(function(){
-                        return spreadsheet.setMergeCell(mergeSetting);
-                    }));
+                    promiseChain = promiseChain.then(function(){
+                        return Promise.all([
+                            spreadsheet.writeSheetData(table,["text","fontColor","fontWeight","fontFamily","background","fontSize","alignHori","alignVer"],100),
+                            spreadsheet.setBorderCell(borderSetting),
+                            spreadsheet.setCellSize(sizeSetting)
+                        ]).then(function(){
+                            return spreadsheet.setMergeCell(mergeSetting);
+                        }).then(function(){
+                            return spreadsheet.setFreezeCell({"row":topOffset,"column":leftOffset})
+                        });
+                    });
 
                 });
                 promiseChain = promiseChain.then(function(){
-                    return Promise.all(promiseChain_parallelism);
-                }).then(function(){
                     console.log("finished updating shiftTableUser completely!!");
                     return Server.handlePropertiesService({[version_propertyKey]:version+1},"script","set");
                 }).catch(function(e){

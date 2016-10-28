@@ -104,10 +104,10 @@ function freezeCell(sheet,setting){
     //setting = {"type":["row"/"column"], "value":[height/width num]}
     setting = setting || {};
     if(setting.row !== undefined){
-        sheet.setFrozenRows(setting.row+1);
+        sheet.setFrozenRows(setting.row);
     }
     if(setting.column !== undefined){
-        sheet.setFrozenColumns(setting.column+1);
+        sheet.setFrozenColumns(setting.column);
     }
 
 }
