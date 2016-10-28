@@ -56,12 +56,6 @@ function setSheetValues(sheet, content, option) {
     var columnNum = content[Object.keys(content)[0]][0].length;
     var range = sheet.getRange(option.top + 1, option.left + 1, content[Object.keys(content)[0]].length, columnNum);
 
-    if (option.rowHeight) {
-        sheet.setRowHeight(option.rowHeight.index, option.rowHeight.value);
-    }
-    if (option.columnWidth) {
-        sheet.setColumnWidth(option.columnWidth.index, option.columnWidth.value);
-    }
     Object.keys(content).sort(function (a, b) {
         var arr = ["text", "background", "alignHori", "alignVer", "fontSize", "fontColor", "fontWeight"];
         return arr.indexOf(a) - arr.indexOf(b);
@@ -94,13 +88,23 @@ function setSheetValues(sheet, content, option) {
     return range;
 }
 
-function setCellSize() {}
+function setCellSize(sheet, settings) {
+    //setting = {"type":["height"/"width"],"index":[row/column index], "value":[height/width px]}
+    settings.forEach(function (setting) {
+        if (setting.type === "height") {
+            sheet.RowHeight(setting.index + 1, setting.value);
+        } else if (setting.type === "width") {}
+        sheet.setColumnWidth(setting.index + 1, setting.value);
+    });
+    return true;
+}
 
 function mergeCells(sheet, settings) {
     settings.forEach(function (setting) {
         var range = sheet.getRange(setting.range.top + 1, setting.range.left + 1, setting.range.height, setting.range.width);
         range.merge();
     });
+    return true;
 }
 
 function setBorderCells(sheet, settings) {
@@ -120,6 +124,7 @@ function setBorderCells(sheet, settings) {
             }
         }));
     });
+    return true;
 }
 
 function openSpreadSheet(sheet) {
@@ -141,5 +146,5 @@ function refreshSheetCompletely(sheet) {
 
 function clearSheet(sheet) {
     sheet.clear();
-    return null;
+    return true;
 }

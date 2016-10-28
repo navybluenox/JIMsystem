@@ -1024,15 +1024,15 @@ class User extends Datapiece{
                 }
                 ret[0] = {"time":cell.start.getTime(),"startWork":true,"text":workList.getValue("nameShort"),"background":workList.getBackgroundColor(),"fontColor":workList.getFontColor()};
                 ret[ret.length-1].endWork = true;
-                mergeSetting.push({"range":{"top":rowIndex,"left":data.tableStartTime.getDiff(cell.start,"timeunit") + leftOffset,"height":1,"width":workAssign.getValue("interval")}});
+                mergeSetting.push({"range":{"top":rowIndex,"left":leftOffset + data.tableStartTime.getDiff(cell.start,"timeunit"),"height":1,"width":workAssign.getValue("interval")}});
             }
             return ret;
         }).reduce(function(prev,curt){
             return prev.concat(curt);
         },[]).map(function(cell,cellIndex,self){
             var time = new LocalDate(cell.time);
-            if(time.getMinutes() === 0 || cellIndex === 0 || cell.startWork || cell.endWorkNext){
-                borderSetting.push({"range":{"top":rowIndex,"left":cellIndex,"height":1,"width":1},"border":{"style":"solid","left":true}})
+            if(time.getMinutes() === 0 || cellIndex === 0 /*|| cell.startWork || cell.endWorkNext*/){
+                borderSetting.push({"range":{"top":rowIndex,"left":leftOffset + cellIndex,"height":1,"width":1},"border":{"style":"solid","left":true}})
             }
             if(cell.endWork && cellIndex !== self.length-1){
                 self[cellIndex+1].endWorkNext = true;

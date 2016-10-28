@@ -135,6 +135,7 @@ $(function(){
                     var spreadsheet = new Spreadsheet("shiftTableUser",timeInfo.sheetName,table);
                     var mergeSetting = [];
                     var borderSetting = [];
+                    var sizeSetting = [];
                     var start = timeInfo.start;
                     var end = timeInfo.end;
                     var sheetName = timeInfo.sheetName;
@@ -171,11 +172,11 @@ $(function(){
                             var row = [];
                             for(var cellIndex=0,l=leftOffset + contentWidth + 1; cellIndex<l; cellIndex++){
                                 if(rowIndex === 0 && cellIndex === 0){
-                                    row.push(setDefaultCellSetting({"text":_val.config.getValue("content.kind") + _val.config.getValue("content.nth") + "当日人割","fontWeight":"bold","fontSize":12}));
+                                    row.push(setDefaultCellSetting({"text":_val.config.getValue("content.kind") + _val.config.getValue("content.nth") + "当日人割","fontWeight":"bold","fontSize":16}));
                                     mergeSetting.push({"range":{"top":0,"left":0,"height":1,"width":widthAll}});
                                     borderSetting.push({"range":{"top":0,"left":0,"height":1,"width":widthAll},"border":{"top":false,"right":false,"left":false}});
                                 }else if(rowIndex === 1 && cellIndex === 0){
-                                    row.push(setDefaultCellSetting({"text":"白枠は本部待機です。","fontWeight":"bold"}));
+                                    row.push(setDefaultCellSetting({"text":"白枠は本部待機です。","fontWeight":"bold","fontSize":16}));
                                     mergeSetting.push({"range":{"top":rowIndex,"left":cellIndex,"width":leftOffset,"height":2}});
                                 }else if(rowIndex >= 1 && cellIndex >= leftOffset && cellIndex < leftOffset + workGroups.length){
                                     workGroup = workGroups[cellIndex - leftOffset];
@@ -185,11 +186,11 @@ $(function(){
                                         row.push(setDefaultCellSetting({"background":workGroup.getValue("backgroundColor")}));
                                     }
                                 }else if(rowIndex === 1 && cellIndex === leftOffset + workGroups.length){
-                                    row.push(setDefaultCellSetting({"text":start.toString({"hideHour":true,"hideMinute":true}) + ":" + dateToValue(start.getAsDateClass()).str2,"background":"#E4E4E4","fontWeight":"bold"}));
+                                    row.push(setDefaultCellSetting({"text":start.toString({"hideHour":true,"hideMinute":true}) + ":" + dateToValue(start.getAsDateClass()).str2,"background":"#E4E4E4","fontWeight":"bold","fontSize":16}));
                                     mergeSetting.push({"range":{"top":rowIndex,"left":cellIndex,"width":dayCellWidth,"height":2}});
                                 }else if(rowIndex === 1 && cellIndex === leftOffset + workGroups.length + dayCellWidth){
                                     var nowTimeString = dateToValue(nowTime);
-                                    row.push(setDefaultCellSetting({"text":"ver." + version + " : " + nowTimeString.month + "月" + nowTimeString.date + "日" + nowTimeString.hour + "時" + nowTimeString.minute + "分更新","fontWeight":"bold"}));
+                                    row.push(setDefaultCellSetting({"text":"ver." + version + " : " + nowTimeString.month + "月" + nowTimeString.date + "日" + nowTimeString.hour + "時" + nowTimeString.minute + "分更新","fontWeight":"bold","fontSize":16}));
                                     mergeSetting.push({"range":{"top":rowIndex,"left":cellIndex,"width":widthAll -leftOffset - workGroups.length - dayCellWidth,"height":2}});
                                 }else{
                                     row.push({});
@@ -260,9 +261,10 @@ $(function(){
                     });
 
                     promiseChain = promiseChain.then(function(){
-                        return spreadsheet.writeSheetData(table,["text","fontColor","fontWeight","background","fontSize","alignHori","alignVer"],100);
-                    }).then(function(){
-                        return spreadsheet.setBorderCell(borderSetting);
+                        return Promise.all([
+                            spreadsheet.writeSheetData(table,["text","fontColor","fontWeight","background","fontSize","alignHori","alignVer"],100),
+                            spreadsheet.setBorderCell(borderSetting)
+                        ]);
                     }).then(function(){
                         return spreadsheet.setMergeCell(mergeSetting);
                     });
