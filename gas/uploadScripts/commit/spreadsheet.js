@@ -13,6 +13,12 @@
         引数
 */
 
+function test(){
+    var ss = SpreadsheetApp.openById("1FYZEbAGAVGXLuHHljO8eOeEOPkWt_df0TEZC13qbigw");
+    var sheet = ss.getSheetByName("day1");
+    getPdfFromSpreadsheet(sheet);
+}
+
 function handleSpreadsheetInterface(funName,fileId,sheetName,argus){
     var func = ThisScript[funName];
     if(typeof func !== "function") return null;
@@ -94,6 +100,18 @@ function setCellSize(sheet,settings){
     return true;
 }
 
+function freezeCell(sheet,setting){
+    //setting = {"type":["row"/"column"], "value":[height/width num]}
+    setting = setting || {};
+    if(setting.row !== undefined){
+        sheet.setFrozenRows(setting.row);
+    }
+    if(setting.column !== undefined){
+        sheet.setFrozenColumns(setting.row);
+    }
+
+}
+
 function mergeCells(sheet,settings){
     settings.forEach(function(setting){
         var range = sheet.getRange(setting.range.top+1,setting.range.left+1,setting.range.height,setting.range.width);
@@ -147,3 +165,34 @@ function clearSheet(sheet){
     sheet.clear();
     return true;
 }
+
+function getPdfFromSpreadsheet(sheet){
+    var spreadsheet = sheet.getParent();
+    var folder = DriveApp.getFolderById("0B88bKUOZP4-ASlQwWDJic3V5WHc");
+    var url = ("https://docs.google.com/spreadsheets/d/__ID__/export?").replace("__ID__", spreadsheet.getId());
+    var option = {
+        "exportFormat":"pdf",    // ファイル形式の指定 pdf / csv / xls / xlsx
+        "format":"pdf",          // ファイル形式の指定 pdf / csv / xls / xlsx
+        "size":"A4",             // 用紙サイズの指定 legal / letter / A4
+        "portrait":true,       // true → 縦向き、false → 横向き
+        "fitw":true,           // 幅を用紙に合わせるか
+        "sheetnames":false,    // シート名をPDF上部に表示するか
+        "printtitle":false,    // スプレッドシート名をPDF上部に表示するか
+        "pagenumbers":false,   // ページ番号の有無
+        "gridlines":false,     // グリッドラインの表示有無
+        "fzr":false,           // 固定行の表示有無
+        "gid":sheet.getId()       
+    };
+
+    url = url + Object.keys(option).map(function(key){
+        return key + "=" + option[key];
+    }).join("&");
+
+    var token = ScriptApp.getOAuthToken();
+    var now = new Date();
+    var blob = UrlFetchApp.fetch(url, {"headers":{"Authorization":"Bearer " + token}})
+        .getBlob().setName([spreadsheet.getName(),sheet.getName(),now.getFullYear(),now.getMonth()+1,now.getDate(),now.getHours(),now.getMinutes()].join("_"));
+    folder.createFile(blob);
+
+}
+

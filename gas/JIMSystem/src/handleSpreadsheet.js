@@ -277,7 +277,8 @@ $(function(){
                     promiseChain_parallelism.push(Promise.all([
                         spreadsheet.writeSheetData(table,["text","fontColor","fontWeight","fontFamily","background","fontSize","alignHori","alignVer"],100),
                         spreadsheet.setBorderCell(borderSetting),
-                        spreadsheet.setCellSize(sizeSetting)
+                        spreadsheet.setCellSize(sizeSetting),
+                        spreadsheet.setFreezeCell({"row":topOffset,"column":leftOffset})
                     ]).then(function(){
                         return spreadsheet.setMergeCell(mergeSetting);
                     }));

@@ -124,6 +124,9 @@ var Spreadsheet = (function(){
         setCellSize(settings){
             return runServerFun("Script.handleSpreadsheetInterface",["setCellSize",this.getFileInfo().getValue("fileId"),this.getSheetName(),[settings]]);                        
         }
+        setFreezeCell(setting){
+            return runServerFun("Script.handleSpreadsheetInterface",["freezeCell",this.getFileInfo().getValue("fileId"),this.getSheetName(),[setting]]);                        
+        }
         hasData(){
             return this._data === undefined;
         }
