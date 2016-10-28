@@ -95,21 +95,23 @@ $(function(){
         },clearSpreadsheet:function(spreadsheetName,sheetName){
             var spreadsheet = new Spreadsheet(spreadsheetName,sheetName);
             spreadsheet.clearSheetData();
-        },createShiftTableUser:function(version){
-            Promise.all([
+        },createShiftTableUser:function(){
+            var version;
+            var version_propertyKey = "shiftTableUser_version_" + _val.config.getValue("content.kind") + _val.config.getValue("content.nth");
+            return Promise.all([
                 _val.server.loadData("user"),
                 _val.server.loadData("workGroup"),
                 _val.server.loadData("workList"),
-                _val.server.loadData("workAssign")
+                _val.server.loadData("workAssign"),
+                Server.handlePropertiesService(version_propertyKey,"script","get").then(function(v){version = (v[version_propertyKey] === undefined ? 0 : +v[version_propertyKey]);})
             ]).then(function(){
-                version = 0;
-                var _users = _val.server.getData("user");
+                var _users = Datapiece.sort(_val.server.getData("user"),"sortId");
                 var nowTime = new Date();
                 var leftOffset = 4;
                 var rightOffset = 1;
                 var topOffset = 3;
                 var dayCellWidth = 10;
-                var defaultCellTemplate = {"fontSize":11,"alignHori":"center","alignVer":"middle"};
+                var defaultCellTemplate = {"fontSize":11,"alignHori":"center","alignVer":"middle","fontFamily":"ＭＳ Ｐゴシック"};
                 var setDefaultCellSetting = function(setting){return $.extend({},defaultCellTemplate,setting)};
                 var timeInfoList = [];
                 var startTrigger = false;
@@ -121,6 +123,7 @@ $(function(){
                         }
                     },100);
                 });
+                var promiseChain_parallelism = []
 
                 (function(){
                     var obj;
@@ -272,26 +275,28 @@ $(function(){
                         });
                     });
 
-                    promiseChain = promiseChain.then(function(){
-                        return Promise.all([
-                            spreadsheet.writeSheetData(table,["text","fontColor","fontWeight","background","fontSize","alignHori","alignVer"],100),
-                            spreadsheet.setBorderCell(borderSetting),
-                            spreadsheet.setCellSize(sizeSetting)
-                        ]);
-                    }).then(function(){
+                    promiseChain_parallelism.push(Promise.all([
+                        spreadsheet.writeSheetData(table,["text","fontColor","fontWeight","fontFamily","background","fontSize","alignHori","alignVer"],100),
+                        spreadsheet.setBorderCell(borderSetting),
+                        spreadsheet.setCellSize(sizeSetting)
+                    ]).then(function(){
                         return spreadsheet.setMergeCell(mergeSetting);
-                    });
+                    }));
 
                 });
-                promiseChain.then(function(){
-                    console.log("finished updating shiftTableUser completely!!")
+                promiseChain = promiseChain.then(function(){
+                    return Promise.all(promiseChain_parallelism);
+                }).then(function(){
+                    console.log("finished updating shiftTableUser completely!!");
+                    return Server.handlePropertiesService({[version_propertyKey]:version+1},"script","set");
                 }).catch(function(e){
                     console.log("Error!!");
                     console.log(e);
                     throw new Error(e);
                 });
                 startTrigger = true;
-            })
+                return promiseChain;
+            });
         }
     };
 });

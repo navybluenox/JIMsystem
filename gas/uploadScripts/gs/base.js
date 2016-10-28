@@ -416,7 +416,7 @@ function handlePropertiesService(value,type,doKind){
                 result = {};
                 value.forEach(function(v){
                     result[v] = properties.getProperty(v);
-                })
+                });
             }
             break;
         case "delete":
@@ -425,7 +425,7 @@ function handlePropertiesService(value,type,doKind){
             }else{
                 value.forEach(function(v){
                     properties.deleteProperty(v);
-                })
+                });
             }
             result = null;
             break;

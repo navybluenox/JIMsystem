@@ -83,6 +83,8 @@ function setSheetValues(sheet, content, option) {
             case "fontWeight":
                 range.setFontWeights(values);
                 break;
+            case "fontFamily":
+                range.setFontFamilies(values);
         }
     });
     return range;
