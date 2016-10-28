@@ -182,7 +182,7 @@ $(function(){
                                     mergeSetting.push({"range":{"top":rowIndex,"left":cellIndex,"width":dayCellWidth,"height":2}});
                                 }else if(rowIndex === 1 && cellIndex === leftOffset + workGroups.length + dayCellWidth){
                                     var nowTimeString = dateToValue(nowTime);
-                                    row.push({"text":"ver." + version + " : " + nowTimeString.month + "月" + nowTimeString.day + "日" + nowTimeString.hour + "時" + nowTimeString.minute + "分更新","fontWeight":"bold"});
+                                    row.push({"text":"ver." + version + " : " + nowTimeString.month + "月" + nowTimeString.date + "日" + nowTimeString.hour + "時" + nowTimeString.minute + "分更新","fontWeight":"bold"});
                                     mergeSetting.push({"range":{"top":rowIndex,"left":cellIndex,"width":widthAll -leftOffset - workGroups.length - dayCellWidth,"height":2}});
                                 }else{
                                     row.push({});

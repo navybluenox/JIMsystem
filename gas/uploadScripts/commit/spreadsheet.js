@@ -13,6 +13,13 @@
         引数
 */
 
+function handleSpreadsheetInterface(funName,fileId,sheetName,argus){
+    var func = Script[funName];
+    if(typeof func !== undefined) return null;
+    var spreadsheet = SpreadsheetApp.openById(fileId);
+    var sheet = spreadsheet.getSheetByName(sheetName);
+    return func.apply(null,[sheet].concat(argus));
+}
 
 function getRangeWithContents(sheet,rowStartIndex,columnStartIndex,maxHeight,rowIndexOfColumns,columnName){
     rowStartIndex = rowStartIndex || 0;
@@ -77,19 +84,16 @@ function setSheetValues(sheet,content,option){
     return range;
 }
 
-function mergeCells(fileId,sheetName,settings){
-    var spreadsheet = SpreadsheetApp.openById(fileId);
-    var sheet = spreadsheet.getSheetByName(sheetName);
-    
+function setCellSize()
+
+function mergeCells(sheet,settings){
     settings.forEach(function(setting){
         var range = sheet.getRange(setting.range.top+1,setting.range.left+1,setting.range.height,setting.range.width);
         range.merge();
     });
 }
 
-function setBorderCells(fileId,sheetName,settings){
-    var spreadsheet = SpreadsheetApp.openById(fileId);
-    var sheet = spreadsheet.getSheetByName(sheetName);
+function setBorderCells(sheet,settings){
     var borderStyle = SpreadsheetApp.BorderStyle;
 
     settings.forEach(function(setting){
@@ -110,31 +114,9 @@ function setBorderCells(fileId,sheetName,settings){
     });    
 }
 
-function readSheetValuesFromClient(fileId,sheetName,option){
-    var spreadsheet = SpreadsheetApp.openById(fileId);
-    var sheet = spreadsheet.getSheetByName(sheetName);
 
-    return getSheetValues(sheet,option)
-}
-
-function writeSheetValuesFromClient(fileId,sheetName,contents,option){
-    var spreadsheet = SpreadsheetApp.openById(fileId);
-    var sheet = spreadsheet.getSheetByName(sheetName);
-
-    setSheetValues(sheet,contents,option);
-    openSpreadSheet(fileId,sheetName);
-
-    return {"fileId":fileId,"sheetName":sheet.getName()};
-}
-
-function openSpreadSheet(fileId,sheetName){
-    var spreadsheet = SpreadsheetApp.openById(fileId);
-    var sheet;
-    if(sheetName === undefined){
-        sheet = spreadsheet.getSheets[0];
-    }else{
-        sheet = spreadsheet.getSheetByName(sheetName);
-    }
+function openSpreadSheet(sheet){
+    var spreadsheet = sheet.getParent();
     SpreadsheetApp.setActiveSpreadsheet(spreadsheet);
     SpreadsheetApp.setActiveSheet(sheet);
     return {"fileId":fileId,"sheetName":sheet.getName()};
@@ -150,7 +132,7 @@ function refreshSheetCompletely(sheet){
     return newSheet;
 }
 
-function clearSheetFromClient(fileId,sheetName){
-    SpreadsheetApp.openById(fileId).getSheetByName(sheetName).clear();
+function clearSheet(sheet){
+    sheet.clear();
     return null;
 }

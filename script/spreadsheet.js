@@ -29,7 +29,7 @@ var Spreadsheet = (function(){
                 option.height = 1;
             }
             var la = new LoadingAlert();
-            return runServerFun("Script.readSheetValuesFromClient",[this.getFileInfo().getValue("fileId"),this.getSheetName(),option]).then(function(v){
+            return runServerFun("Script.handleSpreadsheetInterface",["getSheetValues",this.getFileInfo().getValue("fileId"),this.getSheetName(),[option]]).then(function(v){
                 var  result = Spreadsheet.convertDataFromArrayToHash(v,columnType);
                 that._data = result.content;
                 console.log("Reading data of spreadsheet from server successes!");
@@ -64,7 +64,7 @@ var Spreadsheet = (function(){
             var index = 0;
 
             promiseChain = promiseChain.then(function(){
-                return runServerFun("Script.clearSheetFromClient",[fileId,sheetName]);
+                return runServerFun("Script.handleSpreadsheetInterface",["clearSheet",fileId,sheetName]);
             });
             for(var i=0,l=contents.length; i<l; i+=numRowsPerRequest){
                 promiseChain = promiseChain.then(function(){
@@ -72,7 +72,7 @@ var Spreadsheet = (function(){
                     settings.forEach(function(setting){
                         _sendData[setting] = sendData[setting].splice(0,numRowsPerRequest);
                     });
-                    var p = runServerFun("Script.writeSheetValuesFromClient",[fileId,sheetName,_sendData,$.extend(optionOfWriteSheet,{"top":index})]);
+                    var p = runServerFun("Script.handleSpreadsheetInterface",["setSheetValues",fileId,sheetName,[_sendData,$.extend(optionOfWriteSheet,{"top":index})]]);
                     index += numRowsPerRequest;
                     return p;
                 });
@@ -112,10 +112,10 @@ var Spreadsheet = (function(){
         }
         setMergeCell(settings){
             //settings = {"top":[0-],"left",[0-],"height",[1-],"width",[0-]}
-            return runServerFun("Script.mergeCells",[this.getFileInfo().getValue("fileId"),this.getSheetName(),settings]);
+            return runServerFun("Script.handleSpreadsheetInterface",["mergeCells",this.getFileInfo().getValue("fileId"),this.getSheetName(),[settings]]);
         }
         setBorderCell(settings){
-            return runServerFun("Script.setBorderCells",[this.getFileInfo().getValue("fileId"),this.getSheetName(),settings]);            
+            return runServerFun("Script.handleSpreadsheetInterface",["setBorderCells",this.getFileInfo().getValue("fileId"),this.getSheetName(),[settings]]);            
         }
         hasData(){
             return this._data === undefined;
