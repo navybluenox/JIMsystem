@@ -84,7 +84,9 @@ function setSheetValues(sheet,content,option){
     return range;
 }
 
-function setCellSize()
+function setCellSize(){
+    
+}
 
 function mergeCells(sheet,settings){
     settings.forEach(function(setting){
