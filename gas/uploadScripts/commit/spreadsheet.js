@@ -206,3 +206,8 @@ function exportPdfToDrive(sheet,folderId,option){
     return null;
 }
 
+function downloadPdf(sheet,option){
+    var blob = getPdfFromSpreadsheet(sheet,option);
+    return {"blob":blob.getDataAsString(),"name":blob.getName()};
+}
+

@@ -1,11 +1,12 @@
 $(function(){
     var pageFun;
-    var formAddData;
+    var formAddData,formCreateShiftTable;
     _val.pageFun.handleSpreadsheet = {
         onload:function(){
             _val.server.loadData("fileInfo");
             pageFun = _val.pageFun.handleSpreadsheet;
             formAddData = $("#formAddToDatabase");
+            formCreateShiftTable = $("#formCreateShiftTable");
 
             formAddData.find('[name="dataName"]').append(
                 ['<option value=""></option>'].concat(Datapiece.sort(_val.server.getData("collectionInfo"),"name").map(function(collInfo){
@@ -13,6 +14,15 @@ $(function(){
                     return '<option value="' + name + '">' + name + '</option>';
                 }))
             )
+            (function(){
+                var sheetNameList = [];
+                for(var day=_val.config.getWorkStartDay(),e=_val.config.getWorkEndDay(); day<=e; day++){
+                    sheetNameList.push("day" + day);
+                }
+                formCreateShiftTable.find('[name="downloadShiftTableUser_sheetName"]').append(sheetNameList.map(function(sheetName){
+                    return '<option value="' + sheetName + '">' + sheetName + '</option>';
+                }))
+            })();
         },onunload:function(){
             pageFun = _val.pageFun.handleSpreadsheet;
             formAddData = $("#formAddToDatabase");
@@ -311,11 +321,10 @@ $(function(){
                 },100);
             });
             var folder = _val.server.getData("fileInfo").find(function(fileInfo){
-                return fileInfo.getValue("fileType") === "folder" && fileInfo.getValue("fileType") === "export";
-            })
+                return fileInfo.getValue("fileType") === "folder" && fileInfo.getValue("name") === "export";
+            });
 
             (function(){
-                var obj;
                 for(var day=_val.config.getWorkStartDay(),e=_val.config.getWorkEndDay(); day<=e; day++){
                     sheetNameList.push("day" + day);
                 }
@@ -323,11 +332,15 @@ $(function(){
 
             promiseChain = promiseChain.then(function(){
                 Promise.all(sheetNameList.map(function(sheetName){
-                    var spreadsheet = new Spreadsheet("shiftTableUser",timeInfo.sheetName,[]);
+                    var spreadsheet = new Spreadsheet("shiftTableUser",sheetName,[]);
                     return spreadsheet.exportPdfToDrive(folder.getValue("fileId"),{"size":"A4"});
                 }));
             });
             startTrigger = true;
+        },downloadPdfOfShiftTableUser:function(){
+            var sheetName = formCreateShiftTable.find('[name="downloadShiftTableUser_sheetName"]');
+            var spreadsheet = new Spreadsheet("shiftTableUser",sheetName,[]);
+            return spreadsheet.downloadPdf();
         }
     };
 });

@@ -358,6 +358,10 @@ function downloadTextFile(text,fileName){
         type:"plain/text",
         endings:"native"
     });
+    downloadFile(blob,fileName);
+}
+
+function downloadFile(blob,fileName){
     var url = URL.createObjectURL(blob);
     var a = document.createElement("a");
     a.href = url;
@@ -369,5 +373,3 @@ function downloadTextFile(text,fileName){
     a.click();
     document.body.removeChild(a);
 }
-
-
