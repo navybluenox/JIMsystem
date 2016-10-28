@@ -13,7 +13,8 @@ $(function(){
                     var name = collInfo.getValue("name");
                     return '<option value="' + name + '">' + name + '</option>';
                 }))
-            )
+            );
+
             (function(){
                 var sheetNameList = [];
                 for(var day=_val.config.getWorkStartDay(),e=_val.config.getWorkEndDay(); day<=e; day++){
@@ -24,8 +25,6 @@ $(function(){
                 }))
             })();
         },onunload:function(){
-            pageFun = _val.pageFun.handleSpreadsheet;
-            formAddData = $("#formAddToDatabase");
         },writeSpreadsheet:function(spreadsheetName,sheetName,contentConfig){
             var dataName = formAddData.find('[name="dataName"]').val();
             _val.server.loadData(dataName).then(function(datapieces){
@@ -337,10 +336,5 @@ $(function(){
                 }));
             });
             startTrigger = true;
-        },downloadPdfOfShiftTableUser:function(){
-            var sheetName = formCreateShiftTable.find('[name="downloadShiftTableUser_sheetName"]');
-            var spreadsheet = new Spreadsheet("shiftTableUser",sheetName,[]);
-            return spreadsheet.downloadPdf();
-        }
     };
 });
