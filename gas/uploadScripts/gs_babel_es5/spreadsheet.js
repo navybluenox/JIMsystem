@@ -168,9 +168,9 @@ function clearSheet(sheet) {
     return true;
 }
 
-function getPdfFromSpreadsheet(sheet) {
+function getPdfFromSpreadsheet(sheet, opt) {
+    opt = opt || {};
     var spreadsheet = sheet.getParent();
-    var folder = DriveApp.getFolderById("0B88bKUOZP4-ASlQwWDJic3V5WHc");
     var url = "https://docs.google.com/spreadsheets/d/__ID__/export?".replace("__ID__", spreadsheet.getId());
     var option = {
         "exportFormat": "pdf", // ファイル形式の指定 pdf / csv / xls / xlsx
@@ -183,8 +183,13 @@ function getPdfFromSpreadsheet(sheet) {
         "pagenumbers": false, // ページ番号の有無
         "gridlines": false, // グリッドラインの表示有無
         "fzr": false, // 固定行の表示有無
-        "gid": sheet.getId()
+        "gid": sheet.getSheetId()
     };
+    Object.keys(opt).forEach(function (key) {
+        if (option.key !== undefined && opt[key] !== null) {
+            option[key] = opt[key];
+        }
+    });
 
     url = url + Object.keys(option).map(function (key) {
         return key + "=" + option[key];
@@ -192,6 +197,12 @@ function getPdfFromSpreadsheet(sheet) {
 
     var token = ScriptApp.getOAuthToken();
     var now = new Date();
-    var blob = UrlFetchApp.fetch(url, { "headers": { "Authorization": "Bearer " + token } }).getBlob().setName([spreadsheet.getName(), sheet.getName(), now.getFullYear(), now.getMonth() + 1, now.getDate(), now.getHours(), now.getMinutes()].join("_"));
-    folder.createFile(blob);
+    return UrlFetchApp.fetch(url, { "headers": { "Authorization": "Bearer " + token } }).getBlob().setName([spreadsheet.getName(), sheet.getName(), now.getFullYear(), now.getMonth() + 1, now.getDate(), now.getHours(), now.getMinutes()].join("_"));
+}
+
+function exportPdfToDrive(sheet, folderId, option) {
+    //"0B88bKUOZP4-ASlQwWDJic3V5WHc"
+    var folder = DriveApp.getFolderById(folderId);
+    folder.createFile(getPdfFromSpreadsheet(sheet, option));
+    return null;
 }

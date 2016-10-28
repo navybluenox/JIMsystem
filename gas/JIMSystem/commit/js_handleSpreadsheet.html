@@ -300,6 +300,35 @@ $(function(){
                 startTrigger = true;
                 return promiseChain;
             });
+        },createPdfOfShiftTableUser:function(){
+            var sheetNameList = [];
+            var startTrigger = false;
+            var promiseChain = new Promise(function(resolve){
+                var si = setInterval(function(){
+                    if(startTrigger){
+                        clearInterval(si);
+                        resolve();
+                    }
+                },100);
+            });
+            var folder = _val.server.getData("fileInfo").find(function(fileInfo){
+                return fileInfo.getValue("fileType") === "folder" && fileInfo.getValue("fileType") === "export";
+            })
+
+            (function(){
+                var obj;
+                for(var day=_val.config.getWorkStartDay(),e=_val.config.getWorkEndDay(); day<=e; day++){
+                    sheetNameList.push("day" + day);
+                }
+            })();
+
+            promiseChain = promiseChain.then(function(){
+                Promise.all(sheetNameList.map(function(sheetName){
+                    var spreadsheet = new Spreadsheet("shiftTableUser",timeInfo.sheetName,[]);
+                    return spreadsheet.exportPdfToDrive(folder.getValue("fileId"),{"size":"A4"});
+                }));
+            });
+            startTrigger = true;
         }
     };
 });

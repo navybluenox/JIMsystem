@@ -130,6 +130,10 @@ var Spreadsheet = (function(){
         hasData(){
             return this._data === undefined;
         }
+        exportPdfToDrive(folderId,option){
+            option = option || {};
+            return runServerFun("Script.handleSpreadsheetInterface",["exportPdfToDrive",this.getFileInfo().getValue("fileId"),this.getSheetName(),[folderId,option]]);                        
+        }
         static initialize(settings){
             if(settings === undefined || typeof settings !== "object" || settings === null)  return;
             server = server || settings.server;
