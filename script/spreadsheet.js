@@ -40,6 +40,7 @@ var Spreadsheet = (function(){
         writeSheetData(contents,settings,numRowsPerRequest,optionOfWriteSheet){
             var la = new LoadingAlert();
             var sendData = {};
+            var that = this;
 
             settings.forEach(function(setting){
                 sendData[setting] = contents.map(function(row){
@@ -64,7 +65,7 @@ var Spreadsheet = (function(){
             var index = 0;
 
             promiseChain = promiseChain.then(function(){
-                return runServerFun("Script.handleSpreadsheetInterface",["clearSheet",fileId,sheetName]);
+                return that.clearSheetData() ;
             });
             for(var i=0,l=contents.length; i<l; i+=numRowsPerRequest){
                 promiseChain = promiseChain.then(function(){
@@ -109,6 +110,9 @@ var Spreadsheet = (function(){
                 "key":keys
             };
 
+        }
+        clearSheetData(){
+            return runServerFun("Script.handleSpreadsheetInterface",["clearSheet",this.getFileInfo().getValue("fileId"),this.getSheetName()]);
         }
         setMergeCell(settings){
             //settings = {"top":[0-],"left",[0-],"height",[1-],"width",[0-]}

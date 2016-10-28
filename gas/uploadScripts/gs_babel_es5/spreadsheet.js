@@ -1,7 +1,5 @@
 "use strict";
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
-
 //  ---About This---
 /*
 名前
@@ -19,7 +17,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 function handleSpreadsheetInterface(funName, fileId, sheetName, argus) {
     var func = ThisScript[funName];
-    if ((typeof func === "undefined" ? "undefined" : _typeof(func)) !== undefined) return null;
+    if (typeof func !== "function") return null;
     var spreadsheet = SpreadsheetApp.openById(fileId);
     var sheet = spreadsheet.getSheetByName(sheetName);
     return func.apply(null, [sheet].concat(argus));
@@ -64,7 +62,10 @@ function setSheetValues(sheet, content, option) {
     if (option.columnWidth) {
         sheet.setColumnWidth(option.columnWidth.index, option.columnWidth.value);
     }
-    Object.keys(content).forEach(function (setting) {
+    Object.keys(content).sort(function (a, b) {
+        var arr = ["text", "background", "alignHori", "alignVer", "fontSize", "fontColor", "fontWeight"];
+        return arr.indexOf(a) - arr.indexOf(b);
+    }).forEach(function (setting) {
         var values = content[setting];
         switch (setting) {
             case "text":

@@ -7,13 +7,14 @@
                 <tr><td>データベース名</td><td><select name="dataName" tabindex="2"></td><td></td></tr>
                 <tr><td>スプレッドシートへコピーする</td><td><input type="button" name="writeAll" value="全てコピー" tabindex="2" onclick='_val.pageFun.handleSpreadsheet.writeSpreadsheet("editDatabase","fromJIMsystem","all")'><input type="button" name="writeColumn" value="カラム名のみコピー" tabindex="2" onclick='_val.pageFun.handleSpreadsheet.writeSpreadsheet("editDatabase","fromJIMsystem","column")'></td><td></td></tr>
                 <tr><td>スプレッドシートから読み込む</td><td><input type="button" name="read" value="読み込む" tabindex="2" onclick='_val.pageFun.handleSpreadsheet.readSpreadsheet("editDatabase","fromJIMsystem")'></td><td></td></tr>
+                <tr><td>スプレッドシートをクリアする</td><td><input type="button" name="clear" value="クリアする" tabindex="2" onclick='_val.pageFun.handleSpreadsheet.clearSpreadsheet("editDatabase","fromJIMsystem")'></td><td></td></tr>
             </tbody></table>
         </form>
     </section>
     <section>
         <form id="formCreateShiftTable">
             <table class="tableform"><tbody>
-                <tr><td></td><td><input type="button" name="createShiftTableUser" value="人割表を更新する" tabindex="2" onclick='_val.pageFun.handleSpreadsheet.createShiftTableUser();'></td><td></td></tr>
+                <tr><td>人割表を更新する</td><td><input type="button" name="createShiftTableUser" value="実行" tabindex="2" onclick='_val.pageFun.handleSpreadsheet.createShiftTableUser();'></td><td>※更新直後のスプレッドシートの表示は異常なので、必ず更新後にページを開きなおしてください。</td></tr>
             </tbody></table>
         </form>
     </section>
