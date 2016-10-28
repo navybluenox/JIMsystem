@@ -18,7 +18,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 */
 
 function handleSpreadsheetInterface(funName, fileId, sheetName, argus) {
-    var func = Script[funName];
+    var func = ThisScript[funName];
     if ((typeof func === "undefined" ? "undefined" : _typeof(func)) !== undefined) return null;
     var spreadsheet = SpreadsheetApp.openById(fileId);
     var sheet = spreadsheet.getSheetByName(sheetName);

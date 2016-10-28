@@ -13,8 +13,10 @@ function include(filename) {
 }
 
 function loadfun(funName, _arguments) {
-    var fun;
-    eval("fun = " + funName + ";");
+    var fun = ThisScript;
+    funName.split(".").forEach(function (key) {
+        fun = fun[key] || {};
+    });
     if (_arguments === undefined) {
         return JSON.stringify(fun.apply(undefined));
     } else {
