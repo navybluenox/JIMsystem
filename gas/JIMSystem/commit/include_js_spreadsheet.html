@@ -116,11 +116,14 @@ var Spreadsheet = (function(){
             return runServerFun("Script.handleSpreadsheetInterface",["clearSheet",this.getFileInfo().getValue("fileId"),this.getSheetName()]);
         }
         setMergeCell(settings){
-            //settings = {"top":[0-],"left",[0-],"height",[1-],"width",[0-]}
+            //settings = {"top":[0-],"left",[0-],"height",[1-],"width",[1-]}
             return runServerFun("Script.handleSpreadsheetInterface",["mergeCells",this.getFileInfo().getValue("fileId"),this.getSheetName(),[settings]]);
         }
         setBorderCell(settings){
             return runServerFun("Script.handleSpreadsheetInterface",["setBorderCells",this.getFileInfo().getValue("fileId"),this.getSheetName(),[settings]]);            
+        }
+        setCellSize(settings){
+            return runServerFun("Script.handleSpreadsheetInterface",["setCellSize",this.getFileInfo().getValue("fileId"),this.getSheetName(),[settings]]);                        
         }
         hasData(){
             return this._data === undefined;

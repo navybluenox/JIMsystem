@@ -161,8 +161,19 @@ $(function(){
                     //set border
                     borderSetting.push({"range":{"top":0,"left":0,"height":heightAll,"width":widthAll},"border":{"style":"solid","top":true,"bottom":true,"left":true,"right":true,"vertical":true,"horizontal":true}});
                     borderSetting.push({"range":{"top":topOffset,"left":leftOffset,"height":users.length + indexOfHeader.length,"width":contentWidth},"border":{"style":"dashed","vertical":true}});
-                    //borderSetting.push({"range":{"top":topOffset,"left":leftOffset,"height":users.length + indexOfHeader.length,"width":contentWidth},"border":{"style":"solid","horizontal":true}});
+                    //set cellSize
+                    sizeSetting.push({"type":"width","index":0,"value":45});
+                    sizeSetting.push({"type":"width","index":1,"value":105});
+                    sizeSetting.push({"type":"width","index":2,"value":105});
+                    sizeSetting.push({"type":"width","index":3,"value":135});
+                    (function(){
+                        for(var i=leftOffset; i<leftOffset+contentWidth; i++){
+                            sizeSetting.push({"type":"width","index":i,"value":45});                            
+                        }
+                    })();
+                    sizeSetting.push({"type":"width","index":widthAll-1,"value":105});
 
+                    //1,2行目
                     (function(){
                         var workGroups = _val.server.getData("workGroup").filter(function(workGroup){return workGroup.getValue("isColorGroup")});
                         var workGroup,workGroupName;
@@ -201,7 +212,7 @@ $(function(){
                         }
                     })();
 
-
+                    //3行目以降の準備
                     var makeHeader = function(rowIndex){
                         var header = [];
                         var template = setDefaultCellSetting({"background":"#AAAAAA","fontWeight":"bold","alignHori":"left"});
@@ -231,14 +242,14 @@ $(function(){
                         return header;
                     };
 
-
-
                     var groupUsers = [];
                     (function(){
                         for(var i=0,l=indexOfHeader.length; i<l; i++){
                             groupUsers.push({"index":indexOfHeader[i],"user":users.slice().splice(indexOfHeader[i],i === l-1 ? users.length : indexOfHeader[i+1] - indexOfHeader[i])});
                         }
                     })();
+
+                    //3行目以降
                     groupUsers.forEach(function(obj,groupIndex){
                         var users = obj.user;
                         var offset = obj.index + groupIndex + topOffset;
@@ -264,7 +275,8 @@ $(function(){
                     promiseChain = promiseChain.then(function(){
                         return Promise.all([
                             spreadsheet.writeSheetData(table,["text","fontColor","fontWeight","background","fontSize","alignHori","alignVer"],100),
-                            spreadsheet.setBorderCell(borderSetting)
+                            spreadsheet.setBorderCell(borderSetting),
+                            spreadsheet.setCellSize(sizeSetting)
                         ]);
                     }).then(function(){
                         return spreadsheet.setMergeCell(mergeSetting);
