@@ -36,8 +36,6 @@ $(function(){
                         return {"text":value};
                     }
                 );
-            }).then(function(){
-                //formAddData.find('[name="dataName"],[name="writeAll"],[name="writeColumn"]').prop("disabled",true);
             });
         },readSpreadsheet:function(spreadsheetName,sheetName){
             var spreadsheet = new Spreadsheet(spreadsheetName,sheetName);
@@ -122,7 +120,7 @@ $(function(){
                         }
                     },100);
                 });
-                var promiseChain_parallelism = []
+                var promiseChain_parallelism = [];
 
                 (function(){
                     var obj;
