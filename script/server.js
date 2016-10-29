@@ -251,7 +251,7 @@ var Server = (function(){
                 return Promise.all(Object.keys(queueForSend).map(function(dataName){
                     that._version[dataName]++;
                     that._updated[dataName] = new Date(nowTime.getTime());
-                    return runServerFun("Script.updateDatabase",[that.getCollectionInfoByName(dataName).getValue("fileId"),queueForSend[dataName],nowTime.toISOString(),{"version":that.getVersion(dataName),"updated":that.getUpdatedTime(dataName)}]);
+                    return runServerFun("Script.updateDatabase",[that.getCollectionInfoByName(dataName).getValue("fileId"),queueForSend[dataName],nowTime.toISOString(),{"version":that.getVersion(dataName),"updated":that.getUpdatedTime(dataName).toISOString()}]);
                 }));
             })
             .then(function(){
