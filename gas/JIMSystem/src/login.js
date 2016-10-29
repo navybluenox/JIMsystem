@@ -46,7 +46,7 @@ $(function(){
         },
         sendPass:function(){
             var pass = $("#pass").val();
-            runServerFun("runAsAtThisScript",["Script.checkSimplePass",[pass,"loginPass_" + _val.config.getIdCode(),"main"]])
+            runServerFun("Script.checkSimplePass",[pass,"loginPass_" + _val.config.getIdCode(),"JIMSystem","main"])
             //runServerFun("checkSimplePass",[pass,"main"])
             .then(function(innerHtml){
                 if(innerHtml === null){
