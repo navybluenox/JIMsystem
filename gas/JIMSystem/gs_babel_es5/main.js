@@ -25,21 +25,6 @@ function loadfun(funName, _arguments) {
     }
 }
 
-function checkPass(pass, pageName) {
-    var key = "jimjim";
-    var result;
-    if (pageName === undefined) {
-        result = key === pass;
-    } else {
-        if (key === pass) {
-            result = getPage(pageName);
-        } else {
-            result = null;
-        }
-    }
-    return result;
-}
-
 function getPage(pageName) {
     var htmlName = "html_" + pageName;
     return HtmlService.createTemplateFromFile(htmlName).evaluate().setSandboxMode(HtmlService.SandboxMode.IFRAME).getContent();

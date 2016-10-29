@@ -449,3 +449,10 @@ function checkSimplePass(pass,keyName,systemName,pageName){
     return result;
 }
 
+function getPage(pageName){
+    var htmlName = "html_" + pageName;
+    return  HtmlService.createTemplateFromFile(htmlName)
+        .evaluate()
+        .setSandboxMode(HtmlService.SandboxMode.IFRAME)
+        .getContent();
+}
