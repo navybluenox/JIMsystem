@@ -437,7 +437,8 @@ function checkSimplePass(pass, keyName, systemName, pageName) {
         result = key === pass;
     } else {
         if (key === pass) {
-            result = ThisScript[systemName].runAsAtThisScript("getPage", [pageName]);
+            //result = ThisScript[systemName].runAsAtThisScript("getPage",[pageName]);
+            result = ThisScript[systemName].getPage(pageName);
         } else {
             result = null;
         }
