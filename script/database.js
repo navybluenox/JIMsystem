@@ -787,7 +787,7 @@ var Datapiece = (function(){
                         "color":"#000000",
                         "background":(index%2===0 ? "#7FFFD4" : "#66CDAA"),
                         "text-align":(option.trans ? "" : "center")
-                    }).children("div").text("" + time.getHours() + "時").data({"time":time.getTime()});
+                    }).children("div").text("" + time.getDifferentialHours(data.tableStartTime) + "時").data({"time":time.getTime()});
                     if(option.trans){
                         td.css({"height":cellHeight(timeSpan)});
                         td.children("div").css({"height":cellHeight(timeSpan)})
