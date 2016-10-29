@@ -50,6 +50,7 @@ function getPage(pageName){
 }
 
 function runAsAtThisScript(funName,argu){
+    if(!Array.isArray(argu)) argu = [argu];
     var func = ThisScript;
     funName.split(".").forEach(function(key){
         func = func[key]
