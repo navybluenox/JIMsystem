@@ -47,7 +47,8 @@ $(function(){
         },
         sendPass:function(){
             var pass = $("#pass").val();
-            runServerFun("checkPass",[pass,"main"])
+            runServerFun("runAsAtThisScript",["Script.checkSimplePass",[pass,"loginPass_" + _val.config.getIdCode(),"main"]])
+            //runServerFun("checkSimplePass",[pass,"main"])
             .then(function(innerHtml){
                 if(innerHtml === null){
                     var el = document.createElement("p");

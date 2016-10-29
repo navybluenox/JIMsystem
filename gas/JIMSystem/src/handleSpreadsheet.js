@@ -336,5 +336,6 @@ $(function(){
                 }));
             });
             startTrigger = true;
+        }
     };
 });

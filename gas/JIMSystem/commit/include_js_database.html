@@ -955,6 +955,9 @@ class SystemConfig extends Datapiece{
     getWorkEndDay(){
         return this.getValue("content.workAssign.workStart") + this.getValue("content.workAssign.workTime").length - 1;
     }
+    getIdCode(){
+        return this.getValue("content.kind") + this.getValue("content.nth")
+    }
 }
 
 class User extends Datapiece{

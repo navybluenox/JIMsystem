@@ -44,3 +44,11 @@ function getPage(pageName) {
     var htmlName = "html_" + pageName;
     return HtmlService.createTemplateFromFile(htmlName).evaluate().setSandboxMode(HtmlService.SandboxMode.IFRAME).getContent();
 }
+
+function runAsAtThisScript(funName, argu) {
+    var func = ThisScript;
+    funName.split(".").forEach(function (key) {
+        func = func[key];
+    });
+    return func.apply(null, argu);
+}

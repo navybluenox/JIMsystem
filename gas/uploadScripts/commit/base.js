@@ -433,4 +433,18 @@ function handlePropertiesService(value,type,doKind){
     return result;
 }
 
+function checkSimplePass(pass,keyName,pageName){
+    var result;
+    var key = ThisScript.handlePropertiesService([keyName],"script","get")[keyName];
+    if(pageName === undefined){
+        result = key === pass;
+    }else{
+        if(key === pass){
+            result = getPage(pageName);
+        }else{
+            result = null;
+        }
+    }
+    return result;
+}
 

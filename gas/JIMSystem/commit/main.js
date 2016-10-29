@@ -48,3 +48,11 @@ function getPage(pageName){
         .setSandboxMode(HtmlService.SandboxMode.IFRAME)
         .getContent();
 }
+
+function runAsAtThisScript(funName,argu){
+    var func = ThisScript;
+    funName.split(".").forEach(function(key){
+        func = func[key]
+    });
+    return func.apply(null,argu);
+}
