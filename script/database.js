@@ -1266,6 +1266,26 @@ class WorkList extends Datapiece{
             })
         });
     }
+    static getNotAssigned(){
+        var workLists = Datapiece.getServer().getData("workList").filter(function(workList){
+            return !workList.getValue("asAssigned");
+        });
+        var ret = [];
+        workLists.forEach(function(workList){
+            var indexes = [];
+            workList.getValue("@detail").forEach(function(section,sectionIndex){
+                var start = section.start;
+                var end = start.copy().addTimeUnit(section.number.length);
+                if(workList.getDiffFromRequired(start,end).every(function(obj){return obj.diff > 0})){
+                    indexes.push(sectionIndex);
+                }
+            });
+            if(indexes.length !== 0){
+                    ret.push({"workList":workList,"index":indexes});
+            }
+        });
+        return ret;
+    }
 }
 
 class WorkNotAssigned extends Datapiece{
