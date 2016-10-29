@@ -440,19 +440,10 @@ function checkSimplePass(pass,keyName,systemName,pageName){
         result = key === pass;
     }else{
         if(key === pass){
-            result = ThisScript[systemName].runAsAtThisScript("Script.getPage",[pageName]);
-            //result = ThisScript[systemName].getPage(pageName);
+            result = ThisScript[systemName].getPage(pageName);
         }else{
             result = null;
         }
     }
     return result;
-}
-
-function getPage(pageName){
-    var htmlName = "html_" + pageName;
-    return  HtmlService.createTemplateFromFile(htmlName)
-        .evaluate()
-        .setSandboxMode(HtmlService.SandboxMode.IFRAME)
-        .getContent();
 }

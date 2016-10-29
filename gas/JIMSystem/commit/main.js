@@ -33,12 +33,3 @@ function getPage(pageName){
         .setSandboxMode(HtmlService.SandboxMode.IFRAME)
         .getContent();
 }
-
-function runAsAtThisScript(funName,argu){
-    if(!Array.isArray(argu)) argu = [argu];
-    var func = ThisScript;
-    funName.split(".").forEach(function(key){
-        func = func[key]
-    });
-    return func.apply(null,argu);
-}
