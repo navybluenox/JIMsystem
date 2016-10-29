@@ -774,7 +774,7 @@ var Datapiece = (function(){
                 timeScales = timeScales.map(function(time,index){
                     var timeSpan;
                     if(time.getMinutes() !== 0){
-                        timeSpan = data.tableStartTime.getDiff(time,"timeunit");
+                        timeSpan = (60 - time.getMinutes()) / LocalDate.getTimeUnitAsConverted("minute");
                     }else if(time.getDiff(tableEnd,"minute") < 60){
                         timeSpan = time.getDiff(tableEnd,"timeunit");
                     }else{
