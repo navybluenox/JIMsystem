@@ -327,7 +327,7 @@ function loadDataFromDrive(fileIdStr, mode) {
     return result;
 }
 
-function updateDatabase(fileIdStr,queues){
+function updateDatabase(fileIdStr,queues,updatedTime,prevDataInfo){
     var database = loadDataFromDrive(fileIdStr);
 
     queues.forEach(function(queue){
@@ -385,7 +385,7 @@ function updateDatabase(fileIdStr,queues){
                 break;
         }
     });
-    database.updated = new Date();
+    database.updated = new Date(updatedTime);
     database.version = (+database.version) + 1;
 
     updateFileToDrive(fileIdStr,JSON.stringify(database));

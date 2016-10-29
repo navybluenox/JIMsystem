@@ -22,6 +22,8 @@ var Server = (function(){
             var that = this;
             //baseConfigのcollectionInfoのfileIdを変える場合にはここを書き換える
             if(collectionInfoFileId === undefined) collectionInfoFileId = _val.baseConfig.collectionInfoFileId;
+            this._version = {};
+            this._updated = {};
             this._pendingQueue = [];
             this._updatingQueue = [];
             this._updating = false;
@@ -108,17 +110,19 @@ var Server = (function(){
             var that = this;
             var loadingId = makeRandomStr();
             this._loading.push({id:loadingId,coll:collInfo});
-            return runServerFun("Script.loadDataFromDrive",[collInfo.getValue("fileId"),"data"])
+            return runServerFun("Script.loadDataFromDrive",[collInfo.getValue("fileId"),"all"])
             .then(function(v){
-                var collName = collInfo.getValue("name");
+                var dataName = collInfo.getValue("name");
                 var thisClass = collInfo.getClass();
-                cache[collName] = v.map(function(dataObj){
+                cache[dataName] = v.data.map(function(dataObj){
                     return new thisClass(dataObj,option);
                 });
+                that._updated[dataName] = (v.updated === "" || v.updated === undefined ? null : new Date(v.updated));
+                that._version[dataName] = +v.version;
                 that._loading = that._loading.filter(function(obj){return obj.id !== loadingId});
-                console.log(cache[collName]);
+                console.log(cache[dataName]);
                 la.remove();
-                return that.getData(collName);
+                return that.getData(dataName);
             })
             .catch(function(e){
                 that._loading = that._loading.filter(function(obj){return obj.id !== loadingId});
@@ -180,7 +184,10 @@ var Server = (function(){
             }) || (new CollectionInfo());
         }
         getVersion(dataName){
-            return this.getCollectionInfoByName(dataName).version;
+            return this._version[dataName];
+        }
+        getUpdatedTime(dataName){
+            return this._updated[dataName];
         }
         sendUpdateQueue(){
             if(!checkAuthorization("Server.prototype.sendUpdateQueue")){
@@ -242,7 +249,9 @@ var Server = (function(){
                 //GAS（サーバー側）へ引数を渡す時、普通は自動でJSON.stringify()を実行するが、何故かDate型のJSON.stringifyに失敗するので、手元で整理
                 queueForSend = JSON.parse(JSON.stringify(queueForSend));
                 return Promise.all(Object.keys(queueForSend).map(function(dataName){
-                    return runServerFun("Script.updateDatabase",[that.getCollectionInfoByName(dataName).getValue("fileId"),queueForSend[dataName]]);
+                    that._version[dataName]++;
+                    that._updated[dataName] = new Date(nowTime.getTime());
+                    return runServerFun("Script.updateDatabase",[that.getCollectionInfoByName(dataName).getValue("fileId"),queueForSend[dataName],nowTime.toISOString(),{"version":that.getVersion(dataName),"updated":that.getUpdatedTime(dataName)}]);
                 }));
             })
             .then(function(){
