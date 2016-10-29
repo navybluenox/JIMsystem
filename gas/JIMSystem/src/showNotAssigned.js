@@ -32,7 +32,7 @@ $(function(){
                     var start = detail[index].start;
                     var end = start.copy().addTimeUnit(detail[index].number.length);
                     var div = $("<div></div>").css({"overflow":"auto","max-width":$(window).width()*0.5}).appendTo(td);
-                    $('<input type="button" value="人割を表示する">').appendTo(td).on("click",function(){
+                    $('<input type="button" value="人割を表示する">').appendTo(div).on("click",function(){
                         div.children().remove();
                         div.append(workList.getShiftTableAsElement(start,end));
                     });
