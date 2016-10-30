@@ -1276,7 +1276,7 @@ class WorkList extends Datapiece{
             workList.getValue("@detail").forEach(function(section,sectionIndex){
                 var start = section.start;
                 var end = start.copy().addTimeUnit(section.number.length);
-                if(workList.getDiffFromRequired(start,end).every(function(obj){return obj.diff > 0})){
+                if(workList.getDiffFromRequired(start,end).some(function(obj){return obj.diff !== 0})){
                     indexes.push(sectionIndex);
                 }
             });

@@ -8,8 +8,17 @@
         </form>
     </section>
     <section>
-        <h2>カラーグループに所属していない人割・委員</h2>
-        <form id="formGroup">
+        <h2>カラーグループに所属していない人割</h2>
+        <form id="formWorkColorGroup">
+            <input type="button" name="show" value="一覧を表示" tabindex="2" onclick='_val.pageFun.showNotAssigned.showColorGroupList("work")'>
+            <div id="formWorkColorGroup_result"></div>
+        </form>
+    </section>
+    <section>
+        <h2>カラーグループに所属していない委員</h2>
+        <form id="formUserColorGroup">
+            <input type="button" name="show" value="一覧を表示" tabindex="2" onclick='_val.pageFun.showNotAssigned.showColorGroupList("user")'>
+            <div id="formUserColorGroup_result"></div>
         </form>
     </section>
 </article>

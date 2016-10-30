@@ -326,6 +326,7 @@ $(function(){
                 });
                 return false;
             });
+
             form.find('[name="shiftTableUser"],[name="shiftTableWork"]').siblings("div").on("contextmenu","td.selectedCell.requireNum,td.selectedCell.diffNum",function(e){
                 var div = $(e.delegateTarget);
                 var time = new LocalDate($(e.currentTarget).data("time"));
@@ -443,13 +444,6 @@ $(function(){
                 }
                 pageFun.getFormData();
                 _val.server.changeData(editing);
-            }
-            if(kind === "add" || kind === "change"){
-                if(kind === "change"){
-                }
-                if(kind === "add"){
-                }else{
-                }
             }else if(kind === "remove"){
                 _val.server.removeData(new WorkAssign({"_id":_id}));
             }
