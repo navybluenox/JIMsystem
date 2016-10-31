@@ -48,12 +48,28 @@
     };
     var _tmp = {};
     $(function(){
-        runServerFun("Script.loadDataFromDrive",[_val.baseConfigFileId,"all"])
-        .then(function(v){
-            _val.baseConfig = v;
-            console.log("run mode : " + _val.baseConfig.mode);
-            console.log("In order to change running mode, edit values, both 'mode' and 'collectionInfoFileId' on 'baseConfig.json'");
-        }).then(function(){
+        var modeName;
+        runServerFun("Script.handlePropertiesService",[["mode","defaultMode"],"script","get"]).then(function(obj){
+            modeName = obj.mode;
+            return runServerFun("Script.handlePropertiesService",[["collectionInfoFileId_" + modeName],"script","get"]).then(function(v){
+                if(v["collectionInfoFileId_" + modeName] === null){
+                    modeName = obj.defaultMode;
+                    return runServerFun("Script.handlePropertiesService",[["collectionInfoFileId_" + modeName],"script","get"]).then(function(v1){
+                        return v1["collectionInfoFileId_" + modeName];
+                    });
+                }else{
+                    return Promise.resolve(v["collectionInfoFileId_" + modeName]);
+                }
+            })
+        })//;
+        //runServerFun("Script.loadDataFromDrive",[_val.baseConfigFileId,"all"])
+        /*.then(function(v){
+            //_val.baseConfig = v;
+            console.log("run mode : " + modeName);
+            //console.log("In order to change running mode, edit values, both 'mode' and 'collectionInfoFileId' on 'baseConfig.json'");
+        })*/.then(function(collectionInfoFileId){
+            console.log("run mode : " + modeName);
+            Server.initialize({"collectionInfoFileId":collectionInfoFileId/*_val.baseConfig.collectionInfoFileId*/});
             _val.server = new Server();
             Datapiece.initialize({"server":_val.server});
             Spreadsheet.initialize({"server":_val.server});
@@ -61,13 +77,13 @@
                 _val.server.loadData("systemConfig")
                 .then(function(v){
                     _val.config = v.find(function(v1){
-                        return v1.getValue("modeName") === _val.baseConfig.mode;
+                        return v1.getValue("modeName") === modeName//_val.baseConfig.mode;
                     });
-                    if(_val.config === undefined){
+                    /*if(_val.config === undefined){
                         _val.config = v.find(function(v1){
                             return v1.getValue("modeName") === _val.baseConfig.defaultMode;
                         });
-                    }
+                    }*/
                     Datapiece.initialize({"config":_val.config});
                     LocalDate.initialize({"config":_val.config});
                     console.log("_val",_val);

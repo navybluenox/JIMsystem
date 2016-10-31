@@ -415,7 +415,7 @@ function handlePropertiesService(value,type,doKind){
             }else{
                 result = {};
                 value.forEach(function(v){
-                    result[v] = properties.getProperty(v);
+                    result[v] = (properties.getProperty(v) === undefined ? null : properties.getProperty(v));
                 });
             }
             break;

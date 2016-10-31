@@ -20,8 +20,6 @@ var Server = (function(){
     return class Server {
         constructor(){
             var that = this;
-            //baseConfigのcollectionInfoのfileIdを変える場合にはここを書き換える
-            if(collectionInfoFileId === undefined) collectionInfoFileId = _val.baseConfig.collectionInfoFileId;
             this._version = {};
             this._updated = {};
             this._pendingQueue = [];
@@ -39,9 +37,9 @@ var Server = (function(){
                 .then(function(v){
                     //TODO
                     //value v is invalid (datafile is not incomplete)
-                    var collInfo_of_collectionInfoColl = v.find(function(collObj){return collObj.name === "collectionInfo"});
+                    var collInfo_CollectionInfo = v.find(function(collObj){return collObj.name === "collectionInfo"});
                     cache.collectionInfo = v.map(function(collObj){
-                        return new CollectionInfo(collObj,{init:true,init_data:collInfo_of_collectionInfoColl});
+                        return new CollectionInfo(collObj,{init:true,init_data:collInfo_CollectionInfo});
                     });
                     that._loaded = true;
                     that._ready = true;
@@ -326,6 +324,10 @@ var Server = (function(){
                 });
             });
             return this;
+        }
+        static initialize(settings){
+            if(settings === undefined || typeof settings !== "object" || settings === null)  return;
+            collectionInfoFileId = collectionInfoFileId || settings.collectionInfoFileId;
         }
         static handlePropertiesService(value,type,doKind){
             if(value === undefined || type === undefined || doKind === undefined)  return;
