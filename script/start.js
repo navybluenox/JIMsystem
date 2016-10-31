@@ -52,22 +52,13 @@
             return runServerFun("Script.loadDataFromDrive",[obj.systemConfig_fileId,"data"]).then(function(configs){
                 var index = configs.findIndex(function(config){return config.modeName === obj.mode});
                 if(index === -1){
+                    console.log("Attention : \"" + modeName + "\" is invalid. This system run as the defalut mode.");
                     modeName = obj.defaultMode;
                     return configs.find(function(config){return config.modeName === obj.defaultMode}).content.base.collectionInfoFileId;
                 }else{
                     return configs[index].content.base.collectionInfoFileId;
                 }
             });
-            /*return runServerFun("Script.handlePropertiesService",[["collectionInfoFileId_" + modeName],"script","get"]).then(function(v){
-                if(v["collectionInfoFileId_" + modeName] === null){
-                    modeName = obj.defaultMode;
-                    return runServerFun("Script.handlePropertiesService",[["collectionInfoFileId_" + modeName],"script","get"]).then(function(v1){
-                        return v1["collectionInfoFileId_" + modeName];
-                    });
-                }else{
-                    return Promise.resolve(v["collectionInfoFileId_" + modeName]);
-                }
-            })*/
         }).then(function(collectionInfoFileId){
             console.log("run mode : " + modeName);
             Server.initialize({"collectionInfoFileId":collectionInfoFileId});
@@ -90,5 +81,3 @@
             })
         });
     });
-
-//start.jsが読み込まれると実行される部分　ここまで

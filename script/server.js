@@ -1,18 +1,3 @@
-//  ---About This---
-/*
-名前
-server.js
-
-このファイルについて
-クライアントJSからサーバーへアクセスする関数群をまとめたServerクラスを定義しています
-
-定義一覧
-    Server()クラス
-        説明
-        引数
-*/
-
-
 var Server = (function(){
     var cache = {};
     var collectionInfoFileId;
