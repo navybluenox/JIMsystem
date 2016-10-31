@@ -52,6 +52,7 @@
             return runServerFun("Script.loadDataFromDrive",[obj.systemConfig_fileId,"data"]).then(function(configs){
                 var index = configs.findIndex(function(config){return config.modeName === obj.mode});
                 if(index === -1){
+                    modeName = obj.defaultMode;
                     return configs.find(function(config){return config.modeName === obj.defaultMode}).content.base.collectionInfoFileId;
                 }else{
                     return configs[index].content.base.collectionInfoFileId;
@@ -77,8 +78,11 @@
                 _val.server.loadData("systemConfig")
                 .then(function(v){
                     _val.config = v.find(function(v1){
-                        return v1.getValue("modeName") === modeName//_val.baseConfig.mode;
+                        return v1.getValue("modeName") === modeName;
                     });
+                    if(_val.config === undefined){
+                        throw new Error("configデータが不正です。設定したモードに対応するconfigデータがありません。");
+                    }
                     Datapiece.initialize({"config":_val.config});
                     LocalDate.initialize({"config":_val.config});
                     console.log("_val",_val);
