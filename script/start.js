@@ -41,8 +41,6 @@
 //汎用的なオブジェクトなどはここで作成
 
     var _val = {
-        //baseConfig.jsonのfileId
-        //baseConfigFileId:"0B88bKUOZP4-AdUw1WEJWVkkwTzA",
         pageFun:{},
         authorization:true
     };
@@ -61,15 +59,9 @@
                     return Promise.resolve(v["collectionInfoFileId_" + modeName]);
                 }
             })
-        })//;
-        //runServerFun("Script.loadDataFromDrive",[_val.baseConfigFileId,"all"])
-        /*.then(function(v){
-            //_val.baseConfig = v;
+        }).then(function(collectionInfoFileId){
             console.log("run mode : " + modeName);
-            //console.log("In order to change running mode, edit values, both 'mode' and 'collectionInfoFileId' on 'baseConfig.json'");
-        })*/.then(function(collectionInfoFileId){
-            console.log("run mode : " + modeName);
-            Server.initialize({"collectionInfoFileId":collectionInfoFileId/*_val.baseConfig.collectionInfoFileId*/});
+            Server.initialize({"collectionInfoFileId":collectionInfoFileId});
             _val.server = new Server();
             Datapiece.initialize({"server":_val.server});
             Spreadsheet.initialize({"server":_val.server});
@@ -79,11 +71,6 @@
                     _val.config = v.find(function(v1){
                         return v1.getValue("modeName") === modeName//_val.baseConfig.mode;
                     });
-                    /*if(_val.config === undefined){
-                        _val.config = v.find(function(v1){
-                            return v1.getValue("modeName") === _val.baseConfig.defaultMode;
-                        });
-                    }*/
                     Datapiece.initialize({"config":_val.config});
                     LocalDate.initialize({"config":_val.config});
                     console.log("_val",_val);
