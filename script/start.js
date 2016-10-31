@@ -42,7 +42,7 @@
 
     var _val = {
         //baseConfig.jsonのfileId
-        baseConfigFileId:"0B88bKUOZP4-AdUw1WEJWVkkwTzA",
+        //baseConfigFileId:"0B88bKUOZP4-AdUw1WEJWVkkwTzA",
         pageFun:{},
         authorization:true
     };
