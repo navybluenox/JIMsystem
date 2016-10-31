@@ -16,7 +16,7 @@
                             "end":{"hour":17,"minute":0}
                         }
                     ],
-                    "collectionInfoFileID":"0B88bKUOZP4-AalctMlZ4MDE0eG8"
+                    "collectionInfoFileId":"0B88bKUOZP4-AalctMlZ4MDE0eG8"
                 },
                 "workAssign":{
                     "timeUnit":900000,
@@ -47,5 +47,5 @@
             }
         }
     ],
-    "version":""
+    "version":0
 }

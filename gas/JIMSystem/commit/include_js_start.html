@@ -48,9 +48,17 @@
     var _tmp = {};
     $(function(){
         var modeName;
-        runServerFun("Script.handlePropertiesService",[["mode","defaultMode"],"script","get"]).then(function(obj){
+        runServerFun("Script.handlePropertiesService",[["mode","defaultMode","systemConfig_fileId"],"script","get"]).then(function(obj){
             modeName = obj.mode;
-            return runServerFun("Script.handlePropertiesService",[["collectionInfoFileId_" + modeName],"script","get"]).then(function(v){
+            return runServerFun("Script.loadDataFromDrive",[obj.systemConfig_fileId,"data"]).then(function(configs){
+                var index = configs.findIndex(function(config){return config.modeName === obj.mode});
+                if(index === -1){
+                    return configs.find(function(config){return config.modeName === obj.defaultMode}).content.base.collectionInfoFileId;
+                }else{
+                    return configs[index].content.base.collectionInfoFileId;
+                }
+            });
+            /*return runServerFun("Script.handlePropertiesService",[["collectionInfoFileId_" + modeName],"script","get"]).then(function(v){
                 if(v["collectionInfoFileId_" + modeName] === null){
                     modeName = obj.defaultMode;
                     return runServerFun("Script.handlePropertiesService",[["collectionInfoFileId_" + modeName],"script","get"]).then(function(v1){
@@ -59,7 +67,7 @@
                 }else{
                     return Promise.resolve(v["collectionInfoFileId_" + modeName]);
                 }
-            })
+            })*/
         }).then(function(collectionInfoFileId){
             console.log("run mode : " + modeName);
             Server.initialize({"collectionInfoFileId":collectionInfoFileId});
