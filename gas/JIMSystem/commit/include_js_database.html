@@ -729,15 +729,12 @@ class CollectionInfo extends Datapiece{
         var classNamePairList = [
             {name:"collectionInfo",class:CollectionInfo},
             {name:"fileInfo",class:FileInfo},
-            {name:"shiftTableUser",class:ShiftTableUser},
-            {name:"shiftTableWork",class:ShiftTableWork},
             {name:"systemConfig",class:SystemConfig},
             {name:"user",class:User},
             {name:"userGroup",class:UserGroup},
             {name:"workAssign",class:WorkAssign},
             {name:"workGroup",class:WorkGroup},
-            {name:"workList",class:WorkList},
-            {name:"workNotAssigned",class:WorkNotAssigned}
+            {name:"workList",class:WorkList}
         ];
         var v = classNamePairList.find(function(o){return o.name === this.getValue("name")},this);
         if(v === undefined){
@@ -751,18 +748,6 @@ class CollectionInfo extends Datapiece{
 class FileInfo extends Datapiece{
     constructor(datapieceObj,option){
         super(datapieceObj,"fileInfo",option);
-    }
-}
-
-class ShiftTableUser extends Datapiece{
-    constructor(datapieceObj,option){
-        super(datapieceObj,"shiftTableUser",option);
-    }
-}
-
-class ShiftTableWork extends Datapiece{
-    constructor(datapieceObj,option){
-        super(datapieceObj,"shiftTableWork",option);
     }
 }
 
@@ -1129,12 +1114,6 @@ class WorkList extends Datapiece{
             }
         });
         return ret;
-    }
-}
-
-class WorkNotAssigned extends Datapiece{
-    constructor(datapieceObj,option){
-        super(datapieceObj,"workNotAssigned",option);
     }
 }
 
