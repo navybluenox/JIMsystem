@@ -156,9 +156,9 @@ var Server = (function(){
             }
             return result;
         }
-        getDataById(ids,dataName,newCopy){
+        getDataById(ids,dataName,newCopy,preventSkip){
             if(!Array.isArray(ids))  ids = [ids];
-            return this.getData(dataName,newCopy).filter(function(data){
+            return this.getData(dataName,newCopy,preventSkip).filter(function(data){
                 return inArray(ids,data.getValue("_id"));
             });
         }
