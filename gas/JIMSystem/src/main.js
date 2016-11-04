@@ -146,7 +146,7 @@ $(function(){
                     function showData(_id){
                         var parent = el.find('[name="dataField"]');
                         parent.children().remove();
-                        var targetData = data.find(function(datapiece){return datapiece.getValue("_id") === _id});
+                        var targetData = _val.server.getDataById(_id,dataName,true)[0];
                         var columnObj = _val.server.getCollectionInfoByName(dataName).getValue("column");
                         var table = $("<table><tbody></tbody></table>").appendTo(parent);
                         table.find("tbody").append(repeatString("<tr><td></td><td></td></tr>",Object.keys(columnObj).length));
