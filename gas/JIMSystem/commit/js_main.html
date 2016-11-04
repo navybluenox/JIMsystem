@@ -99,9 +99,11 @@ $(function(){
                             case "null":
                                 return (new RegExp(keyword)).test("" + value);
                             case "date":
-                                return (new Date(keyword)).getTime() === value.getTime();
+                                if(keyword === "") return true;
+                                return castType(keyword,"date").getTime() === value.getTime();
                             case "localdate":
-                                return (new LocalDate(keyword)).getTime() === value.getTime();
+                                if(keyword === "") return true;
+                                return castType(keyword,"localdate").getTime() === value.getTime();
                             default:
                                 return;
                         }
