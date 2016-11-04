@@ -35,7 +35,7 @@
                         ISOフォーマット（YYYY-MM-DDTHH:mm:ss.sssZ）などの、Dateクラスの引数に入れて動作する文字列として読む
                     引数1つ:Date型
                         代入されたDate型からはdeep-copyする
-                    引数1つ:{day:Number,hour:Number,minute:Number,second:Number,millsecond:Number}型
+                    引数1つ:{day:Number,hour:Number,minute:Number,second:Number,millisecond:Number}型
                         全て省略可。省略した場合、0として読む
                     引数1つ：Number型
                         0日目を0とするローカル時間として読む
@@ -60,19 +60,19 @@
             getHours()
             getMinutes()
             getSeconds()
-            getMillseconds()
+            getMilliseconds()
                 ローカル時間を返します
             addTime(localTime)
                 ローカル時間を進めます
                     引数
                         localTime
                             進める時間
-                                {day:Number,hour:Number,minute:Number,second:Number,millsecond:Number}の形
+                                {day:Number,hour:Number,minute:Number,second:Number,millisecond:Number}の形
             addDays(days)
             addHours(hours)
             addMinutes(minutes)
             addSeconds(seconds)
-            addMillseconds(millseconds)
+            addMilliseconds(milliseconds)
                 ローカル時間を進めます
                     引数
                         seconds,minutes,hours,days
@@ -176,7 +176,7 @@ var LocalDate = (function(){
                         if(timeValue.hour != null)  this._localTime += +timeValue.hour * 60 * 60 * 1000;
                         if(timeValue.minute != null)  this._localTime += +timeValue.minute * 60 * 1000;
                         if(timeValue.second != null)  this._localTime += +timeValue.second * 1000;
-                        if(timeValue.millsecond != null)  this._localTime += +timeValue.millsecond;
+                        if(timeValue.millisecond != null)  this._localTime += +timeValue.millisecond;
                     }else{
                         targetTime = new Date();
                         this._localTime = targetTime.getTime() - standardTime.getTime();
@@ -192,10 +192,10 @@ var LocalDate = (function(){
                         this._localTime = +(timeValue.replace(/^local_/,""));
                     }else if(timeValue !== "" && /^(?:-?\d{1,2}日目)?(?:\d{1,2}時)?(?:\d{1,2}分)?(?:\d{1,2}秒)?(?:\d{1,3}ミリ秒)?$/.test(timeValue)){
                         var arr = /^(?:(-?\d{1,2})日目)?(?:(\d{1,2})時)?(?:(\d{1,2})分)?(?:(\d{1,2})秒)?(?:(\d{1,3})ミリ秒)?$/.exec(timeValue);
-                        //index 1->day 2->hour 3->minute 4->second 5->millsecond
+                        //index 1->day 2->hour 3->minute 4->second 5->millisecond
                         var obj = {};
                         for(var i=1,l=arr.length;i<l;i++){
-                            if(arr[i] !== undefined)  obj[[null,"day","hour","minute","second","millsecond"][i]] = +arr[i];
+                            if(arr[i] !== undefined)  obj[[null,"day","hour","minute","second","millisecond"][i]] = +arr[i];
                         }
                         this._localTime = (new LocalDate(obj)).getTime();
                     }else{
@@ -222,7 +222,7 @@ var LocalDate = (function(){
             return config.getValue("content.workAssign.timeUnit");
         }
         static getTimeUnitAsConverted(unitName){
-            var unitValue = [1,1000,60000,3600000,86400000][["millsecond","second","minute","hour","day"].findIndex(function(v){return v === unitName})];
+            var unitValue = [1,1000,60000,3600000,86400000][["millisecond","second","minute","hour","day"].findIndex(function(v){return v === unitName})];
             return LocalDate.getTimeUnit() / unitValue;
         }
         static getOpenTime(day,kind){
@@ -300,14 +300,14 @@ var LocalDate = (function(){
                 hour:(localTime%(24*60*60*1000) - localTime%(60*60*1000))/(60*60*1000),
                 minute:(localTime%(60*60*1000) - localTime%(60*1000))/(60*1000),
                 second:(localTime%(60*1000) - localTime%(1000))/(1000),
-                millsecond:localTime%1000
+                millisecond:localTime%1000
             };
         };
         getDays(){return this.getTimeObj().day};
         getHours(){return this.getTimeObj().hour};
         getMinutes(){return this.getTimeObj().minute};
         getSeconds(){return this.getTimeObj().second};
-        getMillseconds(){return this.getTimeObj().millsecond};
+        getMilliseconds(){return this.getTimeObj().millisecond};
         getDifferentialHours(standard){
             if(standard instanceof LocalDate)  standard = standard.getDays();
             return this.getHours() + (this.getDays() - standard)*24
@@ -332,7 +332,7 @@ var LocalDate = (function(){
                 case "second":
                     unit = 1000;
                     break;
-                case "millsecond":
+                case "millisecond":
                     unit = 1;
                     break;
                 case "timeunit":
@@ -349,8 +349,30 @@ var LocalDate = (function(){
         addHours(hours){this.addTime(hours * 60*60*1000); return this;};
         addMinutes(minutes){this.addTime(minutes * 60*1000); return this;};
         addSeconds(seconds){this.addTime(seconds * 1000); return this;};
-        addMillseconds(millseconds){this.addTime(millseconds); return this;};
+        addMilliseconds(milliseconds){this.addTime(milliseconds); return this;};
         addTimeUnit(timeUnits){this.addTime(timeUnits * LocalDate.getTimeUnit()); return this;};
+        compareTime(another,unit){
+            var flag = true;
+            switch(unit){
+                case "timeunit":
+                    return this.getAsTimeUnits() === another.getAsTimeUnits();
+                case "millisecond":
+                    flag = flag && (this.getMilliseconds() === another.getMilliseconds());
+                case "second":
+                    flag = flag && (this.getSeconds() === another.getSeconds());
+                case "minute":
+                    flag = flag && (this.getMinutes() === another.getMinutes());
+                case "hour":
+                    flag = flag && (this.getHours() === another.getHours());
+                case "day":
+                    flag = flag && (this.getDays() === another.getDays());
+                    break;
+                default:
+                    flag = false;
+                    break;
+            }
+            return flag;
+        }
         toJSON(){
             return "local_" + this.getTime();
         }
@@ -362,7 +384,7 @@ var LocalDate = (function(){
             ["hideDay","hideHour","hideMinute"].forEach(function(v){
                 if(option[v] === undefined)  option[v] = false;
             });
-            ["hideSecond","hideMillsecond"].forEach(function(v){
+            ["hideSecond","hideMillisecond"].forEach(function(v){
                 if(option[v] === undefined)  option[v] = true;
             });
             if(option.userDiffHours === undefined)  option.userDiffHours = false;
@@ -371,7 +393,7 @@ var LocalDate = (function(){
                 option.hideHour ? "" : (option.userDiffHours === false ? this.getHours() : this.getDifferentialHours(option.userDiffHours)) + "時",
                 option.hideMinute ? "" : this.getMinutes() + "分",
                 option.hideSecond ? "" : this.getSeconds() + "秒",
-                option.hideMillsecond ? "" : this.getMillseconds() + "ミリ秒"                
+                option.hideMillisecond ? "" : this.getMilliseconds() + "ミリ秒"                
             ].join("");
         }
     }
@@ -410,6 +432,8 @@ function castType(value,type){
         case "date":
             if(classof(value) === "date"){
                 return value;
+            }else if(value === ""){
+                return new Date(value);
             }else if(typeof value === "string" && /^\d{4}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2}$/.test(value)){
                 var year,month,day,hour,minute,second;
                 value.replace(/^(\d{4})\/(\d{2})\/(\d{2}) (\d{2}):(\d{2}):(\d{2})$/,function(match,p1,p2,p3,p4,p5,p6){
@@ -421,6 +445,31 @@ function castType(value,type){
                     second = +p6;
                 });
                 var date = new Date(year,month-1,day,hour,minute,second);
+                //date.setMinutes(date.getMinutes() + date.getTimezoneOffset());
+                return date;
+            }else if(typeof value === "string" && /^(?:\d{2,4}年)?(?:\d{1,2}月)?(?:\d{1,2}日)?(?:\d{1,2}時)?(?:\d{1,2}分)?(?:\d{1,2}秒)?(?:\d{1,2}ミリ秒)?$/.test(value)){
+                var year,month,day,hour,minute,second,millisecond;
+                var now = new Date();
+                value.replace(/^(?:(\d{2,4})年)?(?:(\d{1,2})月)?(?:(\d{1,2})日)?(?:(\d{1,2})時)?(?:(\d{1,2})分)?(?:(\d{1,2})秒)?(?:\d{1,2}ミリ秒)?$/,function(match,p1,p2,p3,p4,p5,p6,p7){
+                    p1 = (p1 === undefined ? "" + now.getFullYear() : p1);
+                    p2 = (p2 === undefined ? "" + (now.getMonth()+1) : p2);
+                    p3 = (p3 === undefined ? "" + now.getDate() : p3);
+                    p4 = (p4 === undefined ? "" + now.getHours() : p4);
+                    p5 = (p5 === undefined ? "" + now.getMinutes() : p5);
+                    p6 = (p6 === undefined ? "" + now.getSeconds() : p6);
+                    p7 = (p7 === undefined ? "" + now.getMilliseconds() : p7);
+                    
+                    var p1Prefix = now.getFullYear().slice(0,4 - p1.length);
+                    
+                    year = +(p1Prefix + p1);
+                    month = +(p2.replace(/^0(\d)$/,"$1"));
+                    day = +(p3.replace(/^0(\d)$/,"$1"));
+                    hour = +(p4.replace(/^0(\d)$/,"$1"));
+                    minute = +(p5.replace(/^0(\d)$/,"$1"));
+                    second = +(p6.replace(/^0(\d)$/,"$1"));
+                    millisecond = +(p7.replace(/^0(\d)$/,"$1"));
+                });
+                var date = new Date(year,month-1,day,hour,minute,second,millisecond);
                 //date.setMinutes(date.getMinutes() + date.getTimezoneOffset());
                 return date;
             }else{
@@ -623,6 +672,31 @@ function dateToValue(date) {
             return "" + num;
         }
     }
+}
+
+function compareDate(date1,date2,unit){
+    var flag = true;
+    switch(unit){
+        case "millisecond":
+            flag = flag && (date1.getMilliseconds() === date2.getMilliseconds());
+        case "second":
+            flag = flag && (date1.getSeconds() === date2.getSeconds());
+        case "minute":
+            flag = flag && (date1.getMinutes() === date2.getMinutes());
+        case "hour":
+            flag = flag && (date1.getHours() === date2.getHours());
+        case "date":
+            flag = flag && (date1.getDate() === date2.getDate());
+        case "month":
+            flag = flag && (date1.getMonth() === date2.getMonth());
+        case "year":
+            flag = flag && (date1.getFullYear() === date2.getFullYear());
+            break;
+        default:
+            flag = false;
+            break;
+    }
+    return flag;   
 }
 
 function makeRandomStr(length, option) {

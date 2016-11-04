@@ -91,6 +91,7 @@ $(function(){
                     data = _val.server.getData(dataName,null,true).filter(function(dp){
                         if(column === "") return true;
                         var value = dp.getValue(column);
+                        var unit;
                         switch(type){
                             case "string":
                             case "number":
@@ -99,10 +100,36 @@ $(function(){
                                 return (new RegExp(keyword)).test("" + value);
                             case "date":
                                 if(keyword === "") return true;
-                                return castType(keyword,"date").getTime() === value.getTime();
+                                if(/ミリ秒$/.test(keyword)){
+                                    unit = "millisecond";
+                                }else if(/秒$/.test(keyword)){
+                                    unit = "second";
+                                }else if(/分$/.test(keyword)){
+                                    unit = "minute";
+                                }else if(/時$/.test(keyword)){
+                                    unit = "hour";
+                                }else if(/日$/.test(keyword)){
+                                    unit = "date";
+                                }else if(/月$/.test(keyword)){
+                                    unit = "month";
+                                }else if(/年$/.test(keyword)){
+                                    unit = "year";
+                                }else{
+                                    unit = "millisecond";
+                                }
+                                return compareDate(castType(keyword,"date"),value,unit);
                             case "localdate":
                                 if(keyword === "") return true;
-                                return castType(keyword,"localdate").getTime() === value.getTime();
+                                if(/分$/.test(keyword)){
+                                    unit = "minute";
+                                }else if(/時$/.test(keyword)){
+                                    unit = "hour";
+                                }else if(/日目$/.test(keyword)){
+                                    unit = "day";
+                                }else{
+                                    unit = "timeunit";
+                                }
+                                return castType(keyword,"localdate").compareTime(value,unit);
                             default:
                                 return;
                         }
