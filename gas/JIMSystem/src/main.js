@@ -158,7 +158,7 @@ $(function(){
                         if(cellObj.column === "_id"){
                             cellObj.$el.append('<a herf="#_id">' + cellObj.value + "</a>");
                         }else if(cellObj.column === column){
-                            cellObj.$el.text(cellObj.value);
+                            cellObj.$el.text(castIntoString(cellObj.value));
                         }
                     }).el;
                     _table.on("mouseover.openSearchWindow_idList",'a[herf="#_id"]',function(e){
@@ -173,7 +173,7 @@ $(function(){
                     function showData(_id){
                         var parent = el.find('[name="dataField"]');
                         parent.children().remove();
-                        var targetData = _val.server.getDataById(_id,dataName,true)[0];
+                        var targetData = _val.server.getDataById(_id,dataName,null,true)[0];
                         var columnObj = _val.server.getCollectionInfoByName(dataName).getValue("column");
                         var table = $("<table><tbody></tbody></table>").appendTo(parent);
                         table.find("tbody").append(repeatString("<tr><td></td><td></td></tr>",Object.keys(columnObj).length));

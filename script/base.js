@@ -449,7 +449,7 @@ function castType(value,type){
             }else if(typeof value === "string" && /^(?:\d{2,4}年)?(?:\d{1,2}月)?(?:\d{1,2}日)?(?:\d{1,2}時)?(?:\d{1,2}分)?(?:\d{1,2}秒)?(?:\d{1,2}ミリ秒)?$/.test(value)){
                 var year,month,day,hour,minute,second,millisecond;
                 var now = new Date();
-                value.replace(/^(?:(\d{2,4})年)?(?:(\d{1,2})月)?(?:(\d{1,2})日)?(?:(\d{1,2})時)?(?:(\d{1,2})分)?(?:(\d{1,2})秒)?(?:\d{1,2}ミリ秒)?$/,function(match,p1,p2,p3,p4,p5,p6,p7){
+                value.replace(/^(?:(\d{2,4})年)?(?:(\d{1,2})月)?(?:(\d{1,2})日)?(?:(\d{1,2})時)?(?:(\d{1,2})分)?(?:(\d{1,2})秒)?(?:(\d{1,2})ミリ秒)?$/,function(match,p1,p2,p3,p4,p5,p6,p7){
                     p1 = (p1 === undefined ? "" + now.getFullYear() : p1);
                     p2 = (p2 === undefined ? "" + (now.getMonth()+1) : p2);
                     p3 = (p3 === undefined ? "" + now.getDate() : p3);
@@ -458,7 +458,7 @@ function castType(value,type){
                     p6 = (p6 === undefined ? "" + now.getSeconds() : p6);
                     p7 = (p7 === undefined ? "" + now.getMilliseconds() : p7);
                     
-                    var p1Prefix = now.getFullYear().slice(0,4 - p1.length);
+                    var p1Prefix = ("" + now.getFullYear()).slice(0,4 - p1.length);
                     
                     year = +(p1Prefix + p1);
                     month = +(p2.replace(/^0(\d)$/,"$1"));
