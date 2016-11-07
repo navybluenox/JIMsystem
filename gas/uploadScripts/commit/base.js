@@ -407,7 +407,7 @@ function handlePropertiesService(value,type,doKind){
     switch(doKind){
         case "set":
             properties.setProperties(value);
-            result = null;
+            result = true;
             break;
         case "get":
             if(value.length === 0){
@@ -427,7 +427,7 @@ function handlePropertiesService(value,type,doKind){
                     properties.deleteProperty(v);
                 });
             }
-            result = null;
+            result = true;
             break;
     }
     return result;

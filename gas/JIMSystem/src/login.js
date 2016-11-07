@@ -42,6 +42,7 @@ $(function(){
             }).then(function(){
                 mw.fadeOut();
                 $("#pass").focus();
+                $("#modeName").text(_val.config.getValue("modeName"));
             });
         },
         sendPass:function(){

@@ -42,12 +42,16 @@ function movePage(pageName,insertTag,option){
 }
 
 function showOuterPage(url,newTab){
-    newTab = newTab || true;
+    newTab = (newTab === undefined ? true : newTab);
     if(newTab){
         open(url,"_blank");
     }else{
         location.href = url;
     }
+}
+
+function reloadApp(){
+    showOuterPage("https://script.google.com/macros/s/AKfycbzUxSVh83i21s_cUFzXti94N4cVszp7n-VU17RJsRMe/exec",false);
 }
 
 class ModalWindow{

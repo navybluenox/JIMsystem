@@ -170,7 +170,7 @@ var Server = (function(){
         getUpdatedTime(dataName){
             return this._updated[dataName];
         }
-        sendUpdateQueue(){
+        sendUpdateQueue(confirmMsg){
             if(!checkAuthorization("Server.prototype.sendUpdateQueue")){
                 this._pendingQueue = [];
                 return Promise.resolve();
@@ -178,7 +178,7 @@ var Server = (function(){
 
             //TODO
             //ここはそのうち消す
-            if(!Server.confirmUpdate()){
+            if(!Server.confirmUpdate(confirmMsg)){
                 this._pendingQueue = [];
                 return Promise.resolve();
             }
@@ -309,12 +309,14 @@ var Server = (function(){
             config = config || settings.config;
             collectionInfoFileId = collectionInfoFileId || settings.collectionInfoFileId;
         }
-        static confirmUpdate(){
-            return confirm([
+        static confirmUpdate(str){
+            var arr = [
                 "データを上書きします",
                 "よろしいですか？",
                 "（誤爆しなくなったら消します）"
-            ].join("\n"));
+            ];
+            if(str !== undefined)  arr.push(str);
+            return confirm(arr.join("\n"));
         }
         static checkLogInPass(pass,success,fail){
             return runServerFun("Script.checkSimplePass",[pass,"loginPass_" + config.getIdCode(),"JIMSystem","main"])
@@ -322,18 +324,18 @@ var Server = (function(){
                 if(innerHtml === null){
                     if(typeof fail === "function")  fail();
                 }else{
-                    if(typeof success === "function")  success();
+                    if(typeof success === "function")  success(innerHtml);
                 }
-                return innerHTML !== null;
+                return innerHtml !== null;
             });
         }
-        static handlePropertiesService(value,type,doKind){
+        static handlePropertiesService(value,type,doKind,confirmMsg){
             if(value === undefined || type === undefined || doKind === undefined)  return;
             if(
                 (doKind === "set" || doKind === "delete") &&
-                (!checkAuthorization("Server.handlePropertiesService") || !Server.confirmUpdate())
+                (!checkAuthorization("Server.handlePropertiesService") || !Server.confirmUpdate(confirmMsg))
             ){
-                return;
+                return null;
             }
             switch(doKind){
                 case "set":
