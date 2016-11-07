@@ -336,7 +336,7 @@ var Server = (function(){
                 (doKind === "set" || doKind === "delete") &&
                 (!checkAuthorization("Server.handlePropertiesService") || !Server.confirmUpdate(confirmMsg))
             ){
-                return null;
+                return Promise.resolve().then(function(){return null});
             }
             switch(doKind){
                 case "set":

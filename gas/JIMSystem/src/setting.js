@@ -12,13 +12,13 @@ $(function(){
         },changeMode:function(){
             var form = $("#formModeSetting");
             return Promise.all([
-                Server.handlePropertiesService({"mode":form.find('[name="modeName"]').val()},"script","set").then(function(v){
+                Server.handlePropertiesService({"mode":form.find('[name="modeName"]').val()},"script","set","モードの変更").then(function(v){
                     if(v === null){
                         return null;
                     }else{
                         return true;
                     }
-                },"モードの変更"),
+                }),
                 (Promise.resolve().then(function(){
                     var curtPass = form.find('[name="curtPass"]').val(); 
                     var newPass = form.find('[name="newPass"]').val();
@@ -43,7 +43,7 @@ $(function(){
                 if(arr[1] !== null && arr[0] !== null){
                     alert([
                         "システムを再起動します。",
-                        "（安定版(stable)で開くので開発版(dev)で開きたい場合は、このタイミングでF5キーを押してください）"
+                        "（安定版(stable)で開くので開発版(dev)で開きたい場合は、このタイミングでF5キーを押してからこのダイアログを閉じてください）"
                     ].join("\n"));
                     reloadApp();
                 }else if(arr[0] !== null){
