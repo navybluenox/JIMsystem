@@ -74,6 +74,7 @@
                     if(_val.config === undefined){
                         throw new Error("configデータが不正です。設定したモードに対応するconfigデータがありません。");
                     }
+                    Server.initialize({"config":_val.config});
                     Datapiece.initialize({"config":_val.config});
                     LocalDate.initialize({"config":_val.config});
                     console.log("_val",_val);

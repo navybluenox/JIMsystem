@@ -46,18 +46,13 @@ $(function(){
         },
         sendPass:function(){
             var pass = $("#pass").val();
-            runServerFun("Script.checkSimplePass",[pass,"loginPass_" + _val.config.getIdCode(),"JIMSystem","main"])
-            .then(function(innerHtml){
-                if(innerHtml === null){
-                    var el = document.createElement("p");
-                    el.textContent = "パスワードが間違っています";
-                    document.getElementById("passdiv").appendChild(el);
-                }else{
-                    $(document.documentElement).children().remove();
-                    document.documentElement.innerHTML = innerHtml;
-                    _val.pageFun.main.onload();
-                }
-            });
+            return Server.checkLogInPass(pass,function(innerHtml){
+                $(document.documentElement).children().remove();
+                document.documentElement.innerHTML = innerHtml;
+                _val.pageFun.main.onload();
+            },function(){
+                $("#passdiv").append("<p>パスワードが間違っています</p>");
+            })
         }
     }
     _val.pageFun.login.onload();

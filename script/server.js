@@ -1,6 +1,6 @@
 var Server = (function(){
     var cache = {};
-    var collectionInfoFileId;
+    var config,collectionInfoFileId;
     //This is collectionInfo.json
     return class Server {
         constructor(){
@@ -18,8 +18,7 @@ var Server = (function(){
             };
             //delete!!!
             if(Object.keys(cache).length === 0){
-                runServerFun("Script.loadDataFromDrive",[collectionInfoFileId,"data"])
-                .then(function(v){
+                Server.getFileContent(collectionInfoFileId,"data").then(function(v){
                     //TODO
                     //value v is invalid (datafile is not incomplete)
                     var collInfo_CollectionInfo = v.find(function(collObj){return collObj.name === "collectionInfo"});
@@ -93,8 +92,7 @@ var Server = (function(){
             var that = this;
             var loadingId = makeRandomStr();
             this._loading.push({id:loadingId,coll:collInfo});
-            return runServerFun("Script.loadDataFromDrive",[collInfo.getValue("fileId"),"all"])
-            .then(function(v){
+            return Server.getFileContent(collInfo.getValue("fileId"),"all").then(function(v){
                 var dataName = collInfo.getValue("name");
                 var thisClass = collInfo.getClass();
                 cache[dataName] = v.data.map(function(dataObj){
@@ -180,11 +178,7 @@ var Server = (function(){
 
             //TODO
             //ここはそのうち消す
-            if(!confirm([
-                "データを上書きします",
-                "よろしいですか？",
-                "（誤爆しなくなったら消します）"
-            ].join("\n"))){
+            if(!Server.confirmUpdate()){
                 this._pendingQueue = [];
                 return Promise.resolve();
             }
@@ -312,10 +306,35 @@ var Server = (function(){
         }
         static initialize(settings){
             if(settings === undefined || typeof settings !== "object" || settings === null)  return;
+            config = config || settings.config;
             collectionInfoFileId = collectionInfoFileId || settings.collectionInfoFileId;
+        }
+        static confirmUpdate(){
+            return confirm([
+                "データを上書きします",
+                "よろしいですか？",
+                "（誤爆しなくなったら消します）"
+            ].join("\n"));
+        }
+        static checkLogInPass(pass,success,fail){
+            return runServerFun("Script.checkSimplePass",[pass,"loginPass_" + config.getIdCode(),"JIMSystem","main"])
+            .then(function(innerHtml){
+                if(innerHtml === null){
+                    if(typeof fail === "function")  fail();
+                }else{
+                    if(typeof success === "function")  success();
+                }
+                return innerHTML !== null;
+            });
         }
         static handlePropertiesService(value,type,doKind){
             if(value === undefined || type === undefined || doKind === undefined)  return;
+            if(
+                (doKind === "set" || doKind === "delete") &&
+                (!checkAuthorization("Server.handlePropertiesService") || !Server.confirmUpdate())
+            ){
+                return;
+            }
             switch(doKind){
                 case "set":
                     if(classof(value) !== "object")  return;
@@ -332,6 +351,13 @@ var Server = (function(){
                     break;
             }
             return runServerFun("Script.handlePropertiesService",[value,type,doKind]);
+        }
+        static getFileContent(fileId,mode){
+            if(mode === undefined)  mode = "raw";
+            return runServerFun("Script.loadDataFromDrive",[fileId,mode]);
+        }
+        static setFileContent(fileId,content){
+            return runServerFun("Script.updateFileToDrive",[fileId,content]);
         }
     };
 })();
