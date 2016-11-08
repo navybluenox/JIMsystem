@@ -11,7 +11,6 @@ var Spreadsheet = (function(){
             return new Spreadsheet(this.getFileName(), newSheetName ? newSheetName : this.getSheetName(), $.extend(true,{},this.getData()));
         }
         getData(){
-console.log("data1",this._data);
             return this._data;
         }
         getFileInfo(){

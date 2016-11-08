@@ -3,7 +3,7 @@ $(function(){
     var formAddData,formCreateShiftTable;
     _val.pageFun.handleSpreadsheet = {
         onload:function(){
-            _val.server.loadData("fileInfo");
+            _val.server.loadDataAll();
             pageFun = _val.pageFun.handleSpreadsheet;
             formAddData = $("#formAddToDatabase");
             formCreateShiftTable = $("#formCreateShiftTable");
@@ -101,7 +101,7 @@ $(function(){
                         }
                         _val.server.sendUpdateQueue();
                         mw.remove();
-                    }).prop("disabled",dataName === "");
+                    }).prop("disabled",inArray(["","collectionInfo","systemConfig"],dataName));
                     $('<input type="button" value="キャンセル">').appendTo(parent.find("div").eq(1)).on("click",function(e){
                         mw.remove();
                     });
