@@ -60,7 +60,7 @@
             "nameFirstPhonetic":"string",
             "incharge":["string"],
             "inchargeCode":["string"],
-            "oldIncharge":[{"org":"string","nth":"number","code":"string"}],
+            "oldIncharge":[{"org":"string","nth":"number","code":"string","display":"boolean"}],
             "isRojin":"boolean",
             "isAvailable":"boolean"
         },"columnName":{
@@ -78,7 +78,7 @@
             "nameFirstPhonetic":"名（ふりがな）",
             "incharge":["担当名"],
             "inchargeCode":["担当略称"],
-            "oldIncharge":[{"_name":"過去の担当","org":"団体の略称","nth":"期","code":"担当の略称"}],
+            "oldIncharge":[{"_name":"過去の担当","org":"団体の略称","nth":"期","code":"担当の略称","display":"表示するか"}],
             "isRojin":"老人であるか",
             "isAvailable":"今期に参加するか"
         },"columnOrder":["_id","created","updated","sortId","azusaId","azusaSendName","cellphone","grade","nameLast","nameFirst","nameLastPhonetic","nameFirstPhonetic","incharge.0","inchargeCode.0","oldIncharge.0.org","oldIncharge.0.nth","oldIncharge.0.code","isRojin","isAvailable"]},

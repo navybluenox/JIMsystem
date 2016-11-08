@@ -62,16 +62,25 @@ $(function(){
                 }
                 var mw = new ModalWindow({"callback":function(parent){
                     parent.append("<div></div><div></div>");
-                    var table = createTable(parent.find("div").eq(0),spreadsheet.getData(),column,function(cellObj){
+                    var data = spreadsheet.getData();
+                    var mode = formAddData.find('[name="readType"]').val();
+                    if(mode === "change"){
+                        var ids = _val.server.getData(dataName,null,true).map(function(d){return d.getValue("_id")});
+                        data = data.filter(function(d){
+                            return inArray(ids,d._id);
+                        });
+                    }
+                    var table = createTable(parent.find("div").eq(0),data,column,function(cellObj){
                         switch(classof(cellObj.value)){
                             case "array":
                                 cellObj.el.append("<ol></ol>");
                                 cellObj.el.children("ol").append(cellObj.value.map(function(val,index){
-                                    return '<li>' + index + '. ' + castIntoString(val) + '</li>';
+                                    if(val === null) return;
+                                    return '<li>' + index + '. ' + castIntoString(val,true) + '</li>';
                                 }).join(""));
                                 break;
                             default:
-                                cellObj.el.text(castIntoString(cellObj.value));
+                                cellObj.el.text(castIntoString(cellObj.value,true));
                                 break;
                         }
                     }).el;
@@ -81,12 +90,17 @@ $(function(){
                     table.find("td:last-child").css({"padding-left":"0.5em"});
                     table.find("ol").css({"list-style":"none","padding":"0","margin":"0"});
                     table.find("li").css({"padding":"0","margin":"0"});
-                    $('<input type="button" value="この内容をデータベースに追加">').appendTo(parent.find("div").eq(1)).on("click",function(e){
+                    $('<input type="button" value="' + (mode === "add" ? "この内容をデータベースに追加" : "この内容でデータベースを変更") + '">').appendTo(parent.find("div").eq(1)).on("click",function(e){
                         var dataClass = Datapiece.getClassByName(dataName);
-                        var datapieces = spreadsheet.getData().map(function(v){
+                        var datapieces = data.map(function(v){
                             return new dataClass(v,{"overwrite":true});
                         });
-                        _val.server.addData(datapieces).sendUpdateQueue();
+                        if(mode === "change"){
+                            _val.server.changeData(datapieces);
+                        }else if(mode === "add"){
+                            _val.server.addData(datapieces);
+                        }
+                        _val.server.sendUpdateQueue();
                         mw.remove();
                     }).prop("disabled",dataName === "");
                     $('<input type="button" value="キャンセル">').appendTo(parent.find("div").eq(1)).on("click",function(e){

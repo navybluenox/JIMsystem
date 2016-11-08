@@ -6,7 +6,7 @@
             <table class="tableform"><tbody>
                 <tr><td>データベース名</td><td><select name="dataName" tabindex="2"></td><td></td></tr>
                 <tr><td>スプレッドシートへコピーする</td><td><input type="button" name="writeAll" value="全てコピー" tabindex="2" onclick='_val.pageFun.handleSpreadsheet.writeSpreadsheet("editDatabase","fromJIMsystem","all")'><input type="button" name="writeColumn" value="カラム名のみコピー" tabindex="2" onclick='_val.pageFun.handleSpreadsheet.writeSpreadsheet("editDatabase","fromJIMsystem","column")'></td><td></td></tr>
-                <tr><td>スプレッドシートから読み込む</td><td><input type="button" name="read" value="読み込む" tabindex="2" onclick='_val.pageFun.handleSpreadsheet.readSpreadsheet("editDatabase","fromJIMsystem")'></td><td></td></tr>
+                <tr><td>スプレッドシートから読み込む</td><td>編集モード：<select name="readType"><option value="add">追加</option><option value="change">変更</option></select><input type="button" name="read" value="読み込む" tabindex="2" onclick='_val.pageFun.handleSpreadsheet.readSpreadsheet("editDatabase","fromJIMsystem")'></td><td>※空のセルは「変更なし」として無視されます。空文字を入れたい場合には「\_」(半角のバックスラッシュとアンダーバー)を入れてください。</td></tr>
                 <tr><td>スプレッドシートをクリアする</td><td><input type="button" name="clear" value="クリアする" tabindex="2" onclick='_val.pageFun.handleSpreadsheet.clearSpreadsheet("editDatabase","fromJIMsystem")'></td><td></td></tr>
             </tbody></table>
         </form>

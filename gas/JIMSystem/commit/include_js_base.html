@@ -486,18 +486,26 @@ function castType(value,type){
     }
 }
 
-function castIntoString(val){
+function castIntoString(val,nullAswhiteSpace){
+    nullAswhiteSpace = (nullAswhiteSpace === undefined ? false : nullAswhiteSpace);
     switch(classof(val)){
         case "object":
             return "{" + Object.keys(val).map(function(key){
-                return key + ":" + castIntoString(val[key]);
+                return key + ":" + castIntoString(val[key],nullAswhiteSpace);
             }).join(", ") + "}";
         case "array":
-            return "[" + val.map(function(v){return castIntoString(v)}).join(", ") + "]";
+            return "[" + val.map(function(v){return castIntoString(v,nullAswhiteSpace)}).join(", ") + "]";
         case "date":
             return dateToValue(val).str;
         case "localdate":
             return val.toString();
+        case "undefined":
+        case "null":
+            if(nullAswhiteSpace){
+                return "";
+            }else{
+                return "" + val;
+            }
         default:
             return "" + val;
     }

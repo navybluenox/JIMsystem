@@ -10,6 +10,7 @@ var Spreadsheet = (function(){
             return new Spreadsheet(this.getFileName(), newSheetName ? newSheetName : this.getSheetName(), $.extend(true,{},this.getData()));
         }
         getData(){
+console.log("data1",this._data);
             return this._data;
         }
         getFileInfo(){
@@ -30,7 +31,7 @@ var Spreadsheet = (function(){
             }
             var la = new LoadingAlert();
             return runServerFun("Script.handleSpreadsheetInterface",["getSheetValues",this.getFileInfo().getValue("fileId"),this.getSheetName(),[option]]).then(function(v){
-                var  result = Spreadsheet.convertDataFromArrayToHash(v,columnType);
+                var result = Spreadsheet.convertDataFromArrayToHash(v,columnType);
                 that._data = result.content;
                 console.log("Reading data of spreadsheet from server successes!");
                 la.remove();
@@ -173,7 +174,7 @@ var Spreadsheet = (function(){
                 var result = $.extend(true,{},templateHash);
                 var pairs = row.map(function(cell,cellIndex){
                         return {"value":cell,"keys":columnNames[cellIndex].split(".")};
-                    }).filter(function(pair){return pair.value !== ""});
+                    })//.filter(function(pair){return pair.value !== ""});
                 pairs.forEach(function(pair,pairIndex){
                     var cell = pair.value;
                     var keys = pair.keys;
@@ -188,7 +189,15 @@ var Spreadsheet = (function(){
                                     lookAt_result[key] = cell;
                                 }
                             }else{
-                                lookAt_result[key] = castType(cell,lookAt_type[key]);
+                                //空白のセルは空文字列ではなく何も無いものとして扱う
+                                //空文字列にしたい場合には、'\_'とのみ書く
+                                if(cell === ""){
+                                    lookAt_result[key] = null;
+                                }else if(cell === "\\_" && lookAt_type[key] === "string"){
+                                    lookAt_result[key] = "";
+                                }else{
+                                    lookAt_result[key] = castType(cell,lookAt_type[key]);
+                                }
                             }
                         }else{
                             lookAt_type = lookAt_type[key.replace(/^\d+$/,"0")];
@@ -246,26 +255,31 @@ var Spreadsheet = (function(){
 
             if(order !== undefined){
                 keyList.sort(function(a,b){
+                    
+                    var aKeys = a.split(".").reverse();
+                    var bKeys = b.split(".").reverse();
+                    var aKey,bKey,prefix = [];
+                    aKey = aKeys.pop();
+                    bKey = bKeys.pop();
+
+                    while(aKey === bKey && aKey !== undefined && bKey !== undefined){
+                        prefix.push(aKey);
+                        aKey = aKeys.pop();
+                        bKey = bKeys.pop();
+                    }
+
                     var aValue = order.findIndex(function(v){
-                        return a.replace(/\.\d+/g,".0").replace(/^\d+$/,"0").replace(/^\d+\./,"0.") === v;
+                        var text = prefix.concat(aKey === undefined ? [] : [aKey]).join(".").replace(/\.\d+/g,".0").replace(/^\d+$/,"0").replace(/^\d+\./,"0.");
+                        return (new RegExp("^" + text)).test(v);
                     });
                     var bValue = order.findIndex(function(v){
-                        return b.replace(/\.\d+/g,".0").replace(/^\d+$/,"0").replace(/^\d+\./,"0.") === v;
+                        var text = prefix.concat(bKey === undefined ? [] : [bKey]).join(".").replace(/\.\d+/g,".0").replace(/^\d+$/,"0").replace(/^\d+\./,"0.");
+                        return (new RegExp("^" + text)).test(v);
                     });
                     if(aValue === -1)  aValue = order.length;
                     if(bValue === -1)  bValue = order.length;
                     if(aValue === bValue){
-                        var arrayA = a.split("").reverse();
-                        var arrayB = b.split("").reverse();
-                        var lookAt_A,lookAt_B;
-                        do{
-                            lookAt_A = arrayA.pop();
-                            lookAt_B = arrayB.pop();                            
-                        }while(lookAt_A !== undefined && lookAt_B !== undefined && lookAt_A === lookAt_B)
-
-                        if(lookAt_A === undefined)  return -1;
-                        if(lookAt_B === undefined)  return 1;
-                        return lookAt_A.charCodeAt() - lookAt_B.charCodeAt();
+                        return (+aKey) - (+bKey);
                     }else{
                         return aValue - bValue;
                     }

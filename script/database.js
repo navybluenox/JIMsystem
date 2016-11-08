@@ -68,6 +68,10 @@ var Datapiece = (function(){
                                     goDeepLevelValue(dpObj[key],colObj[key],d[key],d,key,op);
                                 }
                             }
+                            //undefined,nullのキーは削除
+                            if(d[key] === undefined || d[key] === null){
+                                delete d[key];
+                            }
                         });
                         return d;
                     case "array":
@@ -77,8 +81,16 @@ var Datapiece = (function(){
                         }
                         if(op.overwrite === true){
                             dParent[dKey] = dpObj.map(function(v,i){
+                                if(v === undefined || v === null)  return;
                                 return goDeepLevelValue(dpObj[i],colObj[0],d[i],d,i,op)
-                            })
+                            }).filter(function(_d){
+                                //undefined,null,{}が入っている値は除外
+                                if(classof(_d) === "object"){
+                                    return Object.keys(_d).length !== 0;
+                                }else{
+                                    return _d !== null && _d !== undefined;
+                                }
+                            });
                         }else{
                             dpObj.forEach(function(v,i){
                                 if(v === undefined || v === null)  return;
@@ -86,6 +98,9 @@ var Datapiece = (function(){
                             });
                         }
                         return d;
+                    case "null":
+                        //nullはスキップ
+                        return undefined;
                     default:
                         //shallow copyをするため、あえてdではなくdParent[dKey]を使用
                         dParent[dKey] = castType(dpObj,colObj);
@@ -790,6 +805,12 @@ class SystemConfig extends Datapiece{
 class User extends Datapiece{
     constructor(datapieceObj,option){
         super(datapieceObj,"user",option);
+        var that = this;
+        Object.defineProperty(this._data,"@name",{
+            "get":function(){
+                return [that.getValue("nameLast"),that.getValue("nameFirst")].join(" ");
+            }
+        });
     }
     getBackgroundColor(){
         return UserGroup.getColorByUserId(this.getValue("_id"),"background");
