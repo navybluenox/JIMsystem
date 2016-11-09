@@ -319,7 +319,7 @@ var Datapiece = (function(){
             if(!Array.isArray(colName)) colName = [colName];
             if(reverse === undefined) reverse = [];
             var colInfo = server.getCollectionInfoByName(dataName);
-            return datapieces.slice().sort(function(a,b){
+            return datapieces.sort(function(a,b){
                 var ret;
                 colName.find(function(c,index){
                     var type = colInfo.getValue("column." + c);

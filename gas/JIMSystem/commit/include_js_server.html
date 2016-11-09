@@ -159,7 +159,11 @@ var Server = (function(){
                         break;
                 }
             }
-            return result;
+            if(dataName === "collectionInfo"){
+                return result;
+            }else{
+                return Datapiece.sort(result,this.getCollectionInfoByName(dataName).getValue("sortColumn"));
+            }
         }
         getDataById(ids,dataName,newCopy,preventSkip){
             if(!Array.isArray(ids))  ids = [ids];
