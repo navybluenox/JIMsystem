@@ -1106,6 +1106,15 @@ class WorkList extends Datapiece{
             return "#CCCCCC";
         }
     }
+    static getAtInterval(start,end){
+        var workLists = Datapiece.getServer().getData("workList");
+        return workLists.filter(function(workList){
+            if(workList.getValue("asAssigned")) return false;
+            return workList.getDiffFromRequired(start,end,true).every(function(obj){
+                return obj.diff > 0;
+            })
+        });        
+    }
     static getNotAssignedAtInterval(start,end){
         var workLists = Datapiece.getServer().getData("workList");
         return workLists.filter(function(workList){

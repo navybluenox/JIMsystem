@@ -13,7 +13,7 @@ $(function(){
         },changeMode:function(){
             var form = $("#formModeSetting");
             return Promise.all([
-                Server.handlePropertiesService({"mode":form.find('[name="modeName"]').val()},"script","set","モードの変更").then(function(v){
+                Server.handlePropertiesService({"mode":form.find('[name="modeName"]').val()},"script","set",{"message":"モードの変更"}).then(function(v){
                     if(v === null){
                         return null;
                     }else{
@@ -33,7 +33,7 @@ $(function(){
                         if(flag){
                             var obj = {};
                             obj["loginPass_" + _val.config.getIdCode()] = newPass;
-                            return Server.handlePropertiesService(obj,"script","set","パスワードの変更");
+                            return Server.handlePropertiesService(obj,"script","set",{"message":"パスワードの変更"});
                         }else{
                             alert("現在のパスワードが間違っています。");
                             return null;

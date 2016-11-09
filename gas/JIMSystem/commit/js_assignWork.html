@@ -180,14 +180,14 @@ $(function(){
 
                 var cm = new ContextMenu(e,[
                     {"key":"setTimeOfForm","text":"この時間をフォームに設定"},
-                    {"key":"setWorkAssign","text":"この時間に人割を入れる"},
+                    {"key":"setWorkAssign","text":"この時間に人割を入れる  （+Ctrl(⌘)キー：全候補）"},
                     {"key":"","text":""},
-                    {"key":"changeWorkList","text":"この人割を他の人割に変える"},
-                    {"key":"changeUser","text":"この人割を他の委員に変える"},
+                    {"key":"changeWorkList","text":"この人割を他の人割に変える  （+Ctrl(⌘)キー：全候補）"},
+                    {"key":"changeUser","text":"この人割を他の委員に変える  （+Ctrl(⌘)キー：全候補）"},
                     {"key":"deleteWorkAssign","text":"この人割を削除する"},
                     {"key":"","text":""},
                     {"key":"setInfoOfForm","text":"フォームに設定する"},
-                    {"key":"deselect","text":"選択を解除"}
+                    {"key":"deselect","text":"選択を解除"},
                 ],{
                     "setTimeOfForm":function(e){
                         form.find('[name="start_day"]').val(start.getDays());
@@ -199,108 +199,11 @@ $(function(){
                         form.find('[name="interval"]').val(start.getDiff(end,"timeunit"));
                         pageFun.showIntervalTime();
                         cm.remove();
-                    },"setWorkAssign":function(e){
-                        var cm1 = new ContextMenu(
-                            e,[{"text":"候補","value":""}].concat((
-                                tableKind === "user" ?
-                                WorkList.getNotAssignedAtInterval(start,end) :
-                                User.getFreeUsers(start,end)                            
-                            ).map(function(datapiece){
-                                return (
-                                    tableKind === "user" ? {
-                                        "text":datapiece.getValue("nameShort"),
-                                        "value":datapiece.getValue("_id")                                    
-                                    } : {
-                                        "text":datapiece.getValue("nameLast") + " " + datapiece.getValue("nameFirst"),
-                                        "value":datapiece.getValue("_id")
-                                    }
-                                );
-                            })),function(e){
-                                var id = e.data.value;
-                                if(id === "")  return;
-                                update(id);
-                                cm1.remove();
-                            },{
-                                "maxHeight":"400px"
-                            }
-                        );
-                        cm1.getContent().find("li").css({"padding":"0 1em"});
-                        cm.remove();
-                        function update(id){
-                            var workListId,userId;
-                            if(tableKind === "user"){
-                                workListId = id;
-                                userId = form.find('[name="shiftTableUser_searchResult"]').val();
-                            }else if(tableKind === "workList"){
-                                userId = id;
-                                workListId = form.find('[name="shiftTableWork_searchResult"]').val();
-                            }
-                            var workAssign = new WorkAssign({
-                                "workListId":workListId,
-                                "userId":userId,
-                                "start":start,
-                                "disabled":false
-                            }).setValue("end",end);
-                            pageFun.fillForm(workAssign);
-                            pageFun.updateWorkAssign("add",null,workAssign);
-                            cm1.remove();
-                        }
-                    },"changeWorkList":function(e){
-                        if(workAssigns.length === 0){
-                            alert("選択範囲に新規追加でない人割がありません。");
-                            return;
-                        }else if(workAssigns.length > 1){
-                            alert("選択範囲に複数の人割があります。\n一つのみ選択してください。");
-                            return;                        
-                        }
-                        var workAssign = workAssigns[0];
-                        var cm1 = new ContextMenu(
-                            e,[{"text":"候補","value":""}].concat(WorkList.getNotAssignedAtInterval(workAssign.getValue("start"),workAssign.getValue("end")).map(function(workList){
-                                return {
-                                    "text":workList.getValue("nameShort"),
-                                    "value":workList.getValue("_id")
-                                };
-                            })),function(e){
-                                var workListId = e.data.value;
-                                if(workListId === "")  return;
-                                pageFun.fillForm(workAssign.copy().setValue("workListId",workListId));
-                                pageFun.updateWorkAssign("change",null,workAssign);
-                                cm1.remove();
-                            },{
-                                "maxHeight":"400px"
-                            }
-                        );
-                        cm1.getContent().find("li").css({"padding":"0 1em"});
-                        cm.remove();
-                    },"changeUser":function(e){
-                        if(workAssigns.length === 0){
-                            alert("選択範囲に新規追加でない人割がありません。");
-                            return;
-                        }else if(workAssigns.length > 1){
-                            alert("選択範囲に複数の人割があります。\n一つのみ選択してください。");
-                            return;                        
-                        }
-                        var workAssign = workAssigns[0];
-                        var cm1 = new ContextMenu(
-                            e,[{"text":"候補","value":""}].concat(User.getFreeUsers(workAssign.getValue("start"),workAssign.getValue("end")).map(function(user){
-                                return {
-                                    "text":user.getValue("nameLast") + " " + user.getValue("nameFirst"),
-                                    "value":user.getValue("_id")
-                                };
-                            })),function(e){
-                                var userId = e.data.value;
-                                if(userId === "")  return;
-                                pageFun.fillForm(workAssign.copy().setValue("userId",userId));
-                                pageFun.updateWorkAssign("change",null,workAssign);
-                                cm1.remove();
-
-                            },{
-                                "maxHeight":"400px"
-                            }
-                        );
-                        cm1.getContent().find("li").css({"padding":"0 1em"});
-                        cm.remove();
-                    },"setInfoOfForm":function(e){
+                    },
+                    "setWorkAssign":setWorkAssign,
+                    "changeWorkList":changeWorkList,
+                    "changeUser":changeUser,
+                    "setInfoOfForm":function(e){
                         if(workAssigns.length === 0){
                             alert("選択範囲に新規追加でない人割がありません。");
                             return;
@@ -311,7 +214,8 @@ $(function(){
                         var workAssign = workAssigns[0];
                         pageFun.fillForm(workAssign);
                         cm.remove();
-                    },"deleteWorkAssign":function(e){
+                    },
+                    "deleteWorkAssign":function(e){
                         if(workAssigns.length === 0){
                             alert("選択範囲に新規追加でない人割がありません。");
                             return;
@@ -320,11 +224,125 @@ $(function(){
                             pageFun.reshowShiftTable();
                         });
                         cm.remove();
-                    },"deselect":function(e){
+                    },
+                    "deselect":function(e){
                         selectedCells.removeClass("selectedCell").find("div div").unwrap();
                         cm.remove();
                     }
                 });
+
+                function setWorkAssign(e,userObj,listAll){
+                    listAll = (listAll === undefined ? !!(e.ctrlKey && !e.metaKey) || (!e.ctrlKey && e.metaKey) : listAll);
+                    var cm1 = new ContextMenu(
+                        e,[{"text":"候補","value":""}].concat((
+                            tableKind === "user" ?
+                            (listAll ? WorkList.getAtInterval(start,end) : WorkList.getNotAssignedAtInterval(start,end)) :
+                            (listAll ? _val.server.getData("user") : User.getFreeUsers(start,end))
+                        ).map(function(datapiece){
+                            return (
+                                tableKind === "user" ? {
+                                    "text":datapiece.getValue("nameShort"),
+                                    "value":datapiece.getValue("_id")                                    
+                                } : {
+                                    "text":datapiece.getValue("nameLast") + " " + datapiece.getValue("nameFirst"),
+                                    "value":datapiece.getValue("_id")
+                                }
+                            );
+                        })),function(e){
+                            var id = e.data.value;
+                            if(id === "")  return;
+                            update(id);
+                            cm1.remove();
+                        },{
+                            "maxHeight":"400px"
+                        }
+                    );
+                    cm1.getContent().find("li").css({"padding":"0 1em"});
+                    cm.remove();
+                    function update(id){
+                        var workListId,userId;
+                        if(tableKind === "user"){
+                            workListId = id;
+                            userId = form.find('[name="shiftTableUser_searchResult"]').val();
+                        }else if(tableKind === "workList"){
+                            userId = id;
+                            workListId = form.find('[name="shiftTableWork_searchResult"]').val();
+                        }
+                        var workAssign = new WorkAssign({
+                            "workListId":workListId,
+                            "userId":userId,
+                            "start":start,
+                            "disabled":false
+                        }).setValue("end",end);
+                        pageFun.fillForm(workAssign);
+                        pageFun.updateWorkAssign("add",null,workAssign);
+                        cm1.remove();
+                    }
+                }
+                function changeWorkList(e,userObj,listAll){
+                    listAll = (listAll === undefined ? !!(e.ctrlKey && !e.metaKey) || (!e.ctrlKey && e.metaKey) : listAll);
+                    if(workAssigns.length === 0){
+                        alert("選択範囲に新規追加でない人割がありません。");
+                        return;
+                    }else if(workAssigns.length > 1){
+                        alert("選択範囲に複数の人割があります。\n一つのみ選択してください。");
+                        return;                        
+                    }
+                    var workAssign = workAssigns[0];
+                    var cm1 = new ContextMenu(
+                        e,[{"text":"候補","value":""}].concat(
+                            (listAll ? WorkList.getAtInterval(workAssign.getValue("start"),workAssign.getValue("end")) : WorkList.getNotAssignedAtInterval(workAssign.getValue("start"),workAssign.getValue("end"))
+                        ).map(function(workList){
+                            return {
+                                "text":workList.getValue("nameShort"),
+                                "value":workList.getValue("_id")
+                            };
+                        })),function(e){
+                            var workListId = e.data.value;
+                            if(workListId === "")  return;
+                            pageFun.fillForm(workAssign.copy().setValue("workListId",workListId));
+                            pageFun.updateWorkAssign("change",null,workAssign);
+                            cm1.remove();
+                        },{
+                            "maxHeight":"400px"
+                        }
+                    );
+                    cm1.getContent().find("li").css({"padding":"0 1em"});
+                    cm.remove();
+                }
+                function changeUser(e,userObj,listAll){
+                    listAll = (listAll === undefined ? !!(e.ctrlKey && !e.metaKey) || (!e.ctrlKey && e.metaKey) : listAll);
+                    if(workAssigns.length === 0){
+                        alert("選択範囲に新規追加でない人割がありません。");
+                        return;
+                    }else if(workAssigns.length > 1){
+                        alert("選択範囲に複数の人割があります。\n一つのみ選択してください。");
+                        return;                        
+                    }
+                    var workAssign = workAssigns[0];
+                    var cm1 = new ContextMenu(
+                        e,[{"text":"候補","value":""}].concat(
+                            (listAll ? _val.server.getData("user") : User.getFreeUsers(workAssign.getValue("start"),workAssign.getValue("end"))
+                        ).map(function(user){
+                            return {
+                                "text":user.getValue("nameLast") + " " + user.getValue("nameFirst"),
+                                "value":user.getValue("_id")
+                            };
+                        })),function(e){
+                            var userId = e.data.value;
+                            if(userId === "")  return;
+                            pageFun.fillForm(workAssign.copy().setValue("userId",userId));
+                            pageFun.updateWorkAssign("change",null,workAssign);
+                            cm1.remove();
+
+                        },{
+                            "maxHeight":"400px"
+                        }
+                    );
+                    cm1.getContent().find("li").css({"padding":"0 1em"});
+                    cm.remove();
+                }
+
                 return false;
             });
 

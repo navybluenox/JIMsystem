@@ -329,11 +329,12 @@ var Server = (function(){
                 return innerHtml !== null;
             });
         }
-        static handlePropertiesService(value,type,doKind,confirmMsg){
+        static handlePropertiesService(value,type,doKind,confirm){
             if(value === undefined || type === undefined || doKind === undefined)  return;
+            confirm = confirm || {};
             if(
                 (doKind === "set" || doKind === "delete") &&
-                (!checkAuthorization("Server.handlePropertiesService") || !Server.confirmUpdate(confirmMsg))
+                (!checkAuthorization("Server.handlePropertiesService") || (!confirm.skip && !Server.confirmUpdate(confirm.message)))
             ){
                 return Promise.resolve().then(function(){return null});
             }

@@ -50,6 +50,12 @@ $(function(){
             var spreadsheet = new Spreadsheet(spreadsheetName,sheetName);
             var dataName = formAddData.find('[name="dataName"]').val();
             var columnType = _val.server.getCollectionInfoByName(dataName).getValue("column");
+
+            if(dataName === ""){
+                alert("データベース名が指定されていません。")
+                formAddData.find('[name="dataName"]').focus();
+                return;
+            }
             
             spreadsheet.readSheetData(columnType).then(function(v){
                 var column = Object.keys(v.type);
@@ -292,7 +298,9 @@ $(function(){
                             preContent.push(setDefaultCellSetting({"alignHori":"left","text":user.getValue("grade")}));
                             preContent.push(setDefaultCellSetting({"alignHori":"left","text":user.getValue("nameLast") + " " + user.getValue("nameFirst")}));
                             preContent.push(setDefaultCellSetting({"alignHori":"left","text":user.getValue("azusaSendName")}));
-                            preContent.push(setDefaultCellSetting({"alignHori":"left","text":user.getValue("inchargeCode").join("/")}));
+                            preContent.push(setDefaultCellSetting({"alignHori":"left","text":(
+                                user.getValue("isRojin") ? user.getValue("oldIncharge").filter(function(v){return v.display}).map(function(v){return "" + v.nth + v.code}).join("/") : user.getValue("inchargeCode").join("/")
+                            )}));
                             sufContent.push(setDefaultCellSetting({"alignHori":"left","text":user.getValue("nameLast") + " " + user.getValue("nameFirst")}));
                             table.push((preContent.concat(ret.content)).concat(sufContent));
                         });
@@ -306,14 +314,14 @@ $(function(){
                         ]).then(function(){
                             return spreadsheet.setMergeCell(mergeSetting);
                         }).then(function(){
-                            return spreadsheet.setFreezeCell({"row":topOffset,"column":leftOffset})
+                            return spreadsheet.setFreezeCell({"row":topOffset + 1,"column":leftOffset})
                         });
                     });
 
                 });
                 promiseChain = promiseChain.then(function(){
                     console.log("finished updating shiftTableUser completely!!");
-                    return Server.handlePropertiesService({[version_propertyKey]:version+1},"script","set");
+                    return Server.handlePropertiesService({[version_propertyKey]:version+1},"script","set",{"skip":true});
                 }).catch(function(e){
                     console.log("Error!!");
                     console.log(e);
