@@ -16,7 +16,7 @@
                             "end":{"hour":17,"minute":0}
                         }
                     ],
-                    "collectionInfoFileId":"0B88bKUOZP4-AalctMlZ4MDE0eG8"
+                    "fileId_fileInfo":"0B88bKUOZP4-Ac01lZHQ5cUo0SGM"
                 },
                 "workAssign":{
                     "timeUnit":900000,
@@ -63,7 +63,7 @@
                             "end":{"hour":17,"minute":0}
                         }
                     ],
-                    "collectionInfoFileId":"0B88bKUOZP4-ASTdGMVhjOGQwMnc"
+                    "fileId_fileInfo":"0B88bKUOZP4-AbFNLVHNCR0s2d2s"
                 },
                 "workAssign":{
                     "timeUnit":1800000,

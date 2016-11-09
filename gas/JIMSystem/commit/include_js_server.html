@@ -1,7 +1,7 @@
 <script>
 var Server = (function(){
     var cache = {};
-    var config,collectionInfoFileId;
+    var config,fileId_fileInfo;
     //This is collectionInfo.json
     return class Server {
         constructor(){
@@ -19,27 +19,35 @@ var Server = (function(){
             };
             //delete!!!
             if(Object.keys(cache).length === 0){
-                Server.getFileContent(collectionInfoFileId,"data").then(function(v){
-                    //TODO
-                    //value v is invalid (datafile is not incomplete)
-                    var collInfo_CollectionInfo = v.find(function(collObj){return collObj.name === "collectionInfo"});
-                    cache.collectionInfo = v.map(function(collObj){
-                        return new CollectionInfo(collObj,{init:true,init_data:collInfo_CollectionInfo});
-                    });
-                    that._loaded = true;
-                    that._ready = true;
-                    that._eventHandler.ready.reverse();
-                    var fun;
-                    var i=0;
-                    while((fun = that._eventHandler.ready.pop()) !== undefined && i<5){
-                        try{
-                            fun(that);
-                        }catch(e){
-                            that._eventHandler.ready.unshift(fun);
-                            i++;
-                        }
+                Server.getFileContent(fileId_fileInfo,"data").then(function(v){
+                    return {
+                        "fileId_collectionInfo":v.find(function(obj){return obj.fileType === "database" && obj.name === "collectionInfo"}).fileId,
+                        "data":v
                     }
-                    console.log(that);
+                }).then(function(obj){
+                    return Server.getFileContent(obj.fileId_collectionInfo,"data").then(function(v){
+                        var collInfo_CollectionInfo = v.find(function(collObj){return collObj.name === "collectionInfo"});
+                        cache.collectionInfo = v.map(function(collObj){
+                            return new CollectionInfo(collObj,{init:true,init_data:collInfo_CollectionInfo});
+                        });
+                        cache.fileInfo = obj.data.map(function(fileInfoObj){
+                            return new FileInfo(fileInfoObj);
+                        });
+                        that._loaded = true;
+                        that._ready = true;
+                        that._eventHandler.ready.reverse();
+                        var fun;
+                        var i=0;
+                        while((fun = that._eventHandler.ready.pop()) !== undefined && i<5){
+                            try{
+                                fun(that);
+                            }catch(e){
+                                that._eventHandler.ready.unshift(fun);
+                                i++;
+                            }
+                        }
+                        console.log(that);
+                    })
                 }).catch(function(e){
                     console.log(e);
                 });
@@ -93,7 +101,7 @@ var Server = (function(){
             var that = this;
             var loadingId = makeRandomStr();
             this._loading.push({id:loadingId,coll:collInfo});
-            return Server.getFileContent(collInfo.getValue("fileId"),"all").then(function(v){
+            return Server.getFileContent(collInfo.getDatapieceRelated("fileInfoId","fileInfo").getValue("fileId"),"all").then(function(v){
                 var dataName = collInfo.getValue("name");
                 var thisClass = collInfo.getClass();
                 cache[dataName] = v.data.map(function(dataObj){
@@ -105,8 +113,7 @@ var Server = (function(){
                 console.log(cache[dataName]);
                 la.remove();
                 return that.getData(dataName);
-            })
-            .catch(function(e){
+            }).catch(function(e){
                 that._loading = that._loading.filter(function(obj){return obj.id !== loadingId});
                 console.log(e);
                 la.remove();
@@ -229,7 +236,7 @@ var Server = (function(){
                 return Promise.all(Object.keys(queueForSend).map(function(dataName){
                     that._version[dataName]++;
                     that._updated[dataName] = new Date(nowTime.getTime());
-                    return runServerFun("Script.updateDatabase",[that.getCollectionInfoByName(dataName).getValue("fileId"),queueForSend[dataName],nowTime.toISOString(),{"version":that.getVersion(dataName),"updated":that.getUpdatedTime(dataName).toISOString()}]);
+                    return runServerFun("Script.updateDatabase",[that.getCollectionInfoByName(dataName).getDatapieceRelated("fileInfoId","fileInfo").getValue("fileId"),queueForSend[dataName],nowTime.toISOString(),{"version":that.getVersion(dataName),"updated":that.getUpdatedTime(dataName).toISOString()}]);
                 }));
             })
             .then(function(){
@@ -308,7 +315,7 @@ var Server = (function(){
         static initialize(settings){
             if(settings === undefined || typeof settings !== "object" || settings === null)  return;
             config = config || settings.config;
-            collectionInfoFileId = collectionInfoFileId || settings.collectionInfoFileId;
+            fileId_fileInfo = fileId_fileInfo || settings.fileId_fileInfo;
         }
         static confirmUpdate(str){
             var arr = [

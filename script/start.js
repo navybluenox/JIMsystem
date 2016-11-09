@@ -54,14 +54,14 @@
                 if(index === -1){
                     console.log("Attention : \"" + modeName + "\" is invalid. This system run as the defalut mode.");
                     modeName = obj.defaultMode;
-                    return configs.find(function(config){return config.modeName === obj.defaultMode}).content.base.collectionInfoFileId;
+                    return configs.find(function(config){return config.modeName === obj.defaultMode}).content.base.fileId_fileInfo;
                 }else{
-                    return configs[index].content.base.collectionInfoFileId;
+                    return configs[index].content.base.fileId_fileInfo;
                 }
             });
-        }).then(function(collectionInfoFileId){
+        }).then(function(fileId_fileInfo){
             console.log("run mode : " + modeName);
-            Server.initialize({"collectionInfoFileId":collectionInfoFileId});
+            Server.initialize({"fileId_fileInfo":fileId_fileInfo});
             _val.server = new Server();
             Datapiece.initialize({"server":_val.server});
             Spreadsheet.initialize({"server":_val.server});
