@@ -809,11 +809,19 @@ class User extends Datapiece{
     constructor(datapieceObj,option){
         super(datapieceObj,"user",option);
         var that = this;
+        this._workAssigns = [];
         Object.defineProperty(this._data,"@name",{
             "get":function(){
                 return [that.getValue("nameLast"),that.getValue("nameFirst")].join(" ");
             }
         });
+        Object.defineProperty(this._data,"@workAssign",{
+            "get":function(){
+                return that._workAssigns.slice();
+            }
+        });
+        //軽量化のためにworkAssignIdを記録
+        this.refreshWorkAssignList();
     }
     getBackgroundColor(){
         return UserGroup.getColorByUserId(this.getValue("_id"),"background");
@@ -821,11 +829,16 @@ class User extends Datapiece{
     getFontColor(){
         return UserGroup.getColorByUserId(this.getValue("_id"),"font");
     }
-    getWorkAssigns(){
+    getWorkAssigns(useReliableMode){
         var that = this;
-        return Datapiece.getServer().getData("workAssign").filter(function(workAssign){
-            return workAssign.getValue("userId") === that.getValue("_id");
-        });
+        useReliableMode = (useReliableMode === undefined ? false : useReliableMode);
+        return useReliableMode ? (
+            Datapiece.getServer().getData("workAssign").filter(function(workAssign){
+                return workAssign.getValue("userId") === that.getValue("_id");
+            })
+        ) : (
+            this.getValue("@workAssign")
+        );
     }
     getShiftTableAsData(start,end,extraWorkAssign){
         return Datapiece.getShiftTableAsData(this,this.getDataName(),start,end,extraWorkAssign);
@@ -901,7 +914,7 @@ class User extends Datapiece{
             return cell;
         });
         return {"content":row,"merge":mergeSetting,"border":borderSetting};
-    }    
+    }
     getShiftTableUser(){
         var setValue = {"userId":this.getValue("_id"),"content":[],"workNum":[]};
         var data;
@@ -954,6 +967,9 @@ class User extends Datapiece{
         if(targetIndex === -1 || targetIndex === workAssign.length - 1)  return new WorkAssign();
         return workAssigns[targetIndex + 1];
     }
+    refreshWorkAssignList(){
+        this._workAssigns = this.getWorkAssigns(true);
+    }
     static getFreeUsers(start,end){
         var users = Datapiece.getServer().getData("user");
         return users.filter(function(user){
@@ -996,6 +1012,7 @@ class WorkAssign extends Datapiece{
         });
         this.addEventListener("updated",function(e){
             that.getDatapieceRelated("workListId","workList").refreshWorkAssignList();
+            that.getDatapieceRelated("userId","user").refreshWorkAssignList();
         });
     }
     getWorkListSectionNumber(){
