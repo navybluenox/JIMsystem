@@ -1057,9 +1057,7 @@ class WorkList extends Datapiece{
         });
         Object.defineProperty(this._data,"@workAssign",{
             "get":function(){
-console.log(this._workAssigns)
-console.log("this._workAssigns")
-                return this._workAssigns.slice();
+                return that._workAssigns.slice();
             }
         });
         //軽量化のためにworkAssignIdを記録
@@ -1073,7 +1071,7 @@ console.log("this._workAssigns")
     }
     getWorkAssigns(useReliableMode){
         var that = this;
-        useReliableMode = useReliableMode === undefined ? false : useReliableMode;
+        useReliableMode = (useReliableMode === undefined ? false : useReliableMode);
         return useReliableMode ? (
             Datapiece.getServer().getData("workAssign").filter(function(workAssign){
                 return workAssign.getValue("workListId") === that.getValue("_id");
