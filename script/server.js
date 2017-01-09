@@ -254,10 +254,12 @@ var Server = (function(){
                             dataId = queue.value.getValue("_id");
                             data.find(function(dp){
                                 return dp.getValue("_id") === dataId;
-                            }).setValues(queue.value.getValues(),{overwrite:true});
+                            }).setValues(queue.value.getValues(),{overwrite:true})
+                            .triggerEvent("updated");
                             break;
                         case "add":
                             data.push(queue.value);
+                            queue.value.triggerEvent("updated");
                             break;
                         case "remove":
                             dataId = queue.value.getValue("_id");

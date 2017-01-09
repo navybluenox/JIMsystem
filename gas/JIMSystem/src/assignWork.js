@@ -13,7 +13,7 @@ $(function(){
             form = $("#formAssignWork_edit");
             pageFun = _val.pageFun.assignWork;
             editing = new WorkAssign();
-            editing.addEventListener("change",function(e){
+            editing.addEventListener("changed",function(e){
                 form.find('[name="editing"]').val(e.target.getValue("_id"));
             });
 

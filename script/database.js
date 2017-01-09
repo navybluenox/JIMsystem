@@ -107,7 +107,7 @@ var Datapiece = (function(){
                         return castType(dpObj,colObj);
                 }
             }
-            this.triggerEvent("change");
+            this.triggerEvent("changed");
             return this;
         }
         //非推奨
@@ -125,7 +125,7 @@ var Datapiece = (function(){
                 }
                 this._data[colName] = castType(value,colType);
             }
-            this.triggerEvent("change");
+            this.triggerEvent("changed");
             return this;
         }
         setNewId(overwrite){
@@ -264,7 +264,7 @@ var Datapiece = (function(){
             return this;
         }
         triggerEvent(events){
-            //setValue,setValuesで何回も呼ばれるため、省略
+            //setValue,setValues,Server.sendUpdateQueueで何回も呼ばれるため、省略
             if(this._event.length === 0)  return this;
             var that = this;
             this.getEventListener(events).filter(function(e){
@@ -283,6 +283,9 @@ var Datapiece = (function(){
                 });
             }
             return ret;
+        }
+        isBlank(){
+            return Object.keys(this.getValues()).length === 0;
         }
         static initialize(settings){
             if(settings === undefined || typeof settings !== "object" || settings === null)  return;
@@ -991,6 +994,9 @@ class WorkAssign extends Datapiece{
                 }
             }
         });
+        this.addEventListener("updated",function(e){
+            that.getDatapieceRelated("workListId","workList").refreshWorkAssignList();
+        });
     }
     getWorkListSectionNumber(){
         var workList = this.getDatapieceRelated("workListId","workList");
@@ -1023,6 +1029,7 @@ class WorkList extends Datapiece{
     constructor(datapieceObj,option){
         super(datapieceObj,"workList",option);
         var that = this;
+        this._workAssigns = [];
         Object.defineProperty(this._data,"@detail",{
             "get":function(){
                 return that.getValue("detail").map(function(obj){
@@ -1047,7 +1054,14 @@ class WorkList extends Datapiece{
                     return obj;
                 })},{overwrite:true});
             }
-        })
+        });
+        Object.defineProperty(this._data,"@workAssign",{
+            "get":function(){
+                return this._workAssigns.slice();
+            }
+        });
+        //軽量化のためにworkAssignIdを記録
+        this.refreshWorkAssignList();
     }
     getBackgroundColor(){
         return WorkGroup.getColorByWorkListId(this.getValue("_id"),"background");
@@ -1055,11 +1069,16 @@ class WorkList extends Datapiece{
     getFontColor(){
         return WorkGroup.getColorByWorkListId(this.getValue("_id"),"font");
     }
-    getWorkAssigns(){
+    getWorkAssigns(useReliableMode){
         var that = this;
-        return Datapiece.getServer().getData("workAssign").filter(function(workAssign){
-            return workAssign.getValue("workListId") === that.getValue("_id");
-        });
+        useReliableMode = useReliableMode === undefined ? false : useReliableMode;
+        return useReliableMode ? (
+            Datapiece.getServer().getData("workAssign").filter(function(workAssign){
+                return workAssign.getValue("workListId") === that.getValue("_id");
+            })
+        ) : (
+            this.getValue("@workAssign")
+        );
     }
     getShiftTableAsData(start,end,extraWorkAssign){
         return Datapiece.getShiftTableAsData(this,this.getDataName(),start,end,extraWorkAssign);
@@ -1095,6 +1114,9 @@ class WorkList extends Datapiece{
             result.push({"time":time,"diff":num_required - num_assigned});
         }
         return result;
+    }
+    refreshWorkAssignList(){
+        this._workAssigns = this.getWorkAssigns(true);
     }
     static getBackgroundColorByNumber(num){
         if(num > 0){
