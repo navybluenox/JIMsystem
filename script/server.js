@@ -109,6 +109,9 @@ var Server = (function(){
                 that._updated[dataName] = (v.updated === "" || v.updated === undefined ? null : new Date(v.updated));
                 that._version[dataName] = +v.version;
                 that._loading = that._loading.filter(function(obj){return obj.id !== loadingId});
+                that.getData(dataName).forEach(function(datapiece){
+                    datapiece.triggerEvent("loaded");
+                });
                 console.log(cache[dataName]);
                 la.remove();
                 return that.getData(dataName);

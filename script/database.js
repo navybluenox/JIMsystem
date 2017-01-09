@@ -1014,7 +1014,9 @@ class WorkAssign extends Datapiece{
             that.getDatapieceRelated("workListId","workList").refreshWorkAssignList();
             that.getDatapieceRelated("userId","user").refreshWorkAssignList();
         });
-        this.triggerEvent("updated");
+        this.addEventListener("loaded",function(e){
+            that.triggerEvent("updated");
+        })
     }
     getWorkListSectionNumber(){
         var workList = this.getDatapieceRelated("workListId","workList");
