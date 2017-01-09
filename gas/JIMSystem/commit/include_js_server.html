@@ -17,6 +17,7 @@ var Server = (function(){
             this._eventHandler = {
                 ready:[]
             };
+            this._event = [];
             //delete!!!
             if(Object.keys(cache).length === 0){
                 Server.getFileContent(fileId_fileInfo,"data").then(function(v){
@@ -110,9 +111,7 @@ var Server = (function(){
                 that._updated[dataName] = (v.updated === "" || v.updated === undefined ? null : new Date(v.updated));
                 that._version[dataName] = +v.version;
                 that._loading = that._loading.filter(function(obj){return obj.id !== loadingId});
-                that.getData(dataName).forEach(function(datapiece){
-                    datapiece.triggerEvent("loaded");
-                });
+                that.triggerEvent("loaded",{"dataName":dataName});
                 console.log(cache[dataName]);
                 la.remove();
                 return that.getData(dataName);
@@ -318,6 +317,77 @@ var Server = (function(){
                     "kind":"remove",
                     "value":datapiece
                 });
+            });
+            return this;
+        }
+        getEventListener(events){
+            var that = this;
+            var ret = [];
+            if(events === undefined || events === ""){
+                ret = this._event.slice();
+            }else{
+                events.split(" ").forEach(function(event){
+                    var type = event.split(".")[0];
+                    var nameSpace = event.split(".").splice(1);
+                    Array.prototype.push.apply(ret,that._event.filter(function(e){
+                        return (type === e.type || type === "" || type === "*") && nameSpace.every(function(s){return inArray(e.nameSpace,s)});
+                    }));
+                });
+            }
+            return ret;
+        }
+        addEventListener(events,handler){
+            //events === String 
+            //events === Array -> eventObjs(Array)
+            //events === Object -> eventObj(Obj)
+            var that = this;
+            if(classof(events) === "array"){
+                events.forEach(function(event){
+                    that.addEventListener(event);
+                });
+            }else if(classof(events) === "object"){
+                var nameSpace,type;
+                if(events.nameSpace !== undefined){
+                    nameSpace = events.nameSpace;
+                    if(Array.isArray(nameSpace)){
+                        nameSpace = nameSpace.join(".");
+                    }
+                    type = nameSpace.split(" ").map(function(nameSpace){
+                        return events.type + (nameSpace !== "" ? "." + nameSpace : "");
+                    }).join(" ");
+                }
+                this.addEventListener(type,events.handler);
+            }else{
+                if(events === undefined)  events = "";
+                events.split(" ").forEach(function(event){
+                    var type = event.split(".")[0];
+                    var nameSpace = event.split(".").splice(1);
+                    var obj = {"type":type,"nameSpace":nameSpace};
+                    if(typeof handler === "function"){
+                        obj.handler = handler;
+                    }
+                    that._event.push(obj);
+                });
+            }
+            return this;
+        }
+        removeEventListener(events){
+            var that = this;
+            events.split(" ").forEach(function(event){
+                var type = event.split(".")[0];
+                var nameSpace = event.split(".").splice(1);
+                that._event = that._event.filter(function(e){
+                    return !((type === e.type || type === "" || type === "*") && nameSpace.every(function(s){return inArray(e.nameSpace,s)}));
+                });
+            });
+            return this;
+        }
+        triggerEvent(events,userObj){
+            var that = this;
+            this.getEventListener(events).filter(function(e){
+                return e.handler !== undefined
+            }).forEach(function(e){
+                e.handler({"type":e.type,"nameSpace":e.nameSpace,"handler":e.handler,"target":that,"userObj":userObj});
             });
             return this;
         }

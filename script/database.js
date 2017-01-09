@@ -263,14 +263,14 @@ var Datapiece = (function(){
             });
             return this;
         }
-        triggerEvent(events){
+        triggerEvent(events,userObj){
             //setValue,setValues,Server.sendUpdateQueueで何回も呼ばれるため、省略
             if(this._event.length === 0)  return this;
             var that = this;
             this.getEventListener(events).filter(function(e){
                 return e.handler !== undefined
             }).forEach(function(e){
-                e.handler({"type":e.type,"nameSpace":e.nameSpace,"handler":e.handler,"target":that});
+                e.handler({"type":e.type,"nameSpace":e.nameSpace,"handler":e.handler,"target":that,"userObj":userObj});
             });
             return this;
         }
@@ -291,6 +291,23 @@ var Datapiece = (function(){
             if(settings === undefined || typeof settings !== "object" || settings === null)  return;
             server = server || settings.server;
             config = config || settings.config;
+
+            Datapiece.getServer().addEventListener("loaded",function(e){
+                if(e.userObj.dataName !== "workAssign") return;
+                var server = e.target;
+                ["user","workList"].forEach(function(dataName){
+                    var la = new LoadingAlert();
+                    new Promise(function(resolve,reject){
+                        var si = setTimeout(function(){
+                            resolve();
+                        },10);
+                    }).then(function(){
+                        server.loadData(dataName).then(function(data){data.forEach(function(dp){dp.refreshWorkAssignList()})});
+                    }).then(function(){
+                        la.remove();
+                    });
+                });
+            });
         }
         static getServer(){
             //Datapiece系クラスで使う専用
@@ -1014,9 +1031,6 @@ class WorkAssign extends Datapiece{
             that.getDatapieceRelated("workListId","workList").refreshWorkAssignList();
             that.getDatapieceRelated("userId","user").refreshWorkAssignList();
         });
-        this.addEventListener("loaded",function(e){
-            that.triggerEvent("updated");
-        })
     }
     getWorkListSectionNumber(){
         var workList = this.getDatapieceRelated("workListId","workList");
