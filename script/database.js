@@ -1057,6 +1057,8 @@ class WorkList extends Datapiece{
         });
         Object.defineProperty(this._data,"@workAssign",{
             "get":function(){
+console.log(this._workAssigns)
+console.log("this._workAssigns")
                 return this._workAssigns.slice();
             }
         });
