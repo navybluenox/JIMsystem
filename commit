@@ -1,0 +1,83 @@
+#!/bin/bash
+
+echo "commit files"
+cd ~/
+
+echo "convert to ES5"
+gulp jimsystem
+
+cd ~/jimsystem/gas/
+echo "prepare to commit"
+for thispass in $(ls)
+do
+    if [ ${thispass} != plugins ] && [ ${thispass} != plugins ]
+    then
+        echo $thispass
+
+        cd ~/jimsystem/gas/$thispass/commit
+        rm -f *
+
+        #cd ../gs_babel_es5
+        #for file in $(ls)
+        #do
+        #    mv -f ~/jimsystem/gas/${thispass}/gs_babel_es5/${file} ~/jimsystem/gas/${thispass}/commit/${file}
+        #done
+
+        cd ../gs
+        for file in $(ls)
+        do
+            cp -f ~/jimsystem/gas/${thispass}/gs/${file} ~/jimsystem/gas/${thispass}/commit/${file}
+        done
+
+        cd ../src
+        for file in $(ls)
+        do
+            nowpass=~/jimsystem/gas/${thispass}/commit/js_${file/.js/.html}
+            cp -f ~/jimsystem/gas/${thispass}/src/${file} $nowpass
+            echo -e "\n</script>" >> $nowpass
+            sed -i -e "1i <script>" $nowpass
+        done
+
+        cd ../html
+        for file in $(ls)
+        do
+            cp -f ~/jimsystem/gas/${thispass}/html/${file} ~/jimsystem/gas/${thispass}/commit/html_${file}
+        done
+
+        cd ../css
+        for file in $(ls)
+        do
+            nowpass=~/jimsystem/gas/${thispass}/commit/css_${file/.css/.html}
+            cp -f ~/jimsystem/gas/${thispass}/css/${file} $nowpass
+            echo -e "\n</style>" >> $nowpass
+            sed -i -e "1i <style>" $nowpass
+        done
+
+        if [ ${thispass} != uploadScripts ] && [ ${thispass} != autoUpdate ]
+        then
+            cd ~/jimsystem/script
+            for file in $(ls)
+            do
+                nowpass=~/jimsystem/gas/${thispass}/commit/include_js_${file/.js/.html}
+                cp -f ~/jimsystem/script/${file} $nowpass
+                echo -e "\n</script>" >> $nowpass
+                sed -i -e "1i <script>" $nowpass
+            done
+        #else
+            #cd ~/jimsystem/script_babel_es5
+            #for file in $(ls)
+            #do
+            #    nowpass=~/jimsystem/gas/${thispass}/commit/include_${file}
+            #    mv -f ~/jimsystem/script_babel_es5/${file} $nowpass
+            #done
+        fi
+
+        cd ~/jimsystem/gas/$thispass
+        gapps upload
+    fi
+done
+
+cd ~/jimsystem/
+git add .
+git commit -m "\"$1\""
+git push
