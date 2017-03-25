@@ -43,6 +43,12 @@
                             "end":{"hour":12,"minute":0}
                         }
                     ]
+                },
+                "shiftTable":{
+                    "insertHeader":{
+                        "leaderCode":["CAP","ZAI","SSK","VIS","PRO","CRE","SYS"],
+                        "azusaSendName":["みーと","あぜがみ"]
+                    }
                 }
             }
         },
@@ -90,6 +96,12 @@
                             "end":{"hour":12,"minute":0}
                         }
                     ]
+                },
+                "shiftTable":{
+                    "insertHeader":{
+                        "leaderCode":["CAP","ZAI","SSK","VIS","PRO","CRE","SYS"],
+                        "azusaSendName":["みーと","あぜがみ"]
+                    }
                 }
             }
         }

@@ -172,13 +172,13 @@ $(function(){
                     var widthAll = leftOffset + contentWidth + rightOffset;
 
                     //日付ごとにユーザーを除外したい場合はここで行う
+                    //TODO
                     var users = _users.filter(function(user){return true});
 
-                    //TODO
                     var indexOfHeader = users.filter(function(user){
                         return (
-                            ["CAP","ZAI","SSK","VIS","PRO","CRE","SYS"].some(function(incharge){return inArray(user.getValue("inchargeCode"),incharge)}) ||
-                            ["みーと","あぜがみ"].some(function(azusaSendName){return user.getValue("azusaSendName") === azusaSendName})                        
+                            _val.config.getValue("content.shiftTable.insertHeader.leaderCode").some(function(incharge){return inArray(user.getValue("inchargeCode"),incharge)}) ||
+                            _val.config.getValue("content.shiftTable.insertHeader.azusaSendName").some(function(azusaSendName){return user.getValue("azusaSendName") === azusaSendName})
                         )
                     }).map(function(user){
                         return users.findIndex(function(u){return u.getValue("_id") === user.getValue("_id")});
