@@ -35,10 +35,11 @@ $(function(){
             detailTable.on("click",'[name^="detail_number"]',function(e){
                 var trigger = $(e.currentTarget);
                 var sign = detailTable.find('[name="detail_increment"]').val();
+                var diff = +detailTable.find('[name="detail_increment_diff"]').val();
                 if(sign === "up"){
-                    trigger.val(+trigger.val() + 1);
+                    trigger.val(+trigger.val() + diff);
                 }else if(sign === "down" && trigger.val() > 1){
-                    trigger.val(+trigger.val() - 1);
+                    trigger.val(+trigger.val() - diff < 0 ? 0 : +trigger.val() - diff);
                 }
                 pageFun.changeButtonColor(trigger,trigger.val());
             });
