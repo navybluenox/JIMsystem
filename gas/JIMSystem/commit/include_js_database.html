@@ -843,10 +843,15 @@ class SystemConfig extends Datapiece{
             ].join("\n"))
         }
         systemConfigs[targetIndex] = newValue;
+        /*var la = new LoadingAlert();
+        return runServerFun("Script.updateFileToDrive",[server.getCollectionInfoByName(dataName).getDatapieceRelated("fileInfoId","fileInfo").getValue("fileId"),JSON.stringify(systemConfigs,null,2)]).then(() => {
+            return server.reloadData(dataName).then(()=>{la.remove();});
+        });*/
 
-        return runServerFun("Script.updateFileToDrive",[server.getCollectionInfoByName(dataName).getDatapieceRelated("fileInfoId","fileInfo").getValue("fileId"),JSON.stringify(systemConfigs)]).then(() => {
-            return server.reloadData(dataName);
-        });
+        //TODO
+        console.log("before",JSON.stringify(server.getData(dataName),null,2));
+        console.log("after",JSON.stringify(systemConfigs,null,2));
+        return Promise.resolve();
     }
 }
 

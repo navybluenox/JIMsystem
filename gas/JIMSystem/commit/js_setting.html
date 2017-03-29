@@ -58,17 +58,15 @@ $(function(){
             var value = _val.config.getValues();
             var str = JSON.stringify(value,null,2);
             jq.val(str);
-            jq.css({"width":"" + $(window).width()*0.7 + "px","height":"" + (str.split("\n").length * 2.1) + "ex"});
+            jq.css({"width":"" + $(window).width()*0.7 + "px","height":"" + (str.split("\n").length * 2.2) + "ex"});
         },updateSystemConfig:()=>{
             if(confirm([
                 "この内容で更新してよろしいですか？",
                 "※内容に誤りがあるとシステムが次回以降起動しない場合があります",
                 "→その場合は、手動でGoogleDriveからsystemConfig.jsonを前の版（version）に戻してください"
             ].join("\n"))){
-                var la = new LoadingAlert();
                 _val.config.updateValues($("#formEditSystemConfig").find('[name="content"]').val()).then(()=>{
                     _val.pageFun.setting.loadSystemConfig();
-                    la.remove();
                 });
             }
         }
