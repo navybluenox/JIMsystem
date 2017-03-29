@@ -18,9 +18,12 @@
     <section>
         <h2>基本情報の変更(not ready)</h2>
         <form id="formEditSystemConfig">
-            <textarea name="content" class="json" tabindex="2"></textarea>
-            <input type="button" name="load" value="基本情報をロード" tabindex="2" onclick='_val.pageFun.setting.loadSystemConfig()'>
-            <input type="button" name="submit" value="設定を更新" tabindex="2" onclick='_val.pageFun.setting.updateSystemConfig()'>
+            <div>
+                <textarea name="content" class="json" tabindex="2"></textarea>
+            </div><div>
+                <input type="button" name="load" value="基本情報をロード" tabindex="2" onclick='_val.pageFun.setting.loadSystemConfig()'>
+                <input type="button" name="submit" value="設定を更新" tabindex="2" onclick='_val.pageFun.setting.updateSystemConfig()'>
+            </div>
         </form>
     </section>
     <section>

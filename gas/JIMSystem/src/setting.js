@@ -57,7 +57,7 @@ $(function(){
             var value = _val.config.getValues();
             var str = JSON.stringify(value,null,2);
             jq.val(str);
-            jq.css({"height":"" + (str.split("\n").length * 2) + "ex"});
+            jq.css({"width":"" + $(window).width()*0.7 + "px","height":"" + (str.split("\n").length * 2.1) + "ex"});
         },updateSystemConfig:()=>{
             if(confirm([
                 "この内容で更新してよろしいですか？",
