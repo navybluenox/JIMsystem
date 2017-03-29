@@ -388,7 +388,7 @@ function updateDatabase(fileIdStr,queues,updatedTime,prevDataInfo){
     database.updated = new Date(updatedTime);
     database.version = (+database.version) + 1;
 
-    updateFileToDrive(fileIdStr,JSON.stringify(database,null,4));
+    updateFileToDrive(fileIdStr,JSON.stringify(database,null,2));
 }
 
 function handlePropertiesService(value,type,doKind){

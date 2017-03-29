@@ -821,6 +821,33 @@ class SystemConfig extends Datapiece{
     getIdCode(){
         return this.getValue("content.kind") + this.getValue("content.nth")
     }
+    updateValues(str){
+        var newValue;
+        var server = Datapiece.getServer();
+        var dataName = this.getDataName();
+
+        try{
+            newValue = JSON.parse(str);
+        }catch(e){
+            throw new Error([
+                "Cannot parse a string-type value as JSON format.",
+                "@ SystemConfig.prototype.updateValues"
+            ].join("\n"));
+        }
+        var systemConfigs = server.getData(dataName);
+        var targetIndex = systemConfigs.find(systemConfig => {return systemConfig.getValue("modeName") === newValue.modeName});
+        if(targetIndex === -1){
+            throw new Error([
+                    "Such a modeName does not exist.",
+                    "@ SystemConfig.prototype.updateValues"
+            ].join("\n"))
+        }
+        systemConfigs[targetIndex] = newValue;
+
+        return runServerFun("Script.updateFileToDrive",[server.getCollectionInfoByName(dataName).getDatapieceRelated("fileInfoId","fileInfo").getValue("fileId"),JSON.stringify(systemConfigs)]).then(() => {
+            return server.reloadData(dataName);
+        });
+    }
 }
 
 class User extends Datapiece{

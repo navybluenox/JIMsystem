@@ -9,6 +9,8 @@ $(function(){
                 var modeName = systemConfig.getValue("modeName");
                 return '<option value="' + modeName + '">' + modeName + "</option>";
             }).join("")).val(_val.config.getValue("modeName"));
+            pageFun.loadSystemConfig();
+
         },onunload:function(){
         },changeMode:function(){
             var form = $("#formModeSetting");
@@ -51,6 +53,24 @@ $(function(){
                     alert("モードの変更は再起動後に有効になります。");
                 }
             })
+        },loadSystemConfig:()=>{
+            var jq = $("#formEditSystemConfig").find('[name="content"]');
+            var value = _val.config.getValues();
+            var str = JSON.stringify(value,null,2);
+            jq.val(str);
+            jq.css({"height":"" + (str.split("\n").length * 2) + "ex"});
+        },updateSystemConfig:()=>{
+            if(confirm([
+                "この内容で更新してよろしいですか？",
+                "※内容に誤りがあるとシステムが次回以降起動しない場合があります",
+                "→その場合は、手動でGoogleDriveからsystemConfig.jsonを前の版（version）に戻してください"
+            ].join("\n"))){
+                var la = new LoadingAlert();
+                _val.config.updateValues($("#formEditSystemConfig").find('[name="content"]').val()).then(()=>{
+                    _val.pageFun.setting.loadSystemConfig();
+                    la.remove();
+                });
+            }
         }
     };
 });
