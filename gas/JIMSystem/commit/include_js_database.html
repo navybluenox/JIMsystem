@@ -835,7 +835,7 @@ class SystemConfig extends Datapiece{
             ].join("\n"));
         }
         var systemConfigs = server.getData(dataName);
-        var targetIndex = systemConfigs.find(systemConfig => {return systemConfig.getValue("modeName") === newValue.modeName});
+        var targetIndex = systemConfigs.findIndex(systemConfig => {return systemConfig.getValue("modeName") === newValue.modeName});
         if(targetIndex === -1){
             throw new Error([
                     "Such a modeName does not exist.",
@@ -843,15 +843,37 @@ class SystemConfig extends Datapiece{
             ].join("\n"))
         }
         systemConfigs[targetIndex] = newValue;
-        /*var la = new LoadingAlert();
-        return runServerFun("Script.updateFileToDrive",[server.getCollectionInfoByName(dataName).getDatapieceRelated("fileInfoId","fileInfo").getValue("fileId"),JSON.stringify(systemConfigs,null,2)]).then(() => {
+        var la = new LoadingAlert();
+        return runServerFun("Script.updateFileToDrive",[
+            server.getCollectionInfoByName(dataName).getDatapieceRelated("fileInfoId","fileInfo").getValue("fileId"),
+            JSON.stringify({"data":systemConfigs,"version":server.getVersion(dataName) + 1,"updated":(new Date().toISOString())},null,2)
+        ]).then(() => {
             return server.reloadData(dataName).then(()=>{la.remove();});
-        });*/
-
-        //TODO
-        console.log("before",JSON.stringify(server.getData(dataName),null,2));
-        console.log("after",JSON.stringify(systemConfigs,null,2));
-        return Promise.resolve();
+        });
+    }
+    static getPropertyCaption(){
+        //CollectionInfoに直書きしたくないので、仕方なくここに直書き
+        return {
+            "modeName":"実行モードの名前 基本的に「祭の略称+期」",
+            "content.kind":"祭の種類",
+            "content.nth":"期",
+            "content.base":"基本情報の設定群",
+            "content.base.standardTime":"0日目0時0分のグリニッジ基準時のISO文字列 （Date.prototype.ISOString()で出力されるものと同形式）",
+            "content.base.openTime":"企画公開時間 配列で複数記入 1日目から全て指定する",
+            "content.base.openTime.[Number].start":"企画公開開始時間",
+            "content.base.openTime.[Number].start.hour":"企画公開開始時間_時間",
+            "content.base.openTime.[Number].start.minute":"企画公開開始時間_分",
+            "content.base.openTime.[Number].end":"企画公開終了時間",
+            "content.base.fileId_fileInfo":"fileInfo.json",
+            "content.workAssign":"人割に関する設定群",
+            "content.workAssign.timeUnit":"人割の1単位の時間 単位はミリ秒",
+            "content.workAssign.workStart":"人割開始日時 人割が開始する日数 「n日目」のnを設定する",
+            "content.workAssign.workTime":"人割時間 人割として管理する時間 この範囲外だと人割表に載らない 表記法はcontent.base.openTimeと同じ 配列の0番目は人割が開始される日のもの（not0日目）",
+            "content.shiftTable":"人割表出力の設定群",
+            "content.shiftTable.insertHeader":"人割表に表示するヘッダー（時間軸）の挿入位置の設定",
+            "content.shiftTable.insertHeader.leaderCode":"局長の担当略称 配列で複数記入",
+            "content.shiftTable.insertHeader.azusaSendName":"その他、老人などヘッダーを入れる直後のAZUSA標準配送名 配列で複数記入"
+        };
     }
 }
 

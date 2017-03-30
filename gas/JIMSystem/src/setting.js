@@ -9,6 +9,10 @@ $(function(){
                 return '<option value="' + modeName + '">' + modeName + "</option>";
             }).join("")).val(_val.config.getValue("modeName"));
             pageFun.loadSystemConfig();
+            $("#formEditSystemConfig table.description tbody").append((()=>{
+                var captions = SystemConfig.getPropertyCaption();
+                return Object.keys(captions).map(key => "<tr><td>" + key + "</td><td>" + captions[key] + "</td></tr>").join("");
+            })())
 
         },onunload:function(){
         },changeMode:function(){
