@@ -11,7 +11,7 @@ $(function(){
             pageFun.loadSystemConfig();
             $("#formEditSystemConfig table.description tbody").append((()=>{
                 var captions = SystemConfig.getPropertyCaption();
-                return Object.keys(captions).map(key => "<tr><td>" + key + "</td><td>" + captions[key] + "</td></tr>").join("");
+                return Object.keys(captions).map(key => "<tr><td>" + key + "</td><td>" + captions[key].replace(/ /,"\n") + "</td></tr>").join("");
             })())
 
         },onunload:function(){
