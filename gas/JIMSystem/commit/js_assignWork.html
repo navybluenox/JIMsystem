@@ -722,7 +722,7 @@ $(function(){
                 var start = detail.start.copy();
                 var end = start.copy().addTimeUnit(detail.number.length);
                 pageFun.getFormData();
-                if(preventShow && limitRowNum < workList.getValue("@detail").reduce((prev,curt)=>prev.concat(curt),[]).reduce((prev,curt)=>Math.max(prev,curt),0)){
+                if(preventShow && limitRowNum < workList.getValue("@detail").reduce((prev,curt)=>prev.concat(curt.number),[]).reduce((prev,curt)=>Math.max(prev,curt),0)){
                     target.children().remove();
                     target.append($('<input type="button" value="人割表を表示する\n※重くなるので注意">').on("click",e => {
                         pageFun.showShiftTableWork(false);
