@@ -3,6 +3,7 @@ $(function(){
     var editing;
     var form;
     var formNameList = [{"name":"workListId"},{"name":"userId"},{"name":"start"},{"name":"interval"},{"name":"notice"},{"name":"note"},{"name":"memberOrder"},{"name":"disabled"}];
+    var limitRowNum = 50;
     _val.pageFun.assignWork = {
         onload:function(){
             _val.server.loadData("user");
@@ -691,7 +692,7 @@ $(function(){
             form.find('[name="end_day"]').val(end.getDays());
             form.find('[name="end_hour"]').val(end.getHours());
             form.find('[name="end_minute"]').val(end.getMinutes());            
-        },showShiftTableUser:function(){
+        },showShiftTableUser:function(preventShow){
             return Promise.resolve().then(function(){
                 var target = form.find('[name="shiftTableUser"]').siblings("div");
                 var user = _val.server.getDataById(form.find('[name="shiftTableUser_searchResult"]').val(),"user")[0];            
@@ -708,7 +709,9 @@ $(function(){
                 var width = $(window).width()*0.5;
                 target.css({"max-width":width,"overflow":"auto"});
             });
-        },showShiftTableWork:function(){
+        },showShiftTableWork:function(preventShow){
+            preventShow = (preventShow === undefined ? true : preventShow);
+
             return Promise.resolve().then(function(){
                 var target = form.find('[name="shiftTableWork"]').siblings("div");
                 var workList = _val.server.getDataById(form.find('[name="shiftTableWork_searchResult"]').val(),"workList")[0];
@@ -718,12 +721,19 @@ $(function(){
                 var start = detail.start.copy();
                 var end = start.copy().addTimeUnit(detail.number.length);
                 pageFun.getFormData();
-                var table = workList.getShiftTableAsElement(start,end,{"mode":"table","extraWorkAssign":(form.find('[name="shiftTableWork_showFormWA"]').val()==="Yes" ? [editing] : [])});
+                if(preventShow && limitRowNum < workList.getValue("@detail").reduce((prev,curt)=>prev.concat(curt),[]).reduce((prev,curt)=>Math.max(prev,curt),0)){
+                    target.children().remove();
+                    target.append($('<input type="button" value="人割表を表示する\n※重くなるので注意">').on("click",e => {
+                        pageFun.showShiftTableWork(false);
+                    }));
+                }else{
+                    var table = workList.getShiftTableAsElement(start,end,{"mode":"table","extraWorkAssign":(form.find('[name="shiftTableWork_showFormWA"]').val()==="Yes" ? [editing] : [])});
 
-                target.children().remove();
-                target.append(table);
-                var width = $(window).width()*0.5;
-                target.css({"max-width":width,"overflow":"auto"});
+                    target.children().remove();
+                    target.append(table);
+                    var width = $(window).width()*0.5;
+                    target.css({"max-width":width,"overflow":"auto"});
+                }
             });
         },reshowShiftTable:function(setData){
             //pageFun.searchWorkAssign();
