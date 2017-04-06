@@ -1088,7 +1088,7 @@ class WorkAssign extends Datapiece{
     }
     getWorkListSectionNumber(){
         var workList = this.getDatapieceRelated("workListId","workList");
-        if(workList === undefined)  return -1;
+        if(workList.getValue("_id") === undefined)  return -1;
         var time = this.getValue("start");
         return workList.getValue("@detail").findIndex(function(section){
             var start = section.start;
