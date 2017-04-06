@@ -749,17 +749,20 @@ $(function(){
 
             target.children().remove();
 
-            var details = workList.getValue("@detail");
-            details.forEach(function(detail,detailIndex){
-                var start = detail.start;
-                target.append([
-                    '<option value="' + detailIndex + '">',
-                    start.getDays() + "日目 ",
-                    start.toString({"hideDay":true}) + "から",
-                    start.copy().addTimeUnit(detail.number.length).toString({"hideDay":true,"userDiffHours":start}) + "まで",
-                    '</option>'
-                ].join(""));
-            });
+            if(workList !== undefined){
+                var details = workList.getValue("@detail");
+                details.forEach(function(detail,detailIndex){
+                    var start = detail.start;
+                    target.append([
+                        '<option value="' + detailIndex + '">',
+                        start.getDays() + "日目 ",
+                        start.toString({"hideDay":true}) + "から",
+                        start.copy().addTimeUnit(detail.number.length).toString({"hideDay":true,"userDiffHours":start}) + "まで",
+                        '</option>'
+                    ].join(""));
+                });
+            }
+
         },setMemberOrder:function(){
             var workListId = form.find('[name="workListId"]').val();
             var userId = form.find('[name="userId"]').val();
