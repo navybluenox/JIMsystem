@@ -606,7 +606,9 @@ $(function(){
             form.find('[name="shiftTableUser_searchResult"]').val(workAssign.getValue("userId"));
             form.find('[name="shiftTableWork_searchResult"]').val(workAssign.getValue("workListId"));
             pageFun.setWorkListSection();
-            form.find('[name="shiftTableWork_section"]').val(workAssign.getWorkListSectionNumber());
+            if(workAssign.getWorkListSectionNumber() !== -1){
+                form.find('[name="shiftTableWork_section"]').val(workAssign.getWorkListSectionNumber());
+            }
 
             pageFun.showIntervalTime();
             pageFun.showShiftTableUser();
