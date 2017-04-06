@@ -606,7 +606,9 @@ $(function(){
             form.find('[name="shiftTableUser_searchResult"]').val(workAssign.getValue("userId"));
             form.find('[name="shiftTableWork_searchResult"]').val(workAssign.getValue("workListId"));
             pageFun.setWorkListSection();
-            if(workAssign.getWorkListSectionNumber() !== -1){
+            if(workAssign.getWorkListSectionNumber() === -1){
+                alert(["Attention!!","この人割の業務は削除されているかIDが変更になっています"].join("\n"))
+            }else{
                 form.find('[name="shiftTableWork_section"]').val(workAssign.getWorkListSectionNumber());
             }
 
