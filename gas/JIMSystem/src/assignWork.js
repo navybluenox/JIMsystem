@@ -660,6 +660,7 @@ $(function(){
                 ].join("")
             }));
             pageFun.setWorkListId(namePrefix);
+            pageFun.setWorkListSection();
         },setWorkListId:function(namePrefix){
             var id = form.find('[name="' + namePrefix + '_searchResult"]').val();
             var target = form.find('[name="' + namePrefix + '"]');
