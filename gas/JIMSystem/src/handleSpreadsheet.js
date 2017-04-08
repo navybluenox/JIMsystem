@@ -24,6 +24,25 @@ $(function(){
                     return '<option value="' + sheetName + '">' + sheetName + '</option>';
                 }))
             })();
+
+            formAddData.find('[name="open"]').on("click",e => {
+                var spreadsheet = new Spreadsheet("editDatabase");
+                spreadsheet.openSpreadsheet();
+            });
+            formCreateShiftTable.find('[name="open_spreadsheet"]').on("click",e => {
+                var spreadsheet = new Spreadsheet("shiftTableUser");
+                spreadsheet.openSpreadsheet();
+            });
+
+            formCreateShiftTable.find('[name="open_pdf"]').on("click",e => {
+                showOuterPage([
+                    "https://drive.google.com/drive/folders/",
+                    _val.server.getData("fileInfo").find(function(fileInfo){
+                        return fileInfo.getValue("fileType") === "folder" && fileInfo.getValue("name") === "export";
+                    }).getValue("fileId")
+                ].join(""));
+            });
+
         },onunload:function(){
         },writeSpreadsheet:function(spreadsheetName,sheetName,contentConfig){
             var dataName = formAddData.find('[name="dataName"]').val();
@@ -319,10 +338,13 @@ $(function(){
                     });
 
                 });
+                var la = LoadingAlert();
                 promiseChain = promiseChain.then(function(){
                     console.log("finished updating shiftTableUser completely!!");
+                    la.remove()
                     return Server.handlePropertiesService({[version_propertyKey]:version+1},"script","set",{"skip":true});
                 }).catch(function(e){
+                    la.remove();
                     console.log("Error!!");
                     console.log(e);
                     throw new Error(e);
