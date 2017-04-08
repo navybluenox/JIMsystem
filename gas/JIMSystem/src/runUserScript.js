@@ -19,18 +19,18 @@ $(function(){
                 table.on("click",'input[type="button"]',e=>{
                     var button = $(e.currentTarget);
                     var kind = button.attr("name");
-                    var scriptLibrary = _val.server.getDataById(button.siblings('input[name="id"]').val(),"scriptLibrary")[0];
+                    var scriptLibrary = _val.server.getDataById(button.siblings('[name="id"]').val(),"scriptLibrary")[0];
                     switch(kind){
                         case "edit":
                             scriptLibrary_editing = scriptLibrary;
-                            $('#formRunUserScript input[name="edit"]').prop("disabled",false).val("変更を保存 [編集中:" + scriptLibrary.getValue("title") + "]");
+                            $('#formRunUserScript [name="edit"]').prop("disabled",false).val("変更を保存 [編集中:" + scriptLibrary.getValue("title") + "]");
                         case "put":
                             textarea.val(scriptLibrary.getValue("content"));
                             break;
                         case "remove":
                             _val.server.removeData(scriptLibrary).sendUpdateQueue();
                             scriptLibrary_editing = null;
-                            $('#formRunUserScript input[name="edit"]').prop("disabled",true).val("↓編集する文例を選択してください");
+                            $('#formRunUserScript [name="edit"]').prop("disabled",true).val("↓編集する文例を選択してください");
                             break;
                     }
                 });
@@ -77,26 +77,27 @@ $(function(){
                 "<table><tbody>",
                 '<tr><td>タイトル</td><td><input type="text" name="title"></td></tr>',
                 '<tr><td>作成者</td><td><input type="text" name="editor"></td></tr>',
-                '<tr><td>説明</td><td><input type="text" name="caption"></td></tr>',
+                '<tr><td>説明</td><td><textarea name="caption"></textarea></td></tr>',
                 "</tbody></table>",
                 '<input type="button" name="run" value="保存"><input type="button" name="cancel" value="キャンセル">'
             ].join(""),"callback":el => {
                 if(scriptLibrary !== undefined){
                     ["title","editor","caption"].forEach(key => {
-                        el.find('input[name="' + key +'"]').val(scriptLibrary.getValue(key));
+                        el.find('[name="' + key +'"]').val(scriptLibrary.getValue(key));
                     });
                 }
-                el.find('input[name="run"]').on("click",e => {
+                el.find('[type="text"],textarea').css({"width":"35em"});
+                el.find('[name="run"]').on("click",e => {
                     _val.server[kind + "Data"](new ScriptLibrary({
                         "_id":(kind === "change" ? scriptLibrary.getValue("_id") : null),
-                        "title":el.find('input[name="title"]').val(),
-                        "editor":el.find('input[name="editor"]').val(),
-                        "caption":el.find('input[name="caption"]').val(),
+                        "title":el.find('[name="title"]').val(),
+                        "editor":el.find('[name="editor"]').val(),
+                        "caption":el.find('[name="caption"]').val(),
                         "content":textarea.val()
                     })).sendUpdateQueue();
                     mw.remove();
                 });
-                el.find('input[name="cancel"]').on("click",e => {
+                el.find('[name="cancel"]').on("click",e => {
                     mw.remove();
                 });
             }});
