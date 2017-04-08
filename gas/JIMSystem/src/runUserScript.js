@@ -4,10 +4,10 @@ $(function(){
     var scriptLibrary_editing;
     _val.pageFun.runUserScript = {
         onload:function(){
+            textarea = $('#formRunUserScript textarea[name="content"]');
             _val.server.loadDataAll().then(()=>{
                 var scriptLibraries = _val.server.getData("scriptLibrary");
                 var div = $("#formScriptLibrary_list");
-                textarea = $('#formRunUserScript textarea[name="content"]');
                 var table = createTable(div,scriptLibraries,["title","button","caption"],cellObj => {
                     if(cellObj.column === "button"){
                         cellObj.el.append('<input type="button" name="put" value="入力"><input type="button" name="edit" value="編集"><input type="button" name="remove" value="削除">');
