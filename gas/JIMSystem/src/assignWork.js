@@ -580,7 +580,7 @@ $(function(){
             function hideRows(){
                 var start = pageNum*showNum;
                 var num = showNum;
-                table.find("tr").css({"display":"none"}).filter((index,el) => {
+                table.el.find("tr").css({"display":"none"}).filter((index,el) => {
                     var index = $(el).data("index");
                     return index >= index && index < start + num; 
                 }).css({"display":""});
