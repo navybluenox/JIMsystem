@@ -17,7 +17,7 @@ $(function(){
                     }
                 },{"header":["名前","","説明"]}).el;
                 table.on("click",'input[type="button"]',e=>{
-                    var button = e.currentTarget;
+                    var button = $(e.currentTarget);
                     var kind = button.attr("name");
                     var scriptLibrary = _val.server.getDataById("scriptLibrary",button.siblings('input[name="id"]').val())[0];
                     switch(kind){
