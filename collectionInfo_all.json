@@ -188,6 +188,7 @@
             "created":"date",
             "updated":"date",
             "title":"string",
+            "editor":"string",
             "caption":"string",
             "content":"string"
         },"columnName":{
@@ -195,6 +196,7 @@
             "created":"作成日時",
             "updated":"更新日時",
             "title":"スクリプト名",
+            "editor":"作成者",
             "caption":"説明",
             "content":"コード"
         },"columnOrder":["_id","created","updated","title","caption","content"],"sortColumn":"title"}

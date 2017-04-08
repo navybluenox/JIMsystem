@@ -5,15 +5,17 @@
             <h2>実行フォーム</h2>
             <textarea name="content" style="resize: both;" rows="8" cols="60"></textarea>
             <input type="button" name="submit" value="実行" style="display:block;" onclick="_val.pageFun.runUserScript.runScript()">
+            <input type="button" name="edit" value="↓編集する文例を選択してください" style="display:block;" disabled onclick="">
+            <input type="button" name="save" value="新規保存" style="display:block;" onclick="">
             <p style="display:block;">※Ctrl+Enterで実行、Ctrl+Sでスクリプトをキャッシュに保存。</p>
             <p style="display:block;">※スクリプトはオートセーブされています。</p>
         </form>
     </section><section>
         <form id="formScriptLibrary">
             <input type="button" name="show" value="文例一覧を表示" style="display: block" onclick='var el=$(this),target=$("#formScriptLibrary_list");if(el.val() === "文例一覧を表示"){el.val("隠す");target.css("display","");}else{el.val("文例一覧を表示");target.css("display","none");}'>
-            <table id="formScriptLibrary_list" style="display: none"></table>
+            <div id="formScriptLibrary_list" style="display: none"></table>
         </form>
-    </section><\section>
+    </section><section>
         <h2>実行結果</h2>
         <p>※変数divへappendすると、この下に表示できます</p>
         <div id="formRunUserScript_div"></div>
