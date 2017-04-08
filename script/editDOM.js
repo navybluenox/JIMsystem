@@ -245,7 +245,8 @@ function createTable(parent,data,columns,callback,option){
                 "el":$cell,
                 "value":v,
                 "column":column,
-                "rowData":value
+                "rowData":value,
+                "index":rowIndex
             });
         })
     })

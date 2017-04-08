@@ -530,17 +530,19 @@ $(function(){
             var workAssignNum = workAssigns.length;
 
             if(showNum !== 0){
-                workAssigns = workAssigns.splice(pageNum*showNum,showNum);
+                //workAssigns = workAssigns.splice(pageNum*showNum,showNum);
                 result.append('<div>検索結果：' + workAssignNum + '件中　' + (pageNum*showNum+1) + '件目から' + Math.min((pageNum+1)*showNum,workAssignNum) + '件目まで</div>');
                 var prev = $('<input type="button" value="前ページ"></input>').on("click",function(e){
                     var page = form_search.find('[name="page"]');
                     page.val(+page.val() <= 0 ? 0 : +page.val() - 1);
-                    pageFun.searchWorkAssign();
+                    //pageFun.searchWorkAssign();
+                    hideRows();
                 });
                 var next = $('<input type="button" value="次ページ"></input>').on("click",function(e){
                     var page = form_search.find('[name="page"]');
                     page.val(+page.val() >= (workAssignNum - workAssignNum%showNum)/showNum ? 0 : +page.val() + 1);
-                    pageFun.searchWorkAssign();
+                    //pageFun.searchWorkAssign();
+                    hideRows();
                 });
                 result.append(prev).append(next);
             }
@@ -553,6 +555,7 @@ $(function(){
                     buttons.eq(0).on("click",function(e){pageFun.fillForm(workAssign,false);});
                     buttons.eq(1).on("click",function(e){pageFun.fillForm(workAssign,true);});
                     buttons.eq(2).on("click",function(e){pageFun.updateWorkAssign("remove",workAssign.getValue("_id"));});
+                    $(cellObj.el).parent().data({"index":cellObj.index});
                 }else{
                     var str;
                     switch(cellObj.column){
@@ -573,7 +576,16 @@ $(function(){
                     cellObj.el.text(str);
                 }
             },{"header":["edit","人割名","従事者氏名","時間","注意事項"]});
+            hideRows();
             table.el.css({"margin":"3em"});
+            function hideRows(){
+                var start = pageNum*showNum;
+                var num = showNum;
+                table.find("tr").css({"display":"none"}).filter((index,el) => {
+                    var index = $(el).data("index");
+                    return index >= index && index < start + num; 
+                }).css({"display":""});
+            }
         },fillForm:function(workAssign,copy){
             formNameList.forEach(function(obj){
                 var el = form.find('[name="' + obj.name + '"]');
