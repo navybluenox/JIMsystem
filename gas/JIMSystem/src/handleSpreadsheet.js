@@ -141,6 +141,7 @@ $(function(){
             var spreadsheet = new Spreadsheet(spreadsheetName,sheetName);
             spreadsheet.clearSheetData();
         },createShiftTableUser:function(){
+            var la = new LoadingAlert();
             var version;
             var version_propertyKey = "shiftTableUser_version_" + _val.config.getValue("content.kind") + _val.config.getValue("content.nth");
             return Promise.all([
@@ -338,7 +339,6 @@ $(function(){
                     });
 
                 });
-                var la = LoadingAlert();
                 promiseChain = promiseChain.then(function(){
                     console.log("finished updating shiftTableUser completely!!");
                     la.remove()
@@ -353,6 +353,7 @@ $(function(){
                 return promiseChain;
             });
         },createPdfOfShiftTableUser:function(){
+            var la = new LoadingAlert();
             var sheetNameList = [];
             var startTrigger = false;
             var promiseChain = new Promise(function(resolve){
@@ -378,6 +379,8 @@ $(function(){
                     var spreadsheet = new Spreadsheet("shiftTableUser",sheetName,[]);
                     return spreadsheet.exportPdfToDrive(folder.getValue("fileId"),{"size":"A4"});
                 }));
+            }).then(() => {
+                la.remove();
             });
             startTrigger = true;
         }
