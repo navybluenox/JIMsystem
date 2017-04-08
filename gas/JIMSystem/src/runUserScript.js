@@ -67,9 +67,9 @@ $(function(){
             var server = _val.server;
             eval(content);
 
-        },editScriptLibrary:function(){
+        },changeScriptLibrary:function(){
             scriptLibraryEditMenu("change",scriptLibrary_editing);
-        },saveScriptLibrary:function(){
+        },addScriptLibrary:function(){
             scriptLibraryEditMenu("add",scriptLibrary_editing);
         },scriptLibraryEditMenu:function(kind,scriptLibrary){
             var mw = new ModalWindow({"html":[

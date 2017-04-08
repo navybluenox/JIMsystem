@@ -5,8 +5,8 @@
             <h2>実行フォーム</h2>
             <textarea name="content" style="resize: both;" rows="8" cols="60"></textarea>
             <input type="button" name="submit" value="実行" style="display:block;" onclick="_val.pageFun.runUserScript.runScript()">
-            <input type="button" name="edit" value="↓編集する文例を選択してください" style="display:block;" disabled onclick="">
-            <input type="button" name="save" value="新規保存" style="display:block;" onclick="">
+            <input type="button" name="edit" value="↓編集する文例を選択してください" style="display:block;" disabled onclick="_val.pageFun.runUserScript.changeScriptLibrary()">
+            <input type="button" name="save" value="新規保存" style="display:block;" onclick="_val.pageFun.runUserScript.addScriptLibrary()">
             <p style="display:block;">※Ctrl+Enterで実行、Ctrl+Sでスクリプトをキャッシュに保存。</p>
             <p style="display:block;">※スクリプトはオートセーブされています。</p>
         </form>
