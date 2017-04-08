@@ -530,7 +530,7 @@ $(function(){
 
             if(showNum !== 0){
                 //workAssigns = workAssigns.splice(pageNum*showNum,showNum);
-                result.append('<div>検索結果：' + workAssignNum + '件中　' + (pageNum*showNum+1) + '件目から' + Math.min((pageNum+1)*showNum,workAssignNum) + '件目まで</div>');
+                result.append('<div>検索結果：' + workAssignNum + '件中　<span id="formAssignWork_search_result_start">' + (pageNum*showNum+1) + '</span>件目から<span id="formAssignWork_search_result_end">' + Math.min((pageNum+1)*showNum,workAssignNum) + '</span>件目まで</div>');
                 var prev = $('<input type="button" value="前ページ"></input>').on("click",function(e){
                     var page = form_search.find('[name="page"]');
                     page.val(+page.val() <= 0 ? 0 : +page.val() - 1);
@@ -586,6 +586,8 @@ $(function(){
                     var index = $(el).data("index");
                     return index >= index && index < start + num; 
                 }).css({"display":""});
+                result.find("#formAssignWork_search_result_start").text(pageNum*showNum+1);
+                result.find("#formAssignWork_search_result_end").text(Math.min((pageNum+1)*showNum,workAssignNum));
             }
         },fillForm:function(workAssign,copy){
             formNameList.forEach(function(obj){
