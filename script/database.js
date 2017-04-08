@@ -572,10 +572,10 @@ var Datapiece = (function(){
                         var datapiece;
                         if(dataName === "user"){
                             datapiece = workAssign.getDatapieceRelated("workListId","workList");
-                            td.children("div").text(datapiece.getValue("nameShort") === undefined ? " " : datapiece.getValue("nameShort"));
+                            td.children("div").text(!!datapiece.getValue("nameShort") ? datapiece.getValue("nameShort") : " ");
                         }else if(dataName === "workList"){
                             datapiece = workAssign.getDatapieceRelated("userId","user");
-                            td.children("div").text(datapiece.getValue("nameLast") === undefined && datapiece.getValue("nameFirst") === undefined ? " " : datapiece.getValue("nameLast") + " " + datapiece.getValue("nameFirst"));
+                            td.children("div").text(!!(datapiece.getValue("nameLast") + datapiece.getValue("nameFirst")) ? datapiece.getValue("nameLast") + " " + datapiece.getValue("nameFirst") : " ");
                         }
                         td.css({
                             "background":datapiece.getBackgroundColor(),
