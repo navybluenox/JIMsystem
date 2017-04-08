@@ -230,6 +230,8 @@ function createTable(parent,data,columns,callback,option){
         $th.text(headerName);
     })
 
+    setTableStyle();
+    
     var $rows = $table.children("tbody").children("tr");
     data.forEach(function(value,rowIndex){
         var $row = $rows.eq(rowIndex);
@@ -266,7 +268,6 @@ function createTable(parent,data,columns,callback,option){
         $table.children("tbody").children("tr:nth-child(2n)").css({"background":"#E2E2E2"});
     }
 
-    setTableStyle();
 
     return {"$table":$table,"el":$table,"styleFun":setTableStyle};
 }

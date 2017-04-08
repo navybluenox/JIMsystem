@@ -58,6 +58,7 @@ $(function(){
             var content = textarea.val();
             var div = $("#formRunUserScript_div");
             var server = _val.server;
+            div.children().remove();
             eval(content);
 
         },setScriptLibraryList:function(){
