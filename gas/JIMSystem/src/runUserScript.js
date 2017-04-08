@@ -8,14 +8,14 @@ $(function(){
             _val.server.loadDataAll().then(()=>{
                 var scriptLibraries = _val.server.getData("scriptLibrary");
                 var div = $("#formScriptLibrary_list");
-                var table = createTable(div,scriptLibraries,["title","button","caption"],cellObj => {
+                var table = createTable(div,scriptLibraries,["title","editor","button","caption"],cellObj => {
                     if(cellObj.column === "button"){
                         cellObj.el.append('<input type="button" name="put" value="入力"><input type="button" name="edit" value="編集"><input type="button" name="remove" value="削除">');
                         $('<input type="hidden" name="id">').appendTo(cellObj.el).val(cellObj.rowData.getValue("_id"));
                     }else{
                         cellObj.el.text(cellObj.rowData.getValue(cellObj.column));
                     }
-                },{"header":["名前","","説明"]}).el;
+                },{"header":["名前","作成者","","説明"]}).el;
                 table.on("click",'input[type="button"]',e=>{
                     var button = $(e.currentTarget);
                     var kind = button.attr("name");
