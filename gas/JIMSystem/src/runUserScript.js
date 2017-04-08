@@ -4,19 +4,11 @@ $(function(){
     var scriptLibrary_editing;
     _val.pageFun.runUserScript = {
         onload:function(){
+            pageFun = _val.pageFun.runUserScript;
             textarea = $('#formRunUserScript textarea[name="content"]');
             _val.server.loadDataAll().then(()=>{
-                var scriptLibraries = _val.server.getData("scriptLibrary");
-                var div = $("#formScriptLibrary_list");
-                var table = createTable(div,scriptLibraries,["title","editor","button","caption"],cellObj => {
-                    if(cellObj.column === "button"){
-                        cellObj.el.append('<input type="button" name="put" value="入力"><input type="button" name="edit" value="編集"><input type="button" name="remove" value="削除">');
-                        $('<input type="hidden" name="id">').appendTo(cellObj.el).val(cellObj.rowData.getValue("_id"));
-                    }else{
-                        cellObj.el.text(cellObj.rowData.getValue(cellObj.column));
-                    }
-                },{"header":["名前","作成者","","説明"]}).el;
-                table.on("click",'input[type="button"]',e=>{
+                pageFun.setScriptLibraryList();
+                $("#formScriptLibrary_list table").on("click",'input[type="button"]',e=>{
                     var button = $(e.currentTarget);
                     var kind = button.attr("name");
                     var scriptLibrary = _val.server.getDataById(button.siblings('[name="id"]').val(),"scriptLibrary")[0];
@@ -33,9 +25,9 @@ $(function(){
                             $('#formRunUserScript [name="edit"]').prop("disabled",true).val("↓編集する文例を選択してください");
                             break;
                     }
+                    pageFun.setScriptLibraryList();
                 });
             });
-            pageFun = _val.pageFun.runUserScript;
             textarea.on("keydown",function(e){
                 if(e.ctrlKey && e.keyCode === 13){
                     pageFun.runScript();
@@ -68,6 +60,18 @@ $(function(){
             var server = _val.server;
             eval(content);
 
+        },setScriptLibraryList:function(){
+            var scriptLibraries = _val.server.getData("scriptLibrary");
+            var div = $("#formScriptLibrary_list");
+            div.children().remove();
+            var table = createTable(div,scriptLibraries,["title","editor","button","caption"],cellObj => {
+                if(cellObj.column === "button"){
+                    cellObj.el.append('<input type="button" name="put" value="入力"><input type="button" name="edit" value="編集"><input type="button" name="remove" value="削除">');
+                    $('<input type="hidden" name="id">').appendTo(cellObj.el).val(cellObj.rowData.getValue("_id"));
+                }else{
+                    cellObj.el.text(cellObj.rowData.getValue(cellObj.column));
+                }
+            },{"header":["名前","作成者","","説明"]}).el;
         },changeScriptLibrary:function(){
             pageFun.scriptLibraryEditMenu("change",scriptLibrary_editing);
         },addScriptLibrary:function(){
