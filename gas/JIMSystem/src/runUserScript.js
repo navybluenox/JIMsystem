@@ -8,7 +8,7 @@ $(function(){
             textarea = $('#formRunUserScript textarea[name="content"]');
             _val.server.loadDataAll().then(()=>{
                 pageFun.setScriptLibraryList();
-                $("#formScriptLibrary_list table").on("click",'input[type="button"]',e=>{
+                $("#formScriptLibrary_list").on("click",'input[type="button"]',e=>{
                     var button = $(e.currentTarget);
                     var kind = button.attr("name");
                     var scriptLibrary = _val.server.getDataById(button.siblings('[name="id"]').val(),"scriptLibrary")[0];
@@ -66,12 +66,13 @@ $(function(){
             div.children().remove();
             var table = createTable(div,scriptLibraries,["title","editor","button","caption"],cellObj => {
                 if(cellObj.column === "button"){
-                    cellObj.el.append('<input type="button" name="put" value="入力"><input type="button" name="edit" value="編集"><input type="button" name="remove" value="削除">');
+                    cellObj.el.append('<input type="button" name="put" value="入力" style="display:block;"><input type="button" name="edit" value="編集" style="display:block;"><input type="button" name="remove" value="削除" style="display:block;">');
                     $('<input type="hidden" name="id">').appendTo(cellObj.el).val(cellObj.rowData.getValue("_id"));
                 }else{
                     cellObj.el.text(cellObj.rowData.getValue(cellObj.column));
                 }
             },{"header":["名前","作成者","","説明"]}).el;
+            table.find("td:eq(3)").css({"white-space":"pre-line","text-align":"left"});
         },changeScriptLibrary:function(){
             pageFun.scriptLibraryEditMenu("change",scriptLibrary_editing);
         },addScriptLibrary:function(){
