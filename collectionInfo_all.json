@@ -182,7 +182,22 @@
             "caption":"業務説明文",
             "note":"メモ書き",
             "asAssigned":"割り振り済みとみなすか"
-        },"columnOrder":["_id","created","updated","name","nameShort","leaderId","leaderIncharge","detail.0.start","detail.0.number","description","condition","caption","note","asAssigned"],"sortColumn":"leaderIncharge"}
+        },"columnOrder":["_id","created","updated","name","nameShort","leaderId","leaderIncharge","detail.0.start","detail.0.number","description","condition","caption","note","asAssigned"],"sortColumn":"leaderIncharge"},
+        {"_id":"Ymnj7O59yx2MxR8H","created":"2016-07-18T08:00:00.000Z","updated":"2016-07-18T08:00:00.000Z","name":"scriptLibrary","fileInfoId":"30o2XsSQUnBaRiM8","column":{
+            "_id":"string",
+            "created":"date",
+            "updated":"date",
+            "title":"string",
+            "caption":"string",
+            "content":"string"
+        },"columnName":{
+            "_id":"データID",
+            "created":"作成日時",
+            "updated":"更新日時",
+            "title":"スクリプト名",
+            "caption":"説明",
+            "content":"コード"
+        },"columnOrder":["_id","created","updated","title","caption","content"],"sortColumn":"title"}
     ],
-    "version":""
-}
+    "version":0
+}0B88bKUOZP4-AakQza2xxVDNEYVU

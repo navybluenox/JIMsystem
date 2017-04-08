@@ -785,6 +785,12 @@ class FileInfo extends Datapiece{
     }
 }
 
+class ScriptLibrary extends Datapiece{
+    constructor(datapieceObj,option){
+        super(datapieceObj,"scriptLibrary",option);
+    }
+}
+
 class SystemConfig extends Datapiece{
     constructor(datapieceObj,option){
         super(datapieceObj,"systemConfig",option);
