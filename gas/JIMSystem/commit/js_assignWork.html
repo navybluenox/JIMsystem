@@ -585,7 +585,7 @@ $(function(){
                 var num = showNum;
                 table.el.find("tr").css({"display":"none"}).filter((index,el) => {
                     var index = $(el).data("index");
-                    return index >= index && index < start + num; 
+                    return index >= start && index < start + num; 
                 }).css({"display":""});
                 result.find("#formAssignWork_search_result_start").text(pageNum*showNum+1);
                 result.find("#formAssignWork_search_result_end").text(Math.min((pageNum+1)*showNum,workAssignNum));
