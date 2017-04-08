@@ -1,12 +1,14 @@
 <script>
 $(function(){
     var pageFun;
+    var textarea;
     var scriptLibrary_editing;
     _val.pageFun.runUserScript = {
         onload:function(){
             _val.server.loadDataAll().then(()=>{
                 var scriptLibraries = _val.server.getData("scriptLibrary");
                 var div = $("#formScriptLibrary_list");
+                textarea = $('#formRunUserScript textarea[name="content"]');
                 var table = createTable(div,scriptLibraries,["title","button","caption"],cellObj => {
                     if(cellObj.column === "button"){
                         cellObj.el.append('<input type="button" name="put" value="入力"><input type="button" name="edit" value="編集"><input type="button" name="remove" value="削除">');
@@ -35,7 +37,6 @@ $(function(){
                 });
             });
             pageFun = _val.pageFun.runUserScript;
-            var textarea = $('#formRunUserScript textarea[name="content"]');
             textarea.on("keydown",function(e){
                 if(e.ctrlKey && e.keyCode === 13){
                     pageFun.runScript();
@@ -63,7 +64,7 @@ $(function(){
         },runScript:function(){
             if(!checkAuthorization("_val.pageFun.runUserScript.runScript")) return;
             var form = $("#formRunUserScript");
-            var content = form.find("textarea").val();
+            var content = textarea.val();
             var div = $("#formRunUserScript_div");
             var server = _val.server;
             eval(content);
@@ -92,7 +93,7 @@ $(function(){
                         "title":el.find('input[name="title"]').val(),
                         "editor":el.find('input[name="editor"]').val(),
                         "caption":el.find('input[name="caption"]').val(),
-                        "content":form.find("textarea").val()
+                        "content":textarea.val()
                     })).sendUpdateQueue();
                     mw.remove();
                 });
