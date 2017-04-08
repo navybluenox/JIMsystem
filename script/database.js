@@ -482,7 +482,7 @@ var Datapiece = (function(){
         }
         static getShiftTableAsElement(that,dataName,start,end,option){
             //UserとWorkListでほぼ共通なのでまとめた
-            //option = {"mode":["tr","table"],"trans":[true,false],"callback":function,"extraWorkAssign":[WorkAssign]}
+            //option = {"mode":["tr","table"],"trans":[true,false],"callback":function,"extraWorkAssign":[WorkAssign],"insertRowAtNoWorkAssigned":[true,false]}
             //tr table
             var cellWidthPerInterval = {"value":2,"unit":"em"};
             var cellHeightPerInterval = {"value":3,"unit":"ex"};
@@ -499,6 +499,7 @@ var Datapiece = (function(){
             option.trans = option.trans || false;
             option.extraWorkAssign = option.extraWorkAssign || [];
             option.diffFormRequired = option.diffFormRequired || true;
+            option.insertRowAtNoWorkAssigned = (option.insertRowAtNoWorkAssigned === undefined ? false : option.insertRowAtNoWorkAssigned);
 
             var idName = dataName + "Id";
 
@@ -511,6 +512,10 @@ var Datapiece = (function(){
             if(dataName === "workList"){
                 //後ろの blank -> vacancy の変更で使用する
                 var _requires = that.getDiffFromRequired(start,end,true).map(function(v){return v.diff});
+            }
+            if(rowContents.length === 0 && option.insertRowAtNoWorkAssigned){
+                //人割が一つも入っていない時、操作性のため1行だけ空行を追加する
+                rowContents.push([]);
             }
             rowContents.forEach(function(_rowContent,rowIndex){
                 var rowContent = _rowContent.slice();
@@ -763,6 +768,7 @@ class CollectionInfo extends Datapiece{
         var classNamePairList = [
             {name:"collectionInfo",class:CollectionInfo},
             {name:"fileInfo",class:FileInfo},
+            {name:"scriptLibrary",class:ScriptLibrary},
             {name:"systemConfig",class:SystemConfig},
             {name:"user",class:User},
             {name:"userGroup",class:UserGroup},

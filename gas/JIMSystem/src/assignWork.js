@@ -697,7 +697,7 @@ $(function(){
             form.find('[name="end_day"]').val(end.getDays());
             form.find('[name="end_hour"]').val(end.getHours());
             form.find('[name="end_minute"]').val(end.getMinutes());            
-        },showShiftTableUser:function(preventShow){
+        },showShiftTableUser:function(){
             return Promise.resolve().then(function(){
                 var target = form.find('[name="shiftTableUser"]').siblings("div");
                 var user = _val.server.getDataById(form.find('[name="shiftTableUser_searchResult"]').val(),"user")[0];            
@@ -707,7 +707,7 @@ $(function(){
                 var end = LocalDate.getWorkTime(day,"end");
 
                 pageFun.getFormData();
-                var table = user.getShiftTableAsElement(start,end,{"mode":"table","extraWorkAssign":(form.find('[name="shiftTableUser_showFormWA"]').val()==="Yes" ? [editing] : [])});
+                var table = user.getShiftTableAsElement(start,end,{"mode":"table","extraWorkAssign":(form.find('[name="shiftTableUser_showFormWA"]').val()==="Yes" ? [editing] : []),"insertRowAtNoWorkAssigned":true});
 
                 target.children().remove();
                 target.append(table);
