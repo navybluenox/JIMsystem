@@ -578,6 +578,8 @@ $(function(){
             hideRows();
             table.el.css({"margin":"3em"});
             function hideRows(){
+                pageNum = +form_search.find('[name="page"]').val();
+                showNum = +form_search.find('[name="showNumber"]').val();
                 var start = pageNum*showNum;
                 var num = showNum;
                 table.el.find("tr").css({"display":"none"}).filter((index,el) => {
