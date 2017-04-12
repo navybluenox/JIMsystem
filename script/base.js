@@ -395,6 +395,10 @@ var LocalDate = (function(){
                 option.hideMillisecond ? "" : this.getMilliseconds() + "ミリ秒"                
             ].join("");
         }
+        get toString_debug(){
+            //Chromeデバッグ用
+            return this.toString();
+        }
     }
 })();
 

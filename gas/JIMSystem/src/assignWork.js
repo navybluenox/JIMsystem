@@ -197,6 +197,11 @@ $(function(){
                         form.find('[name="end_hour"]').val(end.getHours());
                         form.find('[name="end_minute"]').val(end.getMinutes());
                         form.find('[name="interval"]').val(start.getDiff(end,"timeunit"));
+                        if(tableKind === "user"){
+                            form.find('[name="userId"]').val(form.find('[name="shiftTableUser_searchResult"]').val());
+                        }else{
+                            form.find('[name="workListId"]').val(form.find('[name="shiftTableWork_searchResult"]').val());
+                        }
                         pageFun.showIntervalTime();
                         cm.remove();
                     },
@@ -300,8 +305,9 @@ $(function(){
                         })),function(e){
                             var workListId = e.data.value;
                             if(workListId === "")  return;
-                            pageFun.fillForm(workAssign.copy().setValue("workListId",workListId));
-                            pageFun.updateWorkAssign("change",null,workAssign);
+                            var _workAssign = workAssign.copy().setValue("workListId",workListId)
+                            pageFun.fillForm(_workAssign);
+                            pageFun.updateWorkAssign("change",null,_workAssign);
                             cm1.remove();
                         },{
                             "maxHeight":"400px"
@@ -381,6 +387,7 @@ $(function(){
                         form.find('[name="end_hour"]').val(end.getHours());
                         form.find('[name="end_minute"]').val(end.getMinutes());
                         form.find('[name="interval"]').val(start.getDiff(end,"timeunit"));
+                        form.find('[name="workListId"]').val(workList.getValue("_id"));
                         pageFun.showIntervalTime();
                         cm.remove();
                     },"setWorkAssign":function(e){
@@ -615,8 +622,8 @@ $(function(){
             form.find('[name="userId_azusa"],[name="shiftTableUser_azusa"]').val(workAssign.getDatapieceRelated("userId","user").getValue("azusaSendName"));
             pageFun.searchUserId("userId");
             pageFun.searchUserId("shiftTableUser");
-            pageFun.searchWorkListId("workListId");
-            pageFun.searchWorkListId("shiftTableWork");
+            pageFun.searchWorkListId("workListId",true);
+            pageFun.searchWorkListId("shiftTableWork",true);
 
             form.find('[name="shiftTableUser_searchResult"]').val(workAssign.getValue("userId"));
             form.find('[name="shiftTableWork_searchResult"]').val(workAssign.getValue("workListId"));
@@ -645,7 +652,8 @@ $(function(){
             });
             editing.setValues(setValue);
             return editing;            
-        },searchWorkListId:function(namePrefix){
+        },searchWorkListId:function(namePrefix,avoidSettingForm){
+            if(avoidSettingForm === undefined)  avoidSettingForm = false;
             var workLists = _val.server.getData("workList",null,true);
             var result = form.find('[name="' + namePrefix + '_searchResult"]');
             var azusa = form.find('[name="' + namePrefix + '_azusa"]').val();
@@ -675,7 +683,9 @@ $(function(){
                     '</optgroup>'
                 ].join("")
             }));
-            pageFun.setWorkListId(namePrefix);
+            if(!avoidSettingForm){
+                pageFun.setWorkListId(namePrefix);
+            }
             pageFun.setWorkListSection();
         },setWorkListId:function(namePrefix){
             var id = form.find('[name="' + namePrefix + '_searchResult"]').val();

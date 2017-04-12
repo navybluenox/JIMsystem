@@ -388,7 +388,7 @@ var Datapiece = (function(){
                 return workAssign.getValue("_id")
             }).filter(function(v,i,s){return s.indexOf(v) === i});
 
-            var workAssigns = that.getWorkAssigns().filter(function(workAssign){
+            var workAssigns = that.getWorkAssigns(true).filter(function(workAssign){
                 return !inArray(extraIds,workAssign.getValue("_id"));
             }).concat(extraWorkAssign).filter(function(workAssign){
                 return (
@@ -916,7 +916,7 @@ class User extends Datapiece{
         var that = this;
         useReliableMode = (useReliableMode === undefined ? false : useReliableMode);
         return useReliableMode ? (
-            Datapiece.getServer().getData("workAssign").filter(function(workAssign){
+            this._workAssigns = Datapiece.getServer().getData("workAssign").filter(function(workAssign){
                 return workAssign.getValue("userId") === that.getValue("_id");
             })
         ) : (
@@ -1108,6 +1108,11 @@ class WorkAssign extends Datapiece{
             return time.getTime() >= start.getTime() && time.getTime() < end.getTime();
         });
     }
+    refreshUserAndWorkListCache(){
+        this.getDatapieceRelated("userId","user").refreshWorkAssignList();
+        this.getDatapieceRelated("workListId","workListId").refreshWorkAssignList();
+        return this;
+    }
 }
 
 class WorkGroup extends Datapiece{
@@ -1173,7 +1178,7 @@ class WorkList extends Datapiece{
         var that = this;
         useReliableMode = (useReliableMode === undefined ? false : useReliableMode);
         return useReliableMode ? (
-            Datapiece.getServer().getData("workAssign").filter(function(workAssign){
+            this._workAssigns = Datapiece.getServer().getData("workAssign").filter(function(workAssign){
                 return workAssign.getValue("workListId") === that.getValue("_id");
             })
         ) : (
