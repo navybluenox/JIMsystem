@@ -186,7 +186,7 @@ $(function(){
                     {"key":"changeUser","text":"この人割を他の委員に変える  （+Ctrl(⌘)キー：全候補）"},
                     {"key":"deleteWorkAssign","text":"この人割を削除する"},
                     {"key":"","text":""},
-                    {"key":"setInfoOfForm","text":"フォームに設定する"},
+                    {"key":"setInfoOfForm","text":"この人割をフォームに設定する"},
                     {"key":"deselect","text":"選択を解除"},
                 ],{
                     "setTimeOfForm":function(e){
