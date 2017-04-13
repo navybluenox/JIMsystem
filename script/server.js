@@ -116,12 +116,10 @@ var Server = (function(){
                         console.log(cache[dataName]);
                         la.remove();
                         return that.getData(dataName);
-                    }),
-                    runServerFun("Script.handlePropertiesService",["updated_" + config.getValue("modeName"),"script","get"]).then(v => {
+                    }),( config === undefined ? Promise.resolve() :  runServerFun("Script.handlePropertiesService",["updated_" + config.getValue("modeName"),"script","get"]).then(v => {
                         //TODO load時にServerのcacheにたまっていないかチェック
-                        //TODO ロード時にはconfigないのでどうするのか
                         systemUpdated = new Date(v);
-                    })
+                    }))
                 ]).then(v => v[0]);
             }).catch(function(e){
                 that._loading = that._loading.filter(function(obj){return obj.id !== loadingId});
