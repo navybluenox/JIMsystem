@@ -388,7 +388,7 @@ var Datapiece = (function(){
                 return workAssign.getValue("_id")
             }).filter(function(v,i,s){return s.indexOf(v) === i});
 
-            var workAssigns = that.getWorkAssigns(true).filter(function(workAssign){
+            var workAssigns = that.getWorkAssigns().filter(function(workAssign){
                 return !inArray(extraIds,workAssign.getValue("_id"));
             }).concat(extraWorkAssign).filter(function(workAssign){
                 return (

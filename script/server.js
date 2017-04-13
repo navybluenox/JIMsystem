@@ -256,12 +256,10 @@ var Server = (function(){
                             dataId = queue.value.getValue("_id");
                             data.find(function(dp){
                                 return dp.getValue("_id") === dataId;
-                            }).setValues(queue.value.getValues(),{overwrite:true})
-                            .triggerEvent("updated");
+                            }).setValues(queue.value.getValues(),{overwrite:true});
                             break;
                         case "add":
                             data.push(queue.value);
-                            queue.value.triggerEvent("updated");
                             break;
                         case "remove":
                             dataId = queue.value.getValue("_id");
@@ -275,6 +273,7 @@ var Server = (function(){
                 }
             })
             .then(function(){
+                that._updatingQueue.forEach(queue => queue.value.triggerEvent("updated"));
                 that._updatingQueue = [];
                 if(that._pendingQueue.length > 0){
                     return that.sendUpdateQueue();
