@@ -23,16 +23,10 @@ function loadDatabase(dataName){
 }
 
 function updateDatabase(fileId,queue,updated,modeName,prevData){
-    var value = {
-        "fileId":fileId,
-        "queue":queue,
-        "updated":updated,
-        "modeName":modeName,
-        "prevData":prevData
-    };
-    var database = loadDataFromDrive(value.fileId);
 
-    value.queue.forEach(function(queue){
+    var database = loadDataFromDrive(fileId);
+
+    queue.forEach(function(queue){
         var dpIndex;
         switch(queue.kind){
             case "add":
@@ -87,10 +81,10 @@ function updateDatabase(fileId,queue,updated,modeName,prevData){
                 break;
         }
     });
-    database.updated = new Date(value.updated);
+    database.updated = new Date(updated);
     database.version = (+database.version) + 1;
 
-    updateFileToDrive(value.fileId,JSON.stringify(database,null,2));
+    updateFileToDrive(fileId,JSON.stringify(database,null,2));
 }
 
 function loadAllDatabase(){
