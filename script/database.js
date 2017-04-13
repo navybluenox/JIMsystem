@@ -590,7 +590,7 @@ var Datapiece = (function(){
                         }
                     }
                     td.addClass("shiftTableContent").css({"padding":"0","margin":"0"})
-                    .children("div").css({"padding":"1ex 0.5em","white-space":"pre","cursor":"pointer","box-sizing":"border-box"});
+                        .children("div").css({"padding":"1ex 0.5em","white-space":"pre","cursor":"pointer","box-sizing":"border-box","user-select":"none","-webkit-touch-callout":"none"});
                     td.map(function(i,_el){
                         var el = $(_el);
                         if(option.trans){
@@ -621,7 +621,7 @@ var Datapiece = (function(){
                         }).data({"time":start.copy().addTimeUnit(diffIndex).getTime(),"diff":diff})
                         .children("div")
                             .text("" + diff)
-                            .css({"cursor":"pointer"});
+                            .css({"cursor":"pointer","user-select":"none","-webkit-touch-callout":"none"});
                         if(that.getValue("asAssigned")){
                             td.children("div").css("text-decoration","line-through");
                         }
