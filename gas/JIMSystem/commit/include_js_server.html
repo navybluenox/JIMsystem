@@ -87,12 +87,24 @@ var Server = (function(){
                     throw new Error();
                 }
             }
-            if(option === undefined || classof(option) === "object"){
+            if(option === undefined){
                 option = {overwrite:true};
             }else{
                 option.overwrite = true;
             }
+            option.hasUpdateQueue = (option.noLookQueue === undefined ? false : option.noLookQueue);
+
             if(reload === undefined)  reload = false;
+            //updateQueueがあるかどうか
+            if(!option.noLookQueue && this._pendingQueue.length > 0){
+                if(confirm(
+                    ["以下のデータのアップデートが完了していません","それでもサーバーからデータを上書きしますか？（未完了のデータは破棄されます）"].concat(collInfo.getValue("name"))
+                )){
+                    this._pendingQueue = [];
+                }else{
+                    return Promise.resolve();
+                }
+            }
 
             //reloadフラグがfalseで強制リロードでない&既にロードされている　→　自動でスキップ
             if(!reload && this.isLoadedData(collInfo.getValue("name")))  return Promise.resolve(this.getData(collInfo.getValue("name")));
