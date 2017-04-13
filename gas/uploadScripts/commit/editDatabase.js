@@ -84,9 +84,6 @@ function updateDatabase(value){
     database.version = (+database.version) + 1;
 
     updateFileToDrive(value.fileId,JSON.stringify(database,null,2));
-    var property = {};
-    property["updated_" + value.modeName] = (new Date(value.updated)).toISOString();
-    handlePropertiesService(property,"script","set");
 }
 
 function loadAllDatabase(){

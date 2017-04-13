@@ -116,15 +116,9 @@ var Server = (function(){
                         console.log(cache[dataName]);
                         la.remove();
                         return that.getData(dataName);
-                    }),( config === undefined ? Promise.resolve() : Server.handlePropertiesService(
-                        "updated_" + config.getValue("modeName"),
-                        "script",
-                        "get"
-                    ).then(v => {
-                        //TODO load時にServerのcacheにたまっていないかチェック
-                        systemUpdated = new Date(v["updated_" + config.getValue("modeName")]);
-                    }))
+                    }),( config === undefined ? Promise.resolve() : that.loadUpdatetime())
                 ]).then(v => v[0]);
+                //TODO updateのcacheの有無を確認
             }).catch(function(e){
                 that._loading = that._loading.filter(function(obj){return obj.id !== loadingId});
                 console.log(e);
@@ -293,7 +287,9 @@ var Server = (function(){
                 that._updatingQueue.forEach(queue => queue.value.triggerEvent("updated"));
                 that._updatingQueue = [];
                 if(that._pendingQueue.length > 0){
-                    return that.sendUpdateQueue();
+                    return that.sendUpdateQueue().then(() => that.setUpdatetime(nowTime));
+                }else{
+                    return that.setUpdatetime(nowTime);
                 }
             }).then(function(){
                 that._updating = false;
@@ -405,6 +401,26 @@ var Server = (function(){
                 e.handler({"type":e.type,"nameSpace":e.nameSpace,"handler":e.handler,"target":that,"userObj":userObj});
             });
             return this;
+        }
+        loadUpdateTime(){
+            var propertyName = "updated_" + config.getValue("modeName");
+            return Server.handlePropertiesService(
+                propertyName,
+                "script",
+                "get"
+            ).then(v => systemUpdated = new Date(v[propertyName]));
+        }
+        getUpdateTime(){
+            return systemUpdated;
+        }
+        setUpdatetime(value){
+            if(value instanceof Date)  value = value.toISOString();
+            var propertyName = "updated_" + config.getValue("modeName");
+            return Server.handlePropertiesService(
+                {[propertyName]:value},
+                "script",
+                "set"
+            );
         }
         static initialize(settings){
             if(settings === undefined || typeof settings !== "object" || settings === null)  return;

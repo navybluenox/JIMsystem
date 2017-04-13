@@ -75,7 +75,7 @@
                     if(_val.config === undefined){
                         throw new Error("configデータが不正です。設定したモードに対応するconfigデータがありません。");
                     }
-                    return runServerFun("Script.handlePropertiesService",["updated_" + _val.config.getValue("modeName"),"script","get"]).then(v => {
+                    return Server.handlePropertiesService("updated_" + _val.config.getValue("modeName"),"script","get").then(v => {
                         _val.systemUpdated = new Date(v);
                     })
                 }).then(() => {
