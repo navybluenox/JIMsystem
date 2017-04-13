@@ -23,7 +23,6 @@ function loadDatabase(dataName){
 }
 
 function updateDatabase(fileId,queue,updated,modeName,prevData){
-
     var database = loadDataFromDrive(fileId);
 
     queue.forEach(function(queue){
