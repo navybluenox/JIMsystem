@@ -116,7 +116,7 @@ var Server = (function(){
                         console.log(cache[dataName]);
                         la.remove();
                         return that.getData(dataName);
-                    }),( config === undefined ? Promise.resolve() : that.loadUpdatetime())
+                    }),( config === undefined ? Promise.resolve() : that.loadUpdateTime())
                 ]).then(v => v[0]);
                 //TODO updateのcacheの有無を確認
             }).catch(function(e){
