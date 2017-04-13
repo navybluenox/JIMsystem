@@ -482,7 +482,7 @@ var Datapiece = (function(){
         }
         static getShiftTableAsElement(that,dataName,start,end,option){
             //UserとWorkListでほぼ共通なのでまとめた
-            //option = {"mode":["tr","table"],"trans":[true,false],"callback":function,"extraWorkAssign":[WorkAssign]}
+            //option = {"mode":["tr","table"],"trans":[true,false],"callback":function,"extraWorkAssign":[WorkAssign],"insertRowAtNoWorkAssigned":[true,false]}
             //tr table
             var cellWidthPerInterval = {"value":2,"unit":"em"};
             var cellHeightPerInterval = {"value":3,"unit":"ex"};
@@ -499,6 +499,7 @@ var Datapiece = (function(){
             option.trans = option.trans || false;
             option.extraWorkAssign = option.extraWorkAssign || [];
             option.diffFormRequired = option.diffFormRequired || true;
+            option.insertRowAtNoWorkAssigned = (option.insertRowAtNoWorkAssigned === undefined ? false : option.insertRowAtNoWorkAssigned);
 
             var idName = dataName + "Id";
 
@@ -511,6 +512,10 @@ var Datapiece = (function(){
             if(dataName === "workList"){
                 //後ろの blank -> vacancy の変更で使用する
                 var _requires = that.getDiffFromRequired(start,end,true).map(function(v){return v.diff});
+            }
+            if(rowContents.length === 0 && option.insertRowAtNoWorkAssigned){
+                //人割が一つも入っていない時、操作性のため1行だけ空行を追加する
+                rowContents.push([]);
             }
             rowContents.forEach(function(_rowContent,rowIndex){
                 var rowContent = _rowContent.slice();
@@ -567,10 +572,10 @@ var Datapiece = (function(){
                         var datapiece;
                         if(dataName === "user"){
                             datapiece = workAssign.getDatapieceRelated("workListId","workList");
-                            td.children("div").text(datapiece.getValue("nameShort"));
+                            td.children("div").text(!!datapiece.getValue("nameShort") ? datapiece.getValue("nameShort") : " ");
                         }else if(dataName === "workList"){
                             datapiece = workAssign.getDatapieceRelated("userId","user");
-                            td.children("div").text(datapiece.getValue("nameLast") + " " + datapiece.getValue("nameFirst"));
+                            td.children("div").text(!!(datapiece.getValue("nameLast") + datapiece.getValue("nameFirst")) ? datapiece.getValue("nameLast") + " " + datapiece.getValue("nameFirst") : " ");
                         }
                         td.css({
                             "background":datapiece.getBackgroundColor(),
@@ -585,7 +590,7 @@ var Datapiece = (function(){
                         }
                     }
                     td.addClass("shiftTableContent").css({"padding":"0","margin":"0"})
-                    .children("div").css({"padding":"1ex 0.5em","white-space":"pre","cursor":"pointer","box-sizing":"border-box"});
+                        .children("div").css({"padding":"1ex 0.5em","white-space":"pre","cursor":"pointer","box-sizing":"border-box","user-select":"none","-webkit-touch-callout":"none"});
                     td.map(function(i,_el){
                         var el = $(_el);
                         if(option.trans){
@@ -616,7 +621,7 @@ var Datapiece = (function(){
                         }).data({"time":start.copy().addTimeUnit(diffIndex).getTime(),"diff":diff})
                         .children("div")
                             .text("" + diff)
-                            .css({"cursor":"pointer"});
+                            .css({"cursor":"pointer","user-select":"none","-webkit-touch-callout":"none"});
                         if(that.getValue("asAssigned")){
                             td.children("div").css("text-decoration","line-through");
                         }
@@ -763,6 +768,7 @@ class CollectionInfo extends Datapiece{
         var classNamePairList = [
             {name:"collectionInfo",class:CollectionInfo},
             {name:"fileInfo",class:FileInfo},
+            {name:"scriptLibrary",class:ScriptLibrary},
             {name:"systemConfig",class:SystemConfig},
             {name:"user",class:User},
             {name:"userGroup",class:UserGroup},
@@ -782,6 +788,12 @@ class CollectionInfo extends Datapiece{
 class FileInfo extends Datapiece{
     constructor(datapieceObj,option){
         super(datapieceObj,"fileInfo",option);
+    }
+}
+
+class ScriptLibrary extends Datapiece{
+    constructor(datapieceObj,option){
+        super(datapieceObj,"scriptLibrary",option);
     }
 }
 
@@ -904,7 +916,7 @@ class User extends Datapiece{
         var that = this;
         useReliableMode = (useReliableMode === undefined ? false : useReliableMode);
         return useReliableMode ? (
-            Datapiece.getServer().getData("workAssign").filter(function(workAssign){
+            this._workAssigns = Datapiece.getServer().getData("workAssign").filter(function(workAssign){
                 return workAssign.getValue("userId") === that.getValue("_id");
             })
         ) : (
@@ -1088,13 +1100,18 @@ class WorkAssign extends Datapiece{
     }
     getWorkListSectionNumber(){
         var workList = this.getDatapieceRelated("workListId","workList");
-        if(workList === undefined)  return this;
+        if(workList.getValue("_id") === undefined)  return -1;
         var time = this.getValue("start");
         return workList.getValue("@detail").findIndex(function(section){
             var start = section.start;
             var end = start.copy().addTimeUnit(section.number.length);
             return time.getTime() >= start.getTime() && time.getTime() < end.getTime();
         });
+    }
+    refreshUserAndWorkListCache(){
+        this.getDatapieceRelated("userId","user").refreshWorkAssignList();
+        this.getDatapieceRelated("workListId","workListId").refreshWorkAssignList();
+        return this;
     }
 }
 
@@ -1161,7 +1178,7 @@ class WorkList extends Datapiece{
         var that = this;
         useReliableMode = (useReliableMode === undefined ? false : useReliableMode);
         return useReliableMode ? (
-            Datapiece.getServer().getData("workAssign").filter(function(workAssign){
+            this._workAssigns = Datapiece.getServer().getData("workAssign").filter(function(workAssign){
                 return workAssign.getValue("workListId") === that.getValue("_id");
             })
         ) : (

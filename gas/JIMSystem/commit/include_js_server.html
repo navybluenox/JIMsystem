@@ -1,7 +1,7 @@
 <script>
 var Server = (function(){
     var cache = {};
-    var config,fileId_fileInfo;
+    var config,fileId_fileInfo,systemUpdated;
     //This is collectionInfo.json
     return class Server {
         constructor(){
@@ -103,18 +103,27 @@ var Server = (function(){
             var loadingId = makeRandomStr();
             this._loading.push({id:loadingId,coll:collInfo});
             return Server.getFileContent(collInfo.getDatapieceRelated("fileInfoId","fileInfo").getValue("fileId"),"all").then(function(v){
-                var dataName = collInfo.getValue("name");
-                var thisClass = collInfo.getClass();
-                cache[dataName] = v.data.map(function(dataObj){
-                    return new thisClass(dataObj,option);
-                });
-                that._updated[dataName] = (v.updated === "" || v.updated === undefined ? null : new Date(v.updated));
-                that._version[dataName] = +v.version;
-                that._loading = that._loading.filter(function(obj){return obj.id !== loadingId});
-                that.triggerEvent("loaded",{"dataName":dataName});
-                console.log(cache[dataName]);
-                la.remove();
-                return that.getData(dataName);
+                return Promise.all([
+                    Promise.resolve().then(() => {
+                        var dataName = collInfo.getValue("name");
+                        var thisClass = collInfo.getClass();
+                        cache[dataName] = v.data.map(function(dataObj){
+                            return new thisClass(dataObj,option);
+                        });
+                        that._updated[dataName] = (v.updated === "" || v.updated === undefined ? null : new Date(v.updated));
+                        that._version[dataName] = +v.version;
+                        that._loading = that._loading.filter(function(obj){return obj.id !== loadingId});
+                        that.triggerEvent("loaded",{"dataName":dataName});
+                        console.log(cache[dataName]);
+                        la.remove();
+                        return that.getData(dataName);
+                    }),
+                    runServerFun("Script.handlePropertiesService",["updated_" + config.getValue("modeName"),"script","get"]).then(v => {
+                        //TODO load時にServerのcacheにたまっていないかチェック
+                        //TODO ロード時にはconfigないのでどうするのか
+                        systemUpdated = new Date(v);
+                    })
+                ]).then(v => v[0]);
             }).catch(function(e){
                 that._loading = that._loading.filter(function(obj){return obj.id !== loadingId});
                 console.log(e);
@@ -242,7 +251,13 @@ var Server = (function(){
                 return Promise.all(Object.keys(queueForSend).map(function(dataName){
                     that._version[dataName]++;
                     that._updated[dataName] = new Date(nowTime.getTime());
-                    return runServerFun("Script.updateDatabase",[that.getCollectionInfoByName(dataName).getDatapieceRelated("fileInfoId","fileInfo").getValue("fileId"),queueForSend[dataName],nowTime.toISOString(),{"version":that.getVersion(dataName),"updated":that.getUpdatedTime(dataName).toISOString()}]);
+                    return runServerFun("Script.updateDatabase",[{
+                        "fileId":that.getCollectionInfoByName(dataName).getDatapieceRelated("fileInfoId","fileInfo").getValue("fileId"),
+                        "queue":queueForSend[dataName],
+                        "updated":nowTime.toISOString(),
+                        "modeName":config.getValue("modeName"),
+                        "prevData":{"version":that.getVersion(dataName),"updated":that.getUpdatedTime(dataName).toISOString()}
+                    }]);
                 }));
             })
             .then(function(){
@@ -257,12 +272,10 @@ var Server = (function(){
                             dataId = queue.value.getValue("_id");
                             data.find(function(dp){
                                 return dp.getValue("_id") === dataId;
-                            }).setValues(queue.value.getValues(),{overwrite:true})
-                            .triggerEvent("updated");
+                            }).setValues(queue.value.getValues(),{overwrite:true});
                             break;
                         case "add":
                             data.push(queue.value);
-                            queue.value.triggerEvent("updated");
                             break;
                         case "remove":
                             dataId = queue.value.getValue("_id");
@@ -276,6 +289,7 @@ var Server = (function(){
                 }
             })
             .then(function(){
+                that._updatingQueue.forEach(queue => queue.value.triggerEvent("updated"));
                 that._updatingQueue = [];
                 if(that._pendingQueue.length > 0){
                     return that.sendUpdateQueue();
@@ -395,6 +409,7 @@ var Server = (function(){
             if(settings === undefined || typeof settings !== "object" || settings === null)  return;
             config = config || settings.config;
             fileId_fileInfo = fileId_fileInfo || settings.fileId_fileInfo;
+            systemUpdated = systemUpdated || settings.systemUpdated;
         }
         static confirmUpdate(str){
             var arr = [

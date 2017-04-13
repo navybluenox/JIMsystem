@@ -135,6 +135,16 @@ var Spreadsheet = (function(){
             option = option || {};
             return runServerFun("Script.handleSpreadsheetInterface",["exportPdfToDrive",this.getFileInfo().getValue("fileId"),this.getSheetName(),[folderId,option]]);                        
         }
+        getOpenUrl(){
+            return [
+                "https://docs.google.com/spreadsheets/d/",
+                this.getFileInfo().getValue("fileId"),
+                "/edit"
+            ].join("");
+        }
+        openSpreadsheet(option){
+            showOuterPage(this.getOpenUrl(),option);
+        }
         static initialize(settings){
             if(settings === undefined || typeof settings !== "object" || settings === null)  return;
             server = server || settings.server;

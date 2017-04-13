@@ -1,7 +1,7 @@
 $(function(){
     var pageFun;
     var form;
-    var formNameList = [{"name":"name"},{"name":"nameShort"},{"name":"leaderId"},{"name":"leaderIncharge"},{"name":"description"},{"name":"condition"},{"name":"caption"},{"name":"note"},{"name":"asAssined"}];
+    var formNameList = [{"name":"name"},{"name":"nameShort"},{"name":"leaderId"},{"name":"leaderIncharge"},{"name":"description"},{"name":"condition"},{"name":"caption"},{"name":"note"},{"name":"asAssigned"}];
     var editing;
     var detailTable;
     var detailNumberTableWidthLimit;
@@ -118,6 +118,11 @@ $(function(){
             }else if(kind === "remove"){
                 workList = new WorkList({"_id":_id});
                 _val.server.removeData(workList);
+                if(confirm([
+                    "この業務に割り振られている人割も全て消去しますか？"
+                ].join("\n"))){
+                    _val.server.removeData(_val.server.getData("workAssign").filter(workAssign => workAssign.getValue("workListId") === workList.getValue("_id")));
+                }
             }
             _val.server.sendUpdateQueue().then(function(){
                 pageFun.searchWorkList();

@@ -17,8 +17,8 @@
                     <tr><td><input type="button" name="member_add" value="→追加" tabindex="2" onclick='_val.pageFun.editGroup.moveMember("add")'></td><td><input type="button" name="member_remove" value="←削除" tabindex="2" onclick='_val.pageFun.editGroup.moveMember("remove")'></td></tr>
                 </tbody></table><input type="hidden" name="member"></td><td></td></tr>
                 <tr class="userGroupOnly"><td colspan="3" style="text-align:center;">MemberOrderGroup</td></tr>
-                <tr class="userGroupOnly"><td>人割内序列の指定用のグループか</td><td><input type="button" name="isMemberOrderGroup" value="No" tabindex="2" onclick='var el=$(this);if(el.val()==="Yes"){el.val("No");}else{el.val("Yes");_val.pageFun.editGroup.setNamePrefix("mo_");}'></td><td></td></tr>
-                <tr class="userGroupOnly"><td>序列を指定する人割のID</td><td><input type="text" name="memberOrderWorkListId"></td>人によって役割を分けたいが、同じ人割として扱いたいためのグループ設定。人割表の表示に影響する。<td><table><tbody>
+                <tr class="userGroupOnly"><td>人割内序列の指定用のグループか</td><td><input type="button" name="isMemberOrderGroup" value="No" tabindex="2" onclick='var el=$(this);if(el.val()==="Yes"){el.val("No");}else{el.val("Yes");_val.pageFun.editGroup.setNamePrefix("mo_");}'></td><td>人によって役割を分けたいが、同じ人割として扱いたいためのグループ設定。人割表の表示に影響する。</td></tr>
+                <tr class="userGroupOnly"><td>序列を指定する人割のID</td><td><input type="text" name="memberOrderWorkListId"></td><td><table><tbody>
                         <tr><td>統括の配送名：</td><td><input type="text" name="memberOrderWorkListId_azusa" tabindex="2"></td></tr>
                         <tr><td>人割名：</td><td><input type="text" name="memberOrderWorkListId_name" tabindex="2"></td></tr>
                         <tr><td></td><td><select name="memberOrderWorkListId_searchResult" tabindex="2" onchange='_val.pageFun.editGroup.setWorkListId("memberOrderWorkListId")'></select></td></tr>

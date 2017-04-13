@@ -24,6 +24,25 @@ $(function(){
                     return '<option value="' + sheetName + '">' + sheetName + '</option>';
                 }))
             })();
+
+            formAddData.find('[name="open"]').on("click",e => {
+                var spreadsheet = new Spreadsheet("editDatabase");
+                spreadsheet.openSpreadsheet();
+            });
+            formCreateShiftTable.find('[name="open_spreadsheet"]').on("click",e => {
+                var spreadsheet = new Spreadsheet("shiftTableUser");
+                spreadsheet.openSpreadsheet();
+            });
+
+            formCreateShiftTable.find('[name="open_pdf"]').on("click",e => {
+                showOuterPage([
+                    "https://drive.google.com/drive/folders/",
+                    _val.server.getData("fileInfo").find(function(fileInfo){
+                        return fileInfo.getValue("fileType") === "folder" && fileInfo.getValue("name") === "export";
+                    }).getValue("fileId")
+                ].join(""));
+            });
+
         },onunload:function(){
         },writeSpreadsheet:function(spreadsheetName,sheetName,contentConfig){
             var dataName = formAddData.find('[name="dataName"]').val();
@@ -122,6 +141,7 @@ $(function(){
             var spreadsheet = new Spreadsheet(spreadsheetName,sheetName);
             spreadsheet.clearSheetData();
         },createShiftTableUser:function(){
+            var la = new LoadingAlert();
             var version;
             var version_propertyKey = "shiftTableUser_version_" + _val.config.getValue("content.kind") + _val.config.getValue("content.nth");
             return Promise.all([
@@ -321,8 +341,10 @@ $(function(){
                 });
                 promiseChain = promiseChain.then(function(){
                     console.log("finished updating shiftTableUser completely!!");
+                    la.remove()
                     return Server.handlePropertiesService({[version_propertyKey]:version+1},"script","set",{"skip":true});
                 }).catch(function(e){
+                    la.remove();
                     console.log("Error!!");
                     console.log(e);
                     throw new Error(e);
@@ -331,6 +353,7 @@ $(function(){
                 return promiseChain;
             });
         },createPdfOfShiftTableUser:function(){
+            var la = new LoadingAlert();
             var sheetNameList = [];
             var startTrigger = false;
             var promiseChain = new Promise(function(resolve){
@@ -356,6 +379,8 @@ $(function(){
                     var spreadsheet = new Spreadsheet("shiftTableUser",sheetName,[]);
                     return spreadsheet.exportPdfToDrive(folder.getValue("fileId"),{"size":"A4"});
                 }));
+            }).then(() => {
+                la.remove();
             });
             startTrigger = true;
         }

@@ -4,6 +4,7 @@ $(function(){
     var editing;
     var form;
     var formNameList = [{"name":"workListId"},{"name":"userId"},{"name":"start"},{"name":"interval"},{"name":"notice"},{"name":"note"},{"name":"memberOrder"},{"name":"disabled"}];
+    var limitRowNum = 50;
     _val.pageFun.assignWork = {
         onload:function(){
             _val.server.loadData("user");
@@ -185,8 +186,8 @@ $(function(){
                     {"key":"changeWorkList","text":"この人割を他の人割に変える  （+Ctrl(⌘)キー：全候補）"},
                     {"key":"changeUser","text":"この人割を他の委員に変える  （+Ctrl(⌘)キー：全候補）"},
                     {"key":"deleteWorkAssign","text":"この人割を削除する"},
+                    {"key":"setInfoOfForm","text":"この人割をフォームに設定する"},
                     {"key":"","text":""},
-                    {"key":"setInfoOfForm","text":"フォームに設定する"},
                     {"key":"deselect","text":"選択を解除"},
                 ],{
                     "setTimeOfForm":function(e){
@@ -197,6 +198,11 @@ $(function(){
                         form.find('[name="end_hour"]').val(end.getHours());
                         form.find('[name="end_minute"]').val(end.getMinutes());
                         form.find('[name="interval"]').val(start.getDiff(end,"timeunit"));
+                        if(tableKind === "user"){
+                            form.find('[name="userId"]').val(form.find('[name="shiftTableUser_searchResult"]').val());
+                        }else{
+                            form.find('[name="workListId"]').val(form.find('[name="shiftTableWork_searchResult"]').val());
+                        }
                         pageFun.showIntervalTime();
                         cm.remove();
                     },
@@ -300,8 +306,9 @@ $(function(){
                         })),function(e){
                             var workListId = e.data.value;
                             if(workListId === "")  return;
-                            pageFun.fillForm(workAssign.copy().setValue("workListId",workListId));
-                            pageFun.updateWorkAssign("change",null,workAssign);
+                            var _workAssign = workAssign.copy().setValue("workListId",workListId)
+                            pageFun.fillForm(_workAssign);
+                            pageFun.updateWorkAssign("change",null,_workAssign);
                             cm1.remove();
                         },{
                             "maxHeight":"400px"
@@ -381,6 +388,7 @@ $(function(){
                         form.find('[name="end_hour"]').val(end.getHours());
                         form.find('[name="end_minute"]').val(end.getMinutes());
                         form.find('[name="interval"]').val(start.getDiff(end,"timeunit"));
+                        form.find('[name="workListId"]').val(workList.getValue("_id"));
                         pageFun.showIntervalTime();
                         cm.remove();
                     },"setWorkAssign":function(e){
@@ -529,17 +537,19 @@ $(function(){
             var workAssignNum = workAssigns.length;
 
             if(showNum !== 0){
-                workAssigns = workAssigns.splice(pageNum*showNum,showNum);
-                result.append('<div>検索結果：' + workAssignNum + '件中　' + (pageNum*showNum+1) + '件目から' + Math.min((pageNum+1)*showNum,workAssignNum) + '件目まで</div>');
+                //workAssigns = workAssigns.splice(pageNum*showNum,showNum);
+                result.append('<div>検索結果：' + workAssignNum + '件中　<span id="formAssignWork_search_result_start">' + (pageNum*showNum+1) + '</span>件目から<span id="formAssignWork_search_result_end">' + Math.min((pageNum+1)*showNum,workAssignNum) + '</span>件目まで</div>');
                 var prev = $('<input type="button" value="前ページ"></input>').on("click",function(e){
                     var page = form_search.find('[name="page"]');
                     page.val(+page.val() <= 0 ? 0 : +page.val() - 1);
-                    pageFun.searchWorkAssign();
+                    //pageFun.searchWorkAssign();
+                    hideRows();
                 });
                 var next = $('<input type="button" value="次ページ"></input>').on("click",function(e){
                     var page = form_search.find('[name="page"]');
                     page.val(+page.val() >= (workAssignNum - workAssignNum%showNum)/showNum ? 0 : +page.val() + 1);
-                    pageFun.searchWorkAssign();
+                    //pageFun.searchWorkAssign();
+                    hideRows();
                 });
                 result.append(prev).append(next);
             }
@@ -552,6 +562,7 @@ $(function(){
                     buttons.eq(0).on("click",function(e){pageFun.fillForm(workAssign,false);});
                     buttons.eq(1).on("click",function(e){pageFun.fillForm(workAssign,true);});
                     buttons.eq(2).on("click",function(e){pageFun.updateWorkAssign("remove",workAssign.getValue("_id"));});
+                    $(cellObj.el).parent().data({"index":cellObj.index});
                 }else{
                     var str;
                     switch(cellObj.column){
@@ -572,7 +583,20 @@ $(function(){
                     cellObj.el.text(str);
                 }
             },{"header":["edit","人割名","従事者氏名","時間","注意事項"]});
+            hideRows();
             table.el.css({"margin":"3em"});
+            function hideRows(){
+                pageNum = +form_search.find('[name="page"]').val();
+                showNum = +form_search.find('[name="showNumber"]').val();
+                var start = pageNum*showNum;
+                var num = showNum;
+                table.el.find("tr").css({"display":"none"}).filter((index,el) => {
+                    var index = $(el).data("index");
+                    return index >= start && index < start + num; 
+                }).css({"display":""});
+                result.find("#formAssignWork_search_result_start").text(pageNum*showNum+1);
+                result.find("#formAssignWork_search_result_end").text(Math.min((pageNum+1)*showNum,workAssignNum));
+            }
         },fillForm:function(workAssign,copy){
             formNameList.forEach(function(obj){
                 var el = form.find('[name="' + obj.name + '"]');
@@ -599,13 +623,17 @@ $(function(){
             form.find('[name="userId_azusa"],[name="shiftTableUser_azusa"]').val(workAssign.getDatapieceRelated("userId","user").getValue("azusaSendName"));
             pageFun.searchUserId("userId");
             pageFun.searchUserId("shiftTableUser");
-            pageFun.searchWorkListId("workListId");
-            pageFun.searchWorkListId("shiftTableWork");
+            pageFun.searchWorkListId("workListId",true);
+            pageFun.searchWorkListId("shiftTableWork",true);
 
             form.find('[name="shiftTableUser_searchResult"]').val(workAssign.getValue("userId"));
             form.find('[name="shiftTableWork_searchResult"]').val(workAssign.getValue("workListId"));
             pageFun.setWorkListSection();
-            form.find('[name="shiftTableWork_section"]').val(workAssign.getWorkListSectionNumber());
+            if(workAssign.getWorkListSectionNumber() === -1){
+                alert(["Attention!!","この人割の業務は削除されているかIDが変更になっています"].join("\n"))
+            }else{
+                form.find('[name="shiftTableWork_section"]').val(workAssign.getWorkListSectionNumber());
+            }
 
             pageFun.showIntervalTime();
             pageFun.showShiftTableUser();
@@ -625,7 +653,8 @@ $(function(){
             });
             editing.setValues(setValue);
             return editing;            
-        },searchWorkListId:function(namePrefix){
+        },searchWorkListId:function(namePrefix,avoidSettingForm){
+            if(avoidSettingForm === undefined)  avoidSettingForm = false;
             var workLists = _val.server.getData("workList",null,true);
             var result = form.find('[name="' + namePrefix + '_searchResult"]');
             var azusa = form.find('[name="' + namePrefix + '_azusa"]').val();
@@ -655,7 +684,10 @@ $(function(){
                     '</optgroup>'
                 ].join("")
             }));
-            pageFun.setWorkListId(namePrefix);
+            if(!avoidSettingForm){
+                pageFun.setWorkListId(namePrefix);
+            }
+            pageFun.setWorkListSection();
         },setWorkListId:function(namePrefix){
             var id = form.find('[name="' + namePrefix + '_searchResult"]').val();
             var target = form.find('[name="' + namePrefix + '"]');
@@ -702,14 +734,16 @@ $(function(){
                 var end = LocalDate.getWorkTime(day,"end");
 
                 pageFun.getFormData();
-                var table = user.getShiftTableAsElement(start,end,{"mode":"table","extraWorkAssign":(form.find('[name="shiftTableUser_showFormWA"]').val()==="Yes" ? [editing] : [])});
+                var table = user.getShiftTableAsElement(start,end,{"mode":"table","extraWorkAssign":(form.find('[name="shiftTableUser_showFormWA"]').val()==="Yes" ? [editing] : []),"insertRowAtNoWorkAssigned":true});
 
                 target.children().remove();
                 target.append(table);
                 var width = $(window).width()*0.5;
                 target.css({"max-width":width,"overflow":"auto"});
             });
-        },showShiftTableWork:function(){
+        },showShiftTableWork:function(preventShow){
+            preventShow = (preventShow === undefined ? true : preventShow);
+
             return Promise.resolve().then(function(){
                 var target = form.find('[name="shiftTableWork"]').siblings("div");
                 var workList = _val.server.getDataById(form.find('[name="shiftTableWork_searchResult"]').val(),"workList")[0];
@@ -719,12 +753,19 @@ $(function(){
                 var start = detail.start.copy();
                 var end = start.copy().addTimeUnit(detail.number.length);
                 pageFun.getFormData();
-                var table = workList.getShiftTableAsElement(start,end,{"mode":"table","extraWorkAssign":(form.find('[name="shiftTableWork_showFormWA"]').val()==="Yes" ? [editing] : [])});
+                if(preventShow && limitRowNum < workList.getValue("@detail").reduce((prev,curt)=>prev.concat(curt.number),[]).reduce((prev,curt)=>Math.max(prev,curt),0)){
+                    target.children().remove();
+                    target.append($('<input type="button" value="人割表を表示する\n※重くなるので注意">').on("click",e => {
+                        pageFun.showShiftTableWork(false);
+                    }));
+                }else{
+                    var table = workList.getShiftTableAsElement(start,end,{"mode":"table","extraWorkAssign":(form.find('[name="shiftTableWork_showFormWA"]').val()==="Yes" ? [editing] : [])});
 
-                target.children().remove();
-                target.append(table);
-                var width = $(window).width()*0.5;
-                target.css({"max-width":width,"overflow":"auto"});
+                    target.children().remove();
+                    target.append(table);
+                    var width = $(window).width()*0.5;
+                    target.css({"max-width":width,"overflow":"auto"});
+                }
             });
         },reshowShiftTable:function(setData){
             //pageFun.searchWorkAssign();
@@ -740,17 +781,20 @@ $(function(){
 
             target.children().remove();
 
-            var details = workList.getValue("@detail");
-            details.forEach(function(detail,detailIndex){
-                var start = detail.start;
-                target.append([
-                    '<option value="' + detailIndex + '">',
-                    start.getDays() + "日目 ",
-                    start.toString({"hideDay":true}) + "から",
-                    start.copy().addTimeUnit(detail.number.length).toString({"hideDay":true,"userDiffHours":start}) + "まで",
-                    '</option>'
-                ].join(""));
-            });
+            if(workList !== undefined){
+                var details = workList.getValue("@detail");
+                details.forEach(function(detail,detailIndex){
+                    var start = detail.start;
+                    target.append([
+                        '<option value="' + detailIndex + '">',
+                        start.getDays() + "日目 ",
+                        start.toString({"hideDay":true}) + "から",
+                        start.copy().addTimeUnit(detail.number.length).toString({"hideDay":true,"userDiffHours":start}) + "まで",
+                        '</option>'
+                    ].join(""));
+                });
+            }
+
         },setMemberOrder:function(){
             var workListId = form.find('[name="workListId"]').val();
             var userId = form.find('[name="userId"]').val();
