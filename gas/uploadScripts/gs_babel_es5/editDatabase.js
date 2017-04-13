@@ -26,7 +26,14 @@ function loadDatabase(dataName) {
     }), sheet.getRange(3, 1));
 }
 
-function updateDatabase(value) {
+function updateDatabase(fileId, queue, updated, modeName, prevData) {
+    var value = {
+        "fileId": fileId,
+        "queue": queue,
+        "updated": updated,
+        "modeName": modeName,
+        "prevData": prevData
+    };
     var database = loadDataFromDrive(value.fileId);
 
     value.queue.forEach(function (queue) {

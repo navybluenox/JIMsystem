@@ -128,7 +128,7 @@ var Server = (function(){
                         console.log(cache[dataName]);
                         la.remove();
                         return that.getData(dataName);
-                    })/*,( config === undefined ? Promise.resolve() : that.loadUpdateTime())*/
+                    }),( config === undefined ? Promise.resolve() : that.loadUpdateTime())
                 ]).then(v => v[0]);
                 //TODO updateのcacheの有無を確認
             }).catch(function(e){
@@ -258,13 +258,13 @@ var Server = (function(){
                 return Promise.all(Object.keys(queueForSend).map(function(dataName){
                     that._version[dataName]++;
                     that._updated[dataName] = new Date(nowTime.getTime());
-                    return runServerFun("Script.updateDatabase",[{
-                        "fileId":that.getCollectionInfoByName(dataName).getDatapieceRelated("fileInfoId","fileInfo").getValue("fileId"),
-                        "queue":queueForSend[dataName],
-                        "updated":nowTime.toISOString(),
-                        "modeName":config.getValue("modeName"),
-                        "prevData":{"version":that.getVersion(dataName),"updated":that.getUpdatedTime(dataName).toISOString()}
-                    }]);
+                    return runServerFun("Script.updateDatabase",[//{
+                        /*"fileId":*/that.getCollectionInfoByName(dataName).getDatapieceRelated("fileInfoId","fileInfo").getValue("fileId"),
+                        /*"queue":*/queueForSend[dataName],
+                        /*"updated":*/nowTime.toISOString(),
+                        /*"modeName":*/config.getValue("modeName"),
+                        /*"prevData":*/{"version":that.getVersion(dataName),"updated":that.getUpdatedTime(dataName).toISOString()}
+                    /*}*/]);
                 }));
             })
             .then(function(){
@@ -299,9 +299,9 @@ var Server = (function(){
                 that._updatingQueue.forEach(queue => queue.value.triggerEvent("updated"));
                 that._updatingQueue = [];
                 if(that._pendingQueue.length > 0){
-                    return that.sendUpdateQueue()//.then(() => that.setUpdatetime(nowTime));
+                    return that.sendUpdateQueue().then(() => that.setUpdatetime(nowTime));
                 }else{
-                    return Promise.resolve()//that.setUpdatetime(nowTime);
+                    return that.setUpdatetime(nowTime);
                 }
             }).then(function(){
                 that._updating = false;
