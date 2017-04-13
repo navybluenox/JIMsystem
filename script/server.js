@@ -128,8 +128,9 @@ var Server = (function(){
                         console.log(cache[dataName]);
                         la.remove();
                         return that.getData(dataName);
-                    }),(config === undefined ? Promise.resolve() : that.loadUpdateTime())
+                    }),( config === undefined ? Promise.resolve() : that.loadUpdateTime())
                 ]).then(v => v[0]);
+                //TODO updateのcacheの有無を確認
             }).catch(function(e){
                 that._loading = that._loading.filter(function(obj){return obj.id !== loadingId});
                 console.log(e);
@@ -213,22 +214,18 @@ var Server = (function(){
             }
             
             var that = this;
-            var nowTime,la;
-            return Promise.resolve().then(() => {
-                
-            }).then(() => {
-                return (new Promise(function(resolve,reject){
-                    var si = setInterval(function(){
-                        if(!that._updating){
-                            clearInterval(si);
-                            resolve();
-                        }
-                    },100);
-                }))
-            }).then(function(){
-                nowTime = new Date();
-                la = new LoadingAlert();
+            var nowTime;
+            var la = new LoadingAlert();
+            return (new Promise(function(resolve,reject){
+                var si = setInterval(function(){
+                    if(!that._updating){
+                        clearInterval(si);
+                        resolve();
+                    }
+                },100)
+            })).then(function(){
                 that._updating = true;
+                nowTime = new Date();
                 that._updatingQueue = that._pendingQueue.slice();
                 that._pendingQueue = [];
 
