@@ -26,10 +26,10 @@ function loadDatabase(dataName) {
     }), sheet.getRange(3, 1));
 }
 
-function updateDatabase(fileIdStr, queues, updatedTime, prevDataInfo) {
-    var database = loadDataFromDrive(fileIdStr);
+function updateDatabase(value) {
+    var database = loadDataFromDrive(value.fileId);
 
-    queues.forEach(function (queue) {
+    value.queue.forEach(function (queue) {
         var dpIndex;
         switch (queue.kind) {
             case "add":
@@ -94,10 +94,13 @@ function updateDatabase(fileIdStr, queues, updatedTime, prevDataInfo) {
                 break;
         }
     });
-    database.updated = new Date(updatedTime);
+    database.updated = new Date(value.updated);
     database.version = +database.version + 1;
 
-    updateFileToDrive(fileIdStr, JSON.stringify(database, null, 2));
+    updateFileToDrive(value.fileId, JSON.stringify(database, null, 2));
+    var property = {};
+    property["updated_" + value.modeName] = new Date(value.updated).toISOString();
+    handlePropertiesService(property, "script", "set");
 }
 
 function loadAllDatabase() {
