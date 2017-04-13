@@ -120,6 +120,7 @@ var Server = (function(){
                     }),
                     runServerFun("Script.handlePropertiesService",["updated_" + config.getValue("modeName"),"script","get"]).then(v => {
                         //TODO load時にServerのcacheにたまっていないかチェック
+                        //TODO ロード時にはconfigないのでどうするのか
                         systemUpdated = new Date(v);
                     })
                 ]).then(v => v[0]);
