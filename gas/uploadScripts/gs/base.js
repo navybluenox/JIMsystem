@@ -346,7 +346,6 @@ function handlePropertiesService(value,type,doKind){
             result = true;
             break;
         case "get":
-            if(typeof value === "string")  value = [value];
             if(value.length === 0){
                 result = properties.getProperties();
             }else{
@@ -357,7 +356,6 @@ function handlePropertiesService(value,type,doKind){
             }
             break;
         case "delete":
-            if(typeof value === "string")  value = [value];
             if(value.length === 0){
                 properties.deleteAllProperties();
             }else{

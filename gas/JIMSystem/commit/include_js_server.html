@@ -117,9 +117,13 @@ var Server = (function(){
                         console.log(cache[dataName]);
                         la.remove();
                         return that.getData(dataName);
-                    }),( config === undefined ? Promise.resolve() :  runServerFun("Script.handlePropertiesService",["updated_" + config.getValue("modeName"),"script","get"]).then(v => {
+                    }),( config === undefined ? Promise.resolve() : Server.handlePropertiesService(
+                        "updated_" + config.getValue("modeName"),
+                        "script",
+                        "get"
+                    ).then(v => {
                         //TODO load時にServerのcacheにたまっていないかチェック
-                        systemUpdated = new Date(v);
+                        systemUpdated = new Date(v["updated_" + config.getValue("modeName")]);
                     }))
                 ]).then(v => v[0]);
             }).catch(function(e){
