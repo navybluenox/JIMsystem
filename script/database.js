@@ -792,7 +792,7 @@ class FileInfo extends Datapiece{
     constructor(datapieceObj,option){
         super(datapieceObj,"fileInfo",option);
         Object.defineProperty(this._data,"@fileName",{
-            "get":() => [this.getValue("fileType"),this.getValue("name")].join("_")
+            "get":() => [this.getValue("fileType"),this.getValue("name")].join("|")
         });
     }
 }
@@ -1100,7 +1100,7 @@ class WorkAssign extends Datapiece{
             }
         });
         Object.defineProperty(this._data,"@assignInfo",{
-            "get":() => [this.getDatapieceRelated("userId","user").getName(),this.getDatapieceRelated("workListId","workList").getName()].join("_")
+            "get":() => [this.getDatapieceRelated("userId","user").getName(),this.getDatapieceRelated("workListId","workList").getName()].join("|")
         });
         this.addEventListener("updated",function(e){
             that.getDatapieceRelated("workListId","workList").refreshWorkAssignList();
