@@ -206,7 +206,7 @@ var Server = (function(){
                 return Promise.resolve();
             };
             //skip confirm
-            if(true || !Server.confirmUpdate(confirmMsg)){
+            if(false && !Server.confirmUpdate(confirmMsg)){
                 this._pendingQueue = [];
                 return Promise.resolve();
             }
@@ -464,7 +464,7 @@ var Server = (function(){
             //skip confirm
             if(
                 (doKind === "set" || doKind === "delete") &&
-                (!checkAuthorization("Server.handlePropertiesService") || (!confirm.skip && (true || !Server.confirmUpdate(confirm.message))))
+                (!checkAuthorization("Server.handlePropertiesService") || (!confirm.skip && (false && !Server.confirmUpdate(confirm.message))))
             ){
                 return Promise.resolve().then(function(){return null});
             }
