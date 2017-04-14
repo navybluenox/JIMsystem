@@ -621,8 +621,8 @@ $(function(){
             form.find('[name="shiftTableUser_day"]').val(workAssign.getValue("start").getDays());
             form.find('[name="workListId_name"],[name="shiftTableWork_name"]').val(workAssign.getDatapieceRelated("workListId","workList").getValue("name"));
             form.find('[name="userId_azusa"],[name="shiftTableUser_azusa"]').val(workAssign.getDatapieceRelated("userId","user").getValue("azusaSendName"));
-            pageFun.searchUserId("userId");
-            pageFun.searchUserId("shiftTableUser");
+            pageFun.searchUserId("userId",true);
+            pageFun.searchUserId("shiftTableUser",true);
             pageFun.searchWorkListId("workListId",true);
             pageFun.searchWorkListId("shiftTableWork",true);
 
@@ -693,7 +693,8 @@ $(function(){
             var target = form.find('[name="' + namePrefix + '"]');
             target.val(id);
             pageFun.setMemberOrder();
-        },searchUserId:function(namePrefix){
+        },searchUserId:function(namePrefix,avoidSettingForm){
+            if(avoidSettingForm === undefined)  avoidSettingForm = false;
             var users = _val.server.getData("user");
             var result = form.find('[name="' + namePrefix + '_searchResult"]');
             var azusa = form.find('[name="' + namePrefix + '_azusa"]').val();
@@ -707,7 +708,9 @@ $(function(){
             result.append(users.map(function(user){
                 return '<option value="' + user.getValue("_id") +  '">' + user.getValue("nameLast") + " " + user.getValue("nameFirst") + '</option>';
             }).join(""));
-            pageFun.setUserId(namePrefix);
+            if(!avoidSettingForm){
+                pageFun.setUserId(namePrefix);
+            }
         },setUserId:function(namePrefix){
             var id = form.find('[name="' + namePrefix + '_searchResult"]').val();
             var target = form.find('[name="' + namePrefix + '"]');
