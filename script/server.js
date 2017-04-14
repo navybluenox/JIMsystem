@@ -205,10 +205,8 @@ var Server = (function(){
                 this._pendingQueue = [];
                 return Promise.resolve();
             };
-
-            //TODO
-            //ここはそのうち消す
-            if(!Server.confirmUpdate(confirmMsg)){
+            //skip confirm
+            if(true || !Server.confirmUpdate(confirmMsg)){
                 this._pendingQueue = [];
                 return Promise.resolve();
             }
@@ -463,9 +461,10 @@ var Server = (function(){
         static handlePropertiesService(value,type,doKind,confirm){
             if(value === undefined || type === undefined || doKind === undefined)  return;
             confirm = confirm || {};
+            //skip confirm
             if(
                 (doKind === "set" || doKind === "delete") &&
-                (!checkAuthorization("Server.handlePropertiesService") || (!confirm.skip && !Server.confirmUpdate(confirm.message)))
+                (!checkAuthorization("Server.handlePropertiesService") || (!confirm.skip && (true || !Server.confirmUpdate(confirm.message))))
             ){
                 return Promise.resolve().then(function(){return null});
             }
