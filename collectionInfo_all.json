@@ -1,5 +1,7 @@
-{"data":[
-        {"_id":"c3gzVzXDJBKctwQw","name":"collectionInfo","created":"2016-07-18T08:00:00.000Z","updated":"2016-07-18T08:00:00.000Z","fileInfoId":"zrbnlYkaJlc06lRM","column":{
+{"data":
+    [{
+        "_id":"c3gzVzXDJBKctwQw","name":"collectionInfo","created":"2016-07-18T08:00:00.000Z","updated":"2016-07-18T08:00:00.000Z","fileInfoId":"zrbnlYkaJlc06lRM",
+        "column":{
             "_id":"string",
             "created":"date",
             "updated":"date",
@@ -8,7 +10,8 @@
             "column":"other",
             "columnName":"other",
             "columnOrder":["string"],
-            "sortColumn":"string"
+            "sortColumn":"string",
+            "nameColumn":"string"
         },"columnName":{
             "_id":"データID",
             "created":"作成日時",
@@ -18,9 +21,13 @@
             "column":"データテンプレート",
             "columnName":"カラム名",
             "columnOrder":["カラムの順番"],
-            "sortColumn":"ソートするカラム名"
-        },"columnOrder":["_id","created","updated","name","fileInfoId","column","columnName","columnOrder.0"],"sortColumn":"name"},
-        {"_id":"MDTWafLypQHhmgSN","created":"2016-07-18T08:00:00.000Z","updated":"2016-07-18T08:00:00.000Z","name":"systemConfig","fileInfoId":"O1GAv6LvGgjPtIUe","column":{
+            "sortColumn":"ソートするカラム名",
+            "nameColumn":"名前カラム"
+        },"columnOrder":["_id","created","updated","name","fileInfoId","column","columnName","columnOrder.0"],
+        "sortColumn":"name","nameColumn":"name"
+    },{
+        "_id":"MDTWafLypQHhmgSN","created":"2016-07-18T08:00:00.000Z","updated":"2016-07-18T08:00:00.000Z","name":"systemConfig","fileInfoId":"O1GAv6LvGgjPtIUe",
+        "column":{
             "_id":"string",
             "created":"date",
             "updated":"date",
@@ -32,8 +39,11 @@
             "updated":"更新日時",
             "modeName":"設定モード名",
             "content":"設定内容"
-        },"columnOrder":["_id","created","updated","modeName","content"],"sortColumn":"modeName"},
-        {"_id":"eWy3mSJZ49DxUQTH","created":"2016-07-18T08:00:00.000Z","updated":"2016-07-18T08:00:00.000Z","name":"fileInfo","fileInfoId":"9WIsBLlQl6v8t335","column":{
+        },"columnOrder":["_id","created","updated","modeName","content"],
+        "sortColumn":"modeName","nameColumn":"modeName"
+    },{
+        "_id":"eWy3mSJZ49DxUQTH","created":"2016-07-18T08:00:00.000Z","updated":"2016-07-18T08:00:00.000Z","name":"fileInfo","fileInfoId":"9WIsBLlQl6v8t335",
+        "column":{
             "_id":"string",
             "created":"date",
             "updated":"date",
@@ -47,8 +57,11 @@
             "name":"ファイル名",
             "fileId":"ファイルID",
             "fileType":"ファイルの種別"
-        },"columnOrder":["_id","created","updated","name","fileInfoId","fileType"],"sortColumn":"fileType"},
-        {"_id":"JJUwBcLNunQ9YXXB","created":"2016-07-18T08:00:00.000Z","updated":"2016-07-18T08:00:00.000Z","name":"user","fileInfoId":"lStCitwfLqlHo0ry","column":{
+        },"columnOrder":["_id","created","updated","name","fileInfoId","fileType"],
+        "sortColumn":"fileType","nameColumn":"@fileName"
+    },{
+        "_id":"JJUwBcLNunQ9YXXB","created":"2016-07-18T08:00:00.000Z","updated":"2016-07-18T08:00:00.000Z","name":"user","fileInfoId":"lStCitwfLqlHo0ry",
+        "column":{
             "_id":"string",
             "created":"date",
             "updated":"date",
@@ -84,8 +97,11 @@
             "oldIncharge":[{"_name":"過去の担当","org":"団体の略称","nth":"期","code":"担当の略称","display":"表示するか"}],
             "isRojin":"老人であるか",
             "isAvailable":"今期に参加するか"
-        },"columnOrder":["_id","created","updated","sortId","azusaId","azusaSendName","cellphone","grade","nameLast","nameFirst","nameLastPhonetic","nameFirstPhonetic","incharge.0","inchargeCode.0","oldIncharge.0.org","oldIncharge.0.nth","oldIncharge.0.code","isRojin","isAvailable"],"sortColumn":"sortId"},
-        {"_id":"fZBpdfgWyMZdAp3W","created":"2016-07-18T08:00:00.000Z","updated":"2016-07-18T08:00:00.000Z","name":"userGroup","fileInfoId":"QYybMQc3gGZyXBk5","column":{
+        },"columnOrder":["_id","created","updated","sortId","azusaId","azusaSendName","cellphone","grade","nameLast","nameFirst","nameLastPhonetic","nameFirstPhonetic","incharge.0","inchargeCode.0","oldIncharge.0.org","oldIncharge.0.nth","oldIncharge.0.code","isRojin","isAvailable"],
+        "sortColumn":"sortId","nameColumn":"@name"
+    },{
+        "_id":"fZBpdfgWyMZdAp3W","created":"2016-07-18T08:00:00.000Z","updated":"2016-07-18T08:00:00.000Z","name":"userGroup","fileInfoId":"QYybMQc3gGZyXBk5",
+        "column":{
             "_id":"string",
             "created":"date",
             "updated":"date",
@@ -109,8 +125,11 @@
             "isMemberOrderGroup":"人割内序列の指定用のグループか",
             "memberOrderWorkListId":"序列を指定する人割のWorkListID",
             "memberOrderNumber":"人割内の序列"
-        },"columnOrder":["_id","created","updated","member.0","isColorGroup","backgroundColor","fontColor","isMemberOrderGroup","memberOrderWorkListId","memberOrderNumber"],"sortColumn":"name"},
-        {"_id":"TfKSdngFPNKGmdym","created":"2016-07-18T08:00:00.000Z","updated":"2016-07-18T08:00:00.000Z","name":"workAssign","fileInfoId":"0OLDB2IDCFI65dKA","column":{
+        },"columnOrder":["_id","created","updated","member.0","isColorGroup","backgroundColor","fontColor","isMemberOrderGroup","memberOrderWorkListId","memberOrderNumber"],
+        "sortColumn":"name","nameColumn":"name"
+    },{
+        "_id":"TfKSdngFPNKGmdym","created":"2016-07-18T08:00:00.000Z","updated":"2016-07-18T08:00:00.000Z","name":"workAssign","fileInfoId":"0OLDB2IDCFI65dKA",
+        "column":{
             "_id":"string",
             "created":"date",
             "updated":"date",
@@ -134,8 +153,11 @@
             "note":"メモ書き",
             "memberOrder":"人割内の序列",
             "disabled":"無効にするか"
-        },"columnOrder":["_id","created","updated","workListId","userId","start","interval","notice","note","memberOrder","disabled"],"sortColumn":"start"},
-        {"_id":"6beicmYizLdWEcDS","created":"2016-07-18T08:00:00.000Z","updated":"2016-07-18T08:00:00.000Z","name":"workGroup","fileInfoId":"2MrwflzKPQdre8F2","column":{
+        },"columnOrder":["_id","created","updated","workListId","userId","start","interval","notice","note","memberOrder","disabled"],
+        "sortColumn":"start","nameColumn":"@assignInfo"
+    },{
+        "_id":"6beicmYizLdWEcDS","created":"2016-07-18T08:00:00.000Z","updated":"2016-07-18T08:00:00.000Z","name":"workGroup","fileInfoId":"2MrwflzKPQdre8F2",
+        "column":{
             "_id":"string",
             "created":"date",
             "updated":"date",
@@ -153,8 +175,11 @@
             "isColorGroup":"カラー指定用のグループか",
             "backgroundColor":"背景色",
             "fontColor":"フォント色"
-        },"columnOrder":["_id","created","updated","name","member.0","isColorGroup","backgroundColor","fontColor"],"sortColumn":"name"},
-        {"_id":"eXjsCFLMFMkuaNMc","created":"2016-07-18T08:00:00.000Z","updated":"2016-07-18T08:00:00.000Z","name":"workList","fileInfoId":"g8SCM3eLYtmXiBEU","column":{
+        },"columnOrder":["_id","created","updated","name","member.0","isColorGroup","backgroundColor","fontColor"],
+        "sortColumn":"name","nameColumn":"name"
+    },{
+        "_id":"eXjsCFLMFMkuaNMc","created":"2016-07-18T08:00:00.000Z","updated":"2016-07-18T08:00:00.000Z","name":"workList","fileInfoId":"g8SCM3eLYtmXiBEU",
+        "column":{
             "_id":"string",
             "created":"date",
             "updated":"date",
@@ -182,8 +207,11 @@
             "caption":"業務説明文",
             "note":"メモ書き",
             "asAssigned":"割り振り済みとみなすか"
-        },"columnOrder":["_id","created","updated","name","nameShort","leaderId","leaderIncharge","detail.0.start","detail.0.number","description","condition","caption","note","asAssigned"],"sortColumn":"leaderIncharge"},
-        {"_id":"Ymnj7O59yx2MxR8H","created":"2016-07-18T08:00:00.000Z","updated":"2016-07-18T08:00:00.000Z","name":"scriptLibrary","fileInfoId":"NixKGFmuUGRgrhkP","column":{
+        },"columnOrder":["_id","created","updated","name","nameShort","leaderId","leaderIncharge","detail.0.start","detail.0.number","description","condition","caption","note","asAssigned"],
+        "sortColumn":"leaderIncharge","nameColumn":"name"
+    },{
+        "_id":"Ymnj7O59yx2MxR8H","created":"2016-07-18T08:00:00.000Z","updated":"2016-07-18T08:00:00.000Z","name":"scriptLibrary","fileInfoId":"NixKGFmuUGRgrhkP",
+        "column":{
             "_id":"string",
             "created":"date",
             "updated":"date",
@@ -199,7 +227,7 @@
             "editor":"作成者",
             "caption":"説明",
             "content":"コード"
-        },"columnOrder":["_id","created","updated","title","caption","content"],"sortColumn":"title"}
-    ],
-    "version":0
-}
+        },"columnOrder":["_id","created","updated","title","caption","content"],
+        "sortColumn":"title","nameColumn":"title"
+    }],
+"version":0}

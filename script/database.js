@@ -184,6 +184,9 @@ var Datapiece = (function(){
             if(typeof colName !== "string")  return undefined;
             return getValueFromObjectByKey(this._data,colName);
         }
+        getName(){
+            return this.getValue(this.getCollectionInfo().getValue("nameColumn"));
+        }
         toJSON(){
             return this._data;
         }
@@ -788,6 +791,9 @@ class CollectionInfo extends Datapiece{
 class FileInfo extends Datapiece{
     constructor(datapieceObj,option){
         super(datapieceObj,"fileInfo",option);
+        Object.defineProperty(this._data,"@fileName",{
+            "get":() => [this.getValue("fileType"),this.getValue("name")].join("_")
+        });
     }
 }
 
@@ -1092,6 +1098,9 @@ class WorkAssign extends Datapiece{
                     that.setValue("interval",0);
                 }
             }
+        });
+        Object.defineProperty(this._data,"@assignInfo",{
+            "get":() => [this.getDatapieceRelated("userId","user").getName(),this.getDatapieceRelated("workListId","workList").getName()].join("_")
         });
         this.addEventListener("updated",function(e){
             that.getDatapieceRelated("workListId","workList").refreshWorkAssignList();
