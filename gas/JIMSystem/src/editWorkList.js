@@ -37,7 +37,7 @@ $(function(){
                 var diff = +detailTable.find('[name="detail_increment_diff"]').val();
                 if(sign === "up"){
                     trigger.val(+trigger.val() + diff);
-                }else if(sign === "down" && trigger.val() > 1){
+                }else if(sign === "down" && trigger.val() > 0){
                     trigger.val(+trigger.val() - diff < 0 ? 0 : +trigger.val() - diff);
                 }
                 pageFun.changeButtonColor(trigger,trigger.val());
@@ -213,7 +213,11 @@ $(function(){
             if(users.length < 2){
                 target.val(users.map(function(user){return user.getValue("_id")}).join(""));
             }else{
-                target.val(users.map(function(user){return user.getValue("_id") + "(" + user.getValue("azusaSendName") + ")"}).join(","));
+                target.val(
+                    users.findIndex(user => user.getValue("azusaSendName") === value) === -1 ?
+                    users.map(function(user){return user.getValue("_id") + "(" + user.getValue("azusaSendName") + ")"}).join(",") :
+                    users[0].getValue("_id")
+                );
             }
             pageFun.searchInchrageByUserId();
         },searchInchrageByUserId:function(){
