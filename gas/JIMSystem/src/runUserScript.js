@@ -48,15 +48,15 @@ $(function(){
                         var arr = text.split("\n");
                         arr[nowLine] = (
                             e.shiftKey ?
-                            arr[nowLine].replace(new RegExp("^" + repeatString(" ",-(diffNum = -Math.min(
+                            arr[nowLine].replace(new RegExp("^" + repeatString(" ",diffNum = -Math.min(
                                 arr[nowLine].replace(/^( *)[\s\S]*$/,"$1").length, spaceNum
-                            )))),"") :
+                            ))),"") :
                             repeatString(" ",diffNum = spaceNum) + arr[nowLine]
                         );
                         return arr.join("\n");
                     })();
                     target.val(text);
-                    target[0].selectionEnd = target[0].selectionStart = caretPosition + diffNum;
+                    target[0].selectionEnd = target[0].selectionStart = caretPosition + (e.shiftKey ? -Math.min(diffNum,caretPosition - target.val().split("\n").slice(0,nowLine).join("\n").length) : diffNum);
 
                 }else if(e.keyCode === 13){
                     //Enter
