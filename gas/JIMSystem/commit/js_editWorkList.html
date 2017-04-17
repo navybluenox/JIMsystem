@@ -95,10 +95,10 @@ $(function(){
                     }
                 });
                 setValue["@detail"] = [];
-                var skip = detailTable.find('[name="detail_remove"]').filter('[val="done"]').map(function(i,el){return +$(el).attr("name").replace(/^detail_remove_/,"")}).get();
+                var skip = detailTable.find('[name^="detail_remove"]').filter('[val="done"]').map(function(i,el){return +$(el).attr("name").replace(/^detail_remove_/,"")}).get();
                 for(var i=0,l=+detailTable.find('[name="detail_sectionNum"]').val();i<l;i++){
                     if(!inArray(skip,i)){
-                        setValue["@detail"][i] = {"start":pageFun.getDetailStart(i),"number":pageFun.getDetailNumber(i)};
+                        setValue["@detail"].push({"start":pageFun.getDetailStart(i),"number":pageFun.getDetailNumber(i)});
                     }
                 }
                 setValue["@detail"] = setValue["@detail"].filter(function(v){return v !== undefined}).sort(function(a,b){return a.start.getTime() - b.start.getTime()});
