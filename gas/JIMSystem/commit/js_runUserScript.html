@@ -30,14 +30,50 @@ $(function(){
                 });
             });
             textarea.on("keydown",function(e){
+                var target = $(e.currentTarget);
+                var caretPosition = target[0].selectionStart;
+                var text = target.val();
+                var nowLine = (() => {
+                    var position = caretPosition;
+                    return text.split("\n").findIndex(str => {
+                        var num = str.length + 1;
+                        return (position = position - num) < 0;
+                    });
+                })();
                 if(e.keyCode === 9){
                     //Tab
                     e.preventDefault();
-                    if(e.shiftKey){
+                    const spaceNum = 4;
+                    let diffNum;
+                    text = (() => {
+                        var arr = text.split("\n");
+                        arr[nowLine] = (
+                            e.shiftKey ?
+                            arr[nowLine].replace(new RegExp("^" + repeatString(" ",-(diffNum = -Math.min(
+                                arr[nowLine].replace(/^( *)[\s\S]*$/,"$1").length, spaceNum
+                            )))),"") :
+                            repeatString(" ",diffNum = spaceNum) + arr[nowLine]
+                        );
+                        return arr.join("\n");
+                    })();
+                    target.val(text);
+                    target[0].selectionEnd = target[0].selectionStart = caretPosition + diffNum;
+
+                }else if(e.keyCode === 13){
+                    //Enter
+                    if(e.ctrlKey){
+                        pageFun.runScript();
+                    }else{
+                        e.preventDefault();
+                        let num = text.split("\n")[nowLine].replace(/^( *)[\s\S]*$/,"$1").length;
+                        let arr = text.split("");
+                        arr.splice(caretPosition,0,"\n" + repeatString(" ",num));
+                        text = arr.join("");
+                        target.val(text);
+                        target[0].selectionEnd = target[0].selectionStart = caretPosition + 1 + num;
                     }
-                }else if(e.ctrlKey && e.keyCode === 13){
-                    pageFun.runScript();
                 }else if(e.ctrlKey && e.keyCode === 83){
+                    //[s]key
                     localStorage.setItem("userScript",textarea.val());
                     var el = $("<p>保存しました</p>").appendTo($("#formRunUserScript"));
                     setTimeout(function(){
