@@ -395,7 +395,7 @@ var LocalDate = (function(){
                 option.hideMillisecond ? "" : this.getMilliseconds() + "ミリ秒"                
             ].join("");
         }
-        get valueOf(){
+        valueOf(){
             return this.getTime();
         }
         get toString_debug(){
