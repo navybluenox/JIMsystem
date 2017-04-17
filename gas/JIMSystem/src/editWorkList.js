@@ -149,12 +149,14 @@ $(function(){
                 }
                 if(cond.leader !== ""){
                     var user = _val.server.getDataById(workList.getValue("leaderId"),"user")[0];
-                    var reg_leader = new RegExp(cond.leader); 
-                    flag = flag && (
-                        reg_leader.test(user.getValue("azusaSendName")) ||
-                        reg_leader.test(user.getValue("nameLast") + user.getValue("nameFirst")) ||
-                        reg_leader.test(user.getValue("nameLastPhonetic") + user.getValue("nameFirstPhonetic"))
-                    );
+                        if(user !== undefined){
+                            var reg_leader = new RegExp(cond.leader); 
+                            flag = flag && (
+                                reg_leader.test(user.getValue("azusaSendName")) ||
+                                reg_leader.test(user.getValue("nameLast") + user.getValue("nameFirst")) ||
+                                reg_leader.test(user.getValue("nameLastPhonetic") + user.getValue("nameFirstPhonetic"))
+                            );
+                        }
                 }
                 return flag;
             });
