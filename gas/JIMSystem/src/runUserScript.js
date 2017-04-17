@@ -29,10 +29,14 @@ $(function(){
                 });
             });
             textarea.on("keydown",function(e){
-                if(e.ctrlKey && e.keyCode === 13){
+                if(e.keyCode === 9){
+                    //Tab
+                    e.preventDefault();
+                    if(e.shiftKey){
+                    }
+                }else if(e.ctrlKey && e.keyCode === 13){
                     pageFun.runScript();
-                }
-                if(e.ctrlKey && e.keyCode === 83){
+                }else if(e.ctrlKey && e.keyCode === 83){
                     localStorage.setItem("userScript",textarea.val());
                     var el = $("<p>保存しました</p>").appendTo($("#formRunUserScript"));
                     setTimeout(function(){
