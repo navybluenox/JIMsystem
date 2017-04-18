@@ -742,6 +742,7 @@ $(function(){
                 target.append(table);
                 var width = $(window).width()*0.5;
                 target.css({"max-width":width,"overflow":"auto"});
+                pageFun.showInformation();
             });
         },showShiftTableWork:function(preventShow){
             preventShow = (preventShow === undefined ? true : preventShow);
@@ -768,7 +769,39 @@ $(function(){
                     var width = $(window).width()*0.5;
                     target.css({"max-width":width,"overflow":"auto"});
                 }
+                pageFun.showInformation();
             });
+        },showInformation:function(){
+            var target = form.find('[name="infomation"]').siblings("div");
+            target.children().remove();
+            var table = $('<table><tbody></tbody></table>').appendTo(target).filter("table"),
+                tbody = table.find("tbody");
+            var workList = _val.server.getDataById(form.find('[name="shiftTableWork_searchResult"]').val(),"workList")[0];
+            workList = workList || new WorkList({"note":"","condition":""});
+            //メモ書き・条件を表示する
+            $("<tr>" + [
+                "<td>" + [
+                    "条件",
+                    workList.getValue("condition")
+                ].join("</td><td>") + "</td>",
+                "<td>" + [
+                    "メモ",
+                    workList.getValue("note")
+                ].join("</td><td>") + "</td>"
+            ].join("</tr><tr>") + "</tr>").appendTo(tbody).filter("td")//.css();
+
+            table.css({
+                "border-collapse":"collapse",
+                "border-spacing":"0"
+            });
+
+            tbody.find("td").css({
+                "white-space":"pre-line",
+                "padding":"0.5ex 1em",
+                "margin":"0",
+                "border":"1px #000000 solid"
+            });
+
         },reshowShiftTable:function(setData){
             //pageFun.searchWorkAssign();
             pageFun.setWorkListSection();
