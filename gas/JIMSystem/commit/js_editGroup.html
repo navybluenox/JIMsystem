@@ -2,7 +2,7 @@
 $(function(){
     var pageFun;
     var form;
-    var formNameList = [{"name":"name"},{"name":"member"},{"name":"isColorGroup"},{"name":"backgroundColor"},{"name":"fontColor"},{"name":"isMemberOrderGroup","only":"userGroup"},{"name":"memberOrderWorkListId","only":"userGroup"},{"name":"memberOrderNumber","only":"userGroup"}];
+    var formNameList = [{"name":"name"},{"name":"member"},{"name":"isColorGroup"},{"name":"backgroundColor"},{"name":"fontColor"},{"name":"isUnitGroup","only":"workGroup"},{"name":"isMemberOrderGroup","only":"userGroup"},{"name":"memberOrderWorkListId","only":"userGroup"},{"name":"memberOrderNumber","only":"userGroup"}];
     var editing;
     var getCollName = function(){return $("#editGroup_kind").val()};
     _val.pageFun.editGroup = {
@@ -16,6 +16,31 @@ $(function(){
             form.find('[name="memberOrderWorkListId_azusa"],[name="memberOrderWorkListId_name"]').on("keyup focus",function(e){
                 pageFun.searchWorkListId("memberOrderWorkListId");
             });
+            form.find('[name="member_selected"]').on("changeMember",e => {
+                pageFun.showMemberOrderTable();
+            });
+            form.find('[name="member_order"]').sibling("table").on("click",'[name^="member_order_"][type="button"]',e => {
+                var button = $(e.currentTarget);
+                var targetTr = button.closest("tr");
+                var tbody = targetTr.closest("tbody");
+                //TODO
+                var indexTr = tbody.find("tr").index(targetTr[0]);
+                var type = button.attr("name").replace(/^member_order_([^_]+)_.+$/,"$1");
+                var workListId = button.attr("name").replace(/^member_order_[^_]+_(.+)$/,"$1");
+
+                switch(type){
+                    case "top":
+
+                        break;
+                    case "bottom":
+                        break;
+                    case "up":
+                        break;
+                    case "down":
+                        break;
+                }
+            });
+
         },onunload:function(){
         
         },updateGroup:function(kind,_id){
@@ -29,7 +54,7 @@ $(function(){
                     if(key === "isColorGroup"){
                         setValue[key] = (el.val() === "Yes");
                     }else if(key === "member"){
-                        var el = form.find('[name="member_selected"]');
+                        el = form.find('[name="member_selected"]');
                         setValue[key] = el.val();
                     }else if(key === "backgroundColor" || key === "fontColor"){
                         setValue[key] = /^#[0-9A-Fa-f]{6}$/.test(el.val()) ? el.val().toUpperCase() : "";                        
@@ -144,6 +169,9 @@ $(function(){
             pageFun.clearEditing();
             form.find(".userGroupOnly,.workGroupOnly").css("display","none");
             form.find("." + kind + "Only").css("display","");
+            if(kind === "workGroup"){
+                form.find('[name="member_selected"]').trigger("changeMember");
+            }
         },setNamePrefix:function(prefix){
             var target = form.find('[name="name"]');
             if(!(new RegExp("^" + prefix)).test(target.val())){
@@ -185,6 +213,40 @@ $(function(){
             }
             target_list.attr("size",Math.min(target_list.find("option").length,20));
             target_selected.attr("size",Math.min(target_selected.find("option").length,20));
+            target_selected.trigger("changeMember");
+        },showMemberOrderTable:function(workListIds){
+            var tbody = form.find('[name="member_order"]').sibling("table").find("tbody");
+            if(workListIds === undefined){
+                let memberIds_set = tbody.find('[name^="member_order_value_"]').map((i,el) => {
+                    return {"id":+$(el).attr("name").replace(/^member_order_value_/,""),"order":+$(el).val()}
+                }).sort((a,b) => a.order - b.order).map(v => v.id);
+
+                tbody.children().remove();
+
+                let memberIds_selected = form.find('[name="member_selected"]').val();
+                memberIds_selected.sort((a,b) => {
+                    var aOrder = memberIds_set.findIndex(memberId => a === memberId);
+                    var bOrder = memberIds_set.findIndex(memberId => b === memberId);
+                    aOrder = (aOrder === -1 ? memberIds_selected.length : aOrder);
+                    bOrder = (bOrder === -1 ? memberIds_selected.length : bOrder);
+                    return aOrder - bOrder;
+                });
+                workListIds = memberIds_selected;
+            }
+            tbody.append("<tr>" + workListIds.map((memberId,index) => {
+                var workList = _val.server.getDataById(memberId,"workList")[0];
+                return ["<td>" + [
+                    workList.getName(),
+                    [
+                        '<input type="hidden" name="member_order_value_' + workList.getValue("_id") + '" value="' + index + '">',
+                        '<input type="button" name="member_order_top_' + workList.getValue("_id") + '" value="TOP">',
+                        '<input type="button" name="member_order_up_' + workList.getValue("_id") + '" value="↑">',
+                        '<input type="button" name="member_order_down_' + workList.getValue("_id") + '" value="↓">',
+                        '<input type="button" name="member_order_bottom_' + workList.getValue("_id") + '" value="BOTTOM">'
+                    ].join("")
+                ].join("</td><td>") + "</td>"];
+            }).join("</tr><tr>") + "</tr>");
+
         },setColorSample:function(){
             var target = form.find('[name="backgroundColor"]').closest("tr").children("td").eq(2);
             target.css({"background":form.find('[name="backgroundColor"]').val(),"color":form.find('[name="fontColor"]').val()});
