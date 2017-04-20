@@ -29,7 +29,7 @@ $(function(){
 
                 switch(type){
                     case "top":
-
+                        
                         break;
                     case "bottom":
                         break;
