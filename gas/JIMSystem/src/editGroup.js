@@ -19,6 +19,7 @@ $(function(){
                 pageFun.showMemberOrderTable();
             });
             form.find('[name="member_order"]').siblings("table").on("click",'[name^="member_order_"][type="button"]',e => {
+                //TODO debugge
                 var button = $(e.currentTarget);
                 var targetTr = button.closest("tr");
                 var targetValue = targetTr.find('[name^="member_order_value_"]');
