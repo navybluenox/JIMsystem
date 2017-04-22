@@ -21,22 +21,41 @@ $(function(){
             form.find('[name="member_order"]').sibling("table").on("click",'[name^="member_order_"][type="button"]',e => {
                 var button = $(e.currentTarget);
                 var targetTr = button.closest("tr");
+                var targetValue = targetTr.find('[name^="member_order_value_"]');
                 var tbody = targetTr.closest("tbody");
-                //TODO
-                var indexTr = tbody.find("tr").index(targetTr[0]);
+                var trs = tbody.find("tr");
+
+                var indexTr = +targetValue.val();
                 var type = button.attr("name").replace(/^member_order_([^_]+)_.+$/,"$1");
                 var workListId = button.attr("name").replace(/^member_order_[^_]+_(.+)$/,"$1");
 
-                switch(type){
-                    case "top":
-                        
-                        break;
-                    case "bottom":
-                        break;
-                    case "up":
-                        break;
-                    case "down":
-                        break;
+                if(type === "top" || type === "bottom"){
+                    let moveTr = tr.filter((i,el) => {
+                        var index = +$(el).closest("tr").find('[name^="member_order_value_"]').val();
+                        return (type === "top" ? indexTr - index : index - indexTr) > 0
+                    });
+                    let moveValue = moveTr.find('[name^="member_order_value_"]');
+                    moveValue.val(moveValue.val() + (type === "top" ? 1 : -1));
+                    targetValue.val(type === "top" ? 1 : -1);
+                    if(type === "top"){
+                        trs.filter((i,el) => +$(el).closest("tr").find('[name^="member_order_value_"]').val() === 0).before(targetTr);
+                    }else{
+                        trs.filter((i,el) => +$(el).closest("tr").find('[name^="member_order_value_"]').val() === trs.length).after(targetTr);
+                    }
+                }else{
+                    //"up" "down"
+                    let moveTr = trs.filter((i,el) => {
+                        var index = +$(el).closest("tr").find('[name^="member_order_value_"]').val();
+                        return index === indexTr + (type === "up" ? -1 : 1);
+                    });
+                    let moveValue = moveTr.find('[name^="member_order_value_"]');
+                    moveValue.val(moveValue.val() + (type === "up" ? 1 : -1));
+                    targetValue.val(targetValue.val() + (type === "up" ? -1 : 1));
+                    if(type === "up"){
+                        moveTr.before(targetTr);
+                    }else{
+                        moveTr.after(targetTr);
+                    }
                 }
             });
 
@@ -50,11 +69,15 @@ $(function(){
                 formNameList.filter(function(list){return list.only === undefined || list.only === getCollName();}).forEach(function(obj){
                     var el = form.find('[name="' + obj.name + '"]');
                     var key = obj.key === undefined ? obj.name : obj.key;
-                    if(key === "isColorGroup"){
+                    if(inArray(["isColorGroup","isMemberOrderGroup","isUnitGroup"],key)){
                         setValue[key] = (el.val() === "Yes");
                     }else if(key === "member"){
                         el = form.find('[name="member_selected"]');
-                        setValue[key] = el.val();
+                        let orderValues = form.find('[name="member_order"]').sibling("table").find('[name^=member_order_value_]').map((i,el) => {
+                            el = $(el);
+                            return {"id":el.attr("name").replace(/^member_order_value_/,""),"order":el.val()};
+                        }).get();
+                        setValue[key] = el.val().sort((a,b) => orderValues.find(obj => a === obj.id).order - orderValues.find(obj => b === obj.id).order);
                     }else if(key === "backgroundColor" || key === "fontColor"){
                         setValue[key] = /^#[0-9A-Fa-f]{6}$/.test(el.val()) ? el.val().toUpperCase() : "";                        
                     }else{
@@ -63,7 +86,7 @@ $(function(){
                 })
                 if(kind === "change"){
                     if(editing === undefined){
-                        alert("値を変更する人割が指定されていません\n下の「検索」から変更したい人割を選択し、フォームへ入力してください");
+                        alert("値を変更するグループが指定されていません\n下の「検索」から変更したい人割を選択し、フォームへ入力してください");
                         return;
                     }
                     setValue._id = editing.getValue("_id");
