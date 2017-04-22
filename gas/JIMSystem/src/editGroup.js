@@ -18,7 +18,7 @@ $(function(){
             form.find('[name="member_selected"]').on("changeMember",e => {
                 pageFun.showMemberOrderTable();
             });
-            form.find('[name="member_order"]').sibling("table").on("click",'[name^="member_order_"][type="button"]',e => {
+            form.find('[name="member_order"]').siblings("table").on("click",'[name^="member_order_"][type="button"]',e => {
                 var button = $(e.currentTarget);
                 var targetTr = button.closest("tr");
                 var targetValue = targetTr.find('[name^="member_order_value_"]');
@@ -73,7 +73,7 @@ $(function(){
                         setValue[key] = (el.val() === "Yes");
                     }else if(key === "member"){
                         el = form.find('[name="member_selected"]');
-                        let orderValues = form.find('[name="member_order"]').sibling("table").find('[name^=member_order_value_]').map((i,el) => {
+                        let orderValues = form.find('[name="member_order"]').siblings("table").find('[name^=member_order_value_]').map((i,el) => {
                             el = $(el);
                             return {"id":el.attr("name").replace(/^member_order_value_/,""),"order":el.val()};
                         }).get();
@@ -237,7 +237,7 @@ $(function(){
             target_selected.attr("size",Math.min(target_selected.find("option").length,20));
             target_selected.trigger("changeMember");
         },showMemberOrderTable:function(workListIds){
-            var tbody = form.find('[name="member_order"]').sibling("table").find("tbody");
+            var tbody = form.find('[name="member_order"]').siblings("table").find("tbody");
             if(workListIds === undefined){
                 let memberIds_set = tbody.find('[name^="member_order_value_"]').map((i,el) => {
                     return {"id":+$(el).attr("name").replace(/^member_order_value_/,""),"order":+$(el).val()}
