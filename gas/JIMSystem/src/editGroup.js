@@ -15,9 +15,6 @@ $(function(){
             form.find('[name="memberOrderWorkListId_azusa"],[name="memberOrderWorkListId_name"]').on("keyup focus",function(e){
                 pageFun.searchWorkListId("memberOrderWorkListId");
             });
-            form.find('[name="member_selected"]').on("changeMember",e => {
-                pageFun.showMemberOrderTable();
-            });
             form.find('[name="member_order"]').siblings("table").on("click",'[name^="member_order_"][type="button"]',e => {
                 //TODO debugge
                 var button = $(e.currentTarget);
@@ -73,7 +70,7 @@ $(function(){
                     if(inArray(["isColorGroup","isMemberOrderGroup","isUnitGroup"],key)){
                         setValue[key] = (el.val() === "Yes");
                     }else if(key === "member"){
-                        el = form.find('[name="member_selected"]');
+                        let values = form.find('[name="member_selected"] option').map((i,el) => $(el).attr("value")).get();
                         let orderValues = form.find('[name="member_order"]').siblings("table").find('[name^=member_order_value_]').map((i,el) => {
                             el = $(el);
                             return {"id":el.attr("name").replace(/^member_order_value_/,""),"order":el.val()};
@@ -193,7 +190,7 @@ $(function(){
             pageFun.clearEditing();
             form.find(".userGroupOnly,.workGroupOnly").css("display","none");
             form.find("." + kind + "Only").css("display","");
-            form.find('[name="member_selected"]').trigger("changeMember");
+            pageFun.showMemberOrderTable();
         },setNamePrefix:function(prefix){
             var target = form.find('[name="name"]');
             if(!(new RegExp("^" + prefix)).test(target.val())){
@@ -235,7 +232,7 @@ $(function(){
             }
             target_list.attr("size",Math.min(target_list.find("option").length,20));
             target_selected.attr("size",Math.min(target_selected.find("option").length,20));
-            target_selected.trigger("changeMember");
+            pageFun.showMemberOrderTable();
         },showMemberOrderTable:function(ids){
             var tbody = form.find('[name="member_order"]').siblings("table").find("tbody");
             if(ids === undefined){
@@ -245,7 +242,7 @@ $(function(){
 
                 tbody.children().remove();
 
-                let memberIds_selected = form.find('[name="member_selected"]').val();
+                let memberIds_selected = form.find('[name="member_selected"] option').map((i,el) => $(el).attr("value")).get();
                 memberIds_selected = memberIds_selected === null ? [] : memberIds_selected;
                 memberIds_selected.sort((a,b) => {
                     var aOrder = memberIds_set.findIndex(memberId => a === memberId);
