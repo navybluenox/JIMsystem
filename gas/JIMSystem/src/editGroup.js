@@ -193,9 +193,7 @@ $(function(){
             pageFun.clearEditing();
             form.find(".userGroupOnly,.workGroupOnly").css("display","none");
             form.find("." + kind + "Only").css("display","");
-            if(kind === "workGroup"){
-                form.find('[name="member_selected"]').trigger("changeMember");
-            }
+            form.find('[name="member_selected"]').trigger("changeMember");
         },setNamePrefix:function(prefix){
             var target = form.find('[name="name"]');
             if(!(new RegExp("^" + prefix)).test(target.val())){
@@ -248,6 +246,7 @@ $(function(){
                 tbody.children().remove();
 
                 let memberIds_selected = form.find('[name="member_selected"]').val();
+                memberIds_selected = memberIds_selected === null ? [] : memberIds_selected;
                 memberIds_selected.sort((a,b) => {
                     var aOrder = memberIds_set.findIndex(memberId => a === memberId);
                     var bOrder = memberIds_set.findIndex(memberId => b === memberId);
