@@ -30,7 +30,7 @@ $(function(){
 
                 if(
                     (indexTr === 0 && (type === "top" || type === "up")) ||
-                    (indexTr === memberNum && (type === "bottom" || type === "down"))
+                    (indexTr === memberNum-1 && (type === "bottom" || type === "down"))
                 ){
                     //一番上か一番下で動かせない
                     return null;
@@ -43,11 +43,11 @@ $(function(){
                     });
                     let moveValue = moveTr.find('[name^="member_order_value_"]');
                     moveValue.val(+moveValue.val() + (type === "top" ? 1 : -1));
-                    targetValue.val(type === "top" ? 1 : -1);
+                    targetValue.val(type === "top" ? 1 : memberNum-1);
                     if(type === "top"){
                         trs.filter((i,el) => +$(el).closest("tr").find('[name^="member_order_value_"]').val() === 0).before(targetTr);
                     }else{
-                        trs.filter((i,el) => +$(el).closest("tr").find('[name^="member_order_value_"]').val() === memberNum).after(targetTr);
+                        trs.filter((i,el) => +$(el).closest("tr").find('[name^="member_order_value_"]').val() === memberNum-1).after(targetTr);
                     }
                 }else{
                     //"up" "down"
