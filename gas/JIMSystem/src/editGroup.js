@@ -42,13 +42,16 @@ $(function(){
                         return (type === "top" ? indexTr - index : index - indexTr) > 0
                     });
                     let moveValue = moveTr.find('[name^="member_order_value_"]');
-                    moveValue.val(+moveValue.val() + (type === "top" ? 1 : -1));
-                    targetValue.val(type === "top" ? 1 : memberNum-1);
                     if(type === "top"){
                         trs.filter((i,el) => +$(el).closest("tr").find('[name^="member_order_value_"]').val() === 0).before(targetTr);
                     }else{
                         trs.filter((i,el) => +$(el).closest("tr").find('[name^="member_order_value_"]').val() === memberNum-1).after(targetTr);
                     }
+                    moveValue.map((i,el) => {
+                        el = $(el);
+                        el.val(+el.val() + (type === "top" ? 1 : -1));
+                    });
+                    targetValue.val(type === "top" ? 1 : memberNum-1);
                 }else{
                     //"up" "down"
                     let moveTr = trs.filter((i,el) => {
@@ -56,13 +59,13 @@ $(function(){
                         return index === indexTr + (type === "up" ? -1 : 1);
                     });
                     let moveValue = moveTr.find('[name^="member_order_value_"]');
-                    moveValue.val(+moveValue.val() + (type === "up" ? 1 : -1));
-                    targetValue.val(+targetValue.val() + (type === "up" ? -1 : 1));
                     if(type === "up"){
                         moveTr.before(targetTr);
                     }else{
                         moveTr.after(targetTr);
                     }
+                    moveValue.val(+moveValue.val() + (type === "up" ? 1 : -1));
+                    targetValue.val(+targetValue.val() + (type === "up" ? -1 : 1));
                 }
             });
 
