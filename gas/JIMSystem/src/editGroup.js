@@ -250,7 +250,7 @@ $(function(){
                 let memberIds_set = tbody.find('[name^="member_order_value_"]').map((i,el) => {
                     return {"id":+$(el).attr("name").replace(/^member_order_value_/,""),"order":+$(el).val()}
                 }).get().sort((a,b) => a.order - b.order).map(v => v.id);
-
+                //TODO 順番入れ替え中に上フォームで削除すると見事にもともとのならびに戻る
 
                 let memberIds_selected = form.find('[name="member_selected"] option').map((i,el) => $(el).attr("value")).get();
                 memberIds_selected = memberIds_selected === null ? [] : memberIds_selected;
