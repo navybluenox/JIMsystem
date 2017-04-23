@@ -252,7 +252,6 @@ $(function(){
                     return {"id":+$(el).attr("name").replace(/^member_order_value_/,""),"order":+$(el).val()}
                 }).get().sort((a,b) => a.order - b.order).map(v => v.id);
 
-                tbody.children().remove();
 
                 let memberIds_selected = form.find('[name="member_selected"] option').map((i,el) => $(el).attr("value")).get();
                 memberIds_selected = memberIds_selected === null ? [] : memberIds_selected;
@@ -266,6 +265,7 @@ $(function(){
                 ids = memberIds_selected;
             }
             form.find('[name="member_order"]').val(ids.length);
+            tbody.children().remove();
             tbody.append("<tr>" + ids.map((memberId,index) => {
                 var datapiece = _val.server.getDataById(memberId,(getCollName() === "workGroup" ? "workList" : "user"))[0];
                 return ["<td>" + [
