@@ -269,6 +269,8 @@ $(function(){
                     ].join("")
                 ].join("</td><td>") + "</td>"];
             }).join("</tr><tr>") + "</tr>");
+            tbody.find("tr").css({"white-space":"pre"});
+            tbody.find('input[type="button"]').css({"min-width":"36px"});
 
         },setColorSample:function(){
             var target = form.find('[name="backgroundColor"]').closest("tr").children("td").eq(2);
