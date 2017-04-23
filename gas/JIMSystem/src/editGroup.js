@@ -257,7 +257,7 @@ $(function(){
                 ids = memberIds_selected;
             }
             tbody.append("<tr>" + ids.map((memberId,index) => {
-                var datapiece = _val.server.getDataById(memberId,getCollName())[0];
+                var datapiece = _val.server.getDataById(memberId,(getCollName() === "workGroup" ? "workList" : "user"))[0];
                 return ["<td>" + [
                     datapiece.getName(),
                     [
