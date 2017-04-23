@@ -160,6 +160,8 @@ $(function(){
                         el.val(group.getValue(key));
                     }
                 });
+                //TODO
+                pageFun.showMemberOrderTable(group.getValue("member"));
             }
 
             var table = createTable(result,groups,["edit","name","isColorGroup","isMemberOrderGroup"],function(cellObj){
@@ -175,10 +177,9 @@ $(function(){
                             str = group.getValue("name");
                             break;
                         case "isColorGroup":
-                            str = (group.getValue("isColorGroup") ? "Yes" : "No");
-                            break;
                         case "isMemberOrderGroup":
-                            str = (group.getValue("isMemberOrderGroup") ? "Yes" : "No");
+                        case "isUnitGroup":
+                            str = (group.getValue(cellObj.column) ? "Yes" : "No");
                             break;
                     }
                     cellObj.el.text(str);
@@ -237,12 +238,12 @@ $(function(){
             target_list.attr("size",Math.min(target_list.find("option").length,20));
             target_selected.attr("size",Math.min(target_selected.find("option").length,20));
             target_selected.trigger("changeMember");
-        },showMemberOrderTable:function(workListIds){
+        },showMemberOrderTable:function(ids){
             var tbody = form.find('[name="member_order"]').siblings("table").find("tbody");
-            if(workListIds === undefined){
+            if(ids === undefined){
                 let memberIds_set = tbody.find('[name^="member_order_value_"]').map((i,el) => {
                     return {"id":+$(el).attr("name").replace(/^member_order_value_/,""),"order":+$(el).val()}
-                }).sort((a,b) => a.order - b.order).map(v => v.id);
+                }).get().sort((a,b) => a.order - b.order).map(v => v.id);
 
                 tbody.children().remove();
 
@@ -254,18 +255,18 @@ $(function(){
                     bOrder = (bOrder === -1 ? memberIds_selected.length : bOrder);
                     return aOrder - bOrder;
                 });
-                workListIds = memberIds_selected;
+                ids = memberIds_selected;
             }
-            tbody.append("<tr>" + workListIds.map((memberId,index) => {
-                var workList = _val.server.getDataById(memberId,"workList")[0];
+            tbody.append("<tr>" + ids.map((memberId,index) => {
+                var datapiece = _val.server.getDataById(memberId,getCollName())[0];
                 return ["<td>" + [
-                    workList.getName(),
+                    datapiece.getName(),
                     [
-                        '<input type="hidden" name="member_order_value_' + workList.getValue("_id") + '" value="' + index + '">',
-                        '<input type="button" name="member_order_top_' + workList.getValue("_id") + '" value="TOP">',
-                        '<input type="button" name="member_order_up_' + workList.getValue("_id") + '" value="↑">',
-                        '<input type="button" name="member_order_down_' + workList.getValue("_id") + '" value="↓">',
-                        '<input type="button" name="member_order_bottom_' + workList.getValue("_id") + '" value="BOTTOM">'
+                        '<input type="hidden" name="member_order_value_' + datapiece.getValue("_id") + '" value="' + index + '">',
+                        '<input type="button" name="member_order_top_' + datapiece.getValue("_id") + '" value="TOP">',
+                        '<input type="button" name="member_order_up_' + datapiece.getValue("_id") + '" value="↑">',
+                        '<input type="button" name="member_order_down_' + datapiece.getValue("_id") + '" value="↓">',
+                        '<input type="button" name="member_order_bottom_' + datapiece.getValue("_id") + '" value="BOTTOM">'
                     ].join("")
                 ].join("</td><td>") + "</td>"];
             }).join("</tr><tr>") + "</tr>");
