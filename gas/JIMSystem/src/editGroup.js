@@ -28,7 +28,7 @@ $(function(){
                 var workListId = button.attr("name").replace(/^member_order_[^_]+_(.+)$/,"$1");
 
                 if(type === "top" || type === "bottom"){
-                    let moveTr = tr.filter((i,el) => {
+                    let moveTr = trs.filter((i,el) => {
                         var index = +$(el).closest("tr").find('[name^="member_order_value_"]').val();
                         return (type === "top" ? indexTr - index : index - indexTr) > 0
                     });
@@ -57,8 +57,7 @@ $(function(){
                 }
             });
 
-        },onunload:function(){
-        
+        },onunload:function(){   
         },updateGroup:function(kind,_id){
             var group;
             var setValue = {};
@@ -258,7 +257,8 @@ $(function(){
                 return ["<td>" + [
                     datapiece.getName(),
                     [
-                        '<input type="hidden" name="member_order_value_' + datapiece.getValue("_id") + '" value="' + index + '">',
+                        //TODO text => hidden, disabled clear
+                        '<input type="text" disabled name="member_order_value_' + datapiece.getValue("_id") + '" value="' + index + '">',
                         '<input type="button" name="member_order_top_' + datapiece.getValue("_id") + '" value="TOP">',
                         '<input type="button" name="member_order_up_' + datapiece.getValue("_id") + '" value="↑">',
                         '<input type="button" name="member_order_down_' + datapiece.getValue("_id") + '" value="↓">',
