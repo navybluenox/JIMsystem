@@ -51,7 +51,7 @@ $(function(){
                         el = $(el);
                         el.val(+el.val() + (type === "top" ? 1 : -1));
                     });
-                    targetValue.val(type === "top" ? 1 : memberNum-1);
+                    targetValue.val(type === "top" ? 0 : memberNum-1);
                 }else{
                     //"up" "down"
                     let moveTr = trs.filter((i,el) => {
