@@ -771,6 +771,8 @@ class CollectionInfo extends Datapiece{
         var classNamePairList = [
             {name:"collectionInfo",class:CollectionInfo},
             {name:"fileInfo",class:FileInfo},
+            {name:"incharge",class:Incharge},
+            {name:"inchargeGroup",class:InchargeGroup},
             {name:"scriptLibrary",class:ScriptLibrary},
             {name:"systemConfig",class:SystemConfig},
             {name:"user",class:User},
@@ -1279,5 +1281,19 @@ class WorkList extends Datapiece{
             }
         });
         return ret;
+    }
+}
+
+class Incharge extends Datapiece{
+    constructor(datapieceObj,option){
+        super(datapieceObj, option.dataName === undefined ? "incharge" : option.dataName, option);
+    }
+}
+
+class InchargeGroup extends Incharge{
+    constructor(datapieceObj,option){
+        if(option === undefined)  option = {};
+        option.dataName = (option.dataName === undefined ? "inchargeGroup" : option.dataName);
+        super(datapieceObj,option);
     }
 }

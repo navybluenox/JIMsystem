@@ -237,23 +237,49 @@
             "_id":"string",
             "created":"date",
             "updated":"date",
+            "name":"string",
+            "code":"string",
+            "member":["string"],
+            "hide":"boolean",
+            "oldIncharge":[{"dataName":"string","id":"string"}]
         },"columnName":{
             "_id":"データID",
             "created":"作成日時",
             "updated":"更新日時",
-        },"columnOrder":["_id","created","updated"],
-        "sortColumn":"","nameColumn":""
+            "name":"担当名",
+            "code":"担当の略称",
+            "member":["グループメンバーのUserId"],
+            "hide":"人割表に表示しないか",
+            "oldIncharge":[{"_name":"過去の担当","dataName":"コレクション名","id":"データID"}]
+        },"columnOrder":["_id","created","updated","name","code","member.0","hide","oldIncharge.0.dataName","oldIncharge.0.id"],
+        "sortColumn":"code","nameColumn":"name"
     },{
         "_id":"irwObSOO6b3Z9XA2","created":"2016-07-18T08:00:00.000Z","updated":"2016-07-18T08:00:00.000Z","name":"inchargeGroup","fileInfoId":"rm1QTb7fImVTDgTU",
         "column":{
             "_id":"string",
             "created":"date",
             "updated":"date",
+            "name":"string",
+            "code":"string",
+            "member":[{"dataName":"string","id":"string"}],
+            "hide":"boolean",
+            "oldIncharge":[{"dataName":"string","id":"string"}],
+            "org":"string",
+            "nth":"number",
+            "isDivision":"boolean"
         },"columnName":{
             "_id":"データID",
             "created":"作成日時",
             "updated":"更新日時",
-        },"columnOrder":["_id","created","updated"],
-        "sortColumn":"","nameColumn":""
+            "name":"担当名",
+            "code":"担当の略称",
+            "member":[{"_name":"グループメンバー","dataName":"コレクション名","id":"データID"}],
+            "hide":"人割表に表示しないか",
+            "oldIncharge":[{"_name":"過去の担当","dataName":"コレクション名","id":"データID"}],
+            "org":"団体の略称",
+            "nth":"期",
+            "isDivision":"局であるか"
+        },"columnOrder":["_id","created","updated","name","code","member.0.dataName","member.0.id","hide","oldIncharge.0.dataName","oldIncharge.0.id","org","nth","isDivision"],
+        "sortColumn":"code","nameColumn":"name"
     }],
 "version":0}
