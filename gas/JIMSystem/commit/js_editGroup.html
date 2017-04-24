@@ -84,16 +84,15 @@ $(function(){
                     }else if(key === "member"){
                         let values = form.find('[name="member_selected"] option').map((i,el) => $(el).attr("value")).get();
                         let orderValues = form.find('[name="member_order"]').siblings("table").find('[name^=member_order_value_]').map((i,el) => {
-                            el = $(el);
-                            return {"id":el.attr("name").replace(/^member_order_value_/,""),"order":el.val()};
-                        }).get();
-                        setValue[key] = el.val().sort((a,b) => orderValues.find(obj => a === obj.id).order - orderValues.find(obj => b === obj.id).order);
+                            return {"id":$(el).attr("name").replace(/^member_order_value_/,""),"order":+$(el).val()};
+                        }).get().sort((a,b) => a.order - b.order).map(v => v.id);
+                        setValue[key] = values.slice().sort((a,b) => orderValues.findIndex(id => a === id) - orderValues.findIndex(id => b === id));
                     }else if(key === "backgroundColor" || key === "fontColor"){
                         setValue[key] = /^#[0-9A-Fa-f]{6}$/.test(el.val()) ? el.val().toUpperCase() : "";                        
                     }else{
                         setValue[key] = el.val();
                     }
-                })
+                });
                 if(kind === "change"){
                     if(editing === undefined){
                         alert("値を変更するグループが指定されていません\n下の「検索」から変更したい人割を選択し、フォームへ入力してください");
