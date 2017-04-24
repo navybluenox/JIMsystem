@@ -280,13 +280,14 @@ $(function(){
                         '<input type="button" name="member_order_top_' + datapiece.getValue("_id") + '" value="TOP">',
                         '<input type="button" name="member_order_up_' + datapiece.getValue("_id") + '" value="↑">',
                         '<input type="button" name="member_order_down_' + datapiece.getValue("_id") + '" value="↓">',
-                        '<input type="button" name="member_order_bottom_' + datapiece.getValue("_id") + '" value="BOTTOM">'
+                        '<input type="button" name="member_order_bottom_' + datapiece.getValue("_id") + '" value="BOTTOM">',
+                        '<input type="button" name="member_order_remove_' + datapiece.getValue("_id") + '" value="REMOVE">'
                     ].join("")
                 ].join("</td><td>") + "</td>"];
             }).join("</tr><tr>") + "</tr>");
             tbody.find("tr").css({"white-space":"pre"});
             tbody.find('input[type="button"]').css({"min-width":"36px"});
-
+            tbody.find('input[namge^="member_order_remove_"]').css({"background":"#FF2424"});
         },setColorSample:function(){
             var target = form.find('[name="backgroundColor"]').closest("tr").children("td").eq(2);
             target.css({"background":form.find('[name="backgroundColor"]').val(),"color":form.find('[name="fontColor"]').val()});

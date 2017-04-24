@@ -16,7 +16,7 @@
                     <tr><td>リスト</td><td>選択済み</td></tr>
                     <tr><td><input type="button" name="member_add" value="→追加" tabindex="2" onclick='_val.pageFun.editGroup.moveMember("add")'></td><td><input type="button" name="member_remove" value="←削除" tabindex="2" onclick='_val.pageFun.editGroup.moveMember("remove")'></td></tr>
                 </tbody></table><input type="hidden" name="member"></td><td></td></tr>
-                <tr><td>メンバーの順番</td><td><input type="hidden" name="member_order"><table><tbody></tbody></table></td></tr>
+                <tr><td>メンバーの順番</td><td colspan="2"><input type="hidden" name="member_order"><table><tbody></tbody></table></td></tr>
                 <tr class="workGroupOnly"><td colspan="3" style="text-align:center;">UnitGroup</td></tr>
                 <tr class="workGroupOnly"><td>業務ユニット指定用のグループか</td><td><input type="button" name="isUnitGroup" value="No" tabindex="2" onclick='var el=$(this);if(el.val()==="Yes"){el.val("No");}else{el.val("Yes");_val.pageFun.editGroup.setNamePrefix("u_");}'></td><td>同一場所で実行されている人割など、まとめて表示したい人割のグループ設定。</td></tr>
                 <tr class="userGroupOnly"><td colspan="3" style="text-align:center;">MemberOrderGroup</td></tr>
