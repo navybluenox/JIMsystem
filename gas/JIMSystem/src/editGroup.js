@@ -243,8 +243,8 @@ $(function(){
             }else{
                 if(!Array.isArray(ids)) ids = [ids];
                 let move_list,move_selected;
-                move_list = target_list.find("option").filter((i,el) => inArray(ids,$(el).attr("id")));
-                move_selected = target_selected.find("option").filter((i,el) => inArray(ids,$(el).attr("id")));
+                move_list = target_list.find("option").filter((i,el) => inArray(ids,$(el).attr("value")));
+                move_selected = target_selected.find("option").filter((i,el) => inArray(ids,$(el).attr("value")));
                 target_selected.append(move_list);
                 target_list.append(move_selected);
             }
@@ -286,7 +286,7 @@ $(function(){
             }).join("</tr><tr>") + "</tr>");
             tbody.find("tr").css({"white-space":"pre"});
             tbody.find('input[type="button"]').css({"min-width":"36px"});
-            tbody.find('input[namge^="member_order_remove_"]').css({"background":"#FF2424"});
+            tbody.find('input[name^="member_order_remove_"]').css({"background":"#FF2424"});
         },setColorSample:function(){
             var target = form.find('[name="backgroundColor"]').closest("tr").children("td").eq(2);
             target.css({"background":form.find('[name="backgroundColor"]').val(),"color":form.find('[name="fontColor"]').val()});
