@@ -69,7 +69,7 @@ $(function(){
                 }
             });
             (() => {
-                var dr = new DelayRun(pageFun.setMemberList);
+                var dr = new DelayRun(pageFun.setMemberList,200);
                 form.find('[name^=member_search_]').on("keyup",e => dr.runLater());
             })();
 
@@ -263,7 +263,7 @@ $(function(){
                                 value = (dataName_member === "workList" ? [datapiece.getValue("name"),datapiece.getValue("nameShort")] : [datapiece.getValue("nameLast") + datapiece.getValue("nameFirst"),datapiece.getValue("nameLastPhonetic") + datapiece.getValue("nameFirstPhonetic")]);
                                 break;
                         }
-                        flag = flag && (value.length === 0 || value.some(v => (new RegExp(cond.key)).test(v)));
+                        flag = flag && (value.length === 0 || value.some(v => (new RegExp(cond.value)).test(v)));
                     });
                     return flag;
                 });
