@@ -247,20 +247,20 @@ $(function(){
                         var value = [];
                         switch(cond.key){
                             case "azusaSendName":
-                                value = [(dataName_member === "workGroup" ? datapiece.getDatapieceRelated("leaderId","user") : datapiece).getValue("azusaSendName")];
+                                value = [(dataName_member === "workList" ? datapiece.getDatapieceRelated("leaderId","user") : datapiece).getValue("azusaSendName")];
                                 break;
                             case "inchargeCode":
-                                value = (dataName_member === "workGroup" ? [datapiece.getValue("leaderIncharge")] : datapiece.getValue("inchargeCode"));
+                                value = (dataName_member === "workList" ? [datapiece.getValue("leaderIncharge")] : datapiece.getValue("inchargeCode"));
                                 break;
                             case "division":
                                 value = [];
                                 //TODO
                                 break;
                             case "name":
-                                value = (dataName_member === "workGroup" ? [datapiece.getValue("name"),datapiece.getValue("nameShort")] : [datapiece.getValue("nameLast") + datapiece.getValue("nameFirst"),datapiece.getValue("nameLastPhonetic") + datapiece.getValue("nameFirstPhonetic")]);
+                                value = (dataName_member === "workList" ? [datapiece.getValue("name"),datapiece.getValue("nameShort")] : [datapiece.getValue("nameLast") + datapiece.getValue("nameFirst"),datapiece.getValue("nameLastPhonetic") + datapiece.getValue("nameFirstPhonetic")]);
                                 break;
                         }
-                        flag = flag && value.some(v => (new RegExp(cond.key)).test(v))
+                        flag = flag && (value.length === 0 || value.some(v => (new RegExp(cond.key)).test(v)));
                     });
                     return flag;
                 });
