@@ -213,6 +213,7 @@ $(function(){
         },setMemberList:function(){
             var target_list = form.find('[name="member_list"]');
             var target_selected = form.find('[name="member_selected"]');
+            var ids_selected = target_selected.find("option").map((i,el) => $(el).attr("value")).get();
             target_list.children().remove();
             target_selected.children().remove();
             var dataName;
@@ -222,17 +223,22 @@ $(function(){
                 dataName = "workList";
             }
             var ids_search = pageFun.searchMember("member_search_");
-            var data = _val.server.getData(dataName).filter(datapiece => inArray(ids_search,datapiece.getValue("_id")));
+            var data = _val.server.getData(dataName);
+            var data_list = data.filter(datapiece => !inArray(ids_selected,datapiece.getValue("_id")) && inArray(ids_search,datapiece.getValue("_id")));
+            var data_selected = data.filter(datapiece => inArray(ids_selected,datapiece.getValue("_id")));
 
-            target_list.append(Datapiece.sort(data,(dataName === "user" ? ["sortId"] : (dataName === "workList" ? ["leaderIncharge","nameShort"] : []))).map(function(dp){
-                if(dataName === "user"){
-                    return '<option value="' + dp.getValue("_id") + '">' + dp.getValue("nameLast") + " " + dp.getValue("nameFirst") + '</option>';
-                }else if(dataName === "workList"){
-                    return '<option value="' + dp.getValue("_id") + '">' + dp.getValue("nameShort") + '</option>';
-                }
-            }).join(""));
-            target_list.attr("size",Math.min(data.length,20)).find("option").css({"text-align":"left"});
-            target_selected.attr("size",2).find("option").css({"text-align":"left"});
+            [{"data":data_list,"target":target_list},{"data":data_selected,"target":target_selected}].forEach(obj => {
+                obj.target.append(Datapiece.sort(obj.data,(dataName === "user" ? ["sortId"] : (dataName === "workList" ? ["leaderIncharge","nameShort"] : []))).map(function(dp){
+                    if(dataName === "user"){
+                        return '<option value="' + dp.getValue("_id") + '">' + dp.getValue("nameLast") + " " + dp.getValue("nameFirst") + '</option>';
+                    }else if(dataName === "workList"){
+                        return '<option value="' + dp.getValue("_id") + '">' + dp.getValue("nameShort") + '</option>';
+                    }
+                }).join(""));
+            });
+            
+            target_list.attr("size",Math.min(data_list.length,20)).find("option").css({"text-align":"left"});
+            target_selected.attr("size",Math.min(data_selected.length,20)).find("option").css({"text-align":"left"});
         },searchMember:function(prefix){
             var conds = form.find('[name^="' + prefix +'"]').map((i,el) => {
                 el = $(el);
@@ -245,7 +251,6 @@ $(function(){
                 conds = conds.filter(cond => cond.value !== "" && cond.kind === dataName_member);
                 datapieces = _val.server.getData(dataName_member).filter(datapiece => {
                     var flag = true;
-                    //TODO 検索が失敗してる
                     conds.forEach(cond => {
                         if(!flag)  return;
                         var value = [];
@@ -264,7 +269,7 @@ $(function(){
                                 value = (dataName_member === "workList" ? [datapiece.getValue("name"),datapiece.getValue("nameShort")] : [datapiece.getValue("nameLast") + datapiece.getValue("nameFirst"),datapiece.getValue("nameLastPhonetic") + datapiece.getValue("nameFirstPhonetic")]);
                                 break;
                         }
-                        flag = flag && (value.length === 0 || value.some(v => (new RegExp(cond.value)).test(v)));
+                        flag = flag && value.some(v => (new RegExp(cond.value)).test(v));
                     });
                     return flag;
                 });
