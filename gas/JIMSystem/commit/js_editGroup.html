@@ -17,7 +17,6 @@ $(function(){
                 pageFun.searchWorkListId("memberOrderWorkListId");
             });
             form.find('[name="member_order"]').siblings("table").on("click",'[name^="member_order_"][type="button"]',e => {
-                //TODO debugge
                 var button = $(e.currentTarget);
                 var targetTr = button.closest("tr");
                 var targetValue = targetTr.find('[name^="member_order_value_"]');
@@ -27,7 +26,7 @@ $(function(){
 
                 var indexTr = +targetValue.val();
                 var type = button.attr("name").replace(/^member_order_([^_]+)_.+$/,"$1");
-                var workListId = button.attr("name").replace(/^member_order_[^_]+_(.+)$/,"$1");
+                var datapieceId = button.attr("name").replace(/^member_order_[^_]+_(.+)$/,"$1");
 
                 if(
                     (indexTr === 0 && (type === "top" || type === "up")) ||
@@ -53,8 +52,7 @@ $(function(){
                         el.val(+el.val() + (type === "top" ? 1 : -1));
                     });
                     targetValue.val(type === "top" ? 0 : memberNum-1);
-                }else{
-                    //"up" "down"
+                }else if(type === "up" || type === "down"){
                     let moveTr = trs.filter((i,el) => {
                         var index = +$(el).closest("tr").find('[name^="member_order_value_"]').val();
                         return index === indexTr + (type === "up" ? -1 : 1);
@@ -67,6 +65,8 @@ $(function(){
                     }
                     moveValue.val(+moveValue.val() + (type === "up" ? 1 : -1));
                     targetValue.val(+targetValue.val() + (type === "up" ? -1 : 1));
+                }else if(type === "remove"){
+                    pageFun.moveMember(null,datapieceId);
                 }
             });
 
@@ -168,7 +168,6 @@ $(function(){
                         el.val(group.getValue(key));
                     }
                 });
-                //TODO
                 pageFun.showMemberOrderTable(group.getValue("member"));
             }
 
@@ -229,17 +228,26 @@ $(function(){
             }).join(""));
             target_list.attr("size",Math.min(data.length,20)).find("option").css({"text-align":"left"});
             target_selected.attr("size",2).find("option").css({"text-align":"left"});
-        },moveMember:function(type){
+        },moveMember:function(type,ids){
             var target_list = form.find('[name="member_list"]');
             var target_selected = form.find('[name="member_selected"]');
-            var move;
 
-            if(type === "add"){
-                move = target_list.find("option:selected");
-                target_selected.append(move);
-            }else if(type === "remove"){
-                move = target_selected.find("option:selected");
-                target_list.append(move);                
+            if(ids === undefined){
+                let move;
+                if(type === "add"){
+                    move = target_list.find("option:selected");
+                    target_selected.append(move);
+                }else if(type === "remove"){
+                    move = target_selected.find("option:selected");
+                    target_list.append(move);                
+                }
+            }else{
+                if(!Array.isArray(ids)) ids = [ids];
+                let move_list,move_selected;
+                move_list = target_list.find("option").filter((i,el) => inArray(ids,$(el).attr("id")));
+                move_selected = target_selected.find("option").filter((i,el) => inArray(ids,$(el).attr("id")));
+                target_selected.append(move_list);
+                target_list.append(move_selected);
             }
             target_list.attr("size",Math.min(target_list.find("option").length,20));
             target_selected.attr("size",Math.min(target_selected.find("option").length,20));
@@ -268,8 +276,7 @@ $(function(){
                 return ["<td>" + [
                     datapiece.getName(),
                     [
-                        //TODO text => hidden, disabled clear
-                        '<input type="text" disabled name="member_order_value_' + datapiece.getValue("_id") + '" value="' + index + '">',
+                        '<input type="hidden" name="member_order_value_' + datapiece.getValue("_id") + '" value="' + index + '">',
                         '<input type="button" name="member_order_top_' + datapiece.getValue("_id") + '" value="TOP">',
                         '<input type="button" name="member_order_up_' + datapiece.getValue("_id") + '" value="↑">',
                         '<input type="button" name="member_order_down_' + datapiece.getValue("_id") + '" value="↓">',
