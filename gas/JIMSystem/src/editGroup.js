@@ -68,7 +68,7 @@ $(function(){
                     pageFun.moveMember(null,datapieceId);
                 }
             });
-            form.find('[name^=member_search_]').on("change",e => pageFun.setMemberList());
+            form.find('[name^=member_search_]').on("keyup",e => pageFun.setMemberList());
 
         },onunload:function(){   
         },updateGroup:function(kind,_id){
