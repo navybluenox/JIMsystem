@@ -15,7 +15,15 @@
                     <tr><td><select name="member_list" multiple tabindex="2"></select></td><td><select name="member_selected" multiple tabindex="2"></select></td></tr>
                     <tr><td>リスト</td><td>選択済み</td></tr>
                     <tr><td><input type="button" name="member_add" value="→追加" tabindex="2" onclick='_val.pageFun.editGroup.moveMember("add")'></td><td><input type="button" name="member_remove" value="←削除" tabindex="2" onclick='_val.pageFun.editGroup.moveMember("remove")'></td></tr>
-                </tbody></table><input type="hidden" name="member"></td><td></td></tr>
+                </tbody></table><input type="hidden" name="member"></td><td><table><tbody>
+                    <tr class="workGroupOnly"><td>統括の配送名：</td><td><input type="text" name="member_search_workList_azusaSendName" tabindex="2"></td></tr>
+                    <tr class="workGroupOnly"><td>統括の略称：</td><td><input type="text" name="member_search_workList_inchargeCode" tabindex="2"></td></tr>
+                    <tr class="workGroupOnly"><td>統括の局（準備中）：</td><td><input type="text" name="member_search_workList_division" tabindex="2"></td></tr>
+                    <tr class="workGroupOnly"><td>人割名：</td><td><input type="text" name="member_search_workList_name" tabindex="2"></td></tr>
+                    <tr class="userGroupOnly"><td>配送名：</td><td><input type="text" name="member_search_user_azusaSendName" tabindex="2"></td></tr>
+                    <tr class="userGroupOnly"><td>略称</td><td><input type="text" name="member_search_user_inchargeCode" tabindex="2"></td></tr>
+                    <tr class="userGroupOnly"><td>統括の局（準備中）：</td><td><input type="text" name="member_search_user_division" tabindex="2"></td></tr>
+                </tbody></table></td></tr>
                 <tr><td>メンバーの順番</td><td colspan="2"><input type="hidden" name="member_order"><table><tbody></tbody></table></td></tr>
                 <tr class="workGroupOnly"><td colspan="3" style="text-align:center;">UnitGroup</td></tr>
                 <tr class="workGroupOnly"><td>業務ユニット指定用のグループか</td><td><input type="button" name="isUnitGroup" value="No" tabindex="2" onclick='var el=$(this);if(el.val()==="Yes"){el.val("No");}else{el.val("Yes");_val.pageFun.editGroup.setNamePrefix("u_");}'></td><td>同一場所で実行されている人割など、まとめて表示したい人割のグループ設定。</td></tr>

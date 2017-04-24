@@ -69,6 +69,7 @@ $(function(){
                     pageFun.moveMember(null,datapieceId);
                 }
             });
+            form.find('[name^=member_search_]').on("change",e => pageFun.setMemberList());
 
         },onunload:function(){   
         },updateGroup:function(kind,_id){
@@ -217,7 +218,8 @@ $(function(){
             }else if(getCollName() === "workGroup"){
                 dataName = "workList";
             }
-            var data = _val.server.getData(dataName);
+            var ids_search = pageFun.searchMember("member_search_");
+            var data = _val.server.getData(dataName).filter(datapiece => inArray(ids_search,datapiece.getValue("_id")));
 
             target_list.append(Datapiece.sort(data,(dataName === "user" ? ["sortId"] : (dataName === "workList" ? ["leaderIncharge","nameShort"] : []))).map(function(dp){
                 if(dataName === "user"){
@@ -228,6 +230,42 @@ $(function(){
             }).join(""));
             target_list.attr("size",Math.min(data.length,20)).find("option").css({"text-align":"left"});
             target_selected.attr("size",2).find("option").css({"text-align":"left"});
+        },searchMember:function(prefix){
+            var conds = form.find('[name^="' + prefix +'"]').map((i,el) => {
+                el = $(el);
+                var keys = el.attr("name").replace(new RegExp("^" + prefix +"(.+)$"),"$1").split("_");
+                return {"kind":keys[0],"key":keys[1],"value":el.val()};
+            });
+            var datapieces = [];
+            if(prefix === "member_search_"){
+                let dataName_member = (getCollName() === "workGroup" ? "workList" : "user");
+                conds = conds.filter(cond => cond.value !== "" && cond.kind === dataName_member);
+                datapieces = _val.server.getData(dataName_member).filter(datapiece => {
+                    var flag = true;
+                    conds.forEach(cond => {
+                        if(!flag)  return;
+                        var value = [];
+                        switch(cond.key){
+                            case "azusaSendName":
+                                value = [(dataName_member === "workGroup" ? datapiece.getDatapieceRelated("leaderId","user") : datapiece).getValue("azusaSendName")];
+                                break;
+                            case "inchargeCode":
+                                value = (dataName_member === "workGroup" ? [datapiece.getValue("leaderIncharge")] : datapiece.getValue("inchargeCode"));
+                                break;
+                            case "division":
+                                value = [];
+                                //TODO
+                                break;
+                            case "name":
+                                value = (dataName_member === "workGroup" ? [datapiece.getValue("name"),datapiece.getValue("nameShort")] : [datapiece.getValue("nameLast") + datapiece.getValue("nameFirst"),datapiece.getValue("nameLastPhonetic") + datapiece.getValue("nameFirstPhonetic")]);
+                                break;
+                        }
+                        flag = flag && value.some(v => (new RegExp(cond.key)).test(v))
+                    });
+                    return flag;
+                });
+            }
+            return datapieces.map(datapiece => datapiece.getValue("_id"));
         },moveMember:function(type,ids){
             var target_list = form.find('[name="member_list"]');
             var target_selected = form.find('[name="member_selected"]');
