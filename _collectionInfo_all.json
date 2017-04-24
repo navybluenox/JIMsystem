@@ -231,5 +231,29 @@
             "content":"コード"
         },"columnOrder":["_id","created","updated","title","caption","content"],
         "sortColumn":"title","nameColumn":"title"
+    },{
+        "_id":"gm6SVFYwIV0ykN84","created":"2016-07-18T08:00:00.000Z","updated":"2016-07-18T08:00:00.000Z","name":"incharge","fileInfoId":"9n2lJpFLye72b5F2",
+        "column":{
+            "_id":"string",
+            "created":"date",
+            "updated":"date",
+        },"columnName":{
+            "_id":"データID",
+            "created":"作成日時",
+            "updated":"更新日時",
+        },"columnOrder":["_id","created","updated"],
+        "sortColumn":"","nameColumn":""
+    },{
+        "_id":"irwObSOO6b3Z9XA2","created":"2016-07-18T08:00:00.000Z","updated":"2016-07-18T08:00:00.000Z","name":"inchargeGroup","fileInfoId":"rm1QTb7fImVTDgTU",
+        "column":{
+            "_id":"string",
+            "created":"date",
+            "updated":"date",
+        },"columnName":{
+            "_id":"データID",
+            "created":"作成日時",
+            "updated":"更新日時",
+        },"columnOrder":["_id","created","updated"],
+        "sortColumn":"","nameColumn":""
     }],
 "version":0}
