@@ -234,7 +234,7 @@ $(function(){
                 el = $(el);
                 var keys = el.attr("name").replace(new RegExp("^" + prefix +"(.+)$"),"$1").split("_");
                 return {"kind":keys[0],"key":keys[1],"value":el.val()};
-            });
+            }).get();
             var datapieces = [];
             if(prefix === "member_search_"){
                 let dataName_member = (getCollName() === "workGroup" ? "workList" : "user");
