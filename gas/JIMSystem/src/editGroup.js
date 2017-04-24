@@ -68,7 +68,10 @@ $(function(){
                     pageFun.moveMember(null,datapieceId);
                 }
             });
-            form.find('[name^=member_search_]').on("keyup",e => pageFun.setMemberList());
+            (() => {
+                var dr = new DelayRun(pageFun.setMemberList);
+                form.find('[name^=member_search_]').on("keyup",e => dr.runLater());
+            })();
 
         },onunload:function(){   
         },updateGroup:function(kind,_id){
@@ -241,6 +244,7 @@ $(function(){
                 conds = conds.filter(cond => cond.value !== "" && cond.kind === dataName_member);
                 datapieces = _val.server.getData(dataName_member).filter(datapiece => {
                     var flag = true;
+                    //TODO 検索が失敗してる
                     conds.forEach(cond => {
                         if(!flag)  return;
                         var value = [];
