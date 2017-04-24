@@ -235,7 +235,7 @@ $(function(){
                     }
                 }).join(""));
             });
-            
+
             target_list.attr("size",Math.min(data_list.length,20)).find("option").css({"text-align":"left"});
             target_selected.attr("size",Math.min(data_selected.length,20)).find("option").css({"text-align":"left"});
         },searchMember:function(prefix){
@@ -333,7 +333,6 @@ $(function(){
                 ].join("</td><td>") + "</td>"];
             }).filter(v => v !== null).join("</tr><tr>") + "</tr>");
             tbody.find("tr").css({"white-space":"pre"});
-            //tbody.find('input[type="button"]').css({"min-width":"36px"});
             tbody.find('input[name^="member_order_remove_"]').css({"background":"#FF7f7f"});
         },setColorSample:function(){
             var target = form.find('[name="backgroundColor"]').closest("tr").children("td").eq(2);
