@@ -272,6 +272,7 @@ $(function(){
             tbody.children().remove();
             tbody.append("<tr>" + ids.map((memberId,index) => {
                 var datapiece = _val.server.getDataById(memberId,(getCollName() === "workGroup" ? "workList" : "user"))[0];
+                if(datapiece === undefined)  return null;
                 return ["<td>" + [
                     datapiece.getName(),
                     [
@@ -283,7 +284,7 @@ $(function(){
                         '<input type="button" name="member_order_remove_' + datapiece.getValue("_id") + '" value="REMOVE">'
                     ].join("")
                 ].join("</td><td>") + "</td>"];
-            }).join("</tr><tr>") + "</tr>");
+            }).filter(v => v !== null).join("</tr><tr>") + "</tr>");
             tbody.find("tr").css({"white-space":"pre"});
             //tbody.find('input[type="button"]').css({"min-width":"36px"});
             tbody.find('input[name^="member_order_remove_"]').css({"background":"#FF7f7f"});
