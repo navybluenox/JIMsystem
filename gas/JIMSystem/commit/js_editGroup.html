@@ -286,8 +286,8 @@ $(function(){
                 ].join("</td><td>") + "</td>"];
             }).join("</tr><tr>") + "</tr>");
             tbody.find("tr").css({"white-space":"pre"});
-            tbody.find('input[type="button"]').css({"min-width":"36px"});
-            tbody.find('input[name^="member_order_remove_"]').css({"background":"#FF2424"});
+            //tbody.find('input[type="button"]').css({"min-width":"36px"});
+            tbody.find('input[name^="member_order_remove_"]').css({"background":"#FF7f7f"});
         },setColorSample:function(){
             var target = form.find('[name="backgroundColor"]').closest("tr").children("td").eq(2);
             target.css({"background":form.find('[name="backgroundColor"]').val(),"color":form.find('[name="fontColor"]').val()});
