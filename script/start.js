@@ -74,8 +74,9 @@
                     if(_val.config === undefined){
                         throw new Error("configデータが不正です。設定したモードに対応するconfigデータがありません。");
                     }
-                    return Server.handlePropertiesService("updated_" + _val.config.getValue("modeName"),"script","get").then(v => {
-                        _val.systemUpdated = new Date(v);
+                    var key_systemUpdated = "updated_" + _val.config.getValue("modeName");
+                    return Server.handlePropertiesService(key_systemUpdated,"script","get").then(v => {
+                        _val.systemUpdated = new Date(v[key_systemUpdated]);
                     })
                 }).then(() => {
                     Server.initialize({"config":_val.config,"systemUpdated":_val.systemUpdated});
