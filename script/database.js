@@ -1286,6 +1286,7 @@ class WorkList extends Datapiece{
 
 class Incharge extends Datapiece{
     constructor(datapieceObj,option){
+        if(option === undefined)  option = {};
         super(datapieceObj, option.dataName === undefined ? "incharge" : option.dataName, option);
     }
 }
