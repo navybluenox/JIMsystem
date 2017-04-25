@@ -142,17 +142,23 @@ var Server = (function(){
         }
         loadDataAll(){
             var that = this;
-            return Promise.all(cache.collectionInfo.map(function(collInfo){
-                return that.loadData(collInfo);
+            return Promise.all(Server.loadOrderList().map(dataNames => {
+                return Promise.all(dataNames.map(dataName => that.loadData(dataName)));
             }));
+            /*return Promise.all(cache.collectionInfo.map(function(collInfo){
+                return that.loadData(collInfo);
+            }));*/
         }
         reloadDataAll(){
             var that = this;
-            return Promise.all(Object.keys(cache).map(function(dataName){
+            return Promise.all(Server.loadOrderList().map(dataNames => {
+                return Promise.all(dataNames.map(dataName => that.reloadData(dataName)));
+            }));
+            /*return Promise.all(Object.keys(cache).map(function(dataName){
                 return that.getCollectionInfoByName(dataName)
             }).map(function(collInfo){
                 return that.reloadData(collInfo);
-            }));
+            }));*/
         }
         getData(dataName,newCopy,preventSkip){
             if(newCopy === undefined || newCopy === null)  newCopy = true;
@@ -491,6 +497,15 @@ var Server = (function(){
         }
         static setFileContent(fileId,content){
             return runServerFun("Script.updateFileToDrive",[fileId,content]);
+        }
+        static loadOrderList(){
+            var allDataNames = cache.collectionInfo.map(collInfo => collInfo.getValue("name"));
+            var orderList = [
+                ["user","workList"]
+            ];
+            var _orderList = orderList.slice().reduce((prev,curt) => prev.concat(curt),[]);
+            var orderList_other = allDataNames.filter(name => !inArray(_orderList,name));
+            return orderList.concat(orderList_other);
         }
     };
 })();
