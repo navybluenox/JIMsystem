@@ -7,26 +7,28 @@ $(function(){
         onload:function(){
             pageFun = _val.pageFun.runUserScript;
             textarea = $('#formRunUserScript textarea[name="content"]');
-            _val.server.loadDataAll().then(()=>{
-                pageFun.setScriptLibraryList();
-                $("#formScriptLibrary_list").on("click",'input[type="button"]',e=>{
-                    var button = $(e.currentTarget);
-                    var kind = button.attr("name");
-                    var scriptLibrary = _val.server.getDataById(button.siblings('[name="id"]').val(),"scriptLibrary")[0];
-                    switch(kind){
-                        case "edit":
-                            scriptLibrary_editing = scriptLibrary;
-                            $('#formRunUserScript [name="edit"]').prop("disabled",false).val("変更を保存 [編集中:" + scriptLibrary.getValue("title") + "]");
-                        case "put":
-                            textarea.val(scriptLibrary.getValue("content"));
-                            break;
-                        case "remove":
-                            _val.server.removeData(scriptLibrary).sendUpdateQueue();
-                            scriptLibrary_editing = null;
-                            $('#formRunUserScript [name="edit"]').prop("disabled",true).val("↓編集する文例を選択してください");
-                            break;
-                    }
+            Promise.all([_val.server.loadData("user"),_val.server.loadData("workList")]).then(() => {
+                return _val.server.loadDataAll().then(()=>{
                     pageFun.setScriptLibraryList();
+                    $("#formScriptLibrary_list").on("click",'input[type="button"]',e=>{
+                        var button = $(e.currentTarget);
+                        var kind = button.attr("name");
+                        var scriptLibrary = _val.server.getDataById(button.siblings('[name="id"]').val(),"scriptLibrary")[0];
+                        switch(kind){
+                            case "edit":
+                                scriptLibrary_editing = scriptLibrary;
+                                $('#formRunUserScript [name="edit"]').prop("disabled",false).val("変更を保存 [編集中:" + scriptLibrary.getValue("title") + "]");
+                            case "put":
+                                textarea.val(scriptLibrary.getValue("content"));
+                                break;
+                            case "remove":
+                                _val.server.removeData(scriptLibrary).sendUpdateQueue();
+                                scriptLibrary_editing = null;
+                                $('#formRunUserScript [name="edit"]').prop("disabled",true).val("↓編集する文例を選択してください");
+                                break;
+                        }
+                        pageFun.setScriptLibraryList();
+                    });
                 });
             });
             textarea.on("keydown",function(e){

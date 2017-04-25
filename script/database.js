@@ -1288,5 +1288,93 @@ class Incharge extends Datapiece{
         if(option === undefined)  option = {};
         super(datapieceObj, option.dataName === undefined ? "incharge" : option.dataName, option);
     }
+    getParent(){
+        return this.isAllParent() ? this : Datapiece.getServer().getDataById(this.getValue("parentIncharge"),"incharge")[0];
+    }
+    getMemberUsers(eliminatedIdObjs){
+        if(eliminatedIdObjs === undefined)  eliminatedIdObjs = [];
+        var eliminatedIds_user = eliminatedIdObjs.filter(obj => obj.dataName === "user").map(obj => obj.id),
+            eliminatedIds_incharge = eliminatedIdObjs.filter(obj => obj.dataName === "incharge").map(obj => obj.id);
+
+        var members = this.getValue("member").filter(obj => {
+            if(obj.dataName === "user")  return !inArray(eliminatedIds_user,obj.id);
+            if(obj.dataName === "incharge")  return !inArray(eliminatedIds_incharge,obj.id);
+            return false;
+        });
+
+        var users = Datapiece.getServer().getData("user");
+        var incharges = Datapiece.getServer().getData("incharge");
+
+        return members.map(obj => {
+            if(obj.dataName === "user")  return users.find(user => user.getValue("_id") ===  obj.id);
+            if(obj.dataName === "incharge"){
+                return incharges.find(Incharge => incharge.getValue("_id") === obj.id).getMemberUsers(members.concat(eliminatedIdObjs));
+            }
+            return undefined;
+        }).filter(user => user !== undefined);
+
+    }
+    getRelevantIncharge(deep,eliminatedIds){
+        deep = deep === undefined ? true : deep;
+        eliminatedIds = eliminatedIds === undefined ? [] : eliminatedIds;
+        var incharges = Datapiece.getServer().getData("incharge");
+        if(deep){
+            let ids = this.getValue("relevantIncharge").filter(id => !inArray(eliminatedIds,id));
+            return ids.map(id => incharges.find(Incharge => incharges.gatValue("_id") === id))
+                .filter(incharge => incharge !== undefined)
+                .map(incharge => {
+                    return incharge.getRelevantIncharge(deep,ids.concat(eliminatedIds));
+                }).reduce((prev,curt) => prev.concat(curt),[]);
+        }else{
+            return this.getValue("relevantIncharge")
+                .filter(id => !inArray(eliminatedIds,id))
+                .map(id => incharges.find(Incharge => incharges.gatValue("_id") === id))
+                .filter(incharge => incharge !== undefined);
+        }
+    }
+    getAllParent(){
+        return this.isAllParent() ? this : this.getParent().getAllParent();
+    }
+    getDivision(){
+        if(this.isAllParent())  return null;
+        return this.isDivision() ? this : this.getParent().getDivision();
+    }
+    getOrg(){
+        return this.getAllParent().getValue("code").replace(/^([a-zA-Z]+)\d+$/,"$1");
+    }
+    getNth(){
+        //type == string
+        return "" + this.getAllParent().getValue("code").replace(/^[a-zA-Z]+(\d+)$/,"$1");
+    }
+    getDiffFromPresentTerm(){
+        var orderList = Incharge.getTermOrder();
+        var config = Datapiece.getConfig();
+        var presentTermIndex = orderList.find(obj => obj.org === config.getValue("content.kind") && org.nth === ("" + config.getValue("content.nth")));
+        var thisTermIndex = orderList.find(obj => obj.org === this.getOrg() && org.nth === ("" + this.getNth()));
+        return thisTermIndex - presentTermIndex;
+    }
+    isPresentTerm(){
+        return this.getDiffFromPresentTerm === 0;
+    }
+    isDivision(){
+        var parent = this.getParent();
+        return parent !== undefined && !this.isAllParent() && parent.getParent().isAllParent();
+    }
+    isAllParent(){
+        return this.getValue("isAllParent");
+    }
+    isInvisible(){
+        return this.getValue("isInvisible") || (this.isAllParent() ? this.getValue("isInvisible") : this.getParent().isInvisible());
+    }
+    static getTermOrder(){
+        return [
+            {"org":"KF","nth":"68",},{"org":"MF","nth":"90",},{"org":"OC","nth":"17",}, //2017
+            {"org":"KF","nth":"67",},{"org":"MF","nth":"89",},{"org":"OC","nth":"16",}, //2016
+            {"org":"KF","nth":"66",},{"org":"MF","nth":"88",},{"org":"OC","nth":"15",}, //2015
+            {"org":"KF","nth":"65",},{"org":"MF","nth":"87",},{"org":"OC","nth":"14",}, //2014
+            {"org":"KF","nth":"64",},{"org":"MF","nth":"86",},{"org":"OC","nth":"13",}, //2013
+            {"org":"KF","nth":"63",},{"org":"MF","nth":"85",},{"org":"OC","nth":"12",}  //2012
+        ];
+    }
 }
 

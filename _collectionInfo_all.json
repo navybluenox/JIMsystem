@@ -241,8 +241,8 @@
             "code":"string",
             "parentIncharge":"string",
             "member":[{"dataName":"string","id":"string"}],
-            "hide":"boolean",
-            "relevantIncharge":[{"dataName":"string","id":"string"}],
+            "isInvisible":"boolean",
+            "relevantIncharge":["string"],
             "isAllParent":"boolean"
         },"columnName":{
             "_id":"データID",
@@ -252,10 +252,10 @@
             "code":"担当の略称",
             "parentIncharge":"直上の担当グループ",
             "member":[{"_name":"グループメンバー","dataName":"コレクション名","id":"データID"}],
-            "hide":"人割表に表示しないか",
-            "relevantIncharge":[{"_name":"関係する担当","dataName":"コレクション名","id":"データID"}],
+            "isInvisible":"人割表に表示しないか",
+            "relevantIncharge":["関係する担当のデータID"],
             "isAllParent":"全ての親であるか"
-        },"columnOrder":["_id","created","updated","name","code","parentIncharge","member.0.dataName","member.0.id","hide","relevantIncharge.0.dataName","relevantIncharge.0.id","isAllParent"],
+        },"columnOrder":["_id","created","updated","name","code","parentIncharge","member.0.dataName","member.0.id","isInvisible","relevantIncharge.0","isAllParent"],
         "sortColumn":"code","nameColumn":"name"
     }],
 "version":0}
