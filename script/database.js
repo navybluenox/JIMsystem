@@ -1380,5 +1380,13 @@ class Incharge extends Datapiece{
             {"org":"KF","nth":"63",},{"org":"MF","nth":"85",},{"org":"OC","nth":"12",}  //2012
         ];
     }
+    static getPresentInchargesInOrder(){
+        //名簿順
+        //TODO
+        //memberの配列の順番依存
+
+        var allParent = Datapiece.getServer().getData("incharge").find(incharge => incharge.getValue("isAllParent") && incharge.isPresentTerm());
+    }
+
 }
 
