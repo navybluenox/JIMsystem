@@ -1289,26 +1289,26 @@ class Incharge extends Datapiece{
         super(datapieceObj, option.dataName === undefined ? "incharge" : option.dataName, option);
     }
     getParent(){
-        return this.isAllParent() ? this : Datapiece.getServer().getDataById(this.getValue("parentIncharge"),"incharge")[0];
+        return this.isAllParent() ? this : Datapiece.getServer().getDataById(this.getValue("parentIncharge"),this.getDataName())[0];
     }
     getMemberUsers(eliminatedIdObjs){
         if(eliminatedIdObjs === undefined)  eliminatedIdObjs = [];
         var eliminatedIds_user = eliminatedIdObjs.filter(obj => obj.dataName === "user").map(obj => obj.id),
-            eliminatedIds_incharge = eliminatedIdObjs.filter(obj => obj.dataName === "incharge").map(obj => obj.id);
+            eliminatedIds_incharge = eliminatedIdObjs.filter(obj => obj.dataName === this.getDataName()).map(obj => obj.id);
 
         var members = this.getValue("member").filter(obj => {
             if(obj.dataName === "user")  return !inArray(eliminatedIds_user,obj.id);
-            if(obj.dataName === "incharge")  return !inArray(eliminatedIds_incharge,obj.id);
+            if(obj.dataName === this.getDataName())  return !inArray(eliminatedIds_incharge,obj.id);
             return false;
         });
 
         var users = Datapiece.getServer().getData("user");
-        var incharges = Datapiece.getServer().getData("incharge");
+        var incharges = Datapiece.getServer().getData(this.getDataName());
 
         return members.map(obj => {
             if(obj.dataName === "user")  return users.find(user => user.getValue("_id") ===  obj.id);
-            if(obj.dataName === "incharge"){
-                return incharges.find(Incharge => incharge.getValue("_id") === obj.id).getMemberUsers(members.concat(eliminatedIdObjs));
+            if(obj.dataName === this.getDataName()){
+                return incharges.find(incharge => incharge.getValue("_id") === obj.id).getMemberUsers(members.concat(eliminatedIdObjs));
             }
             return undefined;
         }).filter(user => user !== undefined);
@@ -1317,7 +1317,7 @@ class Incharge extends Datapiece{
     getRelevantIncharge(deep,eliminatedIds){
         deep = deep === undefined ? true : deep;
         eliminatedIds = eliminatedIds === undefined ? [] : eliminatedIds;
-        var incharges = Datapiece.getServer().getData("incharge");
+        var incharges = Datapiece.getServer().getData(this.getDataName());
         if(deep){
             let ids = this.getValue("relevantIncharge").filter(id => !inArray(eliminatedIds,id));
             return ids.map(id => incharges.find(Incharge => incharges.gatValue("_id") === id))
@@ -1349,8 +1349,8 @@ class Incharge extends Datapiece{
     getDiffFromPresentTerm(){
         var orderList = Incharge.getTermOrder();
         var config = Datapiece.getConfig();
-        var presentTermIndex = orderList.find(obj => obj.org === config.getValue("content.kind") && org.nth === ("" + config.getValue("content.nth")));
-        var thisTermIndex = orderList.find(obj => obj.org === this.getOrg() && org.nth === ("" + this.getNth()));
+        var presentTermIndex = orderList.find(obj => obj.org === config.getValue("content.kind") && obj.nth === ("" + config.getValue("content.nth")));
+        var thisTermIndex = orderList.find(obj => obj.org === this.getOrg() && obj.nth === ("" + this.getNth()));
         return thisTermIndex - presentTermIndex;
     }
     isPresentTerm(){
@@ -1358,10 +1358,14 @@ class Incharge extends Datapiece{
     }
     isDivision(){
         var parent = this.getParent();
-        return parent !== undefined && !this.isAllParent() && parent.getParent().isAllParent();
+        return parent !== undefined && !this.isAllParent() && parent.isAllParent();
     }
     isAllParent(){
         return this.getValue("isAllParent");
+    }
+    isEndChild(){
+        var incharges = Datapiece.getServer().getData(this.getDataName());
+        return incharges.findIndex(incharge => incharge.getValue("parentIncharge") === this.getValue("_id")) === -1;
     }
     isInvisible(){
         return this.getValue("isInvisible") || (this.isAllParent() ? this.getValue("isInvisible") : this.getParent().isInvisible());
