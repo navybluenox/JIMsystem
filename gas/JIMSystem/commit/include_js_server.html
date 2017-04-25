@@ -166,7 +166,7 @@ var Server = (function(){
         reloadDataAll(){
             var that = this;
             var trigger = false;
-            var promiseChain = new Promise(() => {
+            var promiseChain = new Promise((resolve,reject) => {
                 var si = setInterval(() => {
                     if(trigger){
                           clearInterval(si);
