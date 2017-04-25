@@ -1311,7 +1311,7 @@ class Incharge extends Datapiece{
                 return incharges.find(incharge => incharge.getValue("_id") === obj.id).getMemberUsers(members.concat(eliminatedIdObjs));
             }
             return undefined;
-        }).filter(user => user !== undefined);
+        }).filter(user => user !== undefined).reduce((prev,curt) => prev.concat(curt),[]);
 
     }
     getRelevantIncharge(deep,eliminatedIds){
@@ -1349,8 +1349,8 @@ class Incharge extends Datapiece{
     getDiffFromPresentTerm(){
         var orderList = Incharge.getTermOrder();
         var config = Datapiece.getConfig();
-        var presentTermIndex = orderList.find(obj => obj.org === config.getValue("content.kind") && obj.nth === ("" + config.getValue("content.nth")));
-        var thisTermIndex = orderList.find(obj => obj.org === this.getOrg() && obj.nth === ("" + this.getNth()));
+        var presentTermIndex = orderList.findIndex(obj => obj.org === config.getValue("content.kind") && obj.nth === ("" + config.getValue("content.nth")));
+        var thisTermIndex = orderList.findIndex(obj => obj.org === this.getOrg() && obj.nth === ("" + this.getNth()));
         return thisTermIndex - presentTermIndex;
     }
     isPresentTerm(){
