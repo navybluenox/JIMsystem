@@ -506,7 +506,8 @@ var Server = (function(){
             ];
             var _orderList = orderList.slice().reduce((prev,curt) => prev.concat(curt),[]);
             var orderList_other = allDataNames.filter(name => !inArray(_orderList,name));
-            return orderList.concat(orderList_other);
+            orderList.push(orderList_other);
+            return orderList;
         }
     };
 })();
