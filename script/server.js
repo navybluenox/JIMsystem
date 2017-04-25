@@ -142,18 +142,44 @@ var Server = (function(){
         }
         loadDataAll(){
             var that = this;
-            return Promise.all(Server.loadOrderList().map(dataNames => {
-                return Promise.all(dataNames.map(dataName => that.loadData(dataName)));
-            }));
+            var trigger = false;
+            var promiseChain = new Promise(() => {
+                var si = setInterval(() => {
+                    if(trigger){
+                          clearInterval(si);
+                          resolve();
+                    }
+                },10);
+            });
+            Server.loadOrderList().map(dataNames => {
+                promiseChain = promiseChain.then(() => {
+                    return Promise.all(dataNames.map(dataName => that.loadData(dataName)));
+                });
+            });
+            trigger = true;
+            return promiseChain;
             /*return Promise.all(cache.collectionInfo.map(function(collInfo){
                 return that.loadData(collInfo);
             }));*/
         }
         reloadDataAll(){
             var that = this;
-            return Promise.all(Server.loadOrderList().map(dataNames => {
-                return Promise.all(dataNames.map(dataName => that.reloadData(dataName)));
-            }));
+            var trigger = false;
+            var promiseChain = new Promise(() => {
+                var si = setInterval(() => {
+                    if(trigger){
+                          clearInterval(si);
+                          resolve();
+                    }
+                },10);
+            });
+            Server.loadOrderList().map(dataNames => {
+                promiseChain = promiseChain.then(() => {
+                    return Promise.all(dataNames.map(dataName => that.reloadData(dataName)));
+                });
+            });
+            trigger = true;
+            return promiseChain;
             /*return Promise.all(Object.keys(cache).map(function(dataName){
                 return that.getCollectionInfoByName(dataName)
             }).map(function(collInfo){
