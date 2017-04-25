@@ -215,7 +215,10 @@ $(function(){
                     }else{
                         inputs.prop("disabled",false).css("background","inherit");
                     }
-                })
+                });
+
+                //最後にdataNameを選択するselectタグをunfoucsする
+                $("#formEditDatabase_result table").trigger("foucs");
             });
         },
         updateData:function(){

@@ -772,7 +772,6 @@ class CollectionInfo extends Datapiece{
             {name:"collectionInfo",class:CollectionInfo},
             {name:"fileInfo",class:FileInfo},
             {name:"incharge",class:Incharge},
-            {name:"inchargeGroup",class:InchargeGroup},
             {name:"scriptLibrary",class:ScriptLibrary},
             {name:"systemConfig",class:SystemConfig},
             {name:"user",class:User},
@@ -1291,10 +1290,3 @@ class Incharge extends Datapiece{
     }
 }
 
-class InchargeGroup extends Incharge{
-    constructor(datapieceObj,option){
-        if(option === undefined)  option = {};
-        option.dataName = (option.dataName === undefined ? "inchargeGroup" : option.dataName);
-        super(datapieceObj,option);
-    }
-}
