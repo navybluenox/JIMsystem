@@ -161,7 +161,7 @@ $(function(){
                         if(cellObj.columnIndex === 0){
                             cellObj.$el.append('<a herf="#_id">' + cellObj.value + "</a>");
                         }else if(cellObj.column === column){
-                            cellObj.$el.text(castIntoString(cellObj.column === "_id" ? cellObj.rowData.getName() : cellObj.value));
+                            cellObj.$el.text(castIntoString(cellObj.column === "_id" ? _val.server.getDataById(cellObj.rowData,dataName)[0].getName() : cellObj.value));
                         }
                     }).el;
                     _table.on("mouseover.openSearchWindow_idList",'a[herf="#_id"]',function(e){
