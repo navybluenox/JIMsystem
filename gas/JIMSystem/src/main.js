@@ -156,7 +156,7 @@ $(function(){
                         }
                     }).map(function(v){return v.getValues()});
                     el.find('[name="resultField"]').children().remove();
-                    var _table = createTable(el.find('[name="resultField"]'),data,["_id",cellObj.column === "_id" ? "@name" : column],function(cellObj){
+                    var _table = createTable(el.find('[name="resultField"]'),data,["_id",column === "_id" ? "@name" : column],function(cellObj){
                         if(cellObj.columnIndex === 0){
                             cellObj.$el.append('<a herf="#_id">' + cellObj.value + "</a>");
                         }else if(cellObj.column === column){
