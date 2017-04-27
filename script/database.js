@@ -1287,6 +1287,9 @@ class Incharge extends Datapiece{
     constructor(datapieceObj,option){
         if(option === undefined)  option = {};
         super(datapieceObj, option.dataName === undefined ? "incharge" : option.dataName, option);
+        Object.defineProperty(this._data,"@name",{
+            "get":() => this.getOrg() + this.getNth() + this.getValue("code")
+        });
     }
     getParent(){
         return this.isAllParent() ? this : Datapiece.getServer().getDataById(this.getValue("parentIncharge"),this.getDataName())[0];

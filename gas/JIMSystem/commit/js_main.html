@@ -90,8 +90,7 @@ $(function(){
                 var result = el.find('[name="resultField"]');
                 _val.server.loadData(dataName).then(function(){
                     data = _val.server.getData(dataName,null,true).filter(function(dp){
-                        if(column === "") return true;
-                        var value = dp.getValue(column);
+                        var value = (column === "_id" || column === "" ? dp.getName() : dp.getValue(column));
                         var unit;
                         switch(type){
                             case "string":
@@ -131,6 +130,9 @@ $(function(){
                                     unit = "timeunit";
                                 }
                                 return castType(keyword,"localdate").compareTime(value,unit);
+                            case "array":
+                            case "object":
+                                return (new RegExp(keyword)).test("" + JSON.stringify(value));                                
                             default:
                                 return;
                         }
@@ -155,11 +157,11 @@ $(function(){
                         }
                     }).map(function(v){return v.getValues()});
                     el.find('[name="resultField"]').children().remove();
-                    var _table = createTable(el.find('[name="resultField"]'),data,["_id",column],function(cellObj){
-                        if(cellObj.column === "_id"){
+                    var _table = createTable(el.find('[name="resultField"]'),data,["_id",cellObj.column === "_id" ? "@name" : column],function(cellObj){
+                        if(cellObj.columnIndex === 0){
                             cellObj.$el.append('<a herf="#_id">' + cellObj.value + "</a>");
                         }else if(cellObj.column === column){
-                            cellObj.$el.text(castIntoString(cellObj.value));
+                            cellObj.$el.text(castIntoString(cellObj.column === "_id" ? cellObj.rowData.getName() : cellObj.value));
                         }
                     }).el;
                     _table.on("mouseover.openSearchWindow_idList",'a[herf="#_id"]',function(e){

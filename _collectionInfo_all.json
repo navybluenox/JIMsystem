@@ -256,6 +256,6 @@
             "relevantIncharge":["関係する担当のデータID"],
             "isAllParent":"全ての親であるか"
         },"columnOrder":["_id","created","updated","name","code","parentIncharge","member.0.dataName","member.0.id","isInvisible","relevantIncharge.0","isAllParent"],
-        "sortColumn":"code","nameColumn":"name"
+        "sortColumn":"code","nameColumn":"@name"
     }],
 "version":0}

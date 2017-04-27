@@ -247,6 +247,7 @@ function createTable(parent,data,columns,callback,option){
                 "el":$cell,
                 "value":v,
                 "column":column,
+                "columnIndex":columnIndex,
                 "rowData":value,
                 "index":rowIndex
             });
