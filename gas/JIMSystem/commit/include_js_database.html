@@ -1297,7 +1297,7 @@ class Incharge extends Datapiece{
     }
     getParent(getFromData){
         getFromData = getFromData === undefined ? false : getFromData;
-        return (getFromData ? this.isAllParent() ? this : Datapiece.getServer().getDataById(this.getValue("parentIncharge"),this.getDataName())[0] : this._parent);
+        return (getFromData ? (this.isAllParent() ? this : Datapiece.getServer().getDataById(this.getValue("parentIncharge"),this.getDataName())[0]) : this._parent);
     }
     getMemberIncharges(eliminatedIds){
         if(eliminatedIds === undefined)  eliminatedIds = [];
