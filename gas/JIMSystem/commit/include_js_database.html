@@ -1299,10 +1299,10 @@ class Incharge extends Datapiece{
 
         var member = this.getValue("member")
             .filter(obj => obj.dataName === "incharge" && !inArray(eliminatedIds,obj.id))
-            .map(obj => obj.id);
+            .map(obj => Datapiece.getServer().getDataById(obj.id,this.getDataName())[0])
+            .filter(incharge => incharge !== undefined);
 
-        return member.map(id => this.getMemberIncharges(member.concat(eliminatedIds)));
-        //TODO debug
+        return member.map(incharge => incharge.getMemberIncharges(member.concat(eliminatedIds))).reduce((prev,curt) => prev.concat(curt),[]);
     }
     getMemberUsers(eliminatedIdObjs){
         if(eliminatedIdObjs === undefined)  eliminatedIdObjs = [];
