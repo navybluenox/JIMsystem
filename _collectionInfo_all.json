@@ -74,6 +74,7 @@
             "nameFirst":"string",
             "nameLastPhonetic":"string",
             "nameFirstPhonetic":"string",
+            "inchargeId":["string"],
             "incharge":["string"],
             "inchargeCode":["string"],
             "oldIncharge":[{"org":"string","nth":"number","code":"string","display":"boolean"}],
@@ -92,12 +93,13 @@
             "nameFirst":"名",
             "nameLastPhonetic":"姓（ふりがな）",
             "nameFirstPhonetic":"名（ふりがな）",
+            "inchargeId":["担当ID"],
             "incharge":["担当名"],
             "inchargeCode":["担当略称"],
             "oldIncharge":[{"_name":"過去の担当","org":"団体の略称","nth":"期","code":"担当の略称","display":"表示するか"}],
             "isRojin":"老人であるか",
             "isAvailable":"今期に参加するか"
-        },"columnOrder":["_id","created","updated","sortId","azusaId","azusaSendName","cellphone","grade","nameLast","nameFirst","nameLastPhonetic","nameFirstPhonetic","incharge.0","inchargeCode.0","oldIncharge.0.org","oldIncharge.0.nth","oldIncharge.0.code","isRojin","isAvailable"],
+        },"columnOrder":["_id","created","updated","sortId","azusaId","azusaSendName","cellphone","grade","nameLast","nameFirst","nameLastPhonetic","nameFirstPhonetic","inchargeId.0","incharge.0","inchargeCode.0","oldIncharge.0.org","oldIncharge.0.nth","oldIncharge.0.code","isRojin","isAvailable"],
         "sortColumn":"sortId","nameColumn":"@name"
     },{
         "_id":"fZBpdfgWyMZdAp3W","created":"2016-07-18T08:00:00.000Z","updated":"2016-07-18T08:00:00.000Z","name":"userGroup","fileInfoId":"QYybMQc3gGZyXBk5",
@@ -188,6 +190,7 @@
             "name":"string",
             "nameShort":"string",
             "leaderId":"string",
+            "leaderInchargeId":"string",
             "leaderIncharge":"string",
             "detail":[{"start":"localdate","number":"string"}],
             "description":"string",
@@ -202,6 +205,7 @@
             "name":"人割名",
             "nameShort":"人割名（省略用）",
             "leaderId":"統括のUserID",
+            "leaderInchargeId":"統括の担当ID",
             "leaderIncharge":"統括の担当略称",
             "detail":[{"_name":"時間・人数","start":"開始時間","number":"各単位人割時間ごとの人数"}],
             "description":"業務内容",

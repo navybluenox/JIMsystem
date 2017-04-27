@@ -221,7 +221,7 @@ var Server = (function(){
             if(!Array.isArray(ids))  ids = [ids];
             return this.getData(dataName,newCopy,preventSkip).filter(function(data){
                 return inArray(ids,data.getValue("_id"));
-            });
+            }).sort((a,b) => ids.findIndex(a.getValue("_id")) - ids.findIndex(b.getValue("_id")));
         }
         getCollectionInfoByName(dataName){
             return this.getData("collectionInfo").find(function(collInfo){

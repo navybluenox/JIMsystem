@@ -911,8 +911,36 @@ class User extends Datapiece{
                 return that._workAssigns.slice();
             }
         });
+
+        /*
+        //TODO
+        //Inchargeからのエイリアス
+        var keyOverwrite = (function(){
+            Object.defineProperty(this._data,"incharge",{"get":() => this.getIncharge().map(incharge => incharge.getValue("name"))});
+            Object.defineProperty(this._data,"inchargeCode",{"get":() => this.getIncharge().map(incharge => incharge.getValue("code"))});
+            Object.defineProperty(this._data,"oldIncharge",{"get":() => {
+                return this.getIncharge(true).filter(incharge => !incharge.isPresentTerm()).map(incharge => {
+                    return {"org":incharge.getOrg(),"nth":+incharge.getNth(),"code":incharge.getValue("code"),"display":!incharge.isInvisible()};
+                });
+            }});
+        }).bind(this);
+
+        keyOverwrite();
+
+        this.addEventListener("updated loaded",e => {
+            this.getIncharge(true,true);
+            keyOverwrite();
+        });
+        */
+
         //軽量化のためにworkAssignIdを記録
         this.refreshWorkAssignList();
+    }
+    getIncharge(isAll,getFromData){
+        isPresent = isPresent === undefined ? false : isPresent;
+        getFromData = getFromData === undefined ? false : getFromData;
+        if(this._incharge === undefined || getFromData)  this._incharge = Datapiece.getServer().getDataById(this.getValue("inchargeId"));
+        return isAll ? this._incharge.slice() : this._incharge.filter(incharge => incharge.isPresentTerm());
     }
     getBackgroundColor(){
         return UserGroup.getColorByUserId(this.getValue("_id"),"background");
@@ -1176,6 +1204,21 @@ class WorkList extends Datapiece{
                 return that._workAssigns.slice();
             }
         });
+
+        /*
+        //TODO
+        //Inchargeからのエイリアス
+        var keyOverwrite = (function(){
+            Object.defineProperty(this._data,"leaderIncharge",{"get":() => this.getDatapieceRelated("leaderInchargeId","incharge").getValue("code")});
+        }).bind(this);
+
+        keyOverwrite();
+
+        this.addEventListener("updated loaded",e => {
+            keyOverwrite();
+        });
+        */
+
         //軽量化のためにworkAssignIdを記録
         this.refreshWorkAssignList();
     }
