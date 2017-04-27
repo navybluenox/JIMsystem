@@ -122,6 +122,7 @@ var Server = (function(){
                         cache[dataName] = v.data.map(function(dataObj){
                             return new thisClass(dataObj,option);
                         });
+                        cache[dataName].forEach(dp => dp.triggerEvent("loaded"));
                         that._updated[dataName] = (v.updated === "" || v.updated === undefined ? null : new Date(v.updated));
                         that._version[dataName] = +v.version;
                         that._loading = that._loading.filter(function(obj){return obj.id !== loadingId});

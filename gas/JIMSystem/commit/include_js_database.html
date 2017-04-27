@@ -1291,9 +1291,13 @@ class Incharge extends Datapiece{
         Object.defineProperty(this._data,"@name",{
             "get":() => this.getOrg() + this.getNth() + this.getValue("code")
         });
+        this.addEventListener("updated loaded",e => {
+            this._parent = this.getParent(true);
+        });
     }
-    getParent(){
-        return this.isAllParent() ? this : Datapiece.getServer().getDataById(this.getValue("parentIncharge"),this.getDataName())[0];
+    getParent(getFromData){
+        getFromData = getFromData === undefined ? false : getFromData;
+        return (getFromData ? this.isAllParent() ? this : Datapiece.getServer().getDataById(this.getValue("parentIncharge"),this.getDataName())[0] : this._parent);
     }
     getMemberIncharges(eliminatedIds){
         if(eliminatedIds === undefined)  eliminatedIds = [];

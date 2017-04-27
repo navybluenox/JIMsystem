@@ -156,11 +156,11 @@ $(function(){
                         }
                     }).map(function(v){return v.getValues()});
                     el.find('[name="resultField"]').children().remove();
-                    var _table = createTable(el.find('[name="resultField"]'),data,["_id",column === "_id" ? "@name" : column],function(cellObj){
-                        if(cellObj.columnIndex === 0){
+                    var _table = createTable(el.find('[name="resultField"]'),data,["_id",column],function(cellObj){
+                        if(cellObj.column === "_id"){
                             cellObj.$el.append('<a herf="#_id">' + cellObj.value + "</a>");
                         }else if(cellObj.column === column){
-                            cellObj.$el.text(castIntoString(cellObj.column === "_id" ? _val.server.getDataById(cellObj.rowData,dataName)[0].getName() : cellObj.value));
+                            cellObj.$el.text(castIntoString(cellObj.value));
                         }
                     }).el;
                     _table.on("mouseover.openSearchWindow_idList",'a[herf="#_id"]',function(e){
