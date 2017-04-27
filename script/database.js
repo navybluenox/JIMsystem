@@ -1291,6 +1291,18 @@ class Incharge extends Datapiece{
     getParent(){
         return this.isAllParent() ? this : Datapiece.getServer().getDataById(this.getValue("parentIncharge"),this.getDataName())[0];
     }
+    getMemberIncharges(eliminatedIds){
+        if(eliminatedIds === undefined)  eliminatedIds = [];
+
+        if(this.isEndChild())  return [this];
+
+        var member = this.getValue("member")
+            .filter(obj => obj.dataName === "incharge" && !inArray(eliminatedIds,obj.id))
+            .map(obj => obj.id);
+
+        return member.map(id => this.getMemberIncharges(member.concat(eliminatedIds)));
+        //TODO debug
+    }
     getMemberUsers(eliminatedIdObjs){
         if(eliminatedIdObjs === undefined)  eliminatedIdObjs = [];
         var eliminatedIds_user = eliminatedIdObjs.filter(obj => obj.dataName === "user").map(obj => obj.id),
@@ -1380,12 +1392,15 @@ class Incharge extends Datapiece{
             {"org":"KF","nth":"63",},{"org":"MF","nth":"85",},{"org":"OC","nth":"12",}  //2012
         ];
     }
-    static getPresentInchargesInOrder(){
+    static getPresentInchargesInOrder(name){
         //名簿順
         //TODO
         //memberの配列の順番依存
 
-        var allParent = Datapiece.getServer().getData("incharge").find(incharge => incharge.getValue("isAllParent") && incharge.isPresentTerm());
+        var allParent = Datapiece.getServer().getData("incharge").find(incharge => incharge.isAllParent() && incharge.getValue("name") === name);
+        if(allParent === undefined)  throw new Error("such no name @Incharge.getPresentInchargesInOrder");
+
+
     }
 
 }

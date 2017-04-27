@@ -125,7 +125,8 @@ var Server = (function(){
                         that._version[dataName] = +v.version;
                         that._loading = that._loading.filter(function(obj){return obj.id !== loadingId});
                         that.triggerEvent("loaded",{"dataName":dataName});
-                        console.log(cache[dataName]);
+                        //console.log(cache[dataName]);
+                        console.log("__loaded__ : " + dataName);
                         la.remove();
                         return that.getData(dataName);
                     }),( config === undefined ? Promise.resolve() : that.loadUpdateTime())
