@@ -1291,7 +1291,7 @@ class Incharge extends Datapiece{
         Object.defineProperty(this._data,"@name",{
             "get":() => this.getOrg() + this.getNth() + this.getValue("code")
         });
-        this.addEventListener("updated",e => {
+        this.addEventListener("updated loaded",e => {
             this.getParent(true);
         });
     }
