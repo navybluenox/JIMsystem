@@ -145,6 +145,7 @@ $(function(){
             var la = new LoadingAlert();
             var version;
             var version_propertyKey = "shiftTableUser_version_" + _val.config.getValue("content.kind") + _val.config.getValue("content.nth");
+            console.log("step 1 / 7");
             return Promise.all([
                 _val.server.loadData("user"),
                 _val.server.loadData("workGroup"),
@@ -152,6 +153,7 @@ $(function(){
                 _val.server.loadData("workAssign"),
                 Server.handlePropertiesService(version_propertyKey,"script","get").then(function(v){version = (v[version_propertyKey] === undefined ? 0 : +v[version_propertyKey]);})
             ]).then(function(){
+            console.log("step 2 / 7");
                 var _users = Datapiece.sort(_val.server.getData("user"),"sortId");
                 var nowTime = new Date();
                 var leftOffset = 4;
@@ -222,6 +224,8 @@ $(function(){
                     })();
                     sizeSetting.push({"type":"width","index":widthAll-1,"value":105});
 
+                    console.log("step 3 / 7");
+
                     //1,2行目
                     (function(){
                         var workGroups = _val.server.getData("workGroup").filter(function(workGroup){return workGroup.getValue("isColorGroup")});
@@ -265,6 +269,8 @@ $(function(){
                         }
                     })();
 
+                    console.log("step 4 / 7");
+
                     //3行目以降の準備
                     var makeHeader = function(rowIndex){
                         var header = [];
@@ -302,6 +308,9 @@ $(function(){
                         }
                     })();
 
+                    console.log("step 5 / 7");
+
+
                     //3行目以降
                     groupUsers.forEach(function(obj,groupIndex){
                         var users = obj.user;
@@ -327,6 +336,8 @@ $(function(){
                         });
                     });
 
+                    console.log("step 6 / 7");
+
                     promiseChain = promiseChain.then(function(){
                         return Promise.all([
                             spreadsheet.writeSheetData(table,["text","fontColor","fontWeight","fontFamily","background","fontSize","alignHori","alignVer"],100),
@@ -337,6 +348,7 @@ $(function(){
                         }).then(function(){
                             return spreadsheet.setFreezeCell({"row":topOffset + 1,"column":leftOffset})
                         });
+                        console.log("step 7 / 7");
                     });
 
                 });
