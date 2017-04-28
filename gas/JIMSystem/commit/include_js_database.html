@@ -934,7 +934,7 @@ class User extends Datapiece{
         this.refreshWorkAssignList();
     }
     getIncharge(isAll,getFromData){
-        isPresent = isPresent === undefined ? false : isPresent;
+        isAll = isAll === undefined ? false : isAll;
         getFromData = getFromData === undefined ? false : getFromData;
         if(this._incharge === undefined || getFromData)  this._incharge = Datapiece.getServer().getDataById(this.getValue("inchargeId"));
         return isAll ? this._incharge.slice() : this._incharge.filter(incharge => incharge.isPresentTerm());
