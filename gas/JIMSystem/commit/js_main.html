@@ -90,7 +90,7 @@ $(function(){
                 var result = el.find('[name="resultField"]');
                 _val.server.loadData(dataName).then(function(){
                     data = _val.server.getData(dataName,null,true).filter(function(dp){
-                        var value = (column === "_id" || column === "" ? dp.getName() : dp.getValue(column));
+                        var value = dp.getValue(column);
                         var unit;
                         switch(type){
                             case "string":
