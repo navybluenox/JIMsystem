@@ -277,6 +277,7 @@ var Server = (function(){
                         case "remove":
                             return queue;
                     }
+                    queue.triggerEvent("beforeUpdating");
                 });
                 that._updatingQueue.forEach(function(queue){
                     var dataName = queue.value.getDataName();

@@ -309,7 +309,6 @@ $(function(){
 
                     console.log("step 5 / 7");
 
-
                     //3行目以降
                     groupUsers.forEach(function(obj,groupIndex){
                         var users = obj.user;
