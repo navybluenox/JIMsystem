@@ -86,6 +86,22 @@ function updateDatabase(value){
     updateFileToDrive(value.fileId,JSON.stringify(database,null,2));
 }
 
+function removeColumn(value){
+    //value = {fileId:["string"],column:[["string"]],updated:["string"]}
+    var database = loadDataFromDrive(value.fileId);
+    
+    database.data = database.data.map(function(datapiece){
+        value.column.forEach(function(key){
+            delete datapiece[key];
+        });
+        return datapiece;
+    });
+
+    database.updated = new Date(value.updated);
+    database.version = (+database.version) + 1;
+    updateFileToDrive(value.fileId,JSON.stringify(database,null,2));
+}
+
 function loadAllDatabase(){
     Database.getDatabaseInfo()
     .map(function(info){return info.dataName})

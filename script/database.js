@@ -1370,7 +1370,8 @@ class Incharge extends Datapiece{
         return members.map(obj => {
             if(obj.dataName === "user")  return users.find(user => user.getValue("_id") ===  obj.id);
             if(obj.dataName === this.getDataName()){
-                return incharges.find(incharge => incharge.getValue("_id") === obj.id).getMemberUsers(members.concat(eliminatedIdObjs));
+                var incharge = incharges.find(incharge => incharge.getValue("_id") === obj.id);
+                return incharge === undefined ? [] : incharge.getMemberUsers(members.concat(eliminatedIdObjs));
             }
             return undefined;
         }).filter(user => user !== undefined).reduce((prev,curt) => prev.concat(curt),[]);

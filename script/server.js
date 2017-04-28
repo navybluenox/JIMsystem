@@ -375,6 +375,17 @@ var Server = (function(){
             });
             return this;
         }
+        removeColumnOfDatabase(dataName,column){
+            if(!Array.isArray(column))  column = [column];
+
+            var nowTime = new Date();
+
+            return runServerFun("Script.removeColumn",[{
+                "fileId":this.getCollectionInfoByName(dataName).getDatapieceRelated("fileInfoId","fileInfo").getValue("fileId"),
+                "column":column,
+                "updated":nowTime.toISOString()
+            }]);
+        }
         getEventListener(events){
             var that = this;
             var ret = [];

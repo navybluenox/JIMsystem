@@ -213,7 +213,7 @@
             "caption":"業務説明文",
             "note":"メモ書き",
             "asAssigned":"割り振り済みとみなすか"
-        },"columnOrder":["_id","created","updated","name","nameShort","leaderId","leaderIncharge","detail.0.start","detail.0.number","description","condition","caption","note","asAssigned"],
+        },"columnOrder":["_id","created","updated","name","nameShort","leaderId","leaderInchargeId","leaderIncharge","detail.0.start","detail.0.number","description","condition","caption","note","asAssigned"],
         "sortColumn":"leaderIncharge","nameColumn":"name"
     },{
         "_id":"Ymnj7O59yx2MxR8H","created":"2016-07-18T08:00:00.000Z","updated":"2016-07-18T08:00:00.000Z","name":"scriptLibrary","fileInfoId":"NixKGFmuUGRgrhkP",
