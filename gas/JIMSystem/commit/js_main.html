@@ -179,12 +179,15 @@ $(function(){
                         var targetData = _val.server.getDataById(_id,dataName,null,true)[0];
                         var columnObj = _val.server.getCollectionInfoByName(dataName).getValue("column");
                         var table = $("<table><tbody></tbody></table>").appendTo(parent);
-                        table.find("tbody").append(repeatString("<tr><td></td><td></td></tr>",Object.keys(columnObj).length));
+                        table.find("tbody").append(repeatString("<tr><td></td><td></td></tr>",Object.keys(columnObj).length + 1));
                         table.find("td").css({"padding":"0","font-size":"0.9em"});
                         table.find("td:last-child").css({"padding-left":"0.5em"});
                         
+                        table.find("tbody tr").eq(0).find("td").eq(0).text(".getName()");
+                        table.find("tbody tr").eq(0).find("td").eq(1).text(targetData.getName());
+
                         Object.keys(columnObj).forEach(function(key,keyIndex){
-                            var tr = table.find("tbody tr").eq(keyIndex);
+                            var tr = table.find("tbody tr").eq(keyIndex + 1);
                             tr.find("td").eq(0).text(key);
                             var td = tr.find("td").eq(1);
                             var v = targetData.getValue(key);
