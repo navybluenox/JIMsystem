@@ -1409,14 +1409,14 @@ class Incharge extends Datapiece{
         return "" + this.getAllParent().getValue("code").replace(/^[a-zA-Z]+(\d+)$/,"$1");
     }
     getDiffFromPresentTerm(){
-        var orderList = Incharge.getTermOrder();
+        var orderList = Incharge.getTermList();
         var config = Datapiece.getConfig();
         var presentTermIndex = orderList.findIndex(obj => obj.org === config.getValue("content.kind") && obj.nth === ("" + config.getValue("content.nth")));
         var thisTermIndex = orderList.findIndex(obj => obj.org === this.getOrg() && obj.nth === ("" + this.getNth()));
         return thisTermIndex - presentTermIndex;
     }
     isPresentTerm(){
-        return this.getDiffFromPresentTerm === 0;
+        return this.getDiffFromPresentTerm() === 0;
     }
     isDivision(){
         var parent = this.getParent();
@@ -1432,7 +1432,7 @@ class Incharge extends Datapiece{
     isInvisible(){
         return this.getValue("isInvisible") || (this.isAllParent() ? this.getValue("isInvisible") : this.getParent().isInvisible());
     }
-    static getTermOrder(){
+    static getTermList(){
         return [
             {"org":"KF","nth":"68",},{"org":"MF","nth":"90",},{"org":"OC","nth":"17",}, //2017
             {"org":"KF","nth":"67",},{"org":"MF","nth":"89",},{"org":"OC","nth":"16",}, //2016
