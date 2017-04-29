@@ -922,7 +922,6 @@ class User extends Datapiece{
                 });
             }});
         }).bind(this);
-
         keyOverwrite();
 
         this.addEventListener("updated",e => {
