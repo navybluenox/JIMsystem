@@ -6,10 +6,7 @@ $(function(){
     var limitRowNum = 50;
     _val.pageFun.assignWork = {
         onload:function(){
-            _val.server.loadData("user");
-            _val.server.loadData("workList").then(() => _val.server.loadData("workAssign"));
-            _val.server.loadData("userGroup");
-            _val.server.loadData("workGroup");
+            _val.server.loadDataAll();
             form = $("#formAssignWork_edit");
             pageFun = _val.pageFun.assignWork;
             editing = new WorkAssign();
