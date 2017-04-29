@@ -7,8 +7,12 @@ $(function(){
     var detailNumberTableWidthLimit;
     _val.pageFun.editWorkList = {
         onload:function(){
-            _val.server.loadData("user");
-            _val.server.loadData("workList");
+            _val.server.loadData("incharge").then(() => {
+                return Promise.all([
+                    _val.server.loadData("user"),
+                    _val.server.loadData("workList")
+                ]);
+            });
             pageFun = _val.pageFun.editWorkList;
             form = $("#formEditWorkList_edit");
             detailTable = form.find('table.workList_detail_table');
@@ -193,6 +197,7 @@ $(function(){
                     var str;
                     switch(cellObj.column){
                         case "leaderIncharge":
+                            str = workList.getDatapieceRelated("leaderInchargeId","incharge").getValue("code");
                         case "name":
                         case "caption":
                             str = workList.getValue(cellObj.column);
@@ -233,7 +238,7 @@ $(function(){
             );
             target.prop("selectedIndex",0);
         },setInchrage:function(){
-            var target = form.find('[name="leaderIncharge"]');
+            var target = form.find('[name="leaderInchargeId"]');
             var value = form.find('[name="searchIncharge"]').val();
             target.val(value);
         },makeDetailNumberTable:function(detailIndex,numberArray){
