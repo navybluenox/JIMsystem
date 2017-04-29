@@ -899,6 +899,7 @@ class User extends Datapiece{
     constructor(datapieceObj,option){
         super(datapieceObj,"user",option);
         var that = this;
+        //軽量化のためにworkAssignIdを記録
         this._workAssigns = [];
         Object.defineProperty(this._data,"@name",{
             "get":function(){
@@ -928,9 +929,6 @@ class User extends Datapiece{
             this.getIncharge(true,true);
             keyOverwrite();
         });
-
-        //軽量化のためにworkAssignIdを記録
-        this.getWorkAssigns();
     }
     getIncharge(isAll,getFromData){
         isAll = isAll === undefined ? false : isAll;
@@ -1169,6 +1167,7 @@ class WorkList extends Datapiece{
     constructor(datapieceObj,option){
         super(datapieceObj,"workList",option);
         var that = this;
+        //軽量化のためにworkAssignIdを記録
         this._workAssigns = [];
         Object.defineProperty(this._data,"@detail",{
             "get":function(){
@@ -1211,9 +1210,6 @@ class WorkList extends Datapiece{
         this.addEventListener("updated loaded",e => {
             keyOverwrite();
         });
-
-        //軽量化のためにworkAssignIdを記録
-        this.getWorkAssigns();
     }
     getBackgroundColor(){
         return WorkGroup.getColorByWorkListId(this.getValue("_id"),"background");
