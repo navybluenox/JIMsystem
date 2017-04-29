@@ -387,13 +387,18 @@ var Server = (function(){
         removeColumnOfDatabase(dataName,column){
             if(!Array.isArray(column))  column = [column];
 
+            var la = new LoadingAlert();
+
             var nowTime = new Date();
 
             return runServerFun("Script.removeColumn",[{
                 "fileId":this.getCollectionInfoByName(dataName).getDatapieceRelated("fileInfoId","fileInfo").getValue("fileId"),
                 "column":column,
                 "updated":nowTime.toISOString()
-            }]);
+            }]).then(() => {
+                console.log("remove of column(" + column + " of " + dataName + ") succeeds");
+                la.remove();
+            });
         }
         getEventListener(events){
             var that = this;
