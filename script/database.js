@@ -913,8 +913,8 @@ class User extends Datapiece{
 
         //Inchargeからのエイリアス
         var keyOverwrite = (function(){
-            Object.defineProperty(this._data,"incharge",{"get":() => this.getIncharge().map(incharge => incharge.getValue("name"))});
-            Object.defineProperty(this._data,"inchargeCode",{"get":() => this.getIncharge().map(incharge => incharge.getValue("code"))});
+            Object.defineProperty(this._data,"incharge",{"get":() => "" + this.getIncharge().map(incharge => incharge.getValue("name"))});
+            Object.defineProperty(this._data,"inchargeCode",{"get":() => "" + this.getIncharge().map(incharge => incharge.getValue("code"))});
             Object.defineProperty(this._data,"oldIncharge",{"get":() => {
                 return this.getIncharge(true).filter(incharge => !incharge.isPresentTerm()).map(incharge => {
                     return {"org":incharge.getOrg(),"nth":+incharge.getNth(),"code":incharge.getValue("code"),"display":!incharge.isInvisible()};
@@ -1203,7 +1203,7 @@ class WorkList extends Datapiece{
 
         //Inchargeからのエイリアス
         var keyOverwrite = (function(){
-            Object.defineProperty(this._data,"leaderIncharge",{"get":() => this.getDatapieceRelated("leaderInchargeId","incharge").getValue("code")});
+            Object.defineProperty(this._data,"leaderIncharge",{"get":() => "" + this.getDatapieceRelated("leaderInchargeId","incharge").getValue("code")});
         }).bind(this);
 
         keyOverwrite();
