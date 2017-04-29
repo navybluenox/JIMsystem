@@ -913,21 +913,13 @@ class User extends Datapiece{
         });
 
         //Inchargeからのエイリアス
-        var keyOverwrite = (function(){
-            Object.defineProperty(this._data,"incharge",{"get":() => this.getIncharge().map(incharge => "" + incharge.getValue("name"))});
-            Object.defineProperty(this._data,"inchargeCode",{"get":() => this.getIncharge().map(incharge => "" + incharge.getValue("code"))});
-            Object.defineProperty(this._data,"oldIncharge",{"get":() => {
-                return this.getIncharge(true).filter(incharge => !incharge.isPresentTerm()).map(incharge => {
-                    return {"org":incharge.getOrg(),"nth":+incharge.getNth(),"code":incharge.getValue("code"),"display":!incharge.isInvisible()};
-                });
-            }});
-        }).bind(this);
-        keyOverwrite();
-
-        this.addEventListener("updated",e => {
-            this.getIncharge(true,true);
-            keyOverwrite();
-        });
+        Object.defineProperty(this._data,"incharge",{"get":() => this.getIncharge().map(incharge => "" + incharge.getValue("name"))});
+        Object.defineProperty(this._data,"inchargeCode",{"get":() => this.getIncharge().map(incharge => "" + incharge.getValue("code"))});
+        Object.defineProperty(this._data,"oldIncharge",{"get":() => {
+            return this.getIncharge(true).filter(incharge => !incharge.isPresentTerm()).map(incharge => {
+                return {"org":incharge.getOrg(),"nth":+incharge.getNth(),"code":incharge.getValue("code"),"display":!incharge.isInvisible()};
+            });
+        }});
     }
     getIncharge(isAll,getFromData){
         isAll = isAll === undefined ? false : isAll;
@@ -1200,15 +1192,8 @@ class WorkList extends Datapiece{
         });
 
         //Inchargeからのエイリアス
-        var keyOverwrite = (function(){
-            Object.defineProperty(this._data,"leaderIncharge",{"get":() => "" + this.getDatapieceRelated("leaderInchargeId","incharge").getValue("code")});
-        }).bind(this);
+        Object.defineProperty(this._data,"leaderIncharge",{"get":() => "" + this.getDatapieceRelated("leaderInchargeId","incharge").getValue("code")});
 
-        keyOverwrite();
-
-        this.addEventListener("updated",e => {
-            keyOverwrite();
-        });
     }
     getBackgroundColor(){
         return WorkGroup.getColorByWorkListId(this.getValue("_id"),"background");
