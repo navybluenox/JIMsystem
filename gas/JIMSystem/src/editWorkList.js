@@ -1,7 +1,7 @@
 $(function(){
     var pageFun;
     var form;
-    var formNameList = [{"name":"name"},{"name":"nameShort"},{"name":"leaderId"},{"name":"leaderIncharge"},{"name":"description"},{"name":"condition"},{"name":"caption"},{"name":"note"},{"name":"asAssigned"}];
+    var formNameList = [{"name":"name"},{"name":"nameShort"},{"name":"leaderId"},{"name":"leaderInchargeId"},{"name":"description"},{"name":"condition"},{"name":"caption"},{"name":"note"},{"name":"asAssigned"}];
     var editing;
     var detailTable;
     var detailNumberTableWidthLimit;
@@ -229,7 +229,7 @@ $(function(){
             if(user === undefined) return;
             target.children().remove();
             target.append(
-                user.getValue("inchargeCode").map(function(incharge){return '<option value="' + incharge + '">'+ incharge + "</option>"}).join("")
+                user.getIncharge().map(function(incharge){return '<option value="' + incharge.getValue("_id") + '">'+ incharge.getValue("code") + "</option>"}).join("")
             );
             target.prop("selectedIndex",0);
         },setInchrage:function(){
