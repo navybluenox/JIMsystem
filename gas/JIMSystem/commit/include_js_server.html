@@ -221,9 +221,16 @@ var Server = (function(){
         }
         getDataById(ids,dataName,newCopy,preventSkip){
             if(!Array.isArray(ids))  ids = [ids];
-            return this.getData(dataName,newCopy,preventSkip).filter(function(data){
-                return inArray(ids,data.getValue("_id"));
-            }).sort((a,b) => ids.findIndex(a.getValue("_id")) - ids.findIndex(b.getValue("_id")));
+
+            //軽量化のため、1つの時はアルゴリズムを変える
+            if(ids.length === 1){
+                return [this.getData(dataName,newCopy,preventSkip).find(data => data.getValue("_id") === ids[0])];
+            }else{
+                return this.getData(dataName,newCopy,preventSkip).filter(function(data){
+                    return inArray(ids,data.getValue("_id"));
+                }).sort((a,b) => ids.findIndex(a.getValue("_id")) - ids.findIndex(b.getValue("_id")));
+            }
+
         }
         getCollectionInfoByName(dataName){
             return this.getData("collectionInfo").find(function(collInfo){
