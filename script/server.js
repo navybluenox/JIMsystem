@@ -541,7 +541,7 @@ var Server = (function(){
         static loadOrderList(){
             var allDataNames = cache.collectionInfo.map(collInfo => collInfo.getValue("name"));
             var orderList = [
-                ["incharge"],
+                ["incharge","workAssign"],
                 ["user","workList"]
             ];
             var _orderList = orderList.slice().reduce((prev,curt) => prev.concat(curt),[]);

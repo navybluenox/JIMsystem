@@ -930,7 +930,7 @@ class User extends Datapiece{
         });
 
         //軽量化のためにworkAssignIdを記録
-        this.refreshWorkAssignList();
+        this.getWorkAssigns();
     }
     getIncharge(isAll,getFromData){
         isAll = isAll === undefined ? false : isAll;
@@ -947,7 +947,7 @@ class User extends Datapiece{
     getWorkAssigns(useReliableMode){
         var that = this;
         useReliableMode = (useReliableMode === undefined ? false : useReliableMode);
-        return useReliableMode ? (
+        return useReliableMode || this._workAssigns === undefined ? (
             this._workAssigns = Datapiece.getServer().getData("workAssign").filter(function(workAssign){
                 return workAssign.getValue("userId") === that.getValue("_id");
             })
@@ -1083,7 +1083,7 @@ class User extends Datapiece{
         return workAssigns[targetIndex + 1];
     }
     refreshWorkAssignList(){
-        this._workAssigns = this.getWorkAssigns(true);
+        return this.getWorkAssigns(true);
     }
     static getFreeUsers(start,end){
         var users = Datapiece.getServer().getData("user");
@@ -1213,7 +1213,7 @@ class WorkList extends Datapiece{
         });
 
         //軽量化のためにworkAssignIdを記録
-        this.refreshWorkAssignList();
+        this.getWorkAssigns();
     }
     getBackgroundColor(){
         return WorkGroup.getColorByWorkListId(this.getValue("_id"),"background");
@@ -1224,7 +1224,7 @@ class WorkList extends Datapiece{
     getWorkAssigns(useReliableMode){
         var that = this;
         useReliableMode = (useReliableMode === undefined ? false : useReliableMode);
-        return useReliableMode ? (
+        return useReliableMode || this._workAssigns === undefined ? (
             this._workAssigns = Datapiece.getServer().getData("workAssign").filter(function(workAssign){
                 return workAssign.getValue("workListId") === that.getValue("_id");
             })
@@ -1268,7 +1268,7 @@ class WorkList extends Datapiece{
         return result;
     }
     refreshWorkAssignList(){
-        this._workAssigns = this.getWorkAssigns(true);
+        return this.getWorkAssigns(true);
     }
     static getBackgroundColorByNumber(num){
         if(num > 0){
