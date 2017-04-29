@@ -188,10 +188,11 @@ var Server = (function(){
                 return that.reloadData(collInfo);
             }));*/
         }
-        getData(dataName,newCopy,preventSkip){
+        getData(dataName,newCopy,preventSkip,sort){
             if(newCopy === undefined || newCopy === null)  newCopy = true;
             if(cache[dataName] === undefined)  return [];
             if(preventSkip === undefined || preventSkip === null)  preventSkip = false;
+            sort = sort === undefined ? false : sort;
             var result;
             if(newCopy){
                 result = cache[dataName].slice();
@@ -214,7 +215,7 @@ var Server = (function(){
             if(dataName === "collectionInfo"){
                 return result;
             }else{
-                return Datapiece.sort(result,this.getCollectionInfoByName(dataName).getValue("sortColumn"));
+                return (sort ? Datapiece.sort(result,this.getCollectionInfoByName(dataName).getValue("sortColumn")) : result);
             }
         }
         getDataById(ids,dataName,newCopy,preventSkip){

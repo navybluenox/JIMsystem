@@ -35,7 +35,7 @@ $(function(){
 
             el.find('[name="collName"]').append([
                 '<option value="" selected></option>',
-                _val.server.getData("collectionInfo").map(function(collObj){
+                _val.server.getData("collectionInfo",undefined,undefined,true).map(function(collObj){
                     return collObj.getValue("name");
                 }).filter(function(dataName){
                     return !inArray(["shiftTableUser","shiftTableWork","workNotAssigned","systemConfig","collectionInfo"],dataName);
@@ -89,7 +89,7 @@ $(function(){
                 var data;
                 var result = el.find('[name="resultField"]');
                 _val.server.loadData(dataName).then(function(){
-                    data = _val.server.getData(dataName,null,true).filter(function(dp){
+                    data = _val.server.getData(dataName,null,true,true).filter(function(dp){
                         var value = dp.getValue(column);
                         var unit;
                         switch(type){

@@ -238,7 +238,7 @@ $(function(){
                         e,[{"text":"候補","value":""}].concat((
                             tableKind === "user" ?
                             (listAll ? WorkList.getAtInterval(start,end) : WorkList.getNotAssignedAtInterval(start,end)) :
-                            (listAll ? _val.server.getData("user") : User.getFreeUsers(start,end))
+                            (listAll ? _val.server.getData("user",undefined,undefined,true) : User.getFreeUsers(start,end))
                         ).map(function(datapiece){
                             return (
                                 tableKind === "user" ? {
@@ -324,7 +324,7 @@ $(function(){
                     var workAssign = workAssigns[0];
                     var cm1 = new ContextMenu(
                         e,[{"text":"候補","value":""}].concat(
-                            (listAll ? _val.server.getData("user") : User.getFreeUsers(workAssign.getValue("start"),workAssign.getValue("end"))
+                            (listAll ? _val.server.getData("user",undefined,undefined,true) : User.getFreeUsers(workAssign.getValue("start"),workAssign.getValue("end"))
                         ).map(function(user){
                             return {
                                 "text":user.getValue("nameLast") + " " + user.getValue("nameFirst"),
@@ -485,7 +485,7 @@ $(function(){
             ["name","user","leader","incharge"].forEach(function(name){
                 cond[name] = form_search.find('[name="' + name + '"]').val();
             });
-            var workAssigns = _val.server.getData("workAssign").filter(function(workAssign){
+            var workAssigns = _val.server.getData("workAssign",undefined,undefined,true).filter(function(workAssign){
                 var flag = true;
                 if(cond.name !== ""){
                     var workList = workAssign.getDatapieceRelated("workListId","workList");
@@ -650,7 +650,7 @@ $(function(){
             return editing;            
         },searchWorkListId:function(namePrefix,avoidSettingForm){
             if(avoidSettingForm === undefined)  avoidSettingForm = false;
-            var workLists = _val.server.getData("workList",null,true);
+            var workLists = _val.server.getData("workList",null,true,true);
             var result = form.find('[name="' + namePrefix + '_searchResult"]');
             var azusa = form.find('[name="' + namePrefix + '_azusa"]').val();
             var name = form.find('[name="' + namePrefix + '_name"]').val();

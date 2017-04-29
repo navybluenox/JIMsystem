@@ -23,7 +23,7 @@ $(function(){
             $(result).children().remove();
           
             _val.server.loadData(dataName).then(function(){
-                var dataArr = _val.server.getData(dataName,null,true)
+                var dataArr = _val.server.getData(dataName,null,true,true)
                     .filter(function(v){return true})
                     //.sort(function(a,b){return 1})
                     .map(function(v){return v.getValues()});

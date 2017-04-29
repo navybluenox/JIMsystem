@@ -925,7 +925,7 @@ class User extends Datapiece{
 
         keyOverwrite();
 
-        this.addEventListener("updated loaded",e => {
+        this.addEventListener("updated",e => {
             this.getIncharge(true,true);
             keyOverwrite();
         });
@@ -1207,7 +1207,7 @@ class WorkList extends Datapiece{
 
         keyOverwrite();
 
-        this.addEventListener("updated loaded",e => {
+        this.addEventListener("updated",e => {
             keyOverwrite();
         });
     }
