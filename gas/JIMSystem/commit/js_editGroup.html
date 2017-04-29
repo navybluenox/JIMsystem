@@ -211,10 +211,11 @@ $(function(){
             if(!(new RegExp("^" + prefix)).test(target.val())){
                 target.val(prefix + target.val());
             }
-        },setMemberList:function(){
+        },setMemberList:function(insertSelectedIds){
+            insertSelectedIds = insertSelectedIds === undefined ? [] : insertSelectedIds;
             var target_list = form.find('[name="member_list"]');
             var target_selected = form.find('[name="member_selected"]');
-            var ids_selected = target_selected.find("option").map((i,el) => $(el).attr("value")).get();
+            var ids_selected = target_selected.find("option").map((i,el) => $(el).attr("value")).get().concat(insertSelectedIds).filter((v,i,s) => s.indexOf(v) === i);
             target_list.children().remove();
             target_selected.children().remove();
             var dataName;
