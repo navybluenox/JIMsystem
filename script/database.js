@@ -911,7 +911,6 @@ class User extends Datapiece{
             }
         });
 
-        /*
         //Inchargeからのエイリアス
         var keyOverwrite = (function(){
             Object.defineProperty(this._data,"incharge",{"get":() => this.getIncharge().map(incharge => incharge.getValue("name"))});
@@ -929,7 +928,6 @@ class User extends Datapiece{
             this.getIncharge(true,true);
             keyOverwrite();
         });
-        */
 
         //軽量化のためにworkAssignIdを記録
         this.refreshWorkAssignList();
@@ -1203,7 +1201,6 @@ class WorkList extends Datapiece{
             }
         });
 
-        /*
         //Inchargeからのエイリアス
         var keyOverwrite = (function(){
             Object.defineProperty(this._data,"leaderIncharge",{"get":() => this.getDatapieceRelated("leaderInchargeId","incharge").getValue("code")});
@@ -1214,7 +1211,6 @@ class WorkList extends Datapiece{
         this.addEventListener("updated loaded",e => {
             keyOverwrite();
         });
-        */
 
         //軽量化のためにworkAssignIdを記録
         this.refreshWorkAssignList();
