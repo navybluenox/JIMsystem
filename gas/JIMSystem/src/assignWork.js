@@ -467,7 +467,7 @@ $(function(){
                 pageFun.getFormData();
                 _val.server.changeData(editing);
             }else if(kind === "remove"){
-                _val.server.removeData(new WorkAssign({"_id":_id}));
+                _val.server.removeData(_val.server.getDataById(_id,"workAssign")[0]);
             }
             return _val.server.sendUpdateQueue().then(function(){
                 pageFun.reshowShiftTable(setData);

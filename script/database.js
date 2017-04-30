@@ -381,7 +381,7 @@ var Datapiece = (function(){
 
             if(extraWorkAssign === undefined)  extraWorkAssign = [];
             if(!Array.isArray(extraWorkAssign))  extraWorkAssign = [extraWorkAssign];
-            extraWorkAssign = extraWorkAssign.filter(function(workAssign){
+            extraWorkAssign = extraWorkAssign.filter(v => v !== undefined).filter(function(workAssign){
                 if(workAssign.getValue("_id") === undefined){
                     workAssign.setValue("_id","_extra");
                 }
@@ -1305,7 +1305,7 @@ class Incharge extends Datapiece{
         if(option === undefined)  option = {};
         super(datapieceObj, option.dataName === undefined ? "incharge" : option.dataName, option);
         Object.defineProperty(this._data,"@name",{
-            "get":() => this.getOrg() + this.getNth() + this.getValue("code")
+            "get":() => (this.isAllParent() ? this.getValue("code") : this.getOrg() + this.getNth() + this.getValue("code"))
         });
         this.addEventListener("updated loaded",e => {
             this.getParent(true);

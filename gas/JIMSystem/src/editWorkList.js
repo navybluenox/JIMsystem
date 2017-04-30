@@ -120,7 +120,7 @@ $(function(){
                     _val.server.changeData(workList);
                 }
             }else if(kind === "remove"){
-                workList = new WorkList({"_id":_id});
+                workList = _val.server.getDataById(_id,"workList")[0];
                 _val.server.removeData(workList);
                 if(confirm([
                     "この業務に割り振られている人割も全て消去しますか？"

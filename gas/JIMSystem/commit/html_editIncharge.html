@@ -2,7 +2,82 @@
     <h1>ユーザー情報編集</h1>
     <section>
         <h2>新規作成・変更</h2>
-        <form id="formEditUser_edit">
+        <form id="formEditIncharge_edit">
+            <table class="tableform"><tbody>
+                <tr class="advancedSetting" style="display: none;">
+                    <td>編集中のデータID</td>
+                    <td><input type="text" name="editing" tabindex="-1" disabled></td>
+                    <td>編集不可</td>
+                </tr><tr>
+                    <td>担当名</td>
+                    <td><input type="text" name="name" tabindex="2" ></td>
+                    <td></td>
+                </tr><tr>
+                    <td>略称名</td>
+                    <td><input type="text" name="code" tabindex="2" ></td>
+                    <td></td>
+                </tr><tr>
+                    <td>直上の担当</td>
+                    <td><select name="parentIncharge" tabindex="2"></select></td>
+                    <td><table>
+                        <tr><td>期・局：</td><td>
+                            <select name="parentIncharge_cond_nth" onchange="_val.pageFun.editIncharge.searchDivisionForForm('parentIncharge_');_val.pageFun.editIncharge.searchInchargeForForm('parentIncharge_')"></select>
+                            <select name="parentIncharge_cond_division"></select>
+                        </td></tr>
+                        <tr><td>略称：</td><td><input type="text" name="parentIncharge_cond_code" tabindex="2"></td></tr>
+                        <tr><td>担当名：</td><td><input type="text" name="parentIncharge_cond_name" tabindex="2"></td></tr>
+                    </table></td>
+                </tr><tr>
+                    <td>所属するユーザー</td>
+                    <td><input type="text" name="member_user" tabindex="2"></td>
+                    <td></td>
+                </tr><tr>
+                    <td>所属する担当</td>
+                    <td><table><tbody>
+                        <tr><td>
+                            <select name="member_incharge_list" tabindex="2" multiple></select>
+                        </td><td>
+                            <input type="hidden" name="member_incharge_selected" tabindex="-1">
+                            <div style="display: table"></div>
+                        </td></tr><tr><td>
+                            <input type="button" name="member_incharge_add" value="→追加" tabindex="2">
+                        </td><td>
+                        </td></tr>
+                    </tbody></table></td>
+                    <td><table>
+                        <tr><td>期・局：</td><td>
+                            <select name="member_incharge_cond_nth"></select>
+                            <select name="member_incharge_cond_division"></select>
+                        </td></tr>
+                        <tr><td>略称：</td><td><input type="text" name="member_incharge_cond_code" tabindex="2"></td></tr>
+                        <tr><td>担当名：</td><td><input type="text" name="member_incharge_cond_name" tabindex="2"></td></tr>
+                    </table></td>
+                </tr><tr>
+                    <td>関連する担当</td>
+                    <td><input type="text" name="relevantIncharge" tabindex="2"></td>
+                    <td>oldの担当を入れる。数珠つなぎで参照できるので、前年度の担当のみ入れれば十分</td>
+                </tr><tr>
+                    <td>非表示とするか</td>
+                    <td><input type="button" name="isInvisible" value="No" tabindex="2" onclick='var el=$(this);if(el.val()==="Yes"){el.val("No");}else{el.val("Yes");}'></td>
+                    <td>人割表などで非表示にする。上位の担当が非表示だと、それ以下全ての担当も非表示なる。</td>
+                </tr><tr>
+                    <td>期を表すか</td>
+                    <td><input type="button" name="isAllParent" value="No" tabindex="2" onclick='var el=$(this);if(el.val()==="Yes"){el.val("No");}else{el.val("Yes");}'></td>
+                    <td>例えば、MF90も担当として扱う。この担当はこれより上位の担当が存在せず、期を表す。この担当に限っては担当名は「アルファベット + 期を表す数字」でなくてはならない。</td>
+                </tr>
+            </tbody></table>
         </form>
+    </section><section>
+        <h2>検索</h2>
+        <form id="formEditIncharge_search_cond">
+            <table class="tableform"><tbody>
+                <tr><td>人割名</td><td><input type="text" name="name" tabindex="2" onkeyup='if(event.keyCode === 13){_val.pageFun.assignWork.searchWorkAssign();$("[name=\"page\"]").val(0);return false;}'></td></tr>
+                <tr><td>従事者の氏名・配送名</td><td><input type="text" name="user" tabindex="2" onkeyup='if(event.keyCode === 13){_val.pageFun.assignWork.searchWorkAssign();$("[name=\"page\"]").val(0);return false;}'></td></tr>
+                <tr><td>統括の氏名・配送名</td><td><input type="text" name="leader" tabindex="2" onkeyup='if(event.keyCode === 13){_val.pageFun.assignWork.searchWorkAssign();$("[name=\"page\"]").val(0);return false;}'></td></tr>
+                <tr><td>統括の担当略称</td><td><input type="text" name="incharge" tabindex="2" onkeyup='if(event.keyCode === 13){_val.pageFun.assignWork.searchWorkAssign();$("[name=\"page\"]").val(0);return false;}'></td></tr>
+            </tbody></table>
+            <input type="button" name="run" value="検索" tabindex="2" onclick='_val.pageFun.editIncharge.searchIncharge();'>
+        </form>
+        <div id="formEditIncharge_search_result"></div>
     </section>
 </article>
