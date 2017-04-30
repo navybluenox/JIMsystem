@@ -35,23 +35,24 @@
             <main>
 				<div style="overflow:hidden;">
 					<ul class="menubar">
-						<li><a href="#1" onclick='movePage("editWorkList")'>業務内容の編集</a></li>
-						<li><a href="#2" onclick='movePage("assignWork")'>人割作成</a></li>
-						<li><a href="#3" onclick='movePage("editGroup")'>グループ編集</a></li>
+						<li><a href="#1" onclick='movePage("assignWork")'>人割作成</a></li>
+						<li><a href="#2" onclick='movePage("handleSpreadsheet")'>スプレッドシート</a></li>
+						<li><a href="#3" onclick=''>_</a></li>
 						<li><a href="#4" onclick='movePage("showNotAssigned")'>未処理のデータ</a></li>
-						<li><a href="#5" onclick='movePage("handleSpreadsheet")'>スプレッドシート</a></li>
+						<li><a href="#5" onclick=''></a></li>
 					</ul>
 					<ul class="menubar">
-						<li><a class="has_sub" href="#6" onclick=''>other ...</a><ul class="menubar_sub">
-							<li><a href="#6-1" onclick='movePage("editDatabase")'>データベース編集</a></li>
-							<li><a href="#6-2" onclick='movePage("runUserScript")'>スクリプト実行</a></li>
-							<li><a href="#6-3" onclick='movePage("setting")'>各種設定</a></li>
-<!--							<li><a href="#6-4" onclick=''></a></li>-->
-						</ul></li>
-						<li><a href="#7" onclick=''>_</a></li>
-						<li><a href="#8" onclick=''>_</a></li>
+						<li><a href="#6" onclick='movePage("editUser")'>ユーザー情報編集</a></li>
+						<li><a href="#7" onclick='movePage("editWorkList")'>業務内容の編集</a></li>
+						<li><a href="#8" onclick='movePage("editGroup")'>グループ編集</a></li>
 						<li><a href="#9" onclick=''>_</a></li>
-						<li><a href="#10" onclick=''>_</a></li>
+						<li><a class="has_sub" href="#10" onclick=''>other ...</a><ul class="menubar_sub">
+							<li><a href="#10-1" onclick='movePage("editDatabase")'>データベース一括編集</a></li>
+							<li><a href="#10-2" onclick='movePage("editIncharge")'></a>担当情報編集</li>
+							<li><a href="#10-3" onclick='movePage("setting")'>システム設定</a></li>
+							<li><a href="#10-4" onclick='movePage("runUserScript")'>スクリプト実行</a></li>
+<!--							<li><a href="#10-5" onclick=''></a></li>-->
+						</ul></li>
 					</ul>
 				</div>
                 <div id="content"></div>
