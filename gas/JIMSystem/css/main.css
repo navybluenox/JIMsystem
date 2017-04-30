@@ -83,14 +83,14 @@ table.tableform {
 		margin:3ex 0;
 		padding:0;
 		list-style-type:none;
-	}
+    	}
 		ul.menubar li {
 			width:20%;
 			float:left;
 			padding:0;
 			margin:0;
 			text-align:center;
-		}
+		    }
 			ul.menubar li a {
 				width:auto;
 				color:#0B1C2D;
@@ -100,11 +100,17 @@ table.tableform {
 				text-decoration:none;
 				display:block;
 				background:#b0d7f4;				
-			}
+            }
 			ul.menubar li a:hover {
 				background: #44aeea;
-			}
-	
+            }
+            ul.menubar li a.has_sub {
+                background:#cbc9f7;				
+            }
+            ul.menubar li a.has_sub:hover {
+                background:#9b98f0;				
+            }
+
     #session {
         margin: 2ex 0 0 0;
         padding: 0 1ex;

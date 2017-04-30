@@ -737,7 +737,7 @@ $(function(){
                 target.children().remove();
                 target.append(table);
                 var width = $(window).width()*0.5;
-                target.css({"max-width":width,"overflow":"auto"});
+                target.css({/*"max-width":width,*/"overflow":"auto"});
                 pageFun.showInformation();
             });
         },showShiftTableWork:function(preventShow){
@@ -763,7 +763,7 @@ $(function(){
                     target.children().remove();
                     target.append(table);
                     var width = $(window).width()*0.5;
-                    target.css({"max-width":width,"overflow":"auto"});
+                    target.css({/*"max-width":width,*/"overflow":"auto"});
                 }
                 pageFun.showInformation();
             });
