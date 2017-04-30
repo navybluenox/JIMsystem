@@ -5,6 +5,24 @@ $(function(){
                 movePage(e.location.hash,"content",{state:e.state,parameters:e.location.parameters});
             });
             new LocalDate();
+            $("ul.menubar_sub").css({"display":"none"});
+            $("ul.menubar li a.has_sub").closest("li").on("mouseenter",e => {
+                var ul = $(e.currentTarget).find("ul.menubar_sub");
+                if(ul.data("freeze") !== true)  ul.css({"display":""});
+            }).on("mouseleave",e => {
+                var ul = $(e.currentTarget).find("ul.menubar_sub");
+                if(ul.data("freeze") !== true)  ul.css({"display":"none"});
+            }).on("click",e => {
+                var ul = $(e.currentTarget).find("ul.menubar_sub");
+                if(ul.data("freeze") === true){
+                    ul.data("freeze",false).css({"display":"none"});
+                }else{
+                    ul.data("freeze",true).css({"display":""});
+                }             
+            });
+            _val.onMovePage.push((obj) => {
+                $("ul.menubar_sub").css({"display":"none"});
+            });
         },
         openSearchWindow:function(){
             var sw = new ModalWindow({"html":[
@@ -214,6 +232,6 @@ $(function(){
                     }
                 })
             })
-        }
+        },
     };
 });

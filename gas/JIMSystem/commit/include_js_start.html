@@ -63,6 +63,7 @@
         }).then(function(fileId_fileInfo){
             console.log("run mode : " + modeName);
             Server.initialize({"fileId_fileInfo":fileId_fileInfo});
+            _val.onMovePage = [];
             _val.server = new Server();
             Datapiece.initialize({"server":_val.server});
             Spreadsheet.initialize({"server":_val.server});

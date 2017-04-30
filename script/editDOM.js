@@ -37,6 +37,7 @@ function movePage(pageName,insertTag,option){
         if(pageFun && pageFun[pageName] && pageFun[pageName].onload){
             pageFun[pageName].onload();
         }
+        _val.onMovePage.forEach(fun => fun({"pageName":pageName}));
     });
 }
 
