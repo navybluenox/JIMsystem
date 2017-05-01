@@ -1432,7 +1432,7 @@ class Incharge extends Datapiece{
     static getAllOfAllParents(putPresentTermTop){
         putPresentTermTop = putPresentTermTop === undefined ? true : putPresentTermTop;
         var arr = Incharge.getTermList().map(obj => obj.org + obj.nth)
-        return Datapiece.getServer().getData("incharge").find(incharge => incharge.isAllParent())
+        return Datapiece.getServer().getData("incharge").filter(incharge => incharge.isAllParent())
             .sort((a,b) => {
                 if(putPresentTermTop){
                     if(a.isPresentTerm()) return -1;
