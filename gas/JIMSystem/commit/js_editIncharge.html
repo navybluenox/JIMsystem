@@ -41,7 +41,11 @@ $(() => {
             var condEl = {};
             ["nth","division","code","name"].forEach(key => condEl[key] = form.find('[name="' + nameAttr + '_cond_' + key +'"]'));
 
-            var incharges = (condEl.nth === "" ? Incharge.getAllOfAllParents().map(inch => inch.getMemberIncharges()).reduce((prev,curt) => prev.concat(curt),[]) : _val.server.getDataById(condEl.nth,"incharge")[0].getMemberIncharges()).filter(incharge => {
+            var incharges = (
+                condEl.nth.val() === "" ?
+                Incharge.getAllOfAllParents().map(inch => inch.getMemberIncharges(true)).reduce((prev,curt) => prev.concat(curt),[]) :
+                _val.server.getDataById(condEl.nth.val(),"incharge")[0].getMemberIncharges(true)
+            ).filter(incharge => {
                 if(inArray(skipIds,incharge.getValue("_id")))  return false;
                 return Object.keys(condEl).every(key => {
                     var value = condEl[key].val();
@@ -62,6 +66,9 @@ $(() => {
             });
 
             incharges.forEach(incharge => {
+                if(incharge.isAllParent() || incharge.isDivision()){
+                    result.append('<optgroup label="' + incharge.getName() +'"></optgroup>')
+                }
                 result.append('<option value="' + incharge.getValue("_id") +'">' + pageFun.getInchargeName(incharge) +'</option>');
             });
 

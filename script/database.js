@@ -1315,8 +1315,9 @@ class Incharge extends Datapiece{
         getFromData = getFromData === undefined ? false : getFromData;
         return (getFromData || this._parent === undefined ? this._parent = (this.isAllParent() ? this : Datapiece.getServer().getDataById(this.getValue("parentIncharge"),this.getDataName())[0]) : this._parent);
     }
-    getMemberIncharges(eliminatedIds){
+    getMemberIncharges(includeNotEndChildren,eliminatedIds){
         if(eliminatedIds === undefined)  eliminatedIds = [];
+        includeNotEndChildren = includeNotEndChildren === undefined ? false : includeNotEndChildren;
 
         if(this.isEndChild())  return [this];
 
@@ -1325,7 +1326,10 @@ class Incharge extends Datapiece{
             .map(obj => Datapiece.getServer().getDataById(obj.id,this.getDataName())[0])
             .filter(incharge => incharge !== undefined);
 
-        return member.map(incharge => incharge.getMemberIncharges(member.concat(eliminatedIds))).reduce((prev,curt) => prev.concat(curt),[]);
+        return member
+            .map(incharge => incharge.getMemberIncharges(includeNotEndChildren,member.concat(eliminatedIds)))
+            .reduce((prev,curt) => prev.concat(curt),[this])
+            .filter((v,i,s) => s.findIndex(incharge => incharge.getValue("_id") === v.getValue("_id") === i));
     }
     getMemberUsers(eliminatedIdObjs){
         if(eliminatedIdObjs === undefined)  eliminatedIdObjs = [];

@@ -5,58 +5,58 @@ cd ~/
 
 cd ~/jimsystem/gas/
 echo "prepare to commit"
-for thispass in $(ls)
-do
-    if [ ${thispass} != plugins ] && [ ${thispass} != plugins ]
+
+thispass="JIMSystem";
+
+if [ ${thispass} != plugins ] && [ ${thispass} != plugins ]
+then
+    echo $thispass
+
+    cd ~/jimsystem/gas/$thispass/commit
+    rm -f *
+
+    cd ../gs
+    for file in $(ls)
+    do
+        cp -f ~/jimsystem/gas/${thispass}/gs/${file} ~/jimsystem/gas/${thispass}/commit/${file}
+    done
+
+    cd ../src
+    for file in $(ls)
+    do
+        nowpass=~/jimsystem/gas/${thispass}/commit/js_${file/.js/.html}
+        cp -f ~/jimsystem/gas/${thispass}/src/${file} $nowpass
+        echo -e "\n</script>" >> $nowpass
+        sed -i -e "1i <script>" $nowpass
+    done
+
+    cd ../html
+    for file in $(ls)
+    do
+        cp -f ~/jimsystem/gas/${thispass}/html/${file} ~/jimsystem/gas/${thispass}/commit/html_${file}
+    done
+
+    cd ../css
+    for file in $(ls)
+    do
+        nowpass=~/jimsystem/gas/${thispass}/commit/css_${file/.css/.html}
+        cp -f ~/jimsystem/gas/${thispass}/css/${file} $nowpass
+        echo -e "\n</style>" >> $nowpass
+        sed -i -e "1i <style>" $nowpass
+    done
+
+    if [ ${thispass} != uploadScripts ] && [ ${thispass} != autoUpdate ]
     then
-        echo $thispass
-
-        cd ~/jimsystem/gas/$thispass/commit
-        rm -f *
-
-        cd ../gs
+        cd ~/jimsystem/script
         for file in $(ls)
         do
-            cp -f ~/jimsystem/gas/${thispass}/gs/${file} ~/jimsystem/gas/${thispass}/commit/${file}
-        done
-
-        cd ../src
-        for file in $(ls)
-        do
-            nowpass=~/jimsystem/gas/${thispass}/commit/js_${file/.js/.html}
-            cp -f ~/jimsystem/gas/${thispass}/src/${file} $nowpass
+            nowpass=~/jimsystem/gas/${thispass}/commit/include_js_${file/.js/.html}
+            cp -f ~/jimsystem/script/${file} $nowpass
             echo -e "\n</script>" >> $nowpass
             sed -i -e "1i <script>" $nowpass
         done
-
-        cd ../html
-        for file in $(ls)
-        do
-            cp -f ~/jimsystem/gas/${thispass}/html/${file} ~/jimsystem/gas/${thispass}/commit/html_${file}
-        done
-
-        cd ../css
-        for file in $(ls)
-        do
-            nowpass=~/jimsystem/gas/${thispass}/commit/css_${file/.css/.html}
-            cp -f ~/jimsystem/gas/${thispass}/css/${file} $nowpass
-            echo -e "\n</style>" >> $nowpass
-            sed -i -e "1i <style>" $nowpass
-        done
-
-        if [ ${thispass} != uploadScripts ] && [ ${thispass} != autoUpdate ]
-        then
-            cd ~/jimsystem/script
-            for file in $(ls)
-            do
-                nowpass=~/jimsystem/gas/${thispass}/commit/include_js_${file/.js/.html}
-                cp -f ~/jimsystem/script/${file} $nowpass
-                echo -e "\n</script>" >> $nowpass
-                sed -i -e "1i <script>" $nowpass
-            done
-        fi
-
-        cd ~/jimsystem/gas/$thispass
-        gapps upload
     fi
-done
+
+    cd ~/jimsystem/gas/$thispass
+    gapps upload
+fi
