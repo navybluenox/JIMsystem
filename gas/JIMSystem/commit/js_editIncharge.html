@@ -8,13 +8,16 @@ $(() => {
         onload:() => {
             _val.server.loadDataAll().then(() => {
                 form.find('[name$="_cond_nth"]').append(
+                    '<option value="">指定なし</option>' +
                     _val.server.getData("incharge")
                         .filter(incharge => incharge.isAllParent())
                         .sort((a,b) => {
                             var arr = Incharge.getTermList().map(obj => obj.org + obj.nth);
+                            if(a.isPresentTerm()) return -1;
+                            if(b.isPresentTerm()) return 1;                            
                             return arr.findIndex(name => name === a.getName()) - arr.findIndex(name => name === b.getName());
                         })
-                        .map(incharge => '<option value="' + incharge.getName() +'">' + incharge.getName() + '</option>')
+                        .map(incharge => '<option value="' + incharge.getValue("_id") +'">' + incharge.getName() + '</option>')
                         .join("")
                 );
             });
@@ -52,6 +55,7 @@ $(() => {
                     if(value === "") return true;
                     switch(key){
                         case "nth":
+                            return incharge.getAllParent().getValue("_id") === value;
                             break;
                         case "division":
                             return incharge.isAllParent() ? true : incharge.getDivision().getValue("name") === value;
@@ -72,11 +76,12 @@ $(() => {
             var nth = form.find('[name="' + nameAttr + '_cond_nth"]');
             var division = form.find('[name="' + nameAttr + '_cond_division"]');
             var _incharge = _val.server.getData("incharge");
+            var nthValue = nth.val();
 
             division.children().remove();
             division.append('<option value="">指定なし</option>');
-            if(nth.val() !== ""){
-                _incharge.find(incharge => incharge.isAllParent() && nth.val() === incharge.getName()).getValue("member").forEach(id => {
+            if(nthValue !== ""){
+                _incharge.find(incharge => nthValue === incharge.getValue("_id")).getValue("member").forEach(id => {
                     var _inch = _incharge.find(inch => inch.getValue("_id") === id);
                     division.append('<option value="' + _inch.getValue("_id") + '">' + _inch.getValue("code") +'</option>');
                 });
