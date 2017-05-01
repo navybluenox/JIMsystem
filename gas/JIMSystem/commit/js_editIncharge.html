@@ -9,14 +9,7 @@ $(() => {
             _val.server.loadDataAll().then(() => {
                 form.find('[name$="_cond_nth"]').append(
                     '<option value="">指定なし</option>' +
-                    _val.server.getData("incharge")
-                        .filter(incharge => incharge.isAllParent())
-                        .sort((a,b) => {
-                            var arr = Incharge.getTermList().map(obj => obj.org + obj.nth);
-                            if(a.isPresentTerm()) return -1;
-                            if(b.isPresentTerm()) return 1;                            
-                            return arr.findIndex(name => name === a.getName()) - arr.findIndex(name => name === b.getName());
-                        })
+                    Incharge.getAllOfAllParents()
                         .map(incharge => '<option value="' + incharge.getValue("_id") +'">' + incharge.getName() + '</option>')
                         .join("")
                 );
@@ -48,7 +41,7 @@ $(() => {
             var condEl = {};
             ["nth","division","code","name"].forEach(key => condEl[key] = form.find('[name="' + nameAttr + '_cond_' + key +'"]'));
 
-            var incharges = _val.server.getData("incharge",null,null,true).filter(incharge => {
+            var incharges = (condEl.nth === "" ? Incharge.getAllOfAllParents().map(inch => inch.getMemberIncharges()).reduce((prev,curt) => prev.concat(curt),[]) : _val.server.getDataById(condEl.nth,"incharge")[0].getMemberIncharges()).filter(incharge => {
                 if(inArray(skipIds,incharge.getValue("_id")))  return false;
                 return Object.keys(condEl).every(key => {
                     var value = condEl[key].val();
@@ -58,7 +51,7 @@ $(() => {
                             return incharge.getAllParent().getValue("_id") === value;
                             break;
                         case "division":
-                            return incharge.isAllParent() ? true : incharge.getDivision().getValue("_id") === value;
+                            return incharge.isAllParent() ? false : incharge.getDivision().getValue("_id") === value;
                             break;
                         case "code":
                         case "name":
