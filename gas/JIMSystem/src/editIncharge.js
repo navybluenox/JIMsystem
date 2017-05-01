@@ -57,7 +57,7 @@ $(() => {
                             return incharge.getAllParent().getValue("_id") === value;
                             break;
                         case "division":
-                            return incharge.isAllParent() ? true : incharge.getDivision().getValue("name") === value;
+                            return incharge.isAllParent() ? true : incharge.getDivision().getValue("_id") === value;
                             break;
                         case "code":
                         case "name":
