@@ -80,8 +80,8 @@ $(() => {
             division.children().remove();
             division.append('<option value="">指定なし</option>');
             if(nthValue !== ""){
-                _incharge.find(incharge => nthValue === incharge.getValue("_id")).getValue("member").forEach(id => {
-                    var _inch = _incharge.find(inch => inch.getValue("_id") === id);
+                _incharge.find(incharge => nthValue === incharge.getValue("_id")).getValue("member").forEach(obj => {
+                    var _inch = _incharge.find(inch => inch.getValue("_id") === obj.id);
                     division.append('<option value="' + _inch.getValue("_id") + '">' + _inch.getValue("code") +'</option>');
                 });
             }
