@@ -72,6 +72,10 @@ $(() => {
                 result.append('<option value="' + incharge.getValue("_id") +'">' + pageFun.getInchargeName(incharge) +'</option>');
             });
 
+            if(isMultiple){
+                result.attr("size",Math.min(result.find("option,optgroup").length,20)).find("option,optgroup").css({"text-align":"left"});
+            }
+
         },searchDivisionForForm:(nameAttr) => {
             var nth = form.find('[name="' + nameAttr + '_cond_nth"]');
             var division = form.find('[name="' + nameAttr + '_cond_division"]');
@@ -93,23 +97,24 @@ $(() => {
 
             var incharges = _val.server.getData("incharge");
 
-            ids.forEach(id => {
-                var divTr = $("<div></div>");
+            ids.filter((v,i,s) => s.indexOf(v) === i).forEach(id => {
+                var divTr = $("<div class='div-row'></div>");
                 var incharge = incharges.find(inch => inch.getValue("_id") === id);
                 divBody.append(divTr.css({"display":"table-row"}).data("inchargeid",id));
                 var divCell = $("<div>" + pageFun.getInchargeName(incharge) +"</div><div></div>").appendTo(divTr).css({"display":"table-cell"}).eq(1);
-                divCell.append('<input type="button" name="top" value="TOP"><input type="button" name="up" value="↑"><input type="button" name="down" value="↓"><input type="button" name="bottom" value="BOTTOM"><input type="button" name="remove" value="REMOVE">');
+                divCell.append('<input type="hidden" name="id" value="' + incharge.getValue("_id") + '"><input type="button" name="top" value="TOP"><input type="button" name="up" value="↑"><input type="button" name="down" value="↓"><input type="button" name="bottom" value="BOTTOM"><input type="button" name="remove" value="REMOVE">');
+                divCell.css({"white-space":"pre"});
             });
 
             divBody.on("click",'input[type="button"]',e => {
                 var button = $(e.currentTarget);
-                var divTr = button.closest("div").closest("div");
+                var divTr = button.closest("div.div-row");
                 var kind = button.attr("name");
                 var indexDiv = divBody.children("div").index(divTr);
 
                 if(
-                    (indexTr === 0 && (type === "top" || type === "up")) ||
-                    (indexTr === divBody.children("div").length-1 && (type === "bottom" || type === "down"))
+                    (indexDiv === 0 && (kind === "top" || kind === "up")) ||
+                    (indexDiv === divBody.children("div").length-1 && (kind === "bottom" || kind === "down"))
                 ){
                     //一番上か一番下で動かせない
                     return null;
@@ -142,6 +147,39 @@ $(() => {
             return divTr.map((i,el) => $(el).data("inchargeid")).get();
         },getInchargeName:(incharge) => {
             return incharge.isEndChild() ? incharge.getName() : incharge.getName() + "(" + incharge.getValue("name") + ")";
+        },moveMember:(nameAttr,type) => {
+            var target_list = form.find('[name="' + nameAttr + '_list"]');
+            var target_selected = form.find('[name="' + nameAttr + '_selected"]').siblings("div");
+            var incharges = _val.server.getData("incharge");
+
+            if(type === "add"){
+                let selectedIds = target_list.val();
+                selectedIds = selectedIds === null ? [] : selectedIds;
+
+                let incharges_list = target_list.find("option").map((i,el) => {
+                    return $(el).attr("value");
+                }).get().filter(id => !inArray(selectedIds,id)).map(id => incharges.find(inch => inch.getValue("_id") === id));
+
+                let ids_selected = pageFun.getInchargeIdSelected(nameAttr);
+
+                target_list.children().remove()
+
+                let result = form.find('[name="' + nameAttr + '"]'),
+                    isMultiple = false;
+                if(result.length === 0){
+                    result = form.find('[name="' + nameAttr + '_list"]');
+                    isMultiple = true;
+                }
+
+                incharges_list.forEach(incharge => {
+                    if(incharge.isAllParent() || incharge.isDivision()){
+                        result.append('<optgroup label="' + incharge.getName() +'"></optgroup>')
+                    }
+                    result.append('<option value="' + incharge.getValue("_id") +'">' + pageFun.getInchargeName(incharge) +'</option>');
+                });
+
+                pageFun.setInchargeIdSelected(nameAttr,ids_selected.concat(selectedIds));
+            }
         }
     };
 });
