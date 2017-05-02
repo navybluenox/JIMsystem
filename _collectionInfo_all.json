@@ -75,11 +75,9 @@
             "nameLastPhonetic":"string",
             "nameFirstPhonetic":"string",
             "inchargeId":["string"],
-            "incharge":["string"],
-            "inchargeCode":["string"],
-            "oldIncharge":[{"org":"string","nth":"number","code":"string","display":"boolean"}],
             "isRojin":"boolean",
-            "isAvailable":"boolean"
+            "isAvailable":"boolean",
+            "sheetConfig":[{"day":"number","isInvisible":"boolean"}]
         },"columnName":{
             "_id":"データID",
             "created":"作成日時",
@@ -94,12 +92,10 @@
             "nameLastPhonetic":"姓（ふりがな）",
             "nameFirstPhonetic":"名（ふりがな）",
             "inchargeId":["担当ID"],
-            "incharge":["担当名"],
-            "inchargeCode":["担当略称"],
-            "oldIncharge":[{"_name":"過去の担当","org":"団体の略称","nth":"期","code":"担当の略称","display":"表示するか"}],
             "isRojin":"老人であるか",
-            "isAvailable":"今期に参加するか"
-        },"columnOrder":["_id","created","updated","sortId","azusaId","azusaSendName","cellphone","grade","nameLast","nameFirst","nameLastPhonetic","nameFirstPhonetic","inchargeId.0","incharge.0","inchargeCode.0","oldIncharge.0.org","oldIncharge.0.nth","oldIncharge.0.code","isRojin","isAvailable"],
+            "isAvailable":"今期に参加するか",
+            "sheetConfig":[{"_name":"人割表のユーザーごとの設定","day":"n日目","isInvisible":"非表示にするか"}]
+        },"columnOrder":["_id","created","updated","sortId","azusaId","azusaSendName","cellphone","grade","nameLast","nameFirst","nameLastPhonetic","nameFirstPhonetic","inchargeId.0","isRojin","isAvailable","sheetConfig.0.day","sheetConfig.0.isInvisible"],
         "sortColumn":"sortId","nameColumn":"@name"
     },{
         "_id":"fZBpdfgWyMZdAp3W","created":"2016-07-18T08:00:00.000Z","updated":"2016-07-18T08:00:00.000Z","name":"userGroup","fileInfoId":"QYybMQc3gGZyXBk5",
@@ -191,7 +187,6 @@
             "nameShort":"string",
             "leaderId":"string",
             "leaderInchargeId":"string",
-            "leaderIncharge":"string",
             "detail":[{"start":"localdate","number":"string"}],
             "description":"string",
             "condition":"string",
@@ -206,14 +201,13 @@
             "nameShort":"人割名（省略用）",
             "leaderId":"統括のUserID",
             "leaderInchargeId":"統括の担当ID",
-            "leaderIncharge":"統括の担当略称",
             "detail":[{"_name":"時間・人数","start":"開始時間","number":"各単位人割時間ごとの人数"}],
             "description":"業務内容",
             "condition":"人割条件",
             "caption":"業務説明文",
             "note":"メモ書き",
             "asAssigned":"割り振り済みとみなすか"
-        },"columnOrder":["_id","created","updated","name","nameShort","leaderId","leaderInchargeId","leaderIncharge","detail.0.start","detail.0.number","description","condition","caption","note","asAssigned"],
+        },"columnOrder":["_id","created","updated","name","nameShort","leaderId","leaderInchargeId","detail.0.start","detail.0.number","description","condition","caption","note","asAssigned"],
         "sortColumn":"leaderIncharge","nameColumn":"name"
     },{
         "_id":"Ymnj7O59yx2MxR8H","created":"2016-07-18T08:00:00.000Z","updated":"2016-07-18T08:00:00.000Z","name":"scriptLibrary","fileInfoId":"NixKGFmuUGRgrhkP",

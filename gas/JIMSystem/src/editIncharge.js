@@ -16,6 +16,7 @@ $(() => {
             pageFun = _val.pageFun.editIncharge;
             form = $("#formEditIncharge_edit");
             
+            form.find(".memberForIncharge,.memberForUser").css({"display":"none"});
 
         },onunload:() => {
         },updateIncharge:(kind,_id,setData) => {
@@ -90,7 +91,7 @@ $(() => {
                 });
             }
         },searchUserForFrom:(nameAttr) => {
-        },setInchargeIdSelected:(nameAttr,ids) => {
+        },setMemberSelected:(nameAttr,ids) => {
             var divBody = form.find('[name="' + nameAttr + '_selected"]').siblings("div");
             divBody.children().remove();
 
@@ -102,7 +103,7 @@ $(() => {
                 divBody.append(divTr.css({"display":"table-row"}).data("inchargeid",id));
                 var divCell = $("<div>" + pageFun.getInchargeName(incharge) +"</div><div></div>").appendTo(divTr).css({"display":"table-cell"}).eq(1);
                 divCell.append('<input type="hidden" name="id" value="' + incharge.getValue("_id") + '"><input type="button" name="top" value="TOP"><input type="button" name="up" value="↑"><input type="button" name="down" value="↓"><input type="button" name="bottom" value="BOTTOM"><input type="button" name="remove" value="REMOVE">');
-                divCell.css({"white-space":"pre"});
+                divTr.css({"white-space":"pre"});
             });
 
             divBody.on("click",'input[type="button"]',e => {
@@ -177,7 +178,7 @@ $(() => {
                     result.append('<option value="' + incharge.getValue("_id") +'">' + pageFun.getInchargeName(incharge) +'</option>');
                 });
 
-                pageFun.setInchargeIdSelected(nameAttr,ids_selected.concat(selectedIds));
+                pageFun.setMemberSelected(nameAttr,ids_selected.concat(selectedIds));
             }
         }
     };

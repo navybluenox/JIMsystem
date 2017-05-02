@@ -28,29 +28,33 @@
                         <tr><td>担当名：</td><td><input type="text" name="parentIncharge_cond_name" tabindex="2" onchange="_val.pageFun.editIncharge.searchInchargeForForm('parentIncharge')"></td></tr>
                     </table></td>
                 </tr><tr>
-                    <td>所属するユーザー</td>
-                    <td><input type="text" name="member_user" tabindex="2"></td>
+                    <td>所属するメンバーの種類</td>
+                    <td><select name="member_kind" tabindex="2">
+                        <option value="user">ユーザー</option>
+                        <option value="incharge">担当</option>
+                    </select></td>
                     <td></td>
                 </tr><tr>
-                    <td>所属する担当</td>
+                    <td>所属するメンバー</td>
                     <td><table><tbody>
+                        <tr><td>候補</td><td>リスト</td></tr>
                         <tr><td>
-                            <select name="member_incharge_list" tabindex="2" multiple></select>
+                            <select name="member_list" tabindex="2" multiple></select>
                         </td><td>
-                            <input type="hidden" name="member_incharge_selected" tabindex="-1">
+                            <input type="hidden" name="member_selected" tabindex="-1">
                             <div style="display: table"></div>
                         </td></tr><tr><td>
-                            <input type="button" name="member_incharge_add" value="→追加" tabindex="2" onclick="_val.pageFun.editIncharge.moveMember('member_incharge','add')">
+                            <input type="button" name="member_add" value="→追加" tabindex="2" onclick="_val.pageFun.editIncharge.moveMember('member','add')">
                         </td><td>
                         </td></tr>
                     </tbody></table></td>
                     <td><table>
-                        <tr><td>期・局：</td><td>
+                        <tr class="memberForIncharge"><td>期・局：</td><td>
                             <select name="member_incharge_cond_nth" tabindex="2" onchange="_val.pageFun.editIncharge.searchDivisionForForm('member_incharge');_val.pageFun.editIncharge.searchInchargeForForm('member_incharge')"></select>
                             <select name="member_incharge_cond_division" tabindex="2" onchange="_val.pageFun.editIncharge.searchInchargeForForm('member_incharge');"></select>
                         </td></tr>
-                        <tr><td>略称：</td><td><input type="text" name="member_incharge_cond_code" tabindex="2" onchange="_val.pageFun.editIncharge.searchInchargeForForm('member_incharge');"></td></tr>
-                        <tr><td>担当名：</td><td><input type="text" name="member_incharge_cond_name" tabindex="2" onchange="_val.pageFun.editIncharge.searchInchargeForForm('member_incharge');"></td></tr>
+                        <tr class="memberForIncharge"><td>略称：</td><td><input type="text" name="member_incharge_cond_code" tabindex="2" onchange="_val.pageFun.editIncharge.searchInchargeForForm('member_incharge');"></td></tr>
+                        <tr class="memberForIncharge"><td>担当名：</td><td><input type="text" name="member_incharge_cond_name" tabindex="2" onchange="_val.pageFun.editIncharge.searchInchargeForForm('member_incharge');"></td></tr>
                     </table></td>
                 </tr><tr>
                     <td>関連する担当</td>
