@@ -155,7 +155,7 @@ $(function(){
                 _val.server.loadData("workAssign"),
                 Server.handlePropertiesService(version_propertyKey,"script","get").then(function(v){version = (v[version_propertyKey] === undefined ? 0 : +v[version_propertyKey]);})
             ]).then(function(){
-            console.log("step 2 / 7");
+                console.log("step 2 / 7");
                 var _users = Datapiece.sort(_val.server.getData("user"),"sortId");
                 var nowTime = new Date();
                 var leftOffset = 4;
@@ -373,7 +373,7 @@ $(function(){
             console.log("step 1 / 7");
             Server.handlePropertiesService(version_propertyKey,"script","get").then(function(v){version = (v[version_propertyKey] === undefined ? 0 : +v[version_propertyKey]);})
             .then(function(){
-            console.log("step 2 / 7");
+                console.log("step 2 / 7");
                 var workLists = _val.server.getData("workList",undefined,undefined,true);
                 var nowTime = new Date();
                 var leftOffset = 0;
@@ -586,6 +586,7 @@ $(function(){
                 });
                 startTrigger = true;
                 return promiseChain;
+            });
         },createPdfOfShiftTable:function(type){
             var la = new LoadingAlert();
             var sheetNameList = [];
