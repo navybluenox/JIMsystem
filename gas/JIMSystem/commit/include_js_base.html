@@ -169,6 +169,8 @@ var LocalDate = (function(){
                     if(timeValue instanceof Date){
                         targetTime = new Date(timeValue.toISOString());
                         this._localTime = targetTime.getTime() - standardTime.getTime();
+                    }else if(timeValue instanceof LocalDate){
+                        this._localTime = timeValue.getTime();
                     }else if(timeValue != null){
                         this._localTime = 0;
                         targetTime = LocalDate.getStandardTime()

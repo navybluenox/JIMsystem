@@ -370,14 +370,13 @@ $(function(){
             var la = new LoadingAlert();
             var version;
             var version_propertyKey = "shiftTableWork_version_" + _val.config.getValue("content.kind") + _val.config.getValue("content.nth");
-            console.log("step 1 / 7");
             Server.handlePropertiesService(version_propertyKey,"script","get").then(function(v){version = (v[version_propertyKey] === undefined ? 0 : +v[version_propertyKey]);})
             .then(function(){
-                console.log("step 2 / 7");
                 var workLists = _val.server.getData("workList",undefined,undefined,true);
+                var incharges = Incharge.getInchargesInOrder();
                 var nowTime = new Date();
-                var leftOffset = 0;
-                var rightOffset = 0;
+                var leftOffset = 1;
+                var topOffset = 1;
                 var defaultCellTemplate = {"fontSize":11,"alignHori":"center","alignVer":"middle","fontFamily":"ＭＳ Ｐゴシック"};
                 var setDefaultCellSetting = function(setting){return $.extend({},defaultCellTemplate,setting)};
                 var startTrigger = false;
@@ -392,22 +391,30 @@ $(function(){
 
                 //TODO
                 //シートはinchargeごとに実装する
-                workLists.forEach(workList => {
-                    var sheetName = workList.getValue("")
-                });
 
-                (function(){
-                    var obj;
-                    for(var day=_val.config.getWorkStartDay(),e=_val.config.getWorkEndDay(); day<=e; day++){
-                        obj = _val.config.getWorkTime(day);
-                        obj.sheetName = "day" + day;
-                        timeInfoList.push(obj);
-                    }
-                })();
-
-                timeInfoList.forEach(function(timeInfo){
+                incharges.map(incharge => {
+                    return {
+                        "sheetName":incharge.getValue("code"),
+                        "workLists":workLists
+                            .filter(workList => workList.getValue("leaderInchargeId") === incharge.getValue("_id"))
+                            .sort((a,b) => a.getValue("name").charCodeAt() - b.getValue("name").charCodeAt())
+                    };
+                })
+                .filter(obj => obj.workLists.length !== 0)
+                .map(obj => {
+                    return {
+                        "sheetName":obj.sheetName,
+                        "data":workLists.map(workList => {
+                            return {
+                                "workList":workList,
+                                "setting":workList.getShiftTableAsSpreadsheetSetting()
+                            };
+                        })
+                    };
+                })
+                .forEach(function(tableDataObj){
                     var table = [];
-                    var spreadsheet = new Spreadsheet("shiftTableUser",timeInfo.sheetName,table);
+                    var spreadsheet = new Spreadsheet("shiftTableWork",obj.sheetName,table);
                     var mergeSetting = [];
                     var borderSetting = [];
                     var sizeSetting = [];
@@ -446,8 +453,6 @@ $(function(){
                         }
                     })();
                     sizeSetting.push({"type":"width","index":widthAll-1,"value":105});
-
-                    console.log("step 3 / 7");
 
                     //1,2行目
                     (function(){
@@ -492,8 +497,6 @@ $(function(){
                         }
                     })();
 
-                    console.log("step 4 / 7");
-
                     //3行目以降の準備
                     var makeHeader = function(rowIndex){
                         var header = [];
@@ -531,8 +534,6 @@ $(function(){
                         }
                     })();
 
-                    console.log("step 5 / 7");
-
                     //3行目以降
                     groupUsers.forEach(function(obj,groupIndex){
                         var users = obj.user;
@@ -558,8 +559,6 @@ $(function(){
                         });
                     });
 
-                    console.log("step 6 / 7");
-
                     promiseChain = promiseChain.then(function(){
                         return Promise.all([
                             spreadsheet.writeSheetData(table,["text","fontColor","fontWeight","fontFamily","background","fontSize","alignHori","alignVer"],100),
@@ -570,7 +569,6 @@ $(function(){
                         }).then(function(){
                             return spreadsheet.setFreezeCell({"row":topOffset + 1,"column":leftOffset})
                         });
-                        console.log("step 7 / 7");
                     });
 
                 });

@@ -1219,6 +1219,21 @@ class WorkList extends Datapiece{
     getShiftTableAsElement(start,end,option){
         return Datapiece.getShiftTableAsElement(this,this.getDataName(),start,end,option);        
     }
+    getShiftTableAsSpreadsheetSetting(timeSetting,rowIndex,leftOffset){
+        var start,end;
+        if(typeof timeSetting === "number"){
+            let detailObj = this.getValue("@detail")[timeSetting];
+            if(detailObj === undefined)  throw new Error();
+            start = detailObj.start;
+            end = start.copy().addTimeUnit(detailObj.length);
+        }else if(typeof timeSetting === "object" && timeSetting !== null && timeSetting.start !== undefined && timeSetting.end !== undefined){
+            start = new LocalDate(timeSetting.start);
+            end = new LocalDate(timeSetting.end);
+        }else{
+            throw new Error();
+        }
+        //TODO
+    }
     getDiffFromRequired(start,end,diffFromZero){
         var result = [];
         var workAssigns = this.getWorkAssigns();
