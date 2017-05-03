@@ -371,12 +371,9 @@ $(function(){
             var version;
             var version_propertyKey = "shiftTableWork_version_" + _val.config.getValue("content.kind") + _val.config.getValue("content.nth");
             var constValue = {
-                "leftOffset":0,
-                "topOffset":1,
-                "leftOffset_workList":1,
-                "topOffset_workList":0,
-                "leftOffset_detail":0,
-                "topOffset_detail":1
+                "sheet":{"header":1,"leftMargin":0},
+                "workList":{"header":0,"leftMargin":1},
+                "detail":{"header":1,"leftMargin":0}
             };
             Server.handlePropertiesService(version_propertyKey,"script","get").then(function(v){version = (v[version_propertyKey] === undefined ? 0 : +v[version_propertyKey]);})
             .then(function(){
@@ -409,47 +406,87 @@ $(function(){
                     };
                 })
                 .filter(obj => obj.workLists.length !== 0);
+                sheetSettings = sheetSettings.map(sheetObj => {
+                    var rowIndex = 0;
+                    var leftIndex = 0;
+                    var result_sheet = {
+                        "sheetName":sheetObj.sheetName,
+                        "offset":{"top":rowIndex,"left":leftIndex},
+                        "size":{"height":0,"width":0}
+                    };
+                    rowIndex += constValue.sheet.header;
+                    leftIndex = constValue.sheet.leftMargin;
+                    result_sheet.workLists = sheetObj.workLists.map(workList => {
+                        var result_workList = {
+                            "datapiece":workList,
+                            "offset":{"top":rowIndex,"left":leftIndex},
+                            "size":{"height":0,"width":0}
+                        };
+                        rowIndex += constValue.workList.header;
+                        leftIndex = constValue.sheet.leftMargin + constValue.workList.leftMargin;
+                        result_workList.details = workList.getNumberDetails().map(detail => {
+                            var result_detail =  {
+                                "value":detail,
+                                "offset":{"top":rowIndex,"left":leftIndex},
+                                "size":{"height":constValue.detail.header + detail.number.reduce((prev,curt) => Math.max(prev,curt),0),"width":constValue.detail.leftMargin + numberObj.number.length},
+                                "start":detail.start,
+                                "end":detail.end
+                            };
+                            result_workList.size.height += result_detail.size.height;
+                            result_workList.size.width = Math.max(result_workList.size.width, + constValue.workList.leftMargin,result_detail.size.width);
+                            rowIndex += constValue.detail.header + detailObj.size.height;
+                            return result_detail;
+                        });
+                        result_workList.size.height += constValue.workList.header;
+                        result_sheet.size.height += result_workList.size.height;
+                        result_sheet.size.width += constValue.workList.leftMargin;
+                        return result_workList;
+                    });
+                    result_sheet.size.height += constValue.sheet.header;
+                    return result_sheet;
+                });
 
                 promiseChain = promiseChain.then(() => {
                     return (new Spreadsheet("shiftTableWork")).insertNewSheets(sheetSettings.map(obj => obj.sheetName));
                 });
 
-                sheetSettings.forEach(function(tableDataObj){
+                sheetSettings.forEach(function(sheetObj){
                     var table = [];
-                    var spreadsheet = new Spreadsheet("shiftTableWork",tableDataObj.sheetName,table);
-                    var sheetName = tableDataObj.sheetName;
-                    var workLists = tableDataObj.workLists;
                     var mergeSetting = [];
                     var borderSetting = [];
                     var sizeSetting = [];
-                    /*var start = timeInfo.start;
-                    var end = timeInfo.end;
-                    var sheetName = timeInfo.sheetName;
-                    var contentWidth = start.getDiff(end,"timeunit");
-                    var widthAll = leftOffset + contentWidth + rightOffset;*/
 
-                    var rowIndex_now = constValue.topOffset;
+                    //set cellSize
+                    sizeSetting.push({"type":"width","index":0,"value":45});
+                    for(let i=0;i<sheetObj.size.width;i++){
+                        sizeSetting.push({"type":"width","index":i+1,"value":45});
+                    }
+                    for(let i=0;i<sheetObj.size.height;i++){
+                        table.push([]);
+                    }
 
-                    workLists.forEach(workList => {
+                    sheetObj.workLists.forEach(workListObj => {
                         //workListごとのヘッダー
-                        var leftOffset_workList = constValue.leftOffset + constValue.leftOffset_workList;
-                        var topOffset_workList = rowIndex_now + constValue.topOffset_workList;
-                        var width_workList = constValue.leftOffset_workList;
-                        var height_workList = constValue.topOffset_workList;
+                        //set border
+                        borderSetting.push({"range":{"top":workListObj.offset.top,"left":workListObj.offset.left,"height":workListObj.size.height,"width":1},"border":{"style":"solid","top":true,"bottom":true,"left":true,"right":true,"vertical":true,"horizontal":true}});
+                        mergeSetting.push({"range":{"top":workListObj.offset.top,"left":workListObj.offset.left,"height":workListObj.size.height,"width":1}});
 
-                        workList.getNumberDetails().forEach(detail => {
-                            var leftOffset_detail = leftOffset_workList + constValue.leftOffset_detail;
-                            var topOffset_detail = rowIndex_now + constValue.topOffset_detail;
-                            var width_detail = detail.number.length;
-                            var height_detail = detail.number.reduce((prev,curt) => Math.max(prev,curt),0);
-                            width_workList = Math.max(width_workList,width_detail + constValue.leftOffset_detail);
-                            height_workList += height_detail;
+                        //set content
+                        for(let i=0;i<workListObj.size.height;i++){
+                            let columnIndex = workListObj.offset.top + i
+                            table[columnIndex][0] = setDefaultCellSetting(i === 0 ? {"text":workListObj.datapiece.getName()} : {});
+                        }
+
+                        workListObj.details.forEach(detailObj => {
+                            //TODO
                         });
 
                         //TODO
-
                     });
 
+                    //TODO
+
+                    var spreadsheet = new Spreadsheet("shiftTableWork",sheetObj.sheetName,table);
 
                     var indexOfHeader = users.filter(function(user){
                         return (

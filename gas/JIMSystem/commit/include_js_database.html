@@ -1212,7 +1212,10 @@ class WorkList extends Datapiece{
 
     }
     getNumberDetails(){
-        return this.getValue("@detail");
+        return this.getValue("@detail").map(obj => {
+            obj.end = obj.start.copy().addTimeUnit(obj.number.length);
+            return obj;
+        });
     }
     getBackgroundColor(){
         return WorkGroup.getColorByWorkListId(this.getValue("_id"),"background");
