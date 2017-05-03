@@ -731,7 +731,8 @@ var Datapiece = (function(){
             rowIndex = rowIndex || 0;
             leftOffset = leftOffset || 0;
             var data = that.getShiftTableAsData(start,end);
-            var rows = [];
+            var rows = [[]];
+
             for(var i=0;i<data.workNum;i++){
                 rows[i] = data.content.filter(function(obj){return obj.workIndex === i});
             }
@@ -1031,7 +1032,7 @@ class User extends Datapiece{
         return Datapiece.getShiftTableAsElement(this,this.getDataName(),start,end,option);        
     }
     getShiftTableAsSpreadsheetSetting(start,end,rowIndex,leftOffset){
-        return Datapiece.getShiftTableAsSpreadsheetSetting(this,this.getDataName(),start,end,rowIndex,leftOffset)
+        return Datapiece.getShiftTableAsSpreadsheetSetting(this,this.getDataName(),start,end,rowIndex,leftOffset);
     }
     getShiftTableUser(){
         var setValue = {"userId":this.getValue("_id"),"content":[],"workNum":[]};
