@@ -320,7 +320,7 @@ $(function(){
                         borderSetting.push({"range":{"top":offset,"left":leftOffset,"height":1,"width":contentWidth},"border":{"vertical":true,"style":"solid"}})
 
                         users.forEach(function(user,rowIndex){
-                            var ret = user.getShiftTableAsSpreadsheetSetting(start,end,offset + rowIndex + 1,leftOffset);
+                            var ret = user.getShiftTableAsSpreadsheetSetting(start,end,offset + rowIndex + 1,leftOffset)[0];
                             mergeSetting = mergeSetting.concat(ret.merge);
                             borderSetting = borderSetting.concat(ret.border);
                             ret.content = ret.content.map(function(cell){return setDefaultCellSetting(cell);});

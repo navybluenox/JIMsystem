@@ -728,6 +728,86 @@ var Datapiece = (function(){
 
             return result;
         }
+        static getShiftTableAsSpreadsheetSetting(that,dataName,start,end,rowIndex,leftOffset){
+            rowIndex = rowIndex || 0;
+            leftOffset = leftOffset || 0;
+            var data = that.getShiftTableAsData(start,end);
+            var rows = [];
+            for(var i=0;i<data.workNum;i++){
+                rows[i] = data.content.filter(function(obj){return obj.workIndex === i});
+            }
+
+            return rows.map(_row => {
+                var row = _row.slice();
+                //padding blank time
+                if(_row.length === 0){
+                    for(var j=0,l=start.getDiff(end, "timeunit"); j<l; j++){
+                        row[j] = {"start":start.copy().addTimeUnit(j),"workAssignId":"_vacancy"};
+                    }
+                }else{
+                    var insert;
+                    for(var i=_row.length-1; i>=0; i--){
+                        insert = [];
+                        for(var j=0,l=_row[i].start.copy().addTimeUnit(_row[i].interval).getDiff(i===_row.length-1 ? end : _row[i+1].start, "timeunit"); j<l; j++){
+                            insert[j] = {"start":_row[i].start.copy().addTimeUnit(_row[i].interval + j),"workAssignId":"_vacancy"};
+                        }
+                        row.splice(i+1,0,insert);
+                    }
+                    //padding from start
+                    insert = [];
+                    for(var j=0,l=start.getDiff(_row[0].start, "timeunit"); j<l; j++){
+                        insert[j] = {"start":start.copy().addTimeUnit(j),"workAssignId":"_vacancy"};
+                    }
+                    row.splice(0,0,insert);
+                }
+                row = row.reduce((prev,curt) =>  prev.concat(curt),[]);
+
+                var mergeSetting = [];
+                var borderSetting = [];
+
+                row = row.map(cell => {
+                    var ret = {"time":cell.start.getTime(),"text":null};
+                    if(cell.workAssignId !== "_vacancy" && cell.workAssignId !== "_blank"){
+                        var workAssign = _val.server.getDataById(cell.workAssignId,"workAssign")[0].copy();
+                        workAssign.setValue("start",cell.start.copy()).setValue("interval",cell.interval);
+                        var datapiece;
+                        if(dataName === "user"){
+                            datapiece = workAssign.getDatapieceRelated("workListId","workList");
+                        }else{
+                            datapiece = workAssign.getDatapieceRelated("userId","user");
+                        }
+                        ret = [];
+                        for(var i=0,l=workAssign.getValue("interval");i<l;i++){
+                            ret[i] = {"time":cell.start.copy().addTimeUnit(i).getTime(),"text":null};
+                        }
+                        ret[0] = {"time":cell.start.getTime(),"startWork":true,"text":datapiece.getValue(dataName === "user" ? "nameShort" : "@name"),"background":datapiece.getBackgroundColor(),"fontColor":datapiece.getFontColor()};
+                        ret[ret.length-1].endWork = true;
+                        mergeSetting.push({"range":{"top":rowIndex,"left":leftOffset + data.tableStartTime.getDiff(cell.start,"timeunit"),"height":1,"width":workAssign.getValue("interval")}});
+                    }
+                    return ret;
+                })
+                .reduce((prev,curt) => prev.concat(curt),[])
+                .map((cell,cellIndex,self) => {
+                    var time = new LocalDate(cell.time);
+                    if(time.getMinutes() === 0 || cellIndex === 0 /*|| cell.startWork || cell.endWorkNext*/){
+                        borderSetting.push({"range":{"top":rowIndex,"left":leftOffset + cellIndex,"height":1,"width":1},"border":{"style":"solid","left":true}})
+                    }
+                    if(cell.endWork && cellIndex !== self.length-1){
+                        self[cellIndex+1].endWorkNext = true;
+                    }
+                    return cell;
+                })
+                .map(cell => {
+                    ["time","startWork","endWork","endWorkNext"].forEach(function(key){
+                        if(cell[key] !== undefined){
+                            delete cell[key];
+                        }
+                    });
+                    return cell;
+                });
+                return {"content":row,"merge":mergeSetting,"border":borderSetting};
+            });
+        }
     }
     function getValueFromObjectByKey(obj,key){
         if(typeof key !== "string")  return undefined;
@@ -952,73 +1032,7 @@ class User extends Datapiece{
         return Datapiece.getShiftTableAsElement(this,this.getDataName(),start,end,option);        
     }
     getShiftTableAsSpreadsheetSetting(start,end,rowIndex,leftOffset){
-        rowIndex = rowIndex || 0;
-        leftOffset = leftOffset || 0;
-        var data = this.getShiftTableAsData(start,end);
-        var _row = data.content.filter(function(obj){return obj.workIndex === 0});
-
-        var row = _row.slice();
-        if(_row.length === 0){
-            for(var j=0,l=start.getDiff(end, "timeunit"); j<l; j++){
-                row[j] = {"start":start.copy().addTimeUnit(j),"workAssignId":"_vacancy"};
-            }
-        }else{
-            var insert;
-            for(var i=_row.length-1; i>=0; i--){
-                insert = [];
-                for(var j=0,l=_row[i].start.copy().addTimeUnit(_row[i].interval).getDiff(i===_row.length-1 ? end : _row[i+1].start, "timeunit"); j<l; j++){
-                    insert[j] = {"start":_row[i].start.copy().addTimeUnit(_row[i].interval + j),"workAssignId":"_vacancy"};
-                }
-                row.splice(i+1,0,insert);
-            }
-            insert = [];
-            for(var j=0,l=start.getDiff(_row[0].start, "timeunit"); j<l; j++){
-                insert[j] = {"start":start.copy().addTimeUnit(j),"workAssignId":"_vacancy"};
-            }
-            row.splice(0,0,insert);
-        }
-        row = row.reduce(function(prev,curt){
-            return prev.concat(Array.isArray(curt) ? curt : [curt]);
-        },[]);
-
-        var mergeSetting = [];
-        var borderSetting = [];
-
-        row = row.map(function(cell){
-            var ret = {"time":cell.start.getTime(),"text":null};
-            if(cell.workAssignId !== "_vacancy" && cell.workAssignId !== "_blank"){
-                var workAssign = _val.server.getDataById(cell.workAssignId,"workAssign")[0].copy();
-                workAssign.setValue("start",cell.start.copy()).setValue("interval",cell.interval)
-                var workList = workAssign.getDatapieceRelated("workListId","workList");
-                ret = [];
-                for(var i=0,l=workAssign.getValue("interval");i<l;i++){
-                    ret[i] = {"time":cell.start.copy().addTimeUnit(i).getTime(),"text":null};
-                }
-                ret[0] = {"time":cell.start.getTime(),"startWork":true,"text":workList.getValue("nameShort"),"background":workList.getBackgroundColor(),"fontColor":workList.getFontColor()};
-                ret[ret.length-1].endWork = true;
-                mergeSetting.push({"range":{"top":rowIndex,"left":leftOffset + data.tableStartTime.getDiff(cell.start,"timeunit"),"height":1,"width":workAssign.getValue("interval")}});
-            }
-            return ret;
-        }).reduce(function(prev,curt){
-            return prev.concat(curt);
-        },[]).map(function(cell,cellIndex,self){
-            var time = new LocalDate(cell.time);
-            if(time.getMinutes() === 0 || cellIndex === 0 /*|| cell.startWork || cell.endWorkNext*/){
-                borderSetting.push({"range":{"top":rowIndex,"left":leftOffset + cellIndex,"height":1,"width":1},"border":{"style":"solid","left":true}})
-            }
-            if(cell.endWork && cellIndex !== self.length-1){
-                self[cellIndex+1].endWorkNext = true;
-            }
-            return cell;
-        }).map(function(cell){
-            ["time","startWork","endWork","endWorkNext"].forEach(function(key){
-                if(cell[key] !== undefined){
-                    delete cell[key];
-                }
-            });
-            return cell;
-        });
-        return {"content":row,"merge":mergeSetting,"border":borderSetting};
+        return Datapiece.getShiftTableAsSpreadsheetSetting(this,this.getDataName(),start,end,rowIndex,leftOffset)
     }
     getShiftTableUser(){
         var setValue = {"userId":this.getValue("_id"),"content":[],"workNum":[]};
@@ -1232,7 +1246,7 @@ class WorkList extends Datapiece{
         }else{
             throw new Error();
         }
-        //TODO
+        return Datapiece.getShiftTableAsSpreadsheetSetting(this,this.getDataName(),start,end,rowIndex,leftOffset);
     }
     getDiffFromRequired(start,end,diffFromZero){
         var result = [];
