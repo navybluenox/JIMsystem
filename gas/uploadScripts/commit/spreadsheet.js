@@ -23,7 +23,7 @@ function handleSpreadsheetInterface(funName,fileId,sheetName,argus){
     var func = ThisScript[funName];
     if(typeof func !== "function") return null;
     var spreadsheet = SpreadsheetApp.openById(fileId);
-    var sheet = spreadsheet.getSheetByName(sheetName);
+    var sheet = sheetName === null ? spreadsheet : spreadsheet.getSheetByName(sheetName);
     return func.apply(null,[sheet].concat(argus));
 }
 
@@ -41,10 +41,20 @@ function getRangeWithContents(sheet,rowStartIndex,columnStartIndex,maxHeight,row
     return sheet.getRange(rowStartIndex+1,columnStartIndex+1,maxHeight,columnsForCheck.length);
 }
 
-
 function getSheetValues(sheet,option){
     option = option || {};
     return getRangeWithContents(sheet,option.top,option.left,option.height).getValues();
+}
+
+function insertNewSheets(spreadsheet,sheetNames){
+    var result = [];
+    sheetNames.forEach(function(sheetName){
+        if(spreadsheet.getSheetByName(sheetName) === null){
+            spreadsheet.insertSheet(sheetName);
+            result.push(sheetName);
+        }
+    });
+    return result;
 }
 
 function setSheetValues(sheet,content,option){
@@ -141,8 +151,6 @@ function setBorderCells(sheet,settings){
     });
     return true;
 }
-
-
 
 function openSpreadSheet(sheet){
     var spreadsheet = sheet.getParent();

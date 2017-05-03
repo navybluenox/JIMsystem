@@ -30,7 +30,7 @@ var Spreadsheet = (function(){
                 option.height = 1;
             }
             var la = new LoadingAlert();
-            return runServerFun("Script.handleSpreadsheetInterface",["getSheetValues",this.getFileInfo().getValue("fileId"),this.getSheetName(),[option]]).then(function(v){
+            return this.postTaskToServer({"funName":"getSheetValues","argu":[option]}).then(function(v){
                 var result = Spreadsheet.convertDataFromArrayToHash(v,columnType);
                 that._data = result.content;
                 console.log("Reading data of spreadsheet from server successes!");
@@ -61,20 +61,18 @@ var Spreadsheet = (function(){
                     }
                 },50);
             });
-            var fileId = this.getFileInfo().getValue("fileId");
-            var sheetName = this.getSheetName();
             var index = 0;
 
             promiseChain = promiseChain.then(function(){
                 return that.clearSheetData() ;
             });
             for(var i=0,l=contents.length; i<l; i+=numRowsPerRequest){
-                promiseChain = promiseChain.then(function(){
+                promiseChain = promiseChain.then(() => {
                     var _sendData = {};
-                    settings.forEach(function(setting){
+                    settings.forEach((setting) => {
                         _sendData[setting] = sendData[setting].splice(0,numRowsPerRequest);
                     });
-                    var p = runServerFun("Script.handleSpreadsheetInterface",["setSheetValues",fileId,sheetName,[_sendData,$.extend(optionOfWriteSheet,{"top":index})]]);
+                    var p = this.postTaskToServer({"funName":"setSheetValues","argu":[_sendData,$.extend(optionOfWriteSheet,{"top":index})]});
                     index += numRowsPerRequest;
                     return p;
                 });
@@ -112,28 +110,32 @@ var Spreadsheet = (function(){
             };
 
         }
+        insertNewSheets(sheetNames){
+            if(!Array.isArray(sheetNames))  sheetNames = [sheetNames];
+            return this.postTaskToServer({"funName":"insertNewSheets","sheetName":false,"argu":[sheetNames]});
+        }
         clearSheetData(){
-            return runServerFun("Script.handleSpreadsheetInterface",["clearSheet",this.getFileInfo().getValue("fileId"),this.getSheetName()]);
+            return this.postTaskToServer({"funName":"clearSheet"});
         }
         setMergeCell(settings){
             //settings = {"top":[0-],"left",[0-],"height",[1-],"width",[1-]}
-            return runServerFun("Script.handleSpreadsheetInterface",["mergeCells",this.getFileInfo().getValue("fileId"),this.getSheetName(),[settings]]);
+            return this.postTaskToServer({"funName":"mergeCells","argu":[settings]});
         }
         setBorderCell(settings){
-            return runServerFun("Script.handleSpreadsheetInterface",["setBorderCells",this.getFileInfo().getValue("fileId"),this.getSheetName(),[settings]]);            
+            return this.postTaskToServer({"funName":"setBorderCells","argu":[settings]});
         }
         setCellSize(settings){
-            return runServerFun("Script.handleSpreadsheetInterface",["setCellSize",this.getFileInfo().getValue("fileId"),this.getSheetName(),[settings]]);                        
+            return this.postTaskToServer({"funName":"setCellSize","argu":[settings]});
         }
-        setFreezeCell(setting){
-            return runServerFun("Script.handleSpreadsheetInterface",["freezeCell",this.getFileInfo().getValue("fileId"),this.getSheetName(),[setting]]);                        
+        setFreezeCell(settings){
+            return this.postTaskToServer({"funName":"freezeCell","argu":[settings]});
         }
         hasData(){
             return this._data === undefined;
         }
         exportPdfToDrive(folderId,option){
             option = option || {};
-            return runServerFun("Script.handleSpreadsheetInterface",["exportPdfToDrive",this.getFileInfo().getValue("fileId"),this.getSheetName(),[folderId,option]]);                        
+            return this.postTaskToServer({"funName":"exportPdfToDrive","argu":[folderId,option]});
         }
         getOpenUrl(){
             return [
@@ -144,6 +146,17 @@ var Spreadsheet = (function(){
         }
         openSpreadsheet(option){
             showOuterPage(this.getOpenUrl(),option);
+        }
+        postTaskToServer(config){
+            //config = {funName:[string],fileId:boolean,sheetName:boolean,argu:[Array]};
+            config = $.extend({"funName":"","fileId":true,"sheetName":true,"argu":[]},config === undefined ? {} : config);
+
+            return runServerFun("Script.handleSpreadsheetInterface",[
+                config.funName,
+                config.fileId ? this.getFileInfo().getValue("fileId") : null,
+                config.sheetName ? this.getSheetName() : null,
+                config.argu
+            ]);
         }
         static initialize(settings){
             if(settings === undefined || typeof settings !== "object" || settings === null)  return;

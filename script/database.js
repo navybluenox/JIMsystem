@@ -1210,6 +1210,9 @@ class WorkList extends Datapiece{
         Object.defineProperty(this._data,"leaderIncharge",{"get":() => "" + this.getDatapieceRelated("leaderInchargeId","incharge").getValue("code")});
 
     }
+    getNumberDetails(){
+        return this.getValue("@detail");
+    }
     getBackgroundColor(){
         return WorkGroup.getColorByWorkListId(this.getValue("_id"),"background");
     }

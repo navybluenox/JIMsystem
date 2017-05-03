@@ -370,12 +370,20 @@ $(function(){
             var la = new LoadingAlert();
             var version;
             var version_propertyKey = "shiftTableWork_version_" + _val.config.getValue("content.kind") + _val.config.getValue("content.nth");
+            var constValue = {
+                "leftOffset":0,
+                "topOffset":1,
+                "leftOffset_workList":1,
+                "topOffset_workList":0,
+                "leftOffset_detail":0,
+                "topOffset_detail":1
+            };
             Server.handlePropertiesService(version_propertyKey,"script","get").then(function(v){version = (v[version_propertyKey] === undefined ? 0 : +v[version_propertyKey]);})
             .then(function(){
                 var workLists = _val.server.getData("workList",undefined,undefined,true);
                 var incharges = Incharge.getInchargesInOrder();
                 var nowTime = new Date();
-                var leftOffset = 1;
+                var leftOffset = constValue.leftOffset;
                 var topOffset = 1;
                 var defaultCellTemplate = {"fontSize":11,"alignHori":"center","alignVer":"middle","fontFamily":"ＭＳ Ｐゴシック"};
                 var setDefaultCellSetting = function(setting){return $.extend({},defaultCellTemplate,setting)};
@@ -392,7 +400,7 @@ $(function(){
                 //TODO
                 //シートはinchargeごとに実装する
 
-                incharges.map(incharge => {
+                var sheetSettings = incharges.map(incharge => {
                     return {
                         "sheetName":incharge.getValue("code"),
                         "workLists":workLists
@@ -400,33 +408,48 @@ $(function(){
                             .sort((a,b) => a.getValue("name").charCodeAt() - b.getValue("name").charCodeAt())
                     };
                 })
-                .filter(obj => obj.workLists.length !== 0)
-                .map(obj => {
-                    return {
-                        "sheetName":obj.sheetName,
-                        "data":workLists.map(workList => {
-                            return {
-                                "workList":workList,
-                                "setting":workList.getShiftTableAsSpreadsheetSetting()
-                            };
-                        })
-                    };
-                })
-                .forEach(function(tableDataObj){
+                .filter(obj => obj.workLists.length !== 0);
+
+                promiseChain = promiseChain.then(() => {
+                    return (new Spreadsheet("shiftTableWork")).insertNewSheets(sheetSettings.map(obj => obj.sheetName));
+                });
+
+                sheetSettings.forEach(function(tableDataObj){
                     var table = [];
-                    var spreadsheet = new Spreadsheet("shiftTableWork",obj.sheetName,table);
+                    var spreadsheet = new Spreadsheet("shiftTableWork",tableDataObj.sheetName,table);
+                    var sheetName = tableDataObj.sheetName;
+                    var workLists = tableDataObj.workLists;
                     var mergeSetting = [];
                     var borderSetting = [];
                     var sizeSetting = [];
-                    var start = timeInfo.start;
+                    /*var start = timeInfo.start;
                     var end = timeInfo.end;
                     var sheetName = timeInfo.sheetName;
                     var contentWidth = start.getDiff(end,"timeunit");
-                    var widthAll = leftOffset + contentWidth + rightOffset;
+                    var widthAll = leftOffset + contentWidth + rightOffset;*/
 
-                    //日付ごとにユーザーを除外したい場合はここで行う
-                    //TODO
-                    var users = _users.filter(function(user){return true});
+                    var rowIndex_now = constValue.topOffset;
+
+                    workLists.forEach(workList => {
+                        //workListごとのヘッダー
+                        var leftOffset_workList = constValue.leftOffset + constValue.leftOffset_workList;
+                        var topOffset_workList = rowIndex_now + constValue.topOffset_workList;
+                        var width_workList = constValue.leftOffset_workList;
+                        var height_workList = constValue.topOffset_workList;
+
+                        workList.getNumberDetails().forEach(detail => {
+                            var leftOffset_detail = leftOffset_workList + constValue.leftOffset_detail;
+                            var topOffset_detail = rowIndex_now + constValue.topOffset_detail;
+                            var width_detail = detail.number.length;
+                            var height_detail = detail.number.reduce((prev,curt) => Math.max(prev,curt),0);
+                            width_workList = Math.max(width_workList,width_detail + constValue.leftOffset_detail);
+                            height_workList += height_detail;
+                        });
+
+                        //TODO
+
+                    });
+
 
                     var indexOfHeader = users.filter(function(user){
                         return (
