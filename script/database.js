@@ -792,6 +792,9 @@ var Datapiece = (function(){
                     if(time.getMinutes() === 0 || cellIndex === 0 /*|| cell.startWork || cell.endWorkNext*/){
                         borderSetting.push({"range":{"top":rowIndex + rowOffset,"left":leftOffset + cellIndex,"height":1,"width":1},"border":{"style":"solid","left":true}})
                     }
+                    if(cellIndex === self.length-1){
+                        borderSetting.push({"range":{"top":rowIndex + rowOffset,"left":leftOffset + cellIndex + 1,"height":1,"width":1},"border":{"style":"solid","left":true}})
+                    }
                     if(cell.endWork && cellIndex !== self.length-1){
                         self[cellIndex+1].endWorkNext = true;
                     }

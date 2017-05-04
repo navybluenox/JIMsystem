@@ -93,7 +93,11 @@ function setSheetValues(sheet,content,option){
                 range.setFontWeights(values);
                 break;
             case "fontFamily":
-                range.setFontFamilies(values)
+                range.setFontFamilies(values);
+                break;
+            case "wrap":
+                range.setWraps(values);
+                break;
         }
     });
     return range;

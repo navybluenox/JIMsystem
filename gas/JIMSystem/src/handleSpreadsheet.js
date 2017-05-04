@@ -372,7 +372,7 @@ $(function(){
             const constValue = {
                 "sheet":{"header":1,"leftMargin":0},
                 "workList":{"header":1,"leftMargin":2},
-                "detail":{"header":3,"leftMargin":0}
+                "detail":{"header":2,"leftMargin":0}
             };
             Server.handlePropertiesService(version_propertyKey,"script","get").then(function(v){version = (v[version_propertyKey] === undefined ? 0 : +v[version_propertyKey]);})
             .then(function(){
@@ -402,6 +402,7 @@ $(function(){
                             .sort((a,b) => a.getValue("name").charCodeAt() - b.getValue("name").charCodeAt())
                     };
                 })
+.filter(obj => obj.sheetName === "JIM")
                 .filter(obj => obj.workLists.length !== 0);
                 sheetSettings = sheetSettings.map(sheetObj => {
                     var rowIndex = 0;
@@ -478,17 +479,29 @@ $(function(){
                     sheetObj.workLists.forEach(workListObj => {
                         //workListごとのヘッダー
                         //set border
-                        borderSetting.push({"range":{"top":workListObj.offset.top,"left":workListObj.offset.left,"height":workListObj.size.height,"width":1},"border":{"style":"solid","top":true,"bottom":true,"left":true,"right":true,"vertical":true,"horizontal":true}});
-                        mergeSetting.push({"range":{"top":workListObj.offset.top,"left":workListObj.offset.left,"height":workListObj.size.height,"width":1}});
+                        borderSetting.push({
+                            "range":{"top":workListObj.offset.top + constValue.workList.header ,"left":workListObj.offset.left,"height":workListObj.size.height - constValue.workList.header,"width":1},
+                            "border":{"style":"solid","top":true,"bottom":true,"left":true,"right":true,"vertical":true,"horizontal":true}
+                        });
+                        mergeSetting.push({
+                            "range":{"top":workListObj.offset.top + constValue.workList.header,"left":workListObj.offset.left,"height":workListObj.size.height - constValue.workList.header,"width":1}
+                        });
 
                         //set content
                         forEachRow(workListObj,(x,i) => {
-                            table[x][0] = setDefaultCellSetting(i === 0 ? {"text":workListObj.datapiece.getName()} : {});
+                            table[x][0] = setDefaultCellSetting(i === constValue.workList.header ? {"text":workListObj.datapiece.getName(),"wrap":true} : {});
                             table[x][1] = {};
                         });
 
                         workListObj.details.forEach(detailObj => {
-                            borderSetting.push({"range":{"top":detailObj.offset.top + 1,"left":detailObj.offset.left,"height":detailObj.size.height,"width":detailObj.size.width},"border":{"style":"solid","top":true,"bottom":true,"left":true,"right":true,"vertical":true,"horizontal":true}});
+                            borderSetting.push({
+                                "range":{"top":detailObj.offset.top,"left":detailObj.offset.left,"height":detailObj.size.height,"width":detailObj.size.width},
+                                "border":{"style":"solid","top":true,"bottom":true,"left":true,"right":true,"vertical":true,"horizontal":true}
+                            });
+                            borderSetting.push({
+                                "range":{"top":detailObj.offset.top + constValue.detail.header,"left":detailObj.offset.left + constValue.detail.leftMargin,"height":detailObj.size.height - constValue.detail.header,"width":detailObj.size.width - constValue.detail.leftMargin},
+                                "border":{"style":"dashed","vertical":true}
+                            });
                             mergeSetting.push({"range":{"top":detailObj.offset.top,"left":detailObj.offset.left,"height":1,"width":detailObj.size.width}});
                             //header
                             forEachColumn(detailObj,(y,j) => {
@@ -496,17 +509,17 @@ $(function(){
                                 var row0 = detailObj.offset.top + 0;
                                 var row1 = detailObj.offset.top + 1;
                                 if(j === 0){
-                                    table[row0][y] = setDefaultCellSetting({"text":detailObj.start.toString() + "から" + detailObj.end.toString({"userDiffHours":detailObj.start}) + "まで"});
+                                    table[row0][y] = setDefaultCellSetting({"text":detailObj.start.toString() + "から" + detailObj.end.toString({"userDiffHours":detailObj.start}) + "まで","alignHori":"left"});
                                     if(time.getMinutes() === 0){
-                                        table[row1][y] = setDefaultCellSetting({"text":time.getDifferentialHours(detailObj.start) + "時-"});
+                                        table[row1][y] = setDefaultCellSetting({"text":time.getDifferentialHours(detailObj.start) + "時-","alignHori":"left"});
                                         mergeSetting.push({"range":{"top":row1,"left":y,"height":1,"width":(60 - time.getMinutes()) / LocalDate.getTimeUnitAsConverted("minute")}});
                                     }else{
                                         table[row1][y] = setDefaultCellSetting({});
                                     }
                                 }else if(time.getMinutes() === 0){
                                     table[row0][y] = setDefaultCellSetting({});
-                                    table[row1][y] = setDefaultCellSetting({"text":time.getDifferentialHours(detailObj.start) + "時-"});
-                                    mergeSetting.push({"range":{"top":row1,"left":y,"height":1,"width":Math.min(LocalDate.getTimeUnitPerUnit("hour"),detailObj.end.getDiff(time,"timeunit"))}});
+                                    table[row1][y] = setDefaultCellSetting({"text":time.getDifferentialHours(detailObj.start) + "時-","alignHori":"left"});
+                                    mergeSetting.push({"range":{"top":row1,"left":y,"height":1,"width":Math.min(LocalDate.getTimeUnitPerUnit("hour"),time.getDiff(detailObj.end,"timeunit"))}});
                                 }else{
                                     table[row0][y] = setDefaultCellSetting({});
                                     table[row1][y] = setDefaultCellSetting({});
