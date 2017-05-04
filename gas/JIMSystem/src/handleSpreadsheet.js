@@ -421,8 +421,9 @@ $(function(){
                         };
                         rowIndex += constValue.workList.header;
                         leftIndex = constValue.sheet.leftMargin + constValue.workList.leftMargin;
-                        result_workList.details = workList.getNumberDetails().map(detail => {
+                        result_workList.details = workList.getNumberDetails().map((detail,index) => {
                             var result_detail =  {
+                                "index":index,
                                 "value":detail,
                                 "offset":{"top":rowIndex,"left":leftIndex},
                                 "size":{"height":constValue.detail.header + detail.number.reduce((prev,curt) => Math.max(prev,curt),0),"width":constValue.detail.leftMargin + numberObj.number.length},
@@ -509,13 +510,17 @@ $(function(){
                                 }
                             });
                             //content
-                            
+                            var topOffset_contentTable = detailObj.offset.top + constValue.detail.header;
+                            var leftOffset_contentTable = detailObj.offset.left + constValue.detail.leftMargin;
+                            var detailSetting = workListObj.datapiece.getShiftTableAsSpreadsheetSetting(detailObj.index,topOffset_contentTable,leftOffset_contentTable);
+                            borderSetting = borderSetting.concat(detailSetting.border);
+                            mergeSetting = mergeSetting.concat(detailSetting.merge);
+                            forEachMatrix(detailObj,(x,y,i,j) => {
+                                if(x < constValue.detail.header || y < constValue.detail.leftMargin)  return;
+                                table[x][y] = detailSetting.content[i][j];
+                            });
                         });
-
-                        //TODO
                     });
-
-                    //TODO
 
                     var spreadsheet = new Spreadsheet("shiftTableWork",sheetObj.sheetName,table);
 
