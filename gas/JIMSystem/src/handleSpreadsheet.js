@@ -432,7 +432,7 @@ $(function(){
                             };
                             result_workList.size.height += result_detail.size.height;
                             result_workList.size.width = Math.max(result_workList.size.width, + constValue.workList.leftMargin,result_detail.size.width);
-                            rowIndex += result_workList.size.height;
+                            rowIndex += result_detail.size.height;
                             return result_detail;
                         });
                         result_workList.size.height += constValue.workList.header;
@@ -467,10 +467,10 @@ $(function(){
                         }
                         sizeSetting.push({"type":"width","index":columnIndex,"value":size});
                     })
-                    forEachRow(sheetObj,x => {
-                        table[x] = [];
-                    })
-
+                    forEachMatrix(sheetObj,(x,y,i,j) => {
+                        if(i === 0) table[x] = [];
+                        table[x][y] = setDefaultCellSetting({});
+                    });
 
                     sheetObj.workLists.forEach(workListObj => {
                         //workListごとのヘッダー
