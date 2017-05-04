@@ -406,39 +406,42 @@ $(function(){
                 .filter(obj => obj.workLists.length !== 0);
                 sheetSettings = sheetSettings.map(sheetObj => {
                     var rowIndex = 0;
-                    var leftIndex = 0;
                     var result_sheet = {
                         "sheetName":sheetObj.sheetName,
-                        "offset":{"top":rowIndex,"left":leftIndex},
+                        "offset":{"top":rowIndex,"left":0},
                         "size":{"height":0,"width":0}
                     };
                     rowIndex += constValue.sheet.header;
-                    leftIndex = constValue.sheet.leftMargin;
                     result_sheet.workLists = sheetObj.workLists.map(workList => {
                         var result_workList = {
                             "datapiece":workList,
-                            "offset":{"top":rowIndex,"left":leftIndex},
+                            "offset":{"top":rowIndex,"left":constValue.sheet.leftMargin},
                             "size":{"height":0,"width":0}
                         };
                         rowIndex += constValue.workList.header;
-                        leftIndex = constValue.sheet.leftMargin + constValue.workList.leftMargin;
                         result_workList.details = workList.getNumberDetails().map((detail,index) => {
                             var result_detail =  {
                                 "index":index,
                                 "value":detail,
-                                "offset":{"top":rowIndex,"left":leftIndex},
+                                "offset":{"top":rowIndex,"left":constValue.sheet.leftMargin + constValue.workList.leftMargin},
                                 "size":{"height":constValue.detail.header + detail.number.reduce((prev,curt) => Math.max(prev,curt),0),"width":constValue.detail.leftMargin + detail.number.length},
                                 "start":detail.start,
                                 "end":detail.end
                             };
                             result_workList.size.height += result_detail.size.height;
-                            result_workList.size.width = Math.max(result_workList.size.width, + constValue.workList.leftMargin,result_detail.size.width);
+                            result_workList.size.width = Math.max(
+                                result_detail.size.width + constValue.workList.leftMargin,
+                                result_workList.size.width
+                            );
                             rowIndex += result_detail.size.height;
                             return result_detail;
                         });
                         result_workList.size.height += constValue.workList.header;
                         result_sheet.size.height += result_workList.size.height;
-                        result_sheet.size.width += constValue.workList.leftMargin;
+                        result_sheet.size.width = Math.max(
+                            result_workList.size.width + constValue.sheet.leftMargin,
+                            result_sheet.size.width
+                        );
                         return result_workList;
                     });
                     result_sheet.size.height += constValue.sheet.header;
@@ -466,10 +469,10 @@ $(function(){
                             default:
                                 size = 45;
                         }
-                        sizeSetting.push({"type":"width","index":columnIndex,"value":size});
+                        sizeSetting.push({"type":"width","index":y,"value":size});
                     })
                     forEachMatrix(sheetObj,(x,y,i,j) => {
-                        if(i === 0) table[x] = [];
+                        if(j === 0) table[x] = [];
                         table[x][y] = setDefaultCellSetting({});
                     });
 
@@ -496,14 +499,14 @@ $(function(){
                                 if(j === 0){
                                     table[row0][y] = setDefaultCellSetting({"text":detailObj.start.toString() + "から" + detailObj.end.toString({"userDiffHours":detailObj.start}) + "まで"});
                                     if(time.getMinutes() === 0){
-                                        table[row1][y] = setDefaultCellSetting({"text":time.getDifferentialHours(start) + "時-"});
+                                        table[row1][y] = setDefaultCellSetting({"text":time.getDifferentialHours(detailObj.start) + "時-"});
                                         mergeSetting.push({"range":{"top":row1,"left":y,"height":1,"width":(60 - time.getMinutes()) / LocalDate.getTimeUnitAsConverted("minute")}});
                                     }else{
                                         table[row1][y] = setDefaultCellSetting({});
                                     }
                                 }else if(time.getMinutes() === 0){
                                     table[row0][y] = setDefaultCellSetting({});
-                                    table[row1][y] = setDefaultCellSetting({"text":time.getDifferentialHours(start) + "時-"});
+                                    table[row1][y] = setDefaultCellSetting({"text":time.getDifferentialHours(detailObj.start) + "時-"});
                                     mergeSetting.push({"range":{"top":row1,"left":y,"height":1,"width":Math.min(LocalDate.getTimeUnitPerUnit("hour"),detailObj.end.getDiff(time,"timeunit"))}});
                                 }else{
                                     table[row0][y] = setDefaultCellSetting({});
@@ -514,17 +517,16 @@ $(function(){
                             var topOffset_contentTable = detailObj.offset.top + constValue.detail.header;
                             var leftOffset_contentTable = detailObj.offset.left + constValue.detail.leftMargin;
                             var detailSetting = workListObj.datapiece.getShiftTableAsSpreadsheetSetting(detailObj.index,topOffset_contentTable,leftOffset_contentTable);
-                            borderSetting = borderSetting.concat(detailSetting.border);
-                            mergeSetting = mergeSetting.concat(detailSetting.merge);
+                            borderSetting = borderSetting.concat(detailSetting.map(obj => obj.border).reduce((curt,prev) => prev.concat(curt),[]));
+                            mergeSetting = mergeSetting.concat(detailSetting.map(obj => obj.merge).reduce((curt,prev) => prev.concat(curt),[]));
                             forEachMatrix(detailObj,(x,y,i,j) => {
-                                if(x < constValue.detail.header || y < constValue.detail.leftMargin)  return;
-                                table[x][y] = detailSetting.content[i][j];
+                                if(i < constValue.detail.header || j < constValue.detail.leftMargin || i - constValue.detail.header >= detailSetting.length)  return;
+                                table[x][y] = detailSetting[i - constValue.detail.header].content[j - constValue.detail.leftMargin];
                             });
                         });
                     });
 
                     var spreadsheet = new Spreadsheet("shiftTableWork",sheetObj.sheetName,table);
-
 
                     promiseChain = promiseChain.then(function(){
                         return Promise.all([
@@ -533,8 +535,6 @@ $(function(){
                             spreadsheet.setCellSize(sizeSetting)
                         ]).then(function(){
                             return spreadsheet.setMergeCell(mergeSetting);
-                        }).then(function(){
-                            return spreadsheet.setFreezeCell({"row":topOffset + 1,"column":leftOffset})
                         });
                     });
 

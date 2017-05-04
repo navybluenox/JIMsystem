@@ -737,7 +737,7 @@ var Datapiece = (function(){
                 rows[i] = data.content.filter(function(obj){return obj.workIndex === i});
             }
 
-            return rows.map(_row => {
+            return rows.map((_row,rowOffset) => {
                 var row = _row.slice();
                 //padding blank time
                 if(_row.length === 0){
@@ -782,7 +782,7 @@ var Datapiece = (function(){
                         }
                         ret[0] = {"time":cell.start.getTime(),"startWork":true,"text":datapiece.getValue(dataName === "user" ? "nameShort" : "@name"),"background":datapiece.getBackgroundColor(),"fontColor":datapiece.getFontColor()};
                         ret[ret.length-1].endWork = true;
-                        mergeSetting.push({"range":{"top":rowIndex,"left":leftOffset + data.tableStartTime.getDiff(cell.start,"timeunit"),"height":1,"width":workAssign.getValue("interval")}});
+                        mergeSetting.push({"range":{"top":rowIndex + rowOffset,"left":leftOffset + data.tableStartTime.getDiff(cell.start,"timeunit"),"height":1,"width":workAssign.getValue("interval")}});
                     }
                     return ret;
                 })
@@ -790,7 +790,7 @@ var Datapiece = (function(){
                 .map((cell,cellIndex,self) => {
                     var time = new LocalDate(cell.time);
                     if(time.getMinutes() === 0 || cellIndex === 0 /*|| cell.startWork || cell.endWorkNext*/){
-                        borderSetting.push({"range":{"top":rowIndex,"left":leftOffset + cellIndex,"height":1,"width":1},"border":{"style":"solid","left":true}})
+                        borderSetting.push({"range":{"top":rowIndex + rowOffset,"left":leftOffset + cellIndex,"height":1,"width":1},"border":{"style":"solid","left":true}})
                     }
                     if(cell.endWork && cellIndex !== self.length-1){
                         self[cellIndex+1].endWorkNext = true;
