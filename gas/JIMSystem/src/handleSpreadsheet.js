@@ -369,7 +369,7 @@ $(function(){
             var la = new LoadingAlert();
             var version;
             var version_propertyKey = "shiftTableWork_version_" + _val.config.getValue("content.kind") + _val.config.getValue("content.nth");
-            var constValue = {
+            const constValue = {
                 "sheet":{"header":1,"leftMargin":0},
                 "workList":{"header":1,"leftMargin":2},
                 "detail":{"header":3,"leftMargin":0}
@@ -426,13 +426,13 @@ $(function(){
                                 "index":index,
                                 "value":detail,
                                 "offset":{"top":rowIndex,"left":leftIndex},
-                                "size":{"height":constValue.detail.header + detail.number.reduce((prev,curt) => Math.max(prev,curt),0),"width":constValue.detail.leftMargin + numberObj.number.length},
+                                "size":{"height":constValue.detail.header + detail.number.reduce((prev,curt) => Math.max(prev,curt),0),"width":constValue.detail.leftMargin + detail.number.length},
                                 "start":detail.start,
                                 "end":detail.end
                             };
                             result_workList.size.height += result_detail.size.height;
                             result_workList.size.width = Math.max(result_workList.size.width, + constValue.workList.leftMargin,result_detail.size.width);
-                            rowIndex += constValue.detail.header + detailObj.size.height;
+                            rowIndex += result_workList.size.height;
                             return result_detail;
                         });
                         result_workList.size.height += constValue.workList.header;
@@ -479,7 +479,7 @@ $(function(){
                         mergeSetting.push({"range":{"top":workListObj.offset.top,"left":workListObj.offset.left,"height":workListObj.size.height,"width":1}});
 
                         //set content
-                        forEachRow(workListObj,x => {
+                        forEachRow(workListObj,(x,i) => {
                             table[x][0] = setDefaultCellSetting(i === 0 ? {"text":workListObj.datapiece.getName()} : {});
                             table[x][1] = {};
                         });
