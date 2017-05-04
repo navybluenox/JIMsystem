@@ -371,8 +371,8 @@ $(function(){
             var version_propertyKey = "shiftTableWork_version_" + _val.config.getValue("content.kind") + _val.config.getValue("content.nth");
             var constValue = {
                 "sheet":{"header":1,"leftMargin":0},
-                "workList":{"header":0,"leftMargin":1},
-                "detail":{"header":1,"leftMargin":0}
+                "workList":{"header":1,"leftMargin":2},
+                "detail":{"header":3,"leftMargin":0}
             };
             Server.handlePropertiesService(version_propertyKey,"script","get").then(function(v){version = (v[version_propertyKey] === undefined ? 0 : +v[version_propertyKey]);})
             .then(function(){
@@ -393,8 +393,6 @@ $(function(){
                     },100);
                 });
 
-                //TODO
-                //シートはinchargeごとに実装する
 
                 var sheetSettings = incharges.map(incharge => {
                     return {
@@ -456,13 +454,22 @@ $(function(){
                     var sizeSetting = [];
 
                     //set cellSize
-                    sizeSetting.push({"type":"width","index":0,"value":45});
-                    for(let i=0;i<sheetObj.size.width;i++){
-                        sizeSetting.push({"type":"width","index":i+1,"value":45});
-                    }
-                    for(let i=0;i<sheetObj.size.height;i++){
-                        table.push([]);
-                    }
+                    forEachColumn(sheetObj,y => {
+                        var size;
+                        switch(y){
+                            case 0:
+                                size = 45;
+                            case 1:
+                                size = 45;
+                            default:
+                                size = 45;
+                        }
+                        sizeSetting.push({"type":"width","index":columnIndex,"value":size});
+                    })
+                    forEachRow(sheetObj,x => {
+                        table[x] = [];
+                    })
+
 
                     sheetObj.workLists.forEach(workListObj => {
                         //workListごとのヘッダー
@@ -471,13 +478,38 @@ $(function(){
                         mergeSetting.push({"range":{"top":workListObj.offset.top,"left":workListObj.offset.left,"height":workListObj.size.height,"width":1}});
 
                         //set content
-                        for(let i=0;i<workListObj.size.height;i++){
-                            let columnIndex = workListObj.offset.top + i
-                            table[columnIndex][0] = setDefaultCellSetting(i === 0 ? {"text":workListObj.datapiece.getName()} : {});
-                        }
+                        forEachRow(workListObj,x => {
+                            table[x][0] = setDefaultCellSetting(i === 0 ? {"text":workListObj.datapiece.getName()} : {});
+                            table[x][1] = {};
+                        });
 
                         workListObj.details.forEach(detailObj => {
-                            //TODO
+                            borderSetting.push({"range":{"top":detailObj.offset.top + 1,"left":detailObj.offset.left,"height":detailObj.size.height,"width":detailObj.size.width},"border":{"style":"solid","top":true,"bottom":true,"left":true,"right":true,"vertical":true,"horizontal":true}});
+                            mergeSetting.push({"range":{"top":detailObj.offset.top,"left":detailObj.offset.left,"height":1,"width":detailObj.size.width}});
+                            //header
+                            forEachColumn(detailObj,(y,j) => {
+                                var time = detailObj.start.copy().addTimeUnit(j);
+                                var row0 = detailObj.offset.top + 0;
+                                var row1 = detailObj.offset.top + 1;
+                                if(j === 0){
+                                    table[row0][y] = setDefaultCellSetting({"text":detailObj.start.toString() + "から" + detailObj.end.toString({"userDiffHours":detailObj.start}) + "まで"});
+                                    if(time.getMinutes() === 0){
+                                        table[row1][y] = setDefaultCellSetting({"text":time.getDifferentialHours(start) + "時-"});
+                                        mergeSetting.push({"range":{"top":row1,"left":y,"height":1,"width":(60 - time.getMinutes()) / LocalDate.getTimeUnitAsConverted("minute")}});
+                                    }else{
+                                        table[row1][y] = setDefaultCellSetting({});
+                                    }
+                                }else if(time.getMinutes() === 0){
+                                    table[row0][y] = setDefaultCellSetting({});
+                                    table[row1][y] = setDefaultCellSetting({"text":time.getDifferentialHours(start) + "時-"});
+                                    mergeSetting.push({"range":{"top":row1,"left":y,"height":1,"width":Math.min(LocalDate.getTimeUnitPerUnit("hour"),detailObj.end.getDiff(time,"timeunit"))}});
+                                }else{
+                                    table[row0][y] = setDefaultCellSetting({});
+                                    table[row1][y] = setDefaultCellSetting({});
+                                }
+                            });
+                            //content
+                            
                         });
 
                         //TODO
@@ -487,136 +519,6 @@ $(function(){
 
                     var spreadsheet = new Spreadsheet("shiftTableWork",sheetObj.sheetName,table);
 
-                    var indexOfHeader = users.filter(function(user){
-                        return (
-                            _val.config.getValue("content.shiftTable.insertHeader.leaderCode").some(function(incharge){return inArray(user.getValue("inchargeCode"),incharge)}) ||
-                            _val.config.getValue("content.shiftTable.insertHeader.azusaSendName").some(function(azusaSendName){return user.getValue("azusaSendName") === azusaSendName})
-                        )
-                    }).map(function(user){
-                        return users.findIndex(function(u){return u.getValue("_id") === user.getValue("_id")});
-                    }).sort(function(a,b){return a-b});
-
-                    var heightAll = topOffset + users.length + indexOfHeader.length;
-
-                    //set border
-                    borderSetting.push({"range":{"top":0,"left":0,"height":heightAll,"width":widthAll},"border":{"style":"solid","top":true,"bottom":true,"left":true,"right":true,"vertical":true,"horizontal":true}});
-                    borderSetting.push({"range":{"top":topOffset,"left":leftOffset,"height":users.length + indexOfHeader.length,"width":contentWidth},"border":{"style":"dashed","vertical":true}});
-                    //set cellSize
-                    sizeSetting.push({"type":"width","index":0,"value":45});
-                    sizeSetting.push({"type":"width","index":1,"value":105});
-                    sizeSetting.push({"type":"width","index":2,"value":105});
-                    sizeSetting.push({"type":"width","index":3,"value":135});
-                    (function(){
-                        for(var i=leftOffset; i<leftOffset+contentWidth; i++){
-                            sizeSetting.push({"type":"width","index":i,"value":45});                            
-                        }
-                    })();
-                    sizeSetting.push({"type":"width","index":widthAll-1,"value":105});
-
-                    //1,2行目
-                    (function(){
-                        var workGroups = _val.server.getData("workGroup").filter(function(workGroup){return workGroup.getValue("isColorGroup")});
-                        var workGroup,workGroupName;
-                        if(contentWidth < workGroups.length + dayCellWidth + 2){
-                            workGroups.length = 0;
-                        }
-                        for(var rowIndex=0; rowIndex<3; rowIndex++){
-                            var row = [];
-                            for(var cellIndex=0,l=leftOffset + contentWidth + 1; cellIndex<l; cellIndex++){
-                                if(rowIndex === 0 && cellIndex === 0){
-                                    row.push({});
-                                    mergeSetting.push({"range":{"top":rowIndex,"left":cellIndex,"height":1,"width":leftOffset}});
-                                    borderSetting.push({"range":{"top":rowIndex,"left":cellIndex,"height":1,"width":widthAll},"border":{"top":false,"right":false,"left":false,"vertical":false}});
-                                    
-                                }else if(rowIndex === 0 && cellIndex === leftOffset){
-                                    row.push(setDefaultCellSetting({"text":_val.config.getValue("content.kind") + _val.config.getValue("content.nth") + "当日人割","fontWeight":"bold","fontSize":16}));
-                                    mergeSetting.push({"range":{"top":rowIndex,"left":cellIndex,"height":1,"width":widthAll - leftOffset}});
-                                }else if(rowIndex === 1 && cellIndex === 0){
-                                    row.push(setDefaultCellSetting({"text":"白枠は本部待機です。","fontWeight":"bold","fontSize":16}));
-                                    mergeSetting.push({"range":{"top":rowIndex,"left":cellIndex,"width":leftOffset,"height":2}});
-                                }else if(rowIndex >= 1 && cellIndex >= leftOffset && cellIndex < leftOffset + workGroups.length){
-                                    workGroup = workGroups[cellIndex - leftOffset];
-                                    if(rowIndex === 1){
-                                        row.push(setDefaultCellSetting({"text":workGroup.getValue("name").replace(/^c_/,""),"background":workGroup.getValue("backgroundColor"),"fontColor":workGroup.getValue("fontColor")}));
-                                    }else{
-                                        row.push(setDefaultCellSetting({"background":workGroup.getValue("backgroundColor")}));
-                                    }
-                                }else if(rowIndex === 1 && cellIndex === leftOffset + workGroups.length){
-                                    row.push(setDefaultCellSetting({"text":start.toString({"hideHour":true,"hideMinute":true}) + ":" + dateToValue(start.getAsDateClass()).str2,"background":"#E4E4E4","fontWeight":"bold","fontSize":16}));
-                                    mergeSetting.push({"range":{"top":rowIndex,"left":cellIndex,"width":dayCellWidth,"height":2}});
-                                }else if(rowIndex === 1 && cellIndex === leftOffset + workGroups.length + dayCellWidth){
-                                    var nowTimeString = dateToValue(nowTime);
-                                    row.push(setDefaultCellSetting({"text":"ver." + version + " : " + nowTimeString.month + "月" + nowTimeString.date + "日" + nowTimeString.hour + "時" + nowTimeString.minute + "分更新","fontWeight":"bold","fontSize":16}));
-                                    mergeSetting.push({"range":{"top":rowIndex,"left":cellIndex,"width":widthAll -leftOffset - workGroups.length - dayCellWidth,"height":2}});
-                                }else{
-                                    row.push({});
-                                }
-                            }
-                            table.push(row);
-                        }
-                    })();
-
-                    //3行目以降の準備
-                    var makeHeader = function(rowIndex){
-                        var header = [];
-                        var template = setDefaultCellSetting({"background":"#AAAAAA","fontWeight":"bold","alignHori":"left"});
-                        header.push($.extend({},template,{"text":"学年","left":"solid","alignHori":"center"}));
-                        header.push($.extend({},template,{"text":"氏名","left":"solid","alignHori":"center"}));
-                        header.push($.extend({},template,{"text":"配送名","left":"solid","alignHori":"center"}));
-                        header.push($.extend({},template,{"text":"担当","left":"solid","alignHori":"center"}));
-                        var time = start.copy();
-                        var obj;
-                        var headerOffset = header.length;
-                        for(var i=0; i<contentWidth; i++){
-                            obj = {};
-                            if(time.getMinutes() === 0 || i === 0){
-                                obj.text = "" + time.getDifferentialHours(start) + "時-";
-                                if(i === 0){
-                                    mergeSetting.push({"range":{"top":rowIndex,"left":leftOffset + i,"height":1,"width":(60 - time.getMinutes()) / LocalDate.getTimeUnitAsConverted("minute")}});
-                                }else if(time.getDiff(end,"minute") < 60){
-                                    mergeSetting.push({"range":{"top":rowIndex,"left":leftOffset + i,"height":1,"width":time.getDiff(end,"timeunit")}});
-                                }else{
-                                    mergeSetting.push({"range":{"top":rowIndex,"left":leftOffset + i,"height":1,"width":60 / LocalDate.getTimeUnitAsConverted("minute")}});                                    
-                                }
-                            }
-                            header.push($.extend({},template,obj));                            
-                            time.addTimeUnit(1);
-                        }
-                        header.push($.extend(true,{},template,{"text":"氏名"}));
-                        return header;
-                    };
-
-                    var groupUsers = [];
-                    (function(){
-                        for(var i=0,l=indexOfHeader.length; i<l; i++){
-                            groupUsers.push({"index":indexOfHeader[i],"user":users.slice().splice(indexOfHeader[i],i === l-1 ? users.length : indexOfHeader[i+1] - indexOfHeader[i])});
-                        }
-                    })();
-
-                    //3行目以降
-                    groupUsers.forEach(function(obj,groupIndex){
-                        var users = obj.user;
-                        var offset = obj.index + groupIndex + topOffset;
-                        table.push(makeHeader(offset));
-                        borderSetting.push({"range":{"top":offset,"left":leftOffset,"height":1,"width":contentWidth},"border":{"vertical":true,"style":"solid"}})
-
-                        users.forEach(function(user,rowIndex){
-                            var ret = user.getShiftTableAsSpreadsheetSetting(start,end,offset + rowIndex + 1,leftOffset);
-                            mergeSetting = mergeSetting.concat(ret.merge);
-                            borderSetting = borderSetting.concat(ret.border);
-                            ret.content = ret.content.map(function(cell){return setDefaultCellSetting(cell);});
-                            var preContent = [];
-                            var sufContent = [];
-                            preContent.push(setDefaultCellSetting({"alignHori":"left","text":user.getValue("grade")}));
-                            preContent.push(setDefaultCellSetting({"alignHori":"left","text":user.getValue("nameLast") + " " + user.getValue("nameFirst")}));
-                            preContent.push(setDefaultCellSetting({"alignHori":"left","text":user.getValue("azusaSendName")}));
-                            preContent.push(setDefaultCellSetting({"alignHori":"left","text":(
-                                user.getValue("isRojin") ? user.getValue("oldIncharge").filter(function(v){return v.display}).map(function(v){return "" + v.nth + v.code}).join("/") : user.getValue("inchargeCode").join("/")
-                            )}));
-                            sufContent.push(setDefaultCellSetting({"alignHori":"left","text":user.getValue("nameLast") + " " + user.getValue("nameFirst")}));
-                            table.push((preContent.concat(ret.content)).concat(sufContent));
-                        });
-                    });
 
                     promiseChain = promiseChain.then(function(){
                         return Promise.all([
@@ -629,6 +531,26 @@ $(function(){
                             return spreadsheet.setFreezeCell({"row":topOffset + 1,"column":leftOffset})
                         });
                     });
+
+                    function forEachMatrix(setting,callback){
+                        forEachRow(setting,(x,i) => {
+                            forEachColumn(setting,(y,j) => {
+                                callback(x,y,i,j);
+                            })
+                        })
+                    }
+                    function forEachRow(setting,callback){
+                        for(var i=0;i<setting.size.height;i++){
+                            var x = setting.offset.top + i;
+                            callback(x,i);
+                        }
+                    }
+                    function forEachColumn(setting,callback){
+                        for(var j=0;j<setting.size.leftMargin;j++){
+                            var y = setting.offset.left + j;
+                            callback(y,j);
+                        }                        
+                    }
 
                 });
                 promiseChain = promiseChain.then(function(){

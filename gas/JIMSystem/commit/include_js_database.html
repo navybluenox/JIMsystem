@@ -1246,7 +1246,7 @@ class WorkList extends Datapiece{
             let detailObj = this.getValue("@detail")[timeSetting];
             if(detailObj === undefined)  throw new Error();
             start = detailObj.start;
-            end = start.copy().addTimeUnit(detailObj.length);
+            end = start.copy().addTimeUnit(detailObj.number.length);
         }else if(typeof timeSetting === "object" && timeSetting !== null && timeSetting.start !== undefined && timeSetting.end !== undefined){
             start = new LocalDate(timeSetting.start);
             end = new LocalDate(timeSetting.end);

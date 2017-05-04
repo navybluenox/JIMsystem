@@ -226,6 +226,10 @@ var LocalDate = (function(){
             var unitValue = [1,1000,60000,3600000,86400000][["millisecond","second","minute","hour","day"].findIndex(function(v){return v === unitName})];
             return LocalDate.getTimeUnit() / unitValue;
         }
+        static getTimeUnitPerUnit(unitName){
+            var unitValue = [1,1000,60000,3600000,86400000][["millisecond","second","minute","hour","day"].findIndex(v => v === unitName)];
+            return unitValue / LocalDate.getTimeUnit();            
+        }
         static getOpenTime(day,kind){
             return config.getOpenTime(day,kind);
         }
