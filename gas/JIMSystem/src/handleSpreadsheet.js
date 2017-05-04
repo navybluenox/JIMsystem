@@ -551,7 +551,7 @@ $(function(){
                         }
                     }
                     function forEachColumn(setting,callback){
-                        for(var j=0;j<setting.size.leftMargin;j++){
+                        for(var j=0;j<setting.size.width;j++){
                             var y = setting.offset.left + j;
                             callback(y,j);
                         }                        
