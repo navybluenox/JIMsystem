@@ -3,7 +3,24 @@ $(function(){
     var formAddData,formCreateShiftTable;
     _val.pageFun.handleSpreadsheet = {
         onload:function(){
-            _val.server.loadDataAll();
+            _val.server.loadDataAll().then(() => {
+                var workLists = _val.server.getData("workList");
+                formCreateShiftTable.find('[name="createShiftTableWork_incharge"]')
+                    .append('<option value="all">全て</option>')
+                    .append(
+                        Incharge.getInchargesInOrder()
+                        .filter(incharge => incharge.isEndChild() || incharge.isDivision())
+                        .filter(incharge => incharge.isDivision() || workLists.find(workList => workList.getValue("leaderInchargeId") === incharge.getValue("_id")) !== undefined)
+                        .map(incharge => {
+                            return (
+                                incharge.isDivision() ?
+                                '<optgroup label="' + incharge.getValue("code") + '"></optgroup>' :
+                                '<option value="' + incharge.getValue("_id") + '">' + incharge.getValue("code") + '</option>'
+                            )
+                        })
+                    );
+
+            });
             pageFun = _val.pageFun.handleSpreadsheet;
             formAddData = $("#formAddToDatabase");
             formCreateShiftTable = $("#formCreateShiftTable");
@@ -15,14 +32,16 @@ $(function(){
                 }))
             );
 
-            (function(){
+            (() => {
                 var sheetNameList = [];
                 for(var day=_val.config.getWorkStartDay(),e=_val.config.getWorkEndDay(); day<=e; day++){
-                    sheetNameList.push("day" + day);
+                    sheetNameList.push(day);
                 }
-                formCreateShiftTable.find('[name="downloadShiftTableUser_sheetName"]').append(sheetNameList.map(function(sheetName){
-                    return '<option value="' + sheetName + '">' + sheetName + '</option>';
-                }))
+                formCreateShiftTable.find('[name="createShiftTableUser_day"]')
+                    .append('<option value="all">全て</option>')
+                    .append(sheetNameList.map(function(day){
+                        return '<option value="' + day + '">' + day + "日目" + '</option>';
+                    }));
             })();
 
             formAddData.find('[name="open"]').on("click",e => {
@@ -35,7 +54,6 @@ $(function(){
                 var spreadsheet = new Spreadsheet(spreadsheetName);
                 spreadsheet.openSpreadsheet();
             });
-
             formCreateShiftTable.find('[name="open_pdf"]').on("click",e => {
                 showOuterPage([
                     "https://drive.google.com/drive/folders/",
@@ -179,9 +197,14 @@ $(function(){
                     for(var day=_val.config.getWorkStartDay(),e=_val.config.getWorkEndDay(); day<=e; day++){
                         obj = _val.config.getWorkTime(day);
                         obj.sheetName = "day" + day;
+                        obj.day = day;
                         timeInfoList.push(obj);
                     }
                 })();
+
+                if(formCreateShiftTable.find('[name="createShiftTableUser_day"]').val() !== "all"){
+                    timeInfoList = [timeInfoList.find(obj => obj.day - formCreateShiftTable.find('[name="createShiftTableUser_day"]').val() === 0)];
+                }
 
                 timeInfoList.forEach(function(timeInfo){
                     var table = [];
@@ -195,9 +218,10 @@ $(function(){
                     var contentWidth = start.getDiff(end,"timeunit");
                     var widthAll = leftOffset + contentWidth + rightOffset;
 
-                    //日付ごとにユーザーを除外したい場合はここで行う
-                    //TODO
-                    var users = _users.filter(function(user){return true});
+                    var users = _users.filter(user => {
+                        var value = !user.getValue("sheetConfig").find(obj => obj.day === timeInfo.day);
+                        return value === undefined || !value.isInvisible;
+                    });
 
                     var indexOfHeader = users.filter(function(user){
                         return (
@@ -339,16 +363,17 @@ $(function(){
                     console.log("step 6 / 7");
 
                     promiseChain = promiseChain.then(function(){
+                        return spreadsheet.writeSheetData(table,["text","fontColor","fontWeight","fontFamily","background","fontSize","alignHori","alignVer"],100);
+                    }).then(function(){
                         return Promise.all([
-                            spreadsheet.writeSheetData(table,["text","fontColor","fontWeight","fontFamily","background","fontSize","alignHori","alignVer"],100),
                             spreadsheet.setBorderCell(borderSetting),
                             spreadsheet.setCellSize(sizeSetting)
-                        ]).then(function(){
-                            return spreadsheet.setMergeCell(mergeSetting);
-                        }).then(function(){
-                            return spreadsheet.setFreezeCell({"row":topOffset + 1,"column":leftOffset})
-                        });
+                        ]);
+                    }).then(function(){
+                        return spreadsheet.setMergeCell(mergeSetting);
+                    }).then(function(){
                         console.log("step 7 / 7");
+                        return spreadsheet.setFreezeCell({"row":topOffset + 1,"column":leftOffset})
                     });
 
                 });
@@ -372,7 +397,7 @@ $(function(){
             const constValue = {
                 "sheet":{"header":1,"leftMargin":0},
                 "workList":{"header":1,"leftMargin":2},
-                "detail":{"header":2,"leftMargin":0}
+                "detail":{"header":2,"leftMargin":1}
             };
             Server.handlePropertiesService(version_propertyKey,"script","get").then(function(v){version = (v[version_propertyKey] === undefined ? 0 : +v[version_propertyKey]);})
             .then(function(){
@@ -393,6 +418,9 @@ $(function(){
                     },100);
                 });
 
+                if(formCreateShiftTable.find('[name="createShiftTableWork_incharge"]').val() !== "all"){
+                    incharges = [incharges.find(incharge => incharge.getValue("_id") === formCreateShiftTable.find('[name="createShiftTableWork_incharge"]').val())];
+                }
 
                 var sheetSettings = incharges.map(incharge => {
                     return {
@@ -493,8 +521,19 @@ $(function(){
                         });
 
                         workListObj.details.forEach(detailObj => {
+                            //border
+                            ////header
                             borderSetting.push({
-                                "range":{"top":detailObj.offset.top,"left":detailObj.offset.left,"height":detailObj.size.height,"width":detailObj.size.width},
+                                "range":{"top":detailObj.offset.top,"left":detailObj.offset.left,"height":1,"width":detailObj.size.width},
+                                "border":{"style":"solid","top":true,"bottom":true,"left":true,"right":true,"vertical":true,"horizontal":true}
+                            });
+                            borderSetting.push({
+                                "range":{"top":detailObj.offset.top + 1,"left":detailObj.offset.left + constValue.detail.leftMargin,"height":1,"width":detailObj.size.width - constValue.detail.leftMargin},
+                                "border":{"style":"solid","top":true,"bottom":true,"left":true,"right":true,"vertical":true,"horizontal":true}
+                            });
+                            ////content
+                            borderSetting.push({
+                                "range":{"top":detailObj.offset.top + constValue.detail.header,"left":detailObj.offset.left + constValue.detail.leftMargin,"height":detailObj.size.height - constValue.detail.header,"width":detailObj.size.width - constValue.detail.leftMargin},
                                 "border":{"style":"solid","top":true,"bottom":true,"left":true,"right":true,"vertical":true,"horizontal":true}
                             });
                             borderSetting.push({
@@ -504,24 +543,38 @@ $(function(){
                             mergeSetting.push({"range":{"top":detailObj.offset.top,"left":detailObj.offset.left,"height":1,"width":detailObj.size.width}});
                             //header
                             forEachColumn(detailObj,(y,j) => {
-                                var time = detailObj.start.copy().addTimeUnit(j);
+                                var time = detailObj.start.copy().addTimeUnit(j - constValue.detail.leftMargin);
                                 var row0 = detailObj.offset.top + 0;
                                 var row1 = detailObj.offset.top + 1;
                                 if(j === 0){
-                                    table[row0][y] = setDefaultCellSetting({"text":detailObj.start.toString() + "から" + detailObj.end.toString({"userDiffHours":detailObj.start}) + "まで","alignHori":"left"});
-                                    if(time.getMinutes() === 0){
-                                        table[row1][y] = setDefaultCellSetting({"text":time.getDifferentialHours(detailObj.start) + "時-","alignHori":"left"});
+                                    table[row0][y] = setDefaultCellSetting({
+                                        "text":detailObj.start.toString() + "から" + detailObj.end.toString({"userDiffHours":detailObj.start}) + "まで",
+                                        "background":"#FFD166",
+                                        "alignHori":"left"
+                                    });
+                                    table[row1][y] = setDefaultCellSetting({});
+                                }else{
+                                table[row0][y] = setDefaultCellSetting({});
+                                    if(j === constValue.detail.leftMargin){
+                                        table[row1][y] = setDefaultCellSetting({
+                                            "text":time.getDifferentialHours(detailObj.start) + "時-",
+                                            "background":"#7FFFD4",
+                                            "alignHori":"left"
+                                        });
                                         mergeSetting.push({"range":{"top":row1,"left":y,"height":1,"width":(60 - time.getMinutes()) / LocalDate.getTimeUnitAsConverted("minute")}});
+                                    }else if(time.getMinutes() === 0){
+                                        table[row1][y] = setDefaultCellSetting({
+                                            "text":time.getDifferentialHours(detailObj.start) + "時-",
+                                            "background":((detailObj.start.getDiff(time,"hour") + 1)%2 === 0 ? "#66CDAA" : "#7FFFD4"),
+                                            "alignHori":"left"
+                                        });
+                                        mergeSetting.push({"range":{"top":row1,"left":y,"height":1,"width":Math.min(
+                                            LocalDate.getTimeUnitPerUnit("hour"),
+                                            time.getDiff(detailObj.end,"timeunit")
+                                        )}});
                                     }else{
                                         table[row1][y] = setDefaultCellSetting({});
                                     }
-                                }else if(time.getMinutes() === 0){
-                                    table[row0][y] = setDefaultCellSetting({});
-                                    table[row1][y] = setDefaultCellSetting({"text":time.getDifferentialHours(detailObj.start) + "時-","alignHori":"left"});
-                                    mergeSetting.push({"range":{"top":row1,"left":y,"height":1,"width":Math.min(LocalDate.getTimeUnitPerUnit("hour"),time.getDiff(detailObj.end,"timeunit"))}});
-                                }else{
-                                    table[row0][y] = setDefaultCellSetting({});
-                                    table[row1][y] = setDefaultCellSetting({});
                                 }
                             });
                             //content
@@ -538,15 +591,15 @@ $(function(){
                     });
 
                     var spreadsheet = new Spreadsheet("shiftTableWork",sheetObj.sheetName,table);
-
-                    promiseChain = promiseChain.then(function(){
+                    promiseChain = promiseChain.then(() => {
+                        return spreadsheet.writeSheetData(table,["text","fontColor","fontWeight","fontFamily","background","fontSize","alignHori","alignVer","wrap"],100)
+                    }).then(() => {
                         return Promise.all([
-                            spreadsheet.writeSheetData(table,["text","fontColor","fontWeight","fontFamily","background","fontSize","alignHori","alignVer","wrap"],100),
                             spreadsheet.setBorderCell(borderSetting),
                             spreadsheet.setCellSize(sizeSetting)
-                        ]).then(function(){
-                            return spreadsheet.setMergeCell(mergeSetting);
-                        });
+                        ]);
+                    }).then(() => {
+                        return spreadsheet.setMergeCell(mergeSetting);
                     });
 
                     function forEachMatrix(setting,callback){
@@ -571,7 +624,7 @@ $(function(){
 
                 });
                 promiseChain = promiseChain.then(function(){
-                    console.log("finished updating shiftTableUser completely!!");
+                    console.log("finished updating shiftTableWork completely!!");
                     la.remove()
                     return Server.handlePropertiesService({[version_propertyKey]:version+1},"script","set",{"skip":true});
                 }).catch(function(e){

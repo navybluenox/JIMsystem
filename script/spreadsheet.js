@@ -16,7 +16,7 @@ var Spreadsheet = (function(){
             return this._fileInfo;
         }
         getFileName(){
-            return this.getFileInfo().getValues("name");
+            return this.getFileInfo().getValue("name");
         }
         getSheetName(){
             return this._sheetName;
@@ -76,8 +76,8 @@ var Spreadsheet = (function(){
                     return p;
                 });
             }
-            promiseChain = promiseChain.then(function(v){
-                console.log("Writing data on spreadsheet successes!");
+            promiseChain = promiseChain.then((v) => {
+                console.log("Writing data on spreadsheet successes! ( " + this.getSheetName() + " @ " + this.getFileName() + " )");
                 la.remove();
                 return contents;
             });

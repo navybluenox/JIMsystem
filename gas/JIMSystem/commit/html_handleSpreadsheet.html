@@ -1,6 +1,18 @@
 <article>
     <h1>スプレッドシートと連携</h1>
     <section>
+        <form id="formCreateShiftTable">
+            <table class="tableform"><tbody>
+            <h2>人割表を出力する</h2>
+                <tr><td rowspan="2">人割表を更新する</td><td><input type="button" name="createShiftTableUser" value="人割表 type.User" tabindex="2" onclick='_val.pageFun.handleSpreadsheet.createShiftTableUser();'><select name="createShiftTableUser_day" tabindex="2"></select></td><td rowspan="2">※更新直後のスプレッドシートの表示は異常なので、必ず更新後にページを開きなおしてください。</td></tr>
+                <tr><td style="background:inherit;"><input type="button" name="createShiftTableWork" value="人割表 type.Work" tabindex="2" onclick='_val.pageFun.handleSpreadsheet.createShiftTableWork();'><select name="createShiftTableWork_incharge" tabindex="2"></select></td></tr>
+                <tr><td>人割表をPDFで出力する</td><td><input type="button" name="createShiftTablePdfUser" value="人割表 type.User" tabindex="2" onclick='_val.pageFun.handleSpreadsheet.createPdfOfShiftTable("user");'><input type="button" name="createShiftTablePdfWork" value="人割表 type.Work" tabindex="2" onclick='_val.pageFun.handleSpreadsheet.createPdfOfShiftTable("work");'></td><td>※現在のスプレッドシートのデータがGoogleDriveの「export」フォルダに出力されます。※シートの更新は行われません。</td></tr>
+                <tr><td>人割表のスプレッドシートを開く</td><td><input type="button" name="open_spreadsheet_user" value="人割表 type.User" tabindex="2"><input type="button" name="open_spreadsheet_work" value="人割表 type.Work" tabindex="2"></td><td></td></tr>
+                <tr><td>PDF出力先のフォルダを開く</td><td><input type="button" name="open_pdf" value="開く" tabindex="2"></td><td></td></tr>
+            </tbody></table>
+        </form>
+    </section>
+    <section>
         <h2>データベースに追加</h2>
         <form id="formAddToDatabase">
             <table class="tableform"><tbody>
@@ -9,17 +21,6 @@
                 <tr><td>スプレッドシートから読み込む</td><td>編集モード：<select name="readType"><option value="add">追加</option><option value="change">変更</option></select><input type="button" name="read" value="読み込む" tabindex="2" onclick='_val.pageFun.handleSpreadsheet.readSpreadsheet("editDatabase","fromJIMsystem")'></td><td>※空のセルは「変更なし」として無視されます。空文字を入れたい場合には「\_」(半角のバックスラッシュとアンダーバー)を入れてください。</td></tr>
                 <tr><td>スプレッドシートをクリアする</td><td><input type="button" name="clear" value="クリアする" tabindex="2" onclick='_val.pageFun.handleSpreadsheet.clearSpreadsheet("editDatabase","fromJIMsystem")'></td><td></td></tr>
                 <tr><td>スプレッドシートを開く</td><td><input type="button" name="open" value="開く" tabindex="2"></td><td></td></tr>
-            </tbody></table>
-        </form>
-    </section>
-    <section>
-        <form id="formCreateShiftTable">
-            <table class="tableform"><tbody>
-            <h2>人割表を出力する</h2>
-                <tr><td>人割表を更新する</td><td><input type="button" name="createShiftTableUser" value="人割表 type.User" tabindex="2" onclick='_val.pageFun.handleSpreadsheet.createShiftTableUser();'><input type="button" name="createShiftTableWork" value="人割表 type.Work" tabindex="2" onclick='_val.pageFun.handleSpreadsheet.createShiftTableWork();'></td><td>※更新直後のスプレッドシートの表示は異常なので、必ず更新後にページを開きなおしてください。</td></tr>
-                <tr><td>人割表をPDFで出力する</td><td><input type="button" name="createShiftTablePdfUser" value="人割表 type.User" tabindex="2" onclick='_val.pageFun.handleSpreadsheet.createPdfOfShiftTable("user");'><input type="button" name="createShiftTablePdfWork" value="人割表 type.Work" tabindex="2" onclick='_val.pageFun.handleSpreadsheet.createPdfOfShiftTable("work");'></td><td>※現在のスプレッドシートのデータがGoogleDriveの「export」フォルダに出力されます。※シートの更新は行われません。</td></tr>
-                <tr><td>人割表のスプレッドシートを開く</td><td><input type="button" name="open_spreadsheet_user" value="人割表 type.User" tabindex="2"><input type="button" name="open_spreadsheet_work" value="人割表 type.Work" tabindex="2"></td><td></td></tr>
-                <tr><td>PDF出力先のフォルダを開く</td><td><input type="button" name="open_pdf" value="開く" tabindex="2"></td><td></td></tr>
             </tbody></table>
         </form>
     </section>

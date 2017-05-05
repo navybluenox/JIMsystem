@@ -22,7 +22,7 @@ $(function(){
                 }             
             });
             _val.onMovePage.push((obj) => {
-                $("ul.menubar_sub").css({"display":"none"});
+                $("ul.menubar_sub").css({"display":"none"}).data("freeze",false);
             });
         },
         openSearchWindow:function(){
