@@ -542,6 +542,7 @@ $(function(){
                             });
                             mergeSetting.push({"range":{"top":detailObj.offset.top,"left":detailObj.offset.left,"height":1,"width":detailObj.size.width}});
                             //header
+                            var timeBarColor = 0;
                             forEachColumn(detailObj,(y,j) => {
                                 var time = detailObj.start.copy().addTimeUnit(j - constValue.detail.leftMargin);
                                 var row0 = detailObj.offset.top + 0;
@@ -555,23 +556,25 @@ $(function(){
                                     table[row1][y] = setDefaultCellSetting({});
                                 }else{
                                 table[row0][y] = setDefaultCellSetting({});
-                                    if(j === constValue.detail.leftMargin){
+                                    if(time.getMinutes() === 0){
                                         table[row1][y] = setDefaultCellSetting({
                                             "text":time.getDifferentialHours(detailObj.start) + "時-",
-                                            "background":"#7FFFD4",
+                                            "background":timeBarColor%2 === 0 ? "#7FFFD4" : "#66CDAA",
                                             "alignHori":"left"
                                         });
-                                        mergeSetting.push({"range":{"top":row1,"left":y,"height":1,"width":(60 - time.getMinutes()) / LocalDate.getTimeUnitAsConverted("minute")}});
-                                    }else if(time.getMinutes() === 0){
-                                        table[row1][y] = setDefaultCellSetting({
-                                            "text":time.getDifferentialHours(detailObj.start) + "時-",
-                                            "background":((detailObj.start.getDiff(time,"hour") + 1)%2 === 0 ? "#66CDAA" : "#7FFFD4"),
-                                            "alignHori":"left"
-                                        });
+                                        timeBarColor++;
                                         mergeSetting.push({"range":{"top":row1,"left":y,"height":1,"width":Math.min(
                                             LocalDate.getTimeUnitPerUnit("hour"),
                                             time.getDiff(detailObj.end,"timeunit")
                                         )}});
+                                    }else if(j === constValue.detail.leftMargin){
+                                        table[row1][y] = setDefaultCellSetting({
+                                            "text":"",
+                                            "background":timeBarColor%2 === 0 ? "#7FFFD4" : "#66CDAA",
+                                            "alignHori":"left"
+                                        });
+                                        timeBarColor++;
+                                        mergeSetting.push({"range":{"top":row1,"left":y,"height":1,"width":(60 - time.getMinutes()) / LocalDate.getTimeUnitAsConverted("minute")}});
                                     }else{
                                         table[row1][y] = setDefaultCellSetting({});
                                     }

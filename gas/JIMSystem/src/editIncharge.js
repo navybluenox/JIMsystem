@@ -12,21 +12,149 @@ $(() => {
                         .map(incharge => '<option value="' + incharge.getValue("_id") +'">' + incharge.getName() + '</option>')
                         .join("")
                 );
+                var form_search_cond = $("#formEditIncharge_search_cond");
+                form_search_cond.find('[name="nth"]').append(
+                    Incharge.getAllOfAllParents().map(incharge => '<option value="' + incharge.getValue("_id") + '">' + incharge.getName() + '</option>').join("")
+                ).on("change",e => {
+                    var division = form_search_cond.find('[name="division"]');
+                    division.children().remove();
+                    var incharge = _val.server.getDataById(form_search_cond.find('[name="nth"]').val(),"incharge")[0];
+                    division.append(
+                        '<option value="all">指定なし</option>' +
+                        Incharge.getInchargesInOrder(incharge.getName())
+                            .filter(incharge => incharge.isDivision())
+                            .map(incharge => '<option value="' + incharge.getValue("_id") + '">' + incharge.getValue("code") + '</option>').join("")
+                    )
+                    pageFun.searchIncharge();
+                }).trigger("change");
             });
             pageFun = _val.pageFun.editIncharge;
             form = $("#formEditIncharge_edit");
             
             form.find(".memberForIncharge,.memberForUser").css({"display":"none"});
 
+            form.find('[name="member_kind"]').on("change",e => {
+                var select = $(e.currentTarget);
+                form.find(".memberForIncharge,.memberForUser").css({"display":"none"});
+                if(select.val() === "user"){
+                    form.find(".memberForUser").css({"display":""});                    
+                    pageFun.searchInchargeForForm("member",pageFun.getMemberSelected("member"));
+                }else{
+                    form.find(".memberForIncharge").css({"display":""});
+                    pageFun.searchInchargeForForm("member",pageFun.getMemberSelected("member"));
+                }
+            });
+
         },onunload:() => {
         },updateIncharge:(kind,_id,setData) => {
-
+            var incharge;
+            if(kind === "add" || kind === "change"){
+                incharge = pageFun.getFormData();
+                if(kind === "change"){
+                    if(editing === undefined){
+                        alert("値を変更するグループが指定されていません\n下の「検索」から変更したい人割を選択し、フォームへ入力してください");
+                        return;
+                    }
+                    incharge.setValues({"_id":editing.getValue("_id")});
+                }
+                if(kind === "add"){
+                    _val.server.addData(incharge);
+                }else{
+                    _val.server.changeData(incharge);
+                }
+            }else if(kind === "remove"){
+                incharge = new Incharge({"_id":_id});
+                _val.server.removeData(incharge);
+            }
+            _val.server.sendUpdateQueue().then(function(){
+                pageFun.searchIncharge();
+            });
         },searchIncharge:() => {
+            var result = $("#formEditIncharge_search_result");
+            var form_search = $("#formEditIncharge_search_cond");
+
+            var incharges = Incharge.getAllOfAllParents()
+                .map(incharge => Incharge.getInchargesInOrder(incharge.getName()))
+                .reduce((prev,curt) => prev.concat(curt),[]);
+
+            result.children().remove();
+
+            var cond = {};
+            ["name","nth","division","code"].forEach(name => {
+                cond[name] = form_search.find('[name="' + name +'"]').val();
+            });
+            incharges = incharges.filter(incharge => {
+                var flag = true;
+
+                if(cond.name !== ""){
+                    flag = flag && (new RegExp(cond.name)).test(incharge.getValue("name"));
+                }
+                if(cond.nth !== "all"){
+                    let allParent = incharge.getAllParent();
+                    flag = flag && allParent.getValue("_id") === cond.nth;
+                }
+                if(cond.division !== "all"){
+                    let division = incharge.getDivision();
+                    flag = flag && division !== null && division.getValue("_id") === cond.division;
+                }
+                if(cond.code !== ""){
+                    flag = flag && (new RegExp(cond.code)).test(incharge.getValue("code"));
+                }
+                return flag;
+            });
+
+            var table = createTable(result,incharges,["edit","code","name"],(cellObj) => {
+                var incharge = cellObj.rowData;
+                if(cellObj.column === "edit"){
+                    var buttons = $('<input type="button" value="フォームに入力"><input type="button" value="削除">').appendTo(cellObj.el);
+                    buttons.eq(0).on("click",e => {pageFun.fillForm(incharge);editing = incharge;});
+                    buttons.eq(1).on("click",e => {pageFun.updateIncharge("remove",incharge.getValue("_id"));});
+                }else if(cellObj.column === "code"){
+                    cellObj.el.text(incharge.getName());
+                }else if(cellObj.column === "name"){
+                    cellObj.el.text(incharge.getValue("name"));
+                }
+            },{"header":["edit","略称","担当名"]});
+            table.el.css({"margin":"3em"});
+
 
         },fillForm:(incharge) => {
-
+            form.find('[name="member_kind"]').val(incharge.isEndChild() ? "user" : "incharge");
+            pageFun.searchInchargeForForm("member",incharge.getValue("member").map(obj => obj.id));
+            pageFun.searchInchargeForForm("relevantIncharge",incharge.getValue("relevantIncharge"));
+            pageFun.searchInchargeForForm("parentIncharge");
+            form.find('[name="editing"]').val(incharge.getValue("_id"));
+            formNameList.forEach(obj => {
+                var el = form.find('[name="' + obj.name + '"]');
+                var key = obj.key === undefined ? obj.name : obj.key;
+                if(key === "member"){
+                    pageFun.setMemberSelected(key,incharge.getValue(key).map(obj => obj.id));
+                }else if(key === "relevantIncharge"){
+                    pageFun.setMemberSelected(key,incharge.getValue(key));
+                }else if(inArray(["isInvisible","isAllParent"],key)){
+                    el.val(incharge.getValue(key) ? "Yes" : "No");
+                }else{
+                    el.val(incharge.getValue(key));
+                }
+            });
         },getFormData:() => {
-
+            var setValue = {};
+            formNameList.forEach(function(obj){
+                var el = form.find('[name="' + obj.name + '"]');
+                var key = obj.key === undefined ? obj.name : obj.key;
+                if(key === "member"){
+                    var ids = pageFun.getMemberSelected(key);
+                    var kind = form.find('[name="' + key + '_kind"]').val();
+                    setValue[key] = ids.map(id => {return {"id":id,"dataName":kind}});
+                }else if(key === "relevantIncharge"){
+                    setValue[key] = pageFun.getMemberSelected(key);
+                }else if(inArray(["isInvisible","isAllParent"],key)){
+                    setValue[key] = (el.val() === "Yes");
+                }else{
+                    setValue[key] = el.val();
+                }
+            });
+            return (new Incharge()).setValues(setValue);
         },searchInchargeForForm:(nameAttr,skipIds) => {
             skipIds = skipIds === undefined ? [] : skipIds;
             var result = form.find('[name="' + nameAttr + '"]'),
@@ -40,7 +168,6 @@ $(() => {
 
             var condEl = {};
             ["nth","division","code","name"].forEach(key => condEl[key] = form.find('[name="' + nameAttr + '_cond_' + key +'"]'));
-
             var incharges = (
                 condEl.nth.val() === "" ?
                 Incharge.getAllOfAllParents().map(inch => inch.getMemberIncharges(true)).reduce((prev,curt) => prev.concat(curt),[]) :
@@ -49,7 +176,7 @@ $(() => {
                 if(inArray(skipIds,incharge.getValue("_id")))  return false;
                 return Object.keys(condEl).every(key => {
                     var value = condEl[key].val();
-                    if(value === "") return true;
+                    if(value === "" || value === null) return true;
                     switch(key){
                         case "nth":
                             return incharge.getAllParent().getValue("_id") === value;
@@ -90,19 +217,23 @@ $(() => {
                     division.append('<option value="' + _inch.getValue("_id") + '">' + _inch.getValue("code") +'</option>');
                 });
             }
-        },searchUserForFrom:(nameAttr) => {
+        },searchUserForFrom:(nameAttr,skipIds) => {
+            //TODO
         },setMemberSelected:(nameAttr,ids) => {
             var divBody = form.find('[name="' + nameAttr + '_selected"]').siblings("div");
             divBody.children().remove();
 
-            var incharges = _val.server.getData("incharge");
+            var kind_el = form.find('[name="' + nameAttr + '_kind"]');
 
+            var kind = kind_el.length === 0 ? "incharge" : kind_el.val();
+
+            var datapieces = _val.server.getData(kind);
             ids.filter((v,i,s) => s.indexOf(v) === i).forEach(id => {
                 var divTr = $("<div class='div-row'></div>");
-                var incharge = incharges.find(inch => inch.getValue("_id") === id);
-                divBody.append(divTr.css({"display":"table-row"}).data("inchargeid",id));
-                var divCell = $("<div>" + pageFun.getInchargeName(incharge) +"</div><div></div>").appendTo(divTr).css({"display":"table-cell"}).eq(1);
-                divCell.append('<input type="hidden" name="id" value="' + incharge.getValue("_id") + '"><input type="button" name="top" value="TOP"><input type="button" name="up" value="↑"><input type="button" name="down" value="↓"><input type="button" name="bottom" value="BOTTOM"><input type="button" name="remove" value="REMOVE">');
+                var datapiece = datapieces.find(inch => inch.getValue("_id") === id);
+                divBody.append(divTr.css({"display":"table-row"}).data("id",id));
+                var divCell = $("<div>" + (kind === "incharge" ? pageFun.getInchargeName(datapiece) : datapiece.getName()) +"</div><div></div>").appendTo(divTr).css({"display":"table-cell"}).eq(1);
+                divCell.append('<input type="hidden" name="id" value="' + datapiece.getValue("_id") + '"><input type="button" name="top" value="TOP"><input type="button" name="up" value="↑"><input type="button" name="down" value="↓"><input type="button" name="bottom" value="BOTTOM"><input type="button" name="remove" value="REMOVE">');
                 divTr.css({"white-space":"pre"});
             });
 
@@ -138,13 +269,13 @@ $(() => {
                     divTr.remove();
                 }
             });
-        },getInchargeIdSelected:(nameAttr) => {
+        },getMemberSelected:(nameAttr) => {
             //divの表からデータを取得
             var divBody = form.find('[name="' + nameAttr + '_selected"]').siblings("div");
 
             var divTr = divBody.children("div");
 
-            return divTr.map((i,el) => $(el).data("inchargeid")).get();
+            return divTr.map((i,el) => $(el).data("id")).get();
         },getInchargeName:(incharge) => {
             return incharge.isEndChild() ? incharge.getName() : incharge.getName() + "(" + incharge.getValue("name") + ")";
         },moveMember:(nameAttr,type) => {
@@ -160,7 +291,7 @@ $(() => {
                     return $(el).attr("value");
                 }).get().filter(id => !inArray(selectedIds,id)).map(id => incharges.find(inch => inch.getValue("_id") === id));
 
-                let ids_selected = pageFun.getInchargeIdSelected(nameAttr);
+                let ids_selected = pageFun.getMemberSelected(nameAttr);
 
                 target_list.children().remove()
 
