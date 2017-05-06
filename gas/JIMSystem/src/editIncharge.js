@@ -33,15 +33,16 @@ $(() => {
             
             form.find(".memberForIncharge,.memberForUser").css({"display":"none"});
 
-            form.find('[name="member_kind"]').on("change",e => {
+            form.find('[name="member_kind"]').on("change",(e,userObj) => {
                 var select = $(e.currentTarget);
+                var skipIds = userObj.skipIds;
                 form.find(".memberForIncharge,.memberForUser").css({"display":"none"});
                 if(select.val() === "user"){
                     form.find(".memberForUser").css({"display":""});                    
-                    pageFun.searchInchargeForForm("member",pageFun.getMemberSelected("member"));
+                    pageFun.searchUserForForm("member",skipIds !== undefined ? skipIds : pageFun.getMemberSelected("member"));
                 }else{
                     form.find(".memberForIncharge").css({"display":""});
-                    pageFun.searchInchargeForForm("member",pageFun.getMemberSelected("member"));
+                    pageFun.searchInchargeForForm("member",skipIds !== undefined ? skipIds : getMemberSelected("member"));
                 }
             });
 
@@ -119,8 +120,8 @@ $(() => {
 
 
         },fillForm:(incharge) => {
-            form.find('[name="member_kind"]').val(incharge.isEndChild() ? "user" : "incharge");
-            pageFun.searchInchargeForForm("member",incharge.getValue("member").map(obj => obj.id));
+            var member_dataName = incharge.isEndChild() ? "user" : "incharge";
+            form.find('[name="member_kind"]').val(member_dataName).trigger("change",{"skipIds":incharge.getValue("member").map(obj => obj.id)});
             pageFun.searchInchargeForForm("relevantIncharge",incharge.getValue("relevantIncharge"));
             pageFun.searchInchargeForForm("parentIncharge");
             form.find('[name="editing"]').val(incharge.getValue("_id"));
@@ -216,7 +217,7 @@ $(() => {
                     division.append('<option value="' + _inch.getValue("_id") + '">' + _inch.getValue("code") +'</option>');
                 });
             }
-        },searchUserForFrom:(nameAttr,skipIds) => {
+        },searchUserForForm:(nameAttr,skipIds) => {
             skipIds = skipIds === undefined ? [] : skipIds;
             var result = form.find('[name="' + nameAttr + '"]'),
                 isMultiple = false;
@@ -273,12 +274,12 @@ $(() => {
                 divTr.css({"white-space":"pre"});
             });
 
-            divBody.on("click",'input[type="button"]',e => {
+            divBody.off("click.setMemberSelected");
+            divBody.on("click.setMemberSelected",'input[type="button"]',e => {
                 var button = $(e.currentTarget);
                 var divTr = button.closest("div.div-row");
                 var kind = button.attr("name");
                 var indexDiv = divBody.children("div").index(divTr);
-
                 if(
                     (indexDiv === 0 && (kind === "top" || kind === "up")) ||
                     (indexDiv === divBody.children("div").length-1 && (kind === "bottom" || kind === "down"))
@@ -295,7 +296,8 @@ $(() => {
                         target.after(divTr);
                     }
                 }else if(kind === "up" || kind === "down"){
-                    let target = (kind === "up" ? divTr.prev() : divTr.next());
+                    let target = divBody.children("div").eq(kind === "up" ? indexDiv - 1 : indexDiv + 1);
+                    //let target = (kind === "up" ? divTr.prev() : divTr.next());
                     if(kind === "up"){
                         target.before(divTr);
                     }else{
@@ -317,15 +319,21 @@ $(() => {
         },moveMember:(nameAttr,type) => {
             var target_list = form.find('[name="' + nameAttr + '_list"]');
             var target_selected = form.find('[name="' + nameAttr + '_selected"]').siblings("div");
-            var incharges = _val.server.getData("incharge");
+
+            var dataName = form.find('[name="' + nameAttr + '_kind"]');
+            dataName = dataName.length === 0 ? "incharge" : dataName.val();
+            
+
+            //var incharges = _val.server.getData("incharge");
+            var datapieces = _val.server.getData(dataName);
 
             if(type === "add"){
                 let selectedIds = target_list.val();
                 selectedIds = selectedIds === null ? [] : selectedIds;
 
-                let incharges_list = target_list.find("option").map((i,el) => {
+                let datapieces_list = target_list.find("option").map((i,el) => {
                     return $(el).attr("value");
-                }).get().filter(id => !inArray(selectedIds,id)).map(id => incharges.find(inch => inch.getValue("_id") === id));
+                }).get().filter(id => !inArray(selectedIds,id)).map(id => datapieces.find(inch => inch.getValue("_id") === id));
 
                 let ids_selected = pageFun.getMemberSelected(nameAttr);
 
@@ -338,11 +346,15 @@ $(() => {
                     isMultiple = true;
                 }
 
-                incharges_list.forEach(incharge => {
-                    if(incharge.isAllParent() || incharge.isDivision()){
-                        result.append('<optgroup label="' + incharge.getName() +'"></optgroup>')
+                datapieces.forEach(datapiece => {
+                    if(dataName === "incharge"){
+                        if(datapiece.isAllParent() || datapiece.isDivision()){
+                            result.append('<optgroup label="' + datapiece.getName() +'"></optgroup>')
+                        }
+                        result.append('<option value="' + datapiece.getValue("_id") +'">' + pageFun.getInchargeName(datapiece) +'</option>');
+                    }else{
+                        result.append('<option value="' + datapiece.getValue("_id") +'">' + datapiece.getName() +'</option>');
                     }
-                    result.append('<option value="' + incharge.getValue("_id") +'">' + pageFun.getInchargeName(incharge) +'</option>');
                 });
 
                 pageFun.setMemberSelected(nameAttr,ids_selected.concat(selectedIds));
