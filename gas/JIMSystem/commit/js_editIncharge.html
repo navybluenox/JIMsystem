@@ -203,7 +203,6 @@ $(() => {
             if(isMultiple){
                 result.attr("size",Math.min(result.find("option,optgroup").length,20)).find("option,optgroup").css({"text-align":"left"});
             }
-
         },searchDivisionForForm:(nameAttr) => {
             var nth = form.find('[name="' + nameAttr + '_cond_nth"]');
             var division = form.find('[name="' + nameAttr + '_cond_division"]');
@@ -219,7 +218,44 @@ $(() => {
                 });
             }
         },searchUserForFrom:(nameAttr,skipIds) => {
-            //TODO
+            skipIds = skipIds === undefined ? [] : skipIds;
+            var result = form.find('[name="' + nameAttr + '"]'),
+                isMultiple = false;
+            if(result.length === 0){
+                result = form.find('[name="' + nameAttr + '_list"]');
+                isMultiple = true;
+            }
+
+            result.children().remove();
+
+            var condEl = {};
+            ["azusa","nameUser"].forEach(key => condEl[key] = form.find('[name="' + nameAttr + '_cond_' + key +'"]'));
+            var users = _val.server.getData("user")
+                .filter(user => {
+                    if(inArray(skipIds,user.getValue("_id")))  return false;
+                    return Object.keys(condEl).every(key => {
+                        var value = condEl[key].val();
+                        if(value === "" || value === null) return true;
+                        switch(key){
+                            case "azusa":
+                                return (new RegExp(value)).test(user.getValue("azusaSendName"));
+                                break;
+                            case "nameUser":
+                                return ["","Phonetic"].some(suffix => (new RegExp(value)).test(user.getValue("nameLast" + suffix) + user.getValue(user.getValue("nameFirs" + suffix))));
+                                break;
+                        }
+                    });
+                });
+
+            users.forEach(user => {
+                result.append('<option value="' + user.getValue("_id") +'">' + user.getName() +'</option>');
+            });
+
+            if(isMultiple){
+                result.attr("size",Math.min(result.find("option,optgroup").length,20)).find("option,optgroup").css({"text-align":"left"});
+            }
+
+
         },setMemberSelected:(nameAttr,ids) => {
             var divBody = form.find('[name="' + nameAttr + '_selected"]').siblings("div");
             divBody.children().remove();
