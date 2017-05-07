@@ -92,12 +92,15 @@ $(() => {
                 var key = obj.key === undefined ? obj.name : obj.key;
                 if(key === "inchargeId"){
                     form.find('[name="inchargeId"]').sibling("div.div-table").children().remove();
+                    _val.server.getDataById(user.getValue("inchargeId"),"incharge").forEach(incharge => {
+                        pageFun.addInchargeRow(incharge);
+                    });
                 }else if(key === "sheetConfig"){
 
                 }else if(inArray(["isRojin","isAvailable"],key)){
-                    el.val(incharge.getValue(key) ? "Yes" : "No");
+                    el.val(user.getValue(key) ? "Yes" : "No");
                 }else{
-                    el.val(incharge.getValue(key));
+                    el.val(user.getValue(key));
                 }
             });
         },getFormData:() => {
