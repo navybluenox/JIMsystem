@@ -15,7 +15,7 @@
                 </tr><tr>
                     <td>氏名（よみがな）</td>
                     <td><input type="text" name="nameLastPhonetic" tabindex="2" placeholder="苗字"><input type="text" name="nameFirstPhonetic" tabindex="2" placeholder="名前"></td>
-                    <td></td>
+                    <td>ひらがなで</td>
                 </tr><tr>
                     <td>AZUSA</td>
                     <td><input type="text" name="azusaSendName" tabindex="2" placeholder="標準配送名"><input type="text" name="azusaId" tabindex="2" placeholder="AZUSAID"></td>
@@ -23,11 +23,19 @@
                 </tr><tr>
                     <td>名簿Index</td>
                     <td><input type="text" name="sortId" tabindex="2"></td>
+                    <td>この数字が小さいほうが名簿順にした時に上に来る。</td>
+                </tr><tr>
+                    <td>携帯番号</td>
+                    <td><input type="text" name="cellphone" tabindex="2" placeholder="080-XXXX-YYYY"></td>
                     <td></td>
                 </tr><tr>
                     <td>担当</td>
-                    <td><input type="hidden" name="incharge" tabindex="2"></td>
-                    <td></td>
+                    <td><input type="hidden" name="inchargeId" tabindex="2"><div class="div-table" style="display:table;">
+                        <div class="div-row" style="display:table-row;"><div style="display:table-cell;">
+                            <input type="button" name="inchargeId_add" value="追加" tabindex="3" onclick="pageFun.editUser.addInchargeRow()">
+                        </div></div>
+                    </div></td>
+                    <td>現在の担当以外もここで設定する。ここを編集すると、Inchargeも自動で編集される。</td>
                 </tr><tr>
                     <td>老人であるか</td>
                     <td><input type="button" name="isRojin" value="No" tabindex="2" onclick='var el=$(this);if(el.val()==="Yes"){el.val("No");}else{el.val("Yes");}'></td>

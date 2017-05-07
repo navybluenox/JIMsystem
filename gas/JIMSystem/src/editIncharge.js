@@ -118,7 +118,6 @@ $(() => {
             },{"header":["edit","略称","担当名"]});
             table.el.css({"margin":"3em"});
 
-
         },fillForm:(incharge) => {
             var member_dataName = incharge.isEndChild() ? "user" : "incharge";
             form.find('[name="member_kind"]').val(member_dataName).trigger("change",{"skipIds":incharge.getValue("member").map(obj => obj.id)});
