@@ -193,8 +193,8 @@ $(() => {
             });
 
             if(incharge !== undefined){
-                select_nth.val(incharge.getOrg() + incharge.getNth()).trigger("change");
-                select_division.val(incharge.getDivision()).trigger("change");
+                select_nth.val(incharge.getAllParent().getValue("_id")).trigger("change");
+                select_division.val(incharge.getDivision().getValue("_id")).trigger("change");
                 select_id.val(incharge.getValue("_id"));
             }
         },getInchargeId(){
