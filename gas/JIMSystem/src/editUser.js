@@ -93,7 +93,7 @@ $(() => {
                     let divTrs = form.find('[name="inchargeId"]').siblings("div.div-table").children();
                     divTrs.not(divTrs.find('[name="inchargeId_add"]').closest("div.div-row")).remove();
                     _val.server.getDataById(user.getValue("inchargeId"),"incharge").forEach(incharge => {
-                        pageFun.addInchargeRow(incharge);
+                        pageFun.addInchargeRow(incharge,false);
                     });
                 }else if(key === "sheetConfig"){
 
@@ -139,6 +139,7 @@ $(() => {
                 select_division.trigger("change");
             });
             select_division.on("change",e => {
+                select_id.children().remove();
                 select_id.append(
                     _val.server.getDataById(select_division.val(),"incharge")[0]
                         .getMemberIncharges(false)
@@ -160,7 +161,7 @@ $(() => {
             
             divCell2.on("click",'[type="button"]',e => {
                 var button = $(e.currentTarget);
-                var kind = target.attr("name").replace(/^inchargeId_(.+)$/,"$1");
+                var kind = button.attr("name").replace(/^inchargeId_(.+)$/,"$1");
 
                 var divTr = button.closest("div.div-row");
                 var indexDiv = table.children("div").index(divTr);
@@ -196,6 +197,8 @@ $(() => {
                 select_nth.val(incharge.getAllParent().getValue("_id")).trigger("change");
                 select_division.val(incharge.getDivision().getValue("_id")).trigger("change");
                 select_id.val(incharge.getValue("_id"));
+            }else{
+                select_nth.trigger("change");
             }
         },getInchargeId(){
             var table = form.find('[name="inchargeId"]').siblings("div.div-table");

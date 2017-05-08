@@ -1365,15 +1365,11 @@ class Incharge extends Datapiece{
             .filter(obj => obj.dataName === "incharge" && !inArray(eliminatedIds,obj.id))
             .map(obj => Datapiece.getServer().getDataById(obj.id,this.getDataName())[0])
             .filter(incharge => incharge !== undefined)
+            .filter((v,i,s) => s.findIndex(incharge => incharge.getValue("_id") === v.getValue("_id")) === i)
             .map((incharge,i,self) => incharge.getMemberIncharges(includeNotEndChildren,self.map(incharge => incharge.getValue("_id")).concat(eliminatedIds)))
-            .reduce((prev,curt) => prev.concat(curt),[this])
-            .filter((v,i,s) => s.findIndex(incharge => incharge.getValue("_id") === v.getValue("_id") === i));
-
-        if(includeNotEndChildren){
-            member = [this].concat(member);
-        }
-
-        return member
+            .reduce((prev,curt) => prev.concat(curt),[this]);
+            
+        return member.filter(incharge => includeNotEndChildren || incharge.isEndChild()).filter((v,i,s) => s.findIndex(incharge => incharge.getValue("_id") === v.getValue("_id")) === i);
             
             
     }
