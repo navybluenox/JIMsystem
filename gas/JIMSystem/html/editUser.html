@@ -32,7 +32,7 @@
                     <td>担当</td>
                     <td><input type="hidden" name="inchargeId" tabindex="2"><div class="div-table" style="display:table;">
                         <div class="div-row" style="display:table-row;"><div style="display:table-cell;">
-                            <input type="button" name="inchargeId_add" value="追加" tabindex="3" onclick="pageFun.editUser.addInchargeRow()">
+                            <input type="button" name="inchargeId_add" value="追加" tabindex="3" onclick="_val.pageFun.editUser.addInchargeRow()">
                         </div></div>
                     </div></td>
                     <td>現在の担当以外もここで設定する。ここを編集すると、Inchargeも自動で編集される。</td>
@@ -50,11 +50,11 @@
                     <td></td>
                 </tr>
             </tbody></table>
-            <input type="button" name="run_add" value="新規作成" tabindex="2" onclick='_val.pageFun.editUser.updateIncharge("add")'><input type="button" name="run_change" value="変更を保存" tabindex="2" onclick='_val.pageFun.editUser.updateIncharge("change")'>
+            <input type="button" name="run_add" value="新規作成" tabindex="2" onclick='_val.pageFun.editUser.updateUser("add")'><input type="button" name="run_change" value="変更を保存" tabindex="2" onclick='_val.pageFun.editUser.updateUser("change")'>
         </form>
     </section><section>
         <h2>検索</h2>
-        <form id="formEditIncharge_search_cond">
+        <form id="formEditUser_search_cond">
             <table class="tableform"><tbody>
                 <tr><td>配送名</td><td><input type="text" name="azusa" tabindex="2" onkeyup='if(event.keyCode === 13){_val.pageFun.editUser.searchUser();return false;}'></td></tr>
                 <tr><td>氏名</td><td><input type="text" name="name" tabindex="2" onkeyup='if(event.keyCode === 13){_val.pageFun.editUser.searchUser();return false;}'></td></tr>
@@ -63,6 +63,6 @@
             </tbody></table>
             <input type="button" name="run" value="検索" tabindex="2" onclick='_val.pageFun.editUser.searchUser();'>
         </form>
-        <div id="formEditIncharge_search_result"></div>
+        <div id="formEditUser_search_result"></div>
     </section>
 </article>

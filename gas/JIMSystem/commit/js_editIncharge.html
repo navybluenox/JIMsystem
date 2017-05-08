@@ -297,7 +297,6 @@ $(() => {
                     }
                 }else if(kind === "up" || kind === "down"){
                     let target = divBody.children("div").eq(kind === "up" ? indexDiv - 1 : indexDiv + 1);
-                    //let target = (kind === "up" ? divTr.prev() : divTr.next());
                     if(kind === "up"){
                         target.before(divTr);
                     }else{

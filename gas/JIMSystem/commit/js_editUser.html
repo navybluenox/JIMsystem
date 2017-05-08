@@ -8,7 +8,7 @@ $(() => {
         onload:() => {
             _val.server.loadDataAll().then(() => {
                 var users = _val.server.getData("user");
-                $('#formEditIncharge_search_cond [name="grade"]').append(
+                $('#formEditUser_search_cond [name="grade"]').append(
                     '<option value="all">指定なし</option>' +
                     users.map(user => user.getValue("grade")).filter((v,i,s) => s.indexOf(v) === i).sort((a,b) => a-b)
                     .map(grade => '<option value="' + grade + '">' + grade + '</option>')
@@ -64,7 +64,7 @@ $(() => {
                     flag = flag && ["","Phonetic"].some(suffix => (new RegExp(cond.name)).test(user.getValue("nameLast" + suffix) + user.getValue("nameFirst" + suffix)));
                 }
                 if(cond.grade !== "all"){
-                    flag = flag && cond.grade - user.getValue(grade) === 0;
+                    flag = flag && cond.grade - user.getValue("grade") === 0;
                 }
                 if(cond.incharge !== ""){
                     flag = flag && incharges
@@ -73,13 +73,12 @@ $(() => {
                 }
                 return flag;
             });
-
             var table = createTable(result,users,["edit","grade","name"],(cellObj) => {
                 var user = cellObj.rowData;
                 if(cellObj.column === "edit"){
                     var buttons = $('<input type="button" value="フォームに入力"><input type="button" value="削除">').appendTo(cellObj.el);
                     buttons.eq(0).on("click",e => {pageFun.fillForm(user);editing = user;});
-                    buttons.eq(1).on("click",e => {pageFun.updateuser("remove",user.getValue("_id"));});
+                    buttons.eq(1).on("click",e => {pageFun.updateUser("remove",user.getValue("_id"));});
                 }else if(cellObj.column === "grade"){
                     cellObj.el.text(user.getValue("grade"));
                 }else if(cellObj.column === "name"){
@@ -92,7 +91,8 @@ $(() => {
                 var el = form.find('[name="' + obj.name + '"]');
                 var key = obj.key === undefined ? obj.name : obj.key;
                 if(key === "inchargeId"){
-                    form.find('[name="inchargeId"]').sibling("div.div-table").children().remove();
+                    let divTrs = form.find('[name="inchargeId"]').siblings("div.div-table").children();
+                    divTrs.not(divTrs.find('[name="inchargeId_add"]').closest("div.div-row")).remove();
                     _val.server.getDataById(user.getValue("inchargeId"),"incharge").forEach(incharge => {
                         pageFun.addInchargeRow(incharge);
                     });
@@ -106,22 +106,37 @@ $(() => {
             });
         },getFormData:() => {
             //TODO
-        },addInchargeRow:(incharge) => {
-            var table = form.find('[name="inchargeId"]').sibling("div.div-table");
-            var divTr_last = table.find('[name="inchargeId_add"]').closest("div.div-tr");
+        },addInchargeRow:(incharge,isNew) => {
+            isNew = isNew === undefined ? true : isNew;
+            var table = form.find('[name="inchargeId"]').siblings("div.div-table");
+            var divTr_last = table.find('[name="inchargeId_add"]').closest("div.div-row");
 
             var divTr = $('<div class="div-row"></div>').insertBefore(divTr_last);
             divTr.css({"display":"table-row"});
             var divCell1 = $('<div></div>').appendTo(divTr);
             var divCell2 = $('<div></div>').appendTo(divTr);
-            divCell1.css({"display":"table-cell"});
-            divCell2.css({"display":"table-cell"});
+            divCell1.css({"display":"table-cell","white-space":"pre"});
+            divCell2.css({"display":"table-cell","white-space":"pre"});
             divCell1.append([
                 '<select name="inchargeId_nth"></select>',
                 '<select name="inchargeId_division"></select>',
                 '<select name="inchargeId_id"></select>'
             ].join(""));
-            divCell1.append([
+
+            var select_nth = divCell1.find('[name="inchargeId_nth"]');
+            var select_division = divCell1.find('[name="inchargeId_division"]');
+            var select_id = divCell1.find('[name="inchargeId_id"]');
+
+            select_nth.append(Incharge.getAllOfAllParents().map(incharge => {
+                return '<option value="' + incharge.getName() + '">' + incharge.getName() + '</option>'
+            })).on("change",e => {
+                select_division.children().remove();
+            });
+//    select_division.append(Incharge.getInchargesInOrder(select_nth.val()).map(incharge => {
+//        '<option value="' + incharge.getValue("_id") + '">' + pageFun.getInchargeName(incharge) + '</option>'
+//    }));
+
+            divCell2.append([
                 '<input type="hidden" name="inchargeId_status">',
                 '<input type="button" name="inchargeId_remove" value="REMOVE">',
                 '<input type="button" name="inchargeId_top" value="TOP">',
@@ -129,10 +144,64 @@ $(() => {
                 '<input type="button" name="inchargeId_down" value="↓">',
                 '<input type="button" name="inchargeId_bottom" value="BOTTOM">'
             ].join(""));
+            divTr.find("input,select").css({"vertical-align":"bottom"});
+
+            if(isNew)  divCell2.find('[name="inchargeId_status"]').val("add");
+            
+            divCell2.on("click",'[type="button"]',e => {
+                var button = $(e.currentTarget);
+                var kind = target.attr("name").replace(/^inchargeId_(.+)$/,"$1");
+
+                var divTr = button.closest("div.div-row");
+                var indexDiv = table.children("div").index(divTr);
+                if(
+                    (indexDiv === 0 && (kind === "top" || kind === "up")) ||
+                    (indexDiv === table.children("div").length-1 && (kind === "bottom" || kind === "down"))
+                ){
+                    //一番上か一番下で動かせない
+                    return null;
+                }
+
+                if(kind === "top" || kind === "bottom"){
+                    let target = table.children("div").eq(kind === "top" ? 0 : -1);
+                    if(kind === "top"){
+                        target.before(divTr);
+                    }else{
+                        target.after(divTr);
+                    }
+                }else if(kind === "up" || kind === "down"){
+                    let target = table.children("div").eq(kind === "up" ? indexDiv - 1 : indexDiv + 1);
+                    if(kind === "up"){
+                        target.before(divTr);
+                    }else{
+                        target.after(divTr);
+                    }
+                }else if(kind === "remove"){
+                    divTr.find('[name="inchargeId_status"]').val("remove")
+                    divTr.css({"display":"none"});
+                }
+            });
+
+
 
             if(incharge !== undefined){
 
             }
+        },getInchargeId(){
+            var table = form.find('[name="inchargeId"]').siblings("div.div-table");
+
+            return table.find('[name="inchargeId_status"]').map((i,el) => {
+                el = $(el);
+                var status = el.val();
+                var id = el.closest("div.div-row").find('[name="inchargeId_id"]').val();
+                return {
+                    "id":id,
+                    "status":status,
+                    "index":i
+                };
+            }).get();
+        },getInchargeName(incharge){
+            return incharge.isEndChild() ? incharge.getName() : incharge.getName() + "(" + incharge.getValue("name") + ")";
         }
     };
 });
