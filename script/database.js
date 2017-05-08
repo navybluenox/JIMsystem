@@ -1363,16 +1363,18 @@ class Incharge extends Datapiece{
         var member = this.getValue("member")
             .filter(obj => obj.dataName === "incharge" && !inArray(eliminatedIds,obj.id))
             .map(obj => Datapiece.getServer().getDataById(obj.id,this.getDataName())[0])
-            .filter(incharge => incharge !== undefined);
+            .filter(incharge => incharge !== undefined)
+            .map(incharge => incharge.getMemberIncharges(includeNotEndChildren,member.map(incharge => incharge.getValue("_id")).concat(eliminatedIds)))
+            .reduce((prev,curt) => prev.concat(curt),[this])
+            .filter((v,i,s) => s.findIndex(incharge => incharge.getValue("_id") === v.getValue("_id") === i));
 
         if(includeNotEndChildren){
             member = [this].concat(member);
         }
 
         return member
-            .map(incharge => incharge.getMemberIncharges(includeNotEndChildren,member.map(incharge => incharge.getValue("_id")).concat(eliminatedIds)))
-            .reduce((prev,curt) => prev.concat(curt),[this])
-            .filter((v,i,s) => s.findIndex(incharge => incharge.getValue("_id") === v.getValue("_id") === i));
+            
+            
     }
     getMemberUsers(eliminatedIdObjs){
         if(eliminatedIdObjs === undefined)  eliminatedIdObjs = [];
