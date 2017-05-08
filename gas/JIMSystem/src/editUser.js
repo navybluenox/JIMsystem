@@ -127,13 +127,24 @@ $(() => {
             var select_id = divCell1.find('[name="inchargeId_id"]');
 
             select_nth.append(Incharge.getAllOfAllParents().map(incharge => {
-                return '<option value="' + incharge.getName() + '">' + incharge.getName() + '</option>'
+                return '<option value="' + incharge.getValue("_id") + '">' + incharge.getName() + '</option>'
             })).on("change",e => {
                 select_division.children().remove();
+                select_division.append(
+                    _val.server.getDataById(select_nth.val(),"incharge")[0]
+                        .getMemberIncharges(true)
+                        .filter(incharge => incharge.isDivision())
+                        .map(incharge => '<option value="' + incharge.getValue("_id") + '">' + incharge.getValue("code") + '</option>')
+                );
+                select_division.trigger("change");
             });
-//    select_division.append(Incharge.getInchargesInOrder(select_nth.val()).map(incharge => {
-//        '<option value="' + incharge.getValue("_id") + '">' + pageFun.getInchargeName(incharge) + '</option>'
-//    }));
+            select_division.on("change",e => {
+                select_id.append(
+                    _val.server.getDataById(select_division.val(),"incharge")[0]
+                        .getMemberIncharges(false)
+                        .map(incharge => '<option value="' + incharge.getValue("_id") + '">' + incharge.getValue("code") + '</option>')
+                );
+            });
 
             divCell2.append([
                 '<input type="hidden" name="inchargeId_status">',
@@ -181,10 +192,10 @@ $(() => {
                 }
             });
 
-
-
             if(incharge !== undefined){
-
+                select_nth.val(incharge.getOrg() + incharge.getNth()).trigger("change");
+                select_division.val(incharge.getDivision()).trigger("change");
+                select_id.val(incharge.getValue("_id"));
             }
         },getInchargeId(){
             var table = form.find('[name="inchargeId"]').siblings("div.div-table");

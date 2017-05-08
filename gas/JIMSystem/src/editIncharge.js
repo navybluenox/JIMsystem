@@ -180,14 +180,11 @@ $(() => {
                     switch(key){
                         case "nth":
                             return incharge.getAllParent().getValue("_id") === value;
-                            break;
                         case "division":
                             return incharge.isAllParent() ? false : incharge.getDivision().getValue("_id") === value;
-                            break;
                         case "code":
                         case "name":
                             return (new RegExp(value)).test(incharge.getValue(key));
-                            break;
                     }
                 });
             });
@@ -238,10 +235,8 @@ $(() => {
                         switch(key){
                             case "azusa":
                                 return (new RegExp(value)).test(user.getValue("azusaSendName"));
-                                break;
                             case "nameUser":
                                 return ["","Phonetic"].some(suffix => (new RegExp(value)).test(user.getValue("nameLast" + suffix) + user.getValue(user.getValue("nameFirs" + suffix))));
-                                break;
                         }
                     });
                 });
