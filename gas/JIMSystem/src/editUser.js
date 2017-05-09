@@ -28,17 +28,25 @@ $(() => {
                     user.setValues({"_id":editing.getValue("_id")});
                 }
                 if(kind === "add"){
-                    _val.server.addData(user);
+                    //_val.server.addData(user);
                 }else{
-                    _val.server.changeData(user);
+                    //_val.server.changeData(user);
                 }
             }else if(kind === "remove"){
                 user = _val.server.getDataById(_id,"user")[0];
-                _val.server.removeData(user);
+                //_val.server.removeData(user);
             }
-            _val.server.sendUpdateQueue().then(function(){
+
+            _val.server.sendUpdateQueue().then(function(queue){
+                console.log("queue",queue);
+                var incharge = _val.server.getData("incharge");
+
+                var incharges_change = pageFun.getInchargeId()
+                    .filter(obj => obj.status !== "")
+
                 pageFun.searchUser();
             });
+            console.log(user);
 
         },searchUser:() => {
             var result = $("#formEditUser_search_result");
@@ -96,7 +104,7 @@ $(() => {
                         pageFun.addInchargeRow(incharge,false);
                     });
                 }else if(key === "sheetConfig"){
-
+                    //TODO
                 }else if(inArray(["isRojin","isAvailable"],key)){
                     el.val(user.getValue(key) ? "Yes" : "No");
                 }else{
@@ -104,7 +112,22 @@ $(() => {
                 }
             });
         },getFormData:() => {
-            //TODO
+            var setValue = {};
+            formNameList.forEach(function(obj){
+                var el = form.find('[name="' + obj.name + '"]');
+                var key = obj.key === undefined ? obj.name : obj.key;
+                if(key === "inchargeId"){
+                    var ids = pageFun.getInchargeId().filter(obj => obj.status !== "remove").sort((a,b) => a.index - b.index).map(obj => obj.id);
+                    setValue[key] = ids;
+                }else if(key === "sheetConfig"){
+                    //TODO
+                }else if(inArray(["isRojin","isAvailable"],key)){
+                    setValue[key] = (el.val() === "Yes");
+                }else{
+                    setValue[key] = el.val();
+                }
+            });
+            return (new User()).setValues(setValue);
         },addInchargeRow:(incharge,isNew) => {
             isNew = isNew === undefined ? true : isNew;
             var table = form.find('[name="inchargeId"]').siblings("div.div-table");
