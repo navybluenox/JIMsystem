@@ -13,11 +13,23 @@ $(() => {
                     .map(grade => '<option value="' + grade + '">' + grade + '</option>')
                 )
             });
+
             pageFun = _val.pageFun.editUser;
             form = $("#formEditUser_edit");
+
+            (() => {
+                var table = form.find('[name="sheetConfig"]').siblings("table");
+                for(var day = _val.config.getWorkStartDay(),end = _val.config.getWorkEndDay();day <= end; day++){
+                    table.append(['<tr><td>' + day + '日目</td><td>',
+                        '<input type="button" name="day' + day +'_isInvisible" value="No">',
+                    '</td></tr>'].join(""))
+                }
+            })();
+
         },onunload:() => {
         },updateUser:(kind,_id,setData) => {
             var user;
+            var server = _val.server;
             if(kind === "add" || kind === "change"){
                 user = pageFun.getFormData();
                 if(kind === "change"){
@@ -28,26 +40,61 @@ $(() => {
                     user.setValues({"_id":editing.getValue("_id")});
                 }
                 if(kind === "add"){
-                    //_val.server.addData(user);
+                    server.addData(user);
                 }else{
-                    //_val.server.changeData(user);
+                    server.changeData(user);
                 }
             }else if(kind === "remove"){
-                user = _val.server.getDataById(_id,"user")[0];
-                //_val.server.removeData(user);
+                user = server.getDataById(_id,"user")[0];
+                server.removeData(user);
             }
 
-            _val.server.sendUpdateQueue().then(function(queue){
-                console.log("queue",queue);
-                var incharge = _val.server.getData("incharge");
-
-                var incharges_change = pageFun.getInchargeId()
-                    .filter(obj => obj.status !== "")
-
-                pageFun.searchUser();
-            });
             console.log(user);
+            console.log("pendingQueue",server._pendingQueue);
+            server._pendingQueue = [];
 
+            /*server.sendUpdateQueue().then(function(queue){
+                var update_user = queue[0].value;
+                var update_kind = queue[0].kind;
+
+                var incharge = server.getData("incharge");
+
+                var ids_form = pageFun.getInchargeId();
+                var incharges_form = server.getDataById(ids_form.map(obj => obj.id),"incharge").map((incharge,i) => {
+                    return {"value":incharge,"status":ids_form[i].status};
+                });
+
+                if(update_kind === "remove"){
+                    incharges_change = incharges_change.map(obj => {obj.status = "remove";return obj;});
+                }
+
+                incharges_form.forEach(obj => {
+                    var incharge = obj.value;
+                    var memberIds = incharge.getValue("member").filter(obj => obj.dataName === "user").map(obj => obj.id);
+                    var userId = update_user.getValue("_id");
+                    if(obj.status === "add"){
+                        if(!inArray(memberIds,userId)){
+                            incharge.setValues({"member":
+                                incharge.getValue("member").concat({"dataName":"user","id":userId})
+                            });
+                            server.changeData(incharge);
+                        }
+                    }else if(obj.status === "remove"){
+                        if(inArray(memberIds,userId)){
+                            incharge.setValues({"member":
+                                incharge.getValue("member").filter(obj => obj.dataName !== "user" || obj.id !== userId)
+                            });
+                            server.changeData(incharge);                            
+                        }
+                    }
+                });
+
+                console.log("pendingQueue",server._pendingQueue);
+
+                //return server.sendUpdateQueue().then(() => {
+                //    pageFun.searchUser();
+                //});
+            });*/
         },searchUser:() => {
             var result = $("#formEditUser_search_result");
             var form_search = $("#formEditUser_search_cond");
@@ -223,7 +270,7 @@ $(() => {
             }else{
                 select_nth.trigger("change");
             }
-        },getInchargeId(){
+        },getInchargeId:() => {
             var table = form.find('[name="inchargeId"]').siblings("div.div-table");
 
             return table.find('[name="inchargeId_status"]').map((i,el) => {
@@ -236,7 +283,7 @@ $(() => {
                     "index":i
                 };
             }).get();
-        },getInchargeName(incharge){
+        },getInchargeName:(incharge) => {
             return incharge.isEndChild() ? incharge.getName() : incharge.getName() + "(" + incharge.getValue("name") + ")";
         }
     };
