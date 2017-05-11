@@ -65,7 +65,6 @@ $(() => {
             server.sendUpdateQueue().then(function(queue){
                 var update_user = queue[0].value;
                 var update_kind = queue[0].kind;
-
                 var incharge = server.getData("incharge");
 
                 var ids_form = pageFun.getInchargeId();
@@ -98,7 +97,7 @@ $(() => {
                             incharge.setValues({"member":
                                 incharge.getValue("member").filter(obj => obj.dataName !== "user" || obj.id !== userId)
                             });
-                            server.changeData(incharge);                            
+                            server.changeData(incharge);
                         }
                     }
                 });
@@ -111,7 +110,7 @@ $(() => {
             var result = $("#formEditUser_search_result");
             var form_search = $("#formEditUser_search_cond");
 
-            var users = _val.server.getData("user");
+            var users = _val.server.getData("user",undefined,true);
             var incharges = _val.server.getData("incharge");
 
             result.children().remove();
@@ -150,7 +149,7 @@ $(() => {
                 }else if(cellObj.column === "name"){
                     cellObj.el.text(user.getName());
                 }
-            },{"header":["edit","略称","担当名"]});
+            },{"header":["edit","学年","氏名"]});
             table.el.css({"margin":"3em"});
         },fillForm:(user) => {
             formNameList.forEach(obj => {

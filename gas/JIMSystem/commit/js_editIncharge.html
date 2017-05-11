@@ -76,7 +76,7 @@ $(() => {
             var form_search = $("#formEditIncharge_search_cond");
 
             var incharges = Incharge.getAllOfAllParents()
-                .map(incharge => Incharge.getInchargesInOrder(incharge.getName()))
+                .map(incharge => Incharge.getInchargesInOrder(incharge.getName(),true))
                 .reduce((prev,curt) => prev.concat(curt),[]);
 
             result.children().remove();
@@ -114,7 +114,7 @@ $(() => {
                 }else if(cellObj.column === "code"){
                     cellObj.el.text(incharge.getName());
                 }else if(cellObj.column === "name"){
-                    cellObj.el.text(incharge.getValue("name"));
+                    cellObj.el.text(pageFun.getInchargeName(incharge));
                 }
             },{"header":["edit","略称","担当名"]});
             table.el.css({"margin":"3em"});
