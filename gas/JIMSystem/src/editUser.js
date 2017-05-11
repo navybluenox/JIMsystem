@@ -3,11 +3,13 @@ $(() => {
     var editing;
     var form;
     var formNameList = [{"name":"sortId"},{"name":"azusaId"},{"name":"azusaSendName"},{"name":"cellphone"},{"name":"grade"},{"name":"nameLast"},{"name":"nameFirst"},{"name":"nameLastPhonetic"},{"name":"nameFirstPhonetic"},{"name":"inchargeId"},{"name":"isRojin"},{"name":"isAvailable"},{"name":"sheetConfig"}];
-    var startDay = _val.config.getWorkStartDay();
-    var endDay = _val.config.getWorkEndDay();
+    var startDay,endDay;
+    var isInvisible_value = function(value){return value ? "表示しない" : "表示する";}
 
     _val.pageFun.editUser = {
         onload:() => {
+            startDay = _val.config.getWorkStartDay();
+            endDay = _val.config.getWorkEndDay();
             _val.server.loadDataAll().then(() => {
                 var users = _val.server.getData("user");
                 $('#formEditUser_search_cond [name="grade"]').append(
@@ -24,9 +26,17 @@ $(() => {
                 var table = form.find('[name="sheetConfig"]').siblings("table");
                 for(var day = startDay;day <= endDay; day++){
                     table.append(['<tr><td>' + day + '日目</td><td>',
-                        '<input type="button" name="day' + day +'_isInvisible" value="No">',
+                        '<input type="button" name="day' + day +'_isInvisible" value="' + isInvisible_value(false) + '">',
                     '</td></tr>'].join(""))
                 }
+                table.find('[name$="isInvisible"]').on("click",e => {
+                    var button = $(e.currentTarget);
+                    if(button.val() === isInvisible_value(true)){
+                        button.val(isInvisible_value(false));
+                    }else{
+                        button.val(isInvisible_value(true));
+                    }
+                });
             })();
 
         },onunload:() => {
@@ -52,11 +62,7 @@ $(() => {
                 server.removeData(user);
             }
 
-            console.log(user);
-            console.log("pendingQueue",server._pendingQueue);
-            server._pendingQueue = [];
-
-            /*server.sendUpdateQueue().then(function(queue){
+            server.sendUpdateQueue().then(function(queue){
                 var update_user = queue[0].value;
                 var update_kind = queue[0].kind;
 
@@ -67,8 +73,13 @@ $(() => {
                     return {"value":incharge,"status":ids_form[i].status};
                 });
 
-                if(update_kind === "remove"){
-                    incharges_change = incharges_change.map(obj => {obj.status = "remove";return obj;});
+                if(update_kind === "add"){
+                    incharges_form = incharges_form.map(obj => {
+                        if(obj.status !== "remove")  obj.status = "add";
+                        return obj;
+                    });
+                }else if(update_kind === "remove"){
+                    incharges_form = incharges_form.map(obj => {obj.status = "remove";return obj;});
                 }
 
                 incharges_form.forEach(obj => {
@@ -92,12 +103,10 @@ $(() => {
                     }
                 });
 
-                console.log("pendingQueue",server._pendingQueue);
-
-                //return server.sendUpdateQueue().then(() => {
-                //    pageFun.searchUser();
-                //});
-            });*/
+                return server.sendUpdateQueue().then(() => {
+                    pageFun.searchUser();
+                });
+            });
         },searchUser:() => {
             var result = $("#formEditUser_search_result");
             var form_search = $("#formEditUser_search_cond");
@@ -154,7 +163,13 @@ $(() => {
                         pageFun.addInchargeRow(incharge,false);
                     });
                 }else if(key === "sheetConfig"){
-                    //TODO
+                    var table = form.find('[name="sheetConfig"]').siblings("table");
+                    table.find('[name$="isInvisible"]').map((i,el) => {
+                        el = $(el);
+                        var day = +el.attr("name").replace(/^day(-?\d+)_isInvisible$/,"$1");
+                        var configObj = user.getValue(key).find(obj => obj.day === day);
+                        el.val(isInvisible_value(configObj.isInvisible));
+                    });
                 }else if(inArray(["isRojin","isAvailable"],key)){
                     el.val(user.getValue(key) ? "Yes" : "No");
                 }else{
@@ -170,7 +185,13 @@ $(() => {
                     var ids = pageFun.getInchargeId().filter(obj => obj.status !== "remove").sort((a,b) => a.index - b.index).map(obj => obj.id);
                     setValue[key] = ids;
                 }else if(key === "sheetConfig"){
-                    //TODO
+                    setValue[key] = [];
+                    form.find('[name="sheetConfig"]').siblings("table").find('[name$="isInvisible"]').map((i,el) => {
+                        el = $(el);
+                        var day = +el.attr("name").replace(/^day(-?\d+)_isInvisible$/,"$1");
+                        setValue[key].push({"day":day,"isInvisible":el.val() === isInvisible_value(true)});
+                });
+                setValue[key].sort((a,b) => a.day - b.day);
                 }else if(inArray(["isRojin","isAvailable"],key)){
                     setValue[key] = (el.val() === "Yes");
                 }else{

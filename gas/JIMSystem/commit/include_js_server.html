@@ -247,12 +247,12 @@ var Server = (function(){
             if(!checkAuthorization("Server.prototype.sendUpdateQueue")){
                 this._pendingQueue = [];
                 return Promise.resolve();
-            };
+            }
             //skip confirm
-            if(false && !Server.confirmUpdate(confirmMsg)){
+            /*if(false && !Server.confirmUpdate(confirmMsg)){
                 this._pendingQueue = [];
                 return Promise.resolve();
-            }
+            }*/
             
             var that = this;
             var nowTime;
