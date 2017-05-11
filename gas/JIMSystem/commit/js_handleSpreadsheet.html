@@ -220,7 +220,7 @@ $(function(){
                     var widthAll = leftOffset + contentWidth + rightOffset;
 
                     var users = _users.filter(user => {
-                        var value = !user.getValue("sheetConfig").find(obj => obj.day === timeInfo.day);
+                        var value = user.getValue("sheetConfig").find(obj => obj.day === timeInfo.day);
                         return value === undefined || !value.isInvisible;
                     });
 
@@ -366,10 +366,9 @@ $(function(){
                     promiseChain = promiseChain.then(function(){
                         return spreadsheet.writeSheetData(table,["text","fontColor","fontWeight","fontFamily","background","fontSize","alignHori","alignVer"],100);
                     }).then(function(){
-                        return Promise.all([
-                            spreadsheet.setBorderCell(borderSetting),
-                            spreadsheet.setCellSize(sizeSetting)
-                        ]);
+                        return spreadsheet.setCellSize(sizeSetting);
+                    }).then(function(){
+                        return spreadsheet.setBorderCell(borderSetting);
                     }).then(function(){
                         return spreadsheet.setMergeCell(mergeSetting);
                     }).then(function(){
@@ -598,10 +597,9 @@ $(function(){
                     promiseChain = promiseChain.then(() => {
                         return spreadsheet.writeSheetData(table,["text","fontColor","fontWeight","fontFamily","background","fontSize","alignHori","alignVer","wrap"],100)
                     }).then(() => {
-                        return Promise.all([
-                            spreadsheet.setBorderCell(borderSetting),
-                            spreadsheet.setCellSize(sizeSetting)
-                        ]);
+                        return spreadsheet.setCellSize(sizeSetting);
+                    }).then(() => {
+                        return spreadsheet.setBorderCell(borderSetting);
                     }).then(() => {
                         return spreadsheet.setMergeCell(mergeSetting);
                     });

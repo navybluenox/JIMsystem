@@ -3,6 +3,9 @@ $(() => {
     var editing;
     var form;
     var formNameList = [{"name":"sortId"},{"name":"azusaId"},{"name":"azusaSendName"},{"name":"cellphone"},{"name":"grade"},{"name":"nameLast"},{"name":"nameFirst"},{"name":"nameLastPhonetic"},{"name":"nameFirstPhonetic"},{"name":"inchargeId"},{"name":"isRojin"},{"name":"isAvailable"},{"name":"sheetConfig"}];
+    var startDay = _val.config.getWorkStartDay();
+    var endDay = _val.config.getWorkEndDay();
+
     _val.pageFun.editUser = {
         onload:() => {
             _val.server.loadDataAll().then(() => {
@@ -19,7 +22,7 @@ $(() => {
 
             (() => {
                 var table = form.find('[name="sheetConfig"]').siblings("table");
-                for(var day = _val.config.getWorkStartDay(),end = _val.config.getWorkEndDay();day <= end; day++){
+                for(var day = startDay;day <= endDay; day++){
                     table.append(['<tr><td>' + day + '日目</td><td>',
                         '<input type="button" name="day' + day +'_isInvisible" value="No">',
                     '</td></tr>'].join(""))
