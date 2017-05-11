@@ -1462,16 +1462,15 @@ class Incharge extends Datapiece{
             {"org":"KF","nth":"63",},{"org":"MF","nth":"85",},{"org":"OC","nth":"12",}  //2012
         ];
     }
-    static getInchargesInOrder(name){
+    static getInchargesInOrder(name,includeNotEndChildren){
         //名簿順
-        //TODO
         //memberの配列の順番依存
 
         var allParent = Incharge.getAllOfAllParents()
             .find(incharge =>((name === undefined && incharge.isPresentTerm()) || incharge.getName() === name));
         if(allParent === undefined)  throw new Error("such no name @Incharge.getPresentInchargesInOrder");
 
-        return allParent.getMemberIncharges().filter((v,i,s) => s.findIndex(inch => inch.getValue("_id") === v.getValue("_id")) === i);
+        return allParent.getMemberIncharges(includeNotEndChildren).filter((v,i,s) => s.findIndex(inch => inch.getValue("_id") === v.getValue("_id")) === i);
     }
     static getAllOfAllParents(putPresentTermTop){
         putPresentTermTop = putPresentTermTop === undefined ? true : putPresentTermTop;

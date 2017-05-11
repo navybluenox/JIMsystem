@@ -20,10 +20,9 @@ $(() => {
                     var division = form_search_cond.find('[name="division"]');
                     division.children().remove();
                     var incharge = _val.server.getDataById(form_search_cond.find('[name="nth"]').val(),"incharge")[0];
-                    //TODO 上手く表示されていない
                     division.append(
                         '<option value="all">指定なし</option>' +
-                        Incharge.getInchargesInOrder(incharge.getName())
+                        Incharge.getInchargesInOrder(incharge.getName(),true)
                             .filter(incharge => incharge.isDivision())
                             .map(incharge => '<option value="' + incharge.getValue("_id") + '">' + incharge.getValue("code") + '</option>').join("")
                     )
