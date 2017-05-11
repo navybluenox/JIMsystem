@@ -111,9 +111,9 @@ $(() => {
                     buttons.eq(0).on("click",e => {pageFun.fillForm(incharge);editing = incharge;});
                     buttons.eq(1).on("click",e => {pageFun.updateIncharge("remove",incharge.getValue("_id"));});
                 }else if(cellObj.column === "code"){
-                    cellObj.el.text(incharge.getName());
-                }else if(cellObj.column === "name"){
                     cellObj.el.text(pageFun.getInchargeName(incharge));
+                }else if(cellObj.column === "name"){
+                    cellObj.el.text(incharge.getValue("name"));
                 }
             },{"header":["edit","略称","担当名"]});
             table.el.css({"margin":"3em"});
