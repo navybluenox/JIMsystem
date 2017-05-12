@@ -226,9 +226,9 @@ var initialize_shifttable,createShiftTableUser,createShiftTableWork;
         });
     }
 
-    createShiftTableWork = (incharges,option) =>{
-        incharges = incharges === undefined || incharges === null ? Incharge.getInchargesInOrder() : incharges;
-        option = option === undefined ? {} : $.extend({},option);
+    createShiftTableWork = (sheetSettings,option) => {
+        sheetSettings = sheetSettings === undefined ? [] : sheetSettings;
+        option = option === undefined ? {} : $.extend({"day":"all"},option);
 
         var la = new LoadingAlert();
         var version;
@@ -240,7 +240,6 @@ var initialize_shifttable,createShiftTableUser,createShiftTableWork;
         };
         return Server.handlePropertiesService(version_propertyKey,"script","get").then(function(v){version = (v[version_propertyKey] === undefined ? 0 : +v[version_propertyKey]);})
         .then(function(){
-            var workLists = _val.server.getData("workList",undefined,undefined,true);
             var nowTime = new Date();
             var leftOffset = constValue.leftOffset;
             var topOffset = 1;
@@ -256,15 +255,6 @@ var initialize_shifttable,createShiftTableUser,createShiftTableWork;
                 },100);
             });
 
-            var sheetSettings = incharges.map(incharge => {
-                return {
-                    "sheetName":incharge.getValue("code"),
-                    "workLists":workLists
-                        .filter(workList => workList.getValue("leaderInchargeId") === incharge.getValue("_id"))
-                        .sort((a,b) => a.getValue("name").charCodeAt() - b.getValue("name").charCodeAt())
-                };
-            })
-            .filter(obj => obj.workLists.length !== 0);
             sheetSettings = sheetSettings.map(sheetObj => {
                 var rowIndex = 0;
                 var result_sheet = {
@@ -273,14 +263,26 @@ var initialize_shifttable,createShiftTableUser,createShiftTableWork;
                     "size":{"height":0,"width":0}
                 };
                 rowIndex += constValue.sheet.header;
-                result_sheet.workLists = sheetObj.workLists.map(workList => {
+                result_sheet.workLists = sheetObj.workLists
+                    .filter(workList => {
+                        //TODO option.dayによるfilter
+                        //value === "all" ||  number - value === 0　で評価
+                        return true;
+                    })
+                    .map(workList => {
                     var result_workList = {
                         "datapiece":workList,
                         "offset":{"top":rowIndex,"left":constValue.sheet.leftMargin},
                         "size":{"height":0,"width":0}
                     };
                     rowIndex += constValue.workList.header;
-                    result_workList.details = workList.getNumberDetails().map((detail,index) => {
+                    result_workList.details = workList.getNumberDetails()
+                        .filter(detail => {
+                            //TODO option.dayによるfilter
+                            //value === "all" ||  number - value === 0　で評価
+                            return true;
+                        })
+                        .map((detail,index) => {
                         var result_detail =  {
                             "index":index,
                             "value":detail,
@@ -339,7 +341,7 @@ var initialize_shifttable,createShiftTableUser,createShiftTableWork;
 
                 //sheetごとのヘッダー
                 var nowTimeString = dateToValue(nowTime);
-                table[0][0] = setDefaultCellSetting({"text":"ver." + version + " : " + nowTimeString.month + "月" + nowTimeString.date + "日" + nowTimeString.hour + "時" + nowTimeString.minute + "分更新","fontWeight":"bold","fontSize":16});
+                table[0][0] = setDefaultCellSetting({"text":"ver." + version + " : " + nowTimeString.month + "月" + nowTimeString.date + "日" + nowTimeString.hour + "時" + nowTimeString.minute + "分更新","fontWeight":"bold","fontSize":16,"alignHori":"left"});
                 borderSetting.push({
                     "range":{"top":0 ,"left":0,"height":1,"width":sheetObj.size.width},
                     "border":{"style":"solid","top":true,"bottom":true,"left":true,"right":true}

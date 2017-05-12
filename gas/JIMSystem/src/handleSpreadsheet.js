@@ -8,7 +8,7 @@ $(function(){
                 formCreateShiftTable.find('[name="createShiftTableWork_incharge"]')
                     .append('<option value="all">全て</option>')
                     .append(
-                        Incharge.getInchargesInOrder()
+                        Incharge.getInchargesInOrder(undefined,true)
                         .filter(incharge => incharge.isEndChild() || incharge.isDivision())
                         .filter(incharge => incharge.isDivision() || workLists.find(workList => workList.getValue("leaderInchargeId") === incharge.getValue("_id")) !== undefined)
                         .map(incharge => {
@@ -50,7 +50,7 @@ $(function(){
             });
             formCreateShiftTable.find('[name^="open_spreadsheet"]').on("click",e => {
                 var type = $(e.currentTarget).attr("name").replace(/^open_spreadsheet_(.+)$/,"$1");
-                var spreadsheetName = type === "work" ? "shiftTableWork" : "shiftTableUser"; 
+                var spreadsheetName = {"work":"shiftTableWork","user":"shiftTableUser","place":"shiftTablePlace"}[type];
                 var spreadsheet = new Spreadsheet(spreadsheetName);
                 spreadsheet.openSpreadsheet();
             });
@@ -169,16 +169,29 @@ $(function(){
             return createShiftTableUser(users,{"day":formCreateShiftTable.find('[name="createShiftTableUser_day"]').val()});
         },createShiftTableWork:function(){
             var inchargeId_selected = formCreateShiftTable.find('[name="createShiftTableWork_incharge"]').val();
-            return createShiftTableWork(
+            var workLists = _val.server.getData("workList",undefined,undefined,true);
+            var sheetSettings = (
                 inchargeId_selected !== "all" ?
                 _val.server.getDataById(inchargeId_selected,"incharge") :
-                null
-            );
+                Incharge.getInchargesInOrder()
+            ).map(incharge => {
+                return {
+                    "sheetName":incharge.getValue("code"),
+                    "workLists":workLists
+                        .filter(workList => workList.getValue("leaderInchargeId") === incharge.getValue("_id"))
+                        .sort((a,b) => a.getValue("name").charCodeAt() - b.getValue("name").charCodeAt())
+                };
+            })
+            .filter(obj => obj.workLists.length !== 0);
+            return createShiftTableWork(sheetSettings);
+        },createShiftTablePlace:function(){
+            //TODO
+            //dayでの出力も分ける
         },createPdfOfShiftTable:function(type){
             var la = new LoadingAlert();
             var sheetNameList = [];
             var startTrigger = false;
-            var spreadsheetName = type === "work" ? "shiftTableWork" : "shiftTableUser"; 
+            var spreadsheetName = {"work":"shiftTableWork","user":"shiftTableUser","place":"shiftTablePlace"}[type];
             var promiseChain = new Promise(function(resolve){
                 var si = setInterval(function(){
                     if(startTrigger){
@@ -192,11 +205,16 @@ $(function(){
             });
 
             if(type === "work"){
-                //TODO
-            }else if(type === "user"){
+                let workLists = _val.server.getData("workList");
+                sheetNameList = Incharge.getInchargesInOrder()
+                    .filter(incharge => workLists.find(workList => workList.getValue("leaderInchargeId") === incharge.getValue("_id")) !== undefined)
+                    .map(incharge => incharge.getValue("code"));
+           }else if(type === "user"){
                 for(let day=_val.config.getWorkStartDay(),e=_val.config.getWorkEndDay(); day<=e; day++){
                     sheetNameList.push("day" + day);
                 }
+            }else if(type === "place"){
+                //TODO
             }
 
             promiseChain = promiseChain.then(function(){
