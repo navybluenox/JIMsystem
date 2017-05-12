@@ -1013,10 +1013,10 @@ class User extends Datapiece{
         return isAll ? this._incharge.slice() : this._incharge.filter(incharge => incharge.isPresentTerm());
     }
     getBackgroundColor(){
-        return UserGroup.getColorByUserId(this.getValue("_id"),"background");
+        return !!this.getValue("backgroundColor") ? this.getValue("backgroundColor") : UserGroup.getColorByUserId(this.getValue("_id"),"background");
     }
     getFontColor(){
-        return UserGroup.getColorByUserId(this.getValue("_id"),"font");
+        return !!this.getValue("fontColor") ? this.getValue("fontColor") :  UserGroup.getColorByUserId(this.getValue("_id"),"font");
     }
     getWorkAssigns(useReliableMode){
         var that = this;

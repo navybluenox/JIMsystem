@@ -3,7 +3,7 @@ $(() => {
     var pageFun;
     var editing;
     var form;
-    var formNameList = [{"name":"sortId"},{"name":"azusaId"},{"name":"azusaSendName"},{"name":"cellphone"},{"name":"grade"},{"name":"nameLast"},{"name":"nameFirst"},{"name":"nameLastPhonetic"},{"name":"nameFirstPhonetic"},{"name":"inchargeId"},{"name":"isRojin"},{"name":"isAvailable"},{"name":"sheetConfig"}];
+    var formNameList = [{"name":"sortId"},{"name":"azusaId"},{"name":"azusaSendName"},{"name":"cellphone"},{"name":"grade"},{"name":"nameLast"},{"name":"nameFirst"},{"name":"nameLastPhonetic"},{"name":"nameFirstPhonetic"},{"name":"backgroundColor"},{"name":"fontColor"},{"name":"inchargeId"},{"name":"isRojin"},{"name":"isAvailable"},{"name":"sheetConfig"}];
     var startDay,endDay;
     var isInvisible_value = function(value){return value ? "表示しない" : "表示する";}
 
@@ -174,6 +174,9 @@ $(() => {
                     el.val(user.getValue(key) ? "Yes" : "No");
                 }else{
                     el.val(user.getValue(key));
+                    if(inArray(["backgroundColor","fontColor"],key)){
+                        el.trigger("input");
+                    }
                 }
             });
         },getFormData:() => {
@@ -309,6 +312,136 @@ $(() => {
             }).get();
         },getInchargeName:(incharge) => {
             return incharge.isEndChild() ? incharge.getName() : incharge.getName() + "(" + incharge.getValue("name") + ")";
+        },convertColor:type => {
+            var el = {},value = {};
+            var max,min;
+            ["r","g","b","h","s","l"].forEach(function(key){
+                el[key] = form.find('[name="color_sample_' + key +'"]');
+                el["range_"+key] = form.find('[name="color_sample_' + key +'_range"]');
+                value[key] = 0;
+            });
+            if(type === "rgb"){
+                ["r","g","b"].forEach(function(key){
+                    value[key] = +el[key].val();
+                });
+                value = convertRGBtoHSL(value);
+            }else if(type === "hsl"){
+                ["h","s","l"].forEach(function(key){
+                    value[key] = +el[key].val();
+                });
+                value = convertHSLtoRGB(value);
+            }else if(type === "code"){
+                let code = form.find('[name="color_code"]').val().replace(/#/g,"");
+                ["r","g","b"].forEach((key,index) => {
+                    value[key] = parseInt(code.slice(index*2,index*2+1),16);
+                    el[key].val(value[key]);
+                });
+                value = convertRGBtoHSL(value);
+            }
+            
+            ["r","g","b","h","s","l"].forEach(function(key){
+                el[key].val(value[key]);
+                el["range_"+key].val(value[key]);
+            });
+
+
+            if(type !== "code"){
+                form.find('[name="color_code"]').val(convertRGBtoCode(value));
+            }
+
+            form.find('[name="color_sample"]').parent().css("background",form.find('[name="color_code"]').val());
+
+            function convertRGBtoHSL(value){
+                max = Math.max(value.r,value.g,value.b);
+                min = Math.min(value.r,value.g,value.b);
+                if(max === min){
+                    value.h = 0;
+                }else if(value.r === max){
+                    value.h = Math.round(60 * (value.g - value.b) / (max - min));
+                }else if(value.g === max){
+                    value.h = Math.round(60 * (value.b - value.r) / (max - min) + 120);
+                }else if(value.b === max){
+                    value.h = Math.round(60 * (value.r - value.g) / (max - min) + 240);
+                }
+                while(value.h < 0){
+                    value.h += 360;
+                }
+                value.h = value.h % 360;
+                var cnt = (max + min)/2;
+                if(max === min){
+                    value.s = 0;
+                }else if(cnt < 128){
+                    value.s = Math.round(100 * (max - min)/(max + min));
+                }else{
+                    value.s = Math.round(100 * (max - min)/(510 - max - min));
+                }
+                value.l = Math.round(100*cnt/255);
+
+                return value;
+            }
+            function convertHSLtoRGB(value){
+                var result = {};
+                if(value.l<50){
+                    max = Math.round(2.55*value.l*(1 + value.s/100));
+                    min = Math.round(2.55*value.l*(1 - value.s/100));
+                }else{
+                    max = Math.round(2.55*(value.l*(1 - value.s/100) + value.s));
+                    min = Math.round(2.55*(value.l*(1 + value.s/100) - value.s));
+                }
+                if(value.h < 60*1){
+                    value.r = max;
+                    value.g = Math.round((value.h/60)*(max-min) + min);
+                    value.b = min;
+                }else if(value.h < 60*2){
+                    value.r = Math.round(((120-value.h)/60)*(max-min) + min);
+                    value.g = max;
+                    value.b = min;
+                }else if(value.h < 60*3){
+                    value.r = min;
+                    value.g = max;
+                    value.b = Math.round(((value.h-120)/60)*(max-min) + min);
+                }else if(value.h < 60*4){
+                    value.r = min;
+                    value.g = Math.round(((240-value.h)/60)*(max-min) + min);
+                    value.b = max;
+                }else if(value.h < 60*5){
+                    value.r = Math.round(((value.h-240)/60)*(max-min) + min);
+                    value.g = min;
+                    value.b = max;
+                }else{
+                    value.r = max;
+                    value.g = min;
+                    value.b = Math.round(((360-value.h)/60)*(max-min) + min);
+                }
+                return value;
+            }
+            function convertRGBtoCode(value){
+                var r16,g16,b16;
+                r16 = (value.r.val()).toString(16);
+                g16 = (value.g.val()).toString(16);
+                b16 = (value.b.val()).toString(16);
+                if(r16.length === 1) r16 = "0" + r16;
+                if(g16.length === 1) g16 = "0" + g16;
+                if(b16.length === 1) b16 = "0" + b16;
+                return "#" + r16 + g16 + b16;
+            }
+        },setRandomColor:() => {
+            var colorConst = {
+                "h":{"el":form.find('[name="color_sample_h"]'),"value":0},
+                "s":{"el":form.find('[name="color_sample_s"]'),"value":70},
+                "l":{"el":form.find('[name="color_sample_l"]'),"value":50}
+            };
+
+            var colorValue = {
+                "h":colorConst.h.value + Math.round(Math.random() * (360 - colorConst.h.value)),
+                "s":colorConst.s.value + Math.round(Math.random()**2 * (100 - colorConst.s.value)),
+                "l":colorConst.l.value + Math.round(Math.random()**2 * (100 - colorConst.l.value))
+            };
+
+            ["h","s","l"].forEach(key => {
+                colorConst[key].el.val(colorValue[key]);
+            });
+            pageFun.convertColor("hsl");
         }
     };
 });

@@ -53,6 +53,36 @@
                     <td><input type="hidden" name="sheetConfig" tabindex="2"><table>
                     </table></td>
                     <td></td>
+                </tr><tr>
+                    <td>背景色</td>
+                    <td><input type="text" name="backgroundColor" tabindex="2" oninput='var el=$(this);el.closest("tr").find("td:last").css("background-color",el.val());'></td>
+                    <td>カラーサンプル</td>
+                </tr><tr>
+                    <td>フォント色</td>
+                    <td><input type="text" name="fontColor" tabindex="2" oninput='var el=$(this);el.closest("tr").find("td:last").css("color",el.val());'></td>
+                    <td>#FFFFFF形式で入力してください</td>
+                </tr><tr>
+                    <td colspan="3" style="text-align:center;">色編集</td>
+                </tr><tr>
+                    <td>カラーコード</td>
+                    <td><input type="text" name="color_code" oninput='_val.pageFun.editUser.convertColor("code")'></td>
+                    <td><input type="hidden" name="color_sample"></td>
+                </tr><tr>
+                    <td>RGB</td>
+                    <td><table><tbody>
+                        <tr><td>R</td><td><input type="number" name="color_sample_r" value="0" min="0" max="255" oninput='_val.pageFun.editUser.convertColor("rgb")'><input type="range" value="0" min="0" max="255" name="color_sample_r_range" oninput='$(this).siblings("[type=\"number\"]").val($(this).val());_val.pageFun.editUser.convertColor("rgb")'></td></tr>
+                        <tr><td>G</td><td><input type="number" name="color_sample_g" value="0" min="0" max="255" oninput='_val.pageFun.editUser.convertColor("rgb")'><input type="range" value="0" min="0" max="255" name="color_sample_g_range" oninput='$(this).siblings("[type=\"number\"]").val($(this).val());_val.pageFun.editUser.convertColor("rgb")'></td></tr>
+                        <tr><td>B</td><td><input type="number" name="color_sample_b" value="0" min="0" max="255" oninput='_val.pageFun.editUser.convertColor("rgb")'><input type="range" value="0" min="0" max="255" name="color_sample_b_range" oninput='$(this).siblings("[type=\"number\"]").val($(this).val());_val.pageFun.editUser.convertColor("rgb")'></td></tr>
+                    </tbody></table></td>
+                    <td><input type="button" name="color_random" value="それっぽい色を生成" onclick="_val.pageFun.editUser.setRandomColor()"></td>
+                </tr><tr>
+                    <td>HSL</td>
+                    <td><table><tbody>
+                        <tr><td>H(色相)</td><td><input type="number" name="color_sample_h" value="0" min="0" max="360" oninput='_val.pageFun.editUser.convertColor("hsl")'><input type="range" value="0" min="0" max="360" name="color_sample_h_range" oninput='$(this).siblings("[type=\"number\"]").val($(this).val());_val.pageFun.editUser.convertColor("hsl")'></td></tr>
+                        <tr><td>S(彩度)</td><td><input type="number" name="color_sample_s" value="0" min="0" max="100" oninput='_val.pageFun.editUser.convertColor("hsl")'><input type="range" value="0" min="0" max="100" name="color_sample_s_range" oninput='$(this).siblings("[type=\"number\"]").val($(this).val());_val.pageFun.editUser.convertColor("hsl")'></td></tr>
+                        <tr><td>L(輝度)</td><td><input type="number" name="color_sample_l" value="0" min="0" max="100" oninput='_val.pageFun.editUser.convertColor("hsl")'><input type="range" value="0" min="0" max="100" name="color_sample_l_range" oninput='$(this).siblings("[type=\"number\"]").val($(this).val());_val.pageFun.editUser.convertColor("hsl")'></td></tr>
+                    </tbody></table></td>
+                    <td></td>
                 </tr>
             </tbody></table>
             <input type="button" name="run_add" value="新規作成" tabindex="2" onclick='_val.pageFun.editUser.updateUser("add")'><input type="button" name="run_change" value="変更を保存" tabindex="2" onclick='_val.pageFun.editUser.updateUser("change")'>
