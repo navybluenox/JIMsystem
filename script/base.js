@@ -768,4 +768,18 @@ function makeIdForTable(data, column, length, option) {
     });
 }
 
+function turnValues(nowValues,valueList,inverse){
+    if(!Array.isArray(valueList))  throw new Error("The 2nd argument is not Array @turnValues(base.js)");
+    var index = valueList.findIndex(v => v === nowValues);
+    if(index === -1)  throw new Error("The 1st does not exist in 2nd argument @turnValues(base.js)");
 
+    inverse = inverse === undefined ? false : inverse;
+
+    if(!inverse && index === valueList.length - 1){
+        return valueList[0];
+    }else if(inverse && index === 0){
+        return valueList[valueList.length - 1];
+    }else{
+        return valueList[inverse ? index-1 : index+1];
+    }
+}
