@@ -10,10 +10,11 @@ var initialize_shifttable,createShiftTableUser,createShiftTableWork;
     createShiftTableUser = (_users,option) => {
         _users = _users === undefined || _users === null ? server.getData("user",undefined,undefined,true) : _users;
         option = option === undefined ? {} : $.extend({"day":"all"},option);
+        if(option.spreadsheetName === undefined)  throw new Error("2nd argument has no name of spreadsheet createShiftTableUser@shifttable,js");
 
         var la = new LoadingAlert();
         var version;
-        var version_propertyKey = "shiftTableUser_version_" + _val.config.getValue("content.kind") + _val.config.getValue("content.nth");
+        var version_propertyKey =  option.spreadsheetName + "_version_" + _val.config.getValue("content.kind") + _val.config.getValue("content.nth");
 
         Server.handlePropertiesService(version_propertyKey,"script","get")
         .then(function(v){version = (v[version_propertyKey] === undefined ? 0 : +v[version_propertyKey]);})
@@ -52,7 +53,7 @@ var initialize_shifttable,createShiftTableUser,createShiftTableWork;
 
             timeInfoList.forEach(function(timeInfo){
                 var table = [];
-                var spreadsheet = new Spreadsheet("shiftTableUser",timeInfo.sheetName,table);
+                var spreadsheet = new Spreadsheet(option.spreadsheetName,timeInfo.sheetName,table);
                 var mergeSetting = [];
                 var borderSetting = [];
                 var sizeSetting = [];
@@ -212,7 +213,7 @@ var initialize_shifttable,createShiftTableUser,createShiftTableWork;
 
             });
             promiseChain = promiseChain.then(function(){
-                console.log("finished updating shiftTableUser completely!!");
+                console.log("finished updating " + option.spreadsheetName + " completely!!");
                 la.remove()
                 return Server.handlePropertiesService({[version_propertyKey]:version+1},"script","set",{"skip":true});
             }).catch(function(e){
@@ -228,11 +229,12 @@ var initialize_shifttable,createShiftTableUser,createShiftTableWork;
 
     createShiftTableWork = (sheetSettings,option) => {
         sheetSettings = sheetSettings === undefined ? [] : sheetSettings;
-        option = option === undefined ? {} : $.extend({"day":"all","spreadsheetName":"shiftTableWork"},option);
+        option = option === undefined ? {} : $.extend({"day":"all"},option);
+        if(option.spreadsheetName === undefined)  throw new Error("2nd argument has no name of spreadsheet createShiftTableWork@shifttable,js");
 
         var la = new LoadingAlert();
         var version;
-        var version_propertyKey = "shiftTableWork_version_" + _val.config.getValue("content.kind") + _val.config.getValue("content.nth");
+        var version_propertyKey = option.spreadsheetName + "_version_" + _val.config.getValue("content.kind") + _val.config.getValue("content.nth");
         const constValue = {
             "sheet":{"header":1,"leftMargin":0},
             "workList":{"header":1,"leftMargin":2},
@@ -312,7 +314,7 @@ var initialize_shifttable,createShiftTableUser,createShiftTableWork;
             });
 
             promiseChain = promiseChain.then(() => {
-                return (new Spreadsheet("shiftTableWork")).insertNewSheets(sheetSettings.map(obj => obj.sheetName));
+                return (new Spreadsheet(option.spreadsheetName)).insertNewSheets(sheetSettings.map(obj => obj.sheetName));
             });
 
             sheetSettings.forEach(function(sheetObj){
@@ -475,7 +477,7 @@ var initialize_shifttable,createShiftTableUser,createShiftTableWork;
 
             });
             promiseChain = promiseChain.then(function(){
-                console.log("finished updating shiftTableWork completely!!");
+                console.log("finished updating " + option.spreadsheetName + " completely!!");
                 la.remove()
                 return Server.handlePropertiesService({[version_propertyKey]:version+1},"script","set",{"skip":true});
             }).catch(function(e){

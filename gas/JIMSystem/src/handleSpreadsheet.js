@@ -177,7 +177,10 @@ $(function(){
                 "現役のみ":_val.server.getData("user",undefined,undefined,true).filter(user => !user.getValue("isRojin")),
                 "老人のみ":_val.server.getData("user",undefined,undefined,true).filter(user => user.getValue("isRojin"))
             }[formCreateShiftTable.find('[name="createShiftTableUser_rojin"]').val()];
-            return createShiftTableUser(users,{"day":formCreateShiftTable.find('[name="createShiftTableUser_day"]').val()});
+            return createShiftTableUser(users,{
+                "spreadsheetName":"shiftTableUser",
+                "day":formCreateShiftTable.find('[name="createShiftTableUser_day"]').val()
+            });
         },createShiftTableWork:function(){
             var inchargeId_selected = formCreateShiftTable.find('[name="createShiftTableWork_incharge"]').val();
             var workLists = _val.server.getData("workList",undefined,undefined,true);
