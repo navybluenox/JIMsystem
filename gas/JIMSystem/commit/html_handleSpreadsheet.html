@@ -11,7 +11,7 @@
                     </td><td>
                         <input type="button" name="createShiftTableWork" value="type.Workを更新" tabindex="2" onclick='_val.pageFun.handleSpreadsheet.createShiftTableWork();'>
                     </td><td>
-                        <input disabled type="button" name="createShiftTablePlace" value="type.Placeを更新 (Under Construction)" tabindex="2" onclick='_val.pageFun.handleSpreadsheet.createShiftTablePlace();'>
+                        <input type="button" name="createShiftTablePlace" value="type.Placeを更新 (Under Construction)" tabindex="2" onclick='_val.pageFun.handleSpreadsheet.createShiftTablePlace();'>
                     </td><td rowspan="2">
                         ※更新直後のスプレッドシートの表示は異常なので、必ず更新後にページを開きなおしてください。
                     </td>
@@ -22,6 +22,8 @@
                     </td><td>
                         <select name="createShiftTableWork_incharge" tabindex="2"></select>
                     </td><td>
+                        <select name="createShiftTablePlace_group" tabindex="2"></select>
+                        <select name="createShiftTablePlace_day" tabindex="2"></select>
                     </td>
                 </tr><tr>
                     <td>人割表をPDFで出力する</td>
@@ -30,7 +32,7 @@
                     </td><td>
                         <input type="button" name="createShiftTablePdfWork" value="type.WorkをPDFとして保存" tabindex="2" onclick='_val.pageFun.handleSpreadsheet.createPdfOfShiftTable("work");'>
                     </td><td>
-                        <input type="button" name="createShiftTablePdfPlace" value="type.WorkをPDFとして保存" tabindex="2" onclick='_val.pageFun.handleSpreadsheet.createPdfOfShiftTable("place");'>
+                        <input type="button" name="createShiftTablePdfPlace" value="type.PlaceをPDFとして保存" tabindex="2" onclick='_val.pageFun.handleSpreadsheet.createPdfOfShiftTable("place");'>
                     </td><td>
                         ※現在のスプレッドシートのデータがGoogleDriveの「export」フォルダに出力されます。※シートの更新は行われません。
                     </td>

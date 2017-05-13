@@ -228,7 +228,7 @@ var initialize_shifttable,createShiftTableUser,createShiftTableWork;
 
     createShiftTableWork = (sheetSettings,option) => {
         sheetSettings = sheetSettings === undefined ? [] : sheetSettings;
-        option = option === undefined ? {} : $.extend({"day":"all"},option);
+        option = option === undefined ? {} : $.extend({"day":"all","spreadsheetName":"shiftTableWork"},option);
 
         var la = new LoadingAlert();
         var version;
@@ -442,7 +442,7 @@ var initialize_shifttable,createShiftTableUser,createShiftTableWork;
                     });
                 });
 
-                var spreadsheet = new Spreadsheet("shiftTableWork",sheetObj.sheetName,table);
+                var spreadsheet = new Spreadsheet(option.spreadsheetName,sheetObj.sheetName,table);
                 promiseChain = promiseChain.then(() => {
                     return spreadsheet.writeSheetData(table,["text","fontColor","fontWeight","fontFamily","background","fontSize","alignHori","alignVer","wrap"],100)
                 }).then(() => {

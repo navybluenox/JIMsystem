@@ -10,17 +10,25 @@ $(function(){
                     .append('<option value="all">全て</option>')
                     .append(
                         Incharge.getInchargesInOrder(undefined,true)
-                        .filter(incharge => incharge.isEndChild() || incharge.isDivision())
-                        .filter(incharge => incharge.isDivision() || workLists.find(workList => workList.getValue("leaderInchargeId") === incharge.getValue("_id")) !== undefined)
-                        .map(incharge => {
-                            return (
-                                incharge.isDivision() ?
-                                '<optgroup label="' + incharge.getValue("code") + '"></optgroup>' :
-                                '<option value="' + incharge.getValue("_id") + '">' + incharge.getValue("code") + '</option>'
-                            )
-                        })
+                            .filter(incharge => incharge.isEndChild() || incharge.isDivision())
+                            .filter(incharge => incharge.isDivision() || workLists.find(workList => workList.getValue("leaderInchargeId") === incharge.getValue("_id")) !== undefined)
+                            .map(incharge => {
+                                return (
+                                    incharge.isDivision() ?
+                                    '<optgroup label="' + incharge.getValue("code") + '"></optgroup>' :
+                                    '<option value="' + incharge.getValue("_id") + '">' + incharge.getValue("code") + '</option>'
+                                )
+                            })
+                            .join("")
                     );
-
+                formCreateShiftTable.find('[name="createShiftTablePlace_group"]')
+                    .append('<option value="all">全て</option>')
+                    .append(
+                        _val.server.getData("workGroup",undefined,undefined,true)
+                            .filter(workGroup => workGroup.getValue("isUnitGroup"))
+                            .map(workGroup => '<option value="' + workGroup.getValue("_id") +'">' + workGroup.getName().replace(/^u_/,"") + '</option>')
+                            .join("")
+                    )
             });
             pageFun = _val.pageFun.handleSpreadsheet;
             formAddData = $("#formAddToDatabase");
@@ -38,7 +46,7 @@ $(function(){
                 for(var day=_val.config.getWorkStartDay(),e=_val.config.getWorkEndDay(); day<=e; day++){
                     sheetNameList.push(day);
                 }
-                formCreateShiftTable.find('[name="createShiftTableUser_day"]')
+                formCreateShiftTable.find('[name="createShiftTableUser_day"],[name="createShiftTablePlace_day"]')
                     .append('<option value="all">全て</option>')
                     .append(sheetNameList.map(function(day){
                         return '<option value="' + day + '">' + day + "日目" + '</option>';
@@ -161,6 +169,9 @@ $(function(){
         },clearSpreadsheet:function(spreadsheetName,sheetName){
             var spreadsheet = new Spreadsheet(spreadsheetName,sheetName);
             spreadsheet.clearSheetData();
+        },removeAllSheets:function(spreadsheetName){
+            var spreadsheet = new Spreadsheet(spreadsheetName);
+            spreadsheet.removeSheet(null);            
         },createShiftTableUser:function(){
             var users = {
                 "現役と老人":null,
@@ -184,10 +195,26 @@ $(function(){
                 };
             })
             .filter(obj => obj.workLists.length !== 0);
-            return createShiftTableWork(sheetSettings);
+            return createShiftTableWork(sheetSettings,{"spreadsheetName":"shiftTableWork"});
         },createShiftTablePlace:function(){
-            //TODO
-            //dayでの出力も分ける
+            var workGroupId_selected = formCreateShiftTable.find('[name="createShiftTablePlace_group"]').val();
+            var workLists = _val.server.getData("workList",undefined,undefined,true);
+            var sheetSettings = (
+                workGroupId_selected !== "all" ?
+                _val.server.getDataById(workGroupId_selected,"workGroup") :
+                _val.server.getData("workGroup",undefined,undefined,true)
+                    .filter(workGroup => workGroup.getValue("isUnitGroup"))
+            ).map(workGroup => {
+                return {
+                    "sheetName":workGroup.getName().replace(/^u_/,""),
+                    "workLists":_val.server.getDataById(workGroup.getValue("member"),"workList")
+                };
+            })
+            .filter(obj => obj.workLists.length !== 0);
+            return createShiftTableWork(sheetSettings,{
+                "spreadsheetName":"shiftTablePlace",
+                "day":formCreateShiftTable.find('[name="createShiftTableTable_day"]').val()
+            });
         },createPdfOfShiftTable:function(type){
             var la = new LoadingAlert();
             var sheetNameList = [];

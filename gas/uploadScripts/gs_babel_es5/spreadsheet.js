@@ -65,6 +65,26 @@ function insertNewSheets(spreadsheet, sheetNames) {
     return result;
 }
 
+function removeSheet(spreadsheet, sheetNames) {
+    var sheets;
+    if (sheetNames === null) {
+        sheets = spreadsheet.getSheets();
+    } else {
+        sheets = sheetNames.map(function (name) {
+            return spreadsheet.getSheetByName(name);
+        });
+    }
+    if (sheets.length === spreadsheet.getSheets().length) {
+        spreadsheet.insertSheet("_ダミー_", 0);
+    }
+    var result = [];
+    sheets.forEach(function (sheet) {
+        result.push(sheet.getName());
+        sheet.deleteSheet(sheet);
+    });
+    return result;
+}
+
 function setSheetValues(sheet, content, option) {
     option = option || {};
     option.top = option.top || 0;

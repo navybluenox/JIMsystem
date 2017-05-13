@@ -113,6 +113,11 @@ var Spreadsheet = (function(){
             if(!Array.isArray(sheetNames))  sheetNames = [sheetNames];
             return this.postTaskToServer({"funName":"insertNewSheets","sheetName":false,"argu":[sheetNames]});
         }
+        removeSheet(sheetNames){
+            if(sheetNames === undefined)  throw new Error("1st argument is undefined SpreadSheet.prototype.removeSheet@spreadsheet.js");
+            if(sheetNames !== null && !Array.isArray(sheetNames))  sheetNames = [sheetNames];
+            return this.postTaskToServer({"funName":"removeSheet","sheetName":false,"argu":[sheetNames]});            
+        }
         clearSheetData(){
             return this.postTaskToServer({"funName":"clearSheet"});
         }
