@@ -79,7 +79,8 @@
             "inchargeId":["string"],
             "isRojin":"boolean",
             "isAvailable":"boolean",
-            "sheetConfig":[{"day":"number","isInvisible":"boolean"}]
+            "sheetConfig":[{"day":"number","isInvisible":"boolean"}],
+            "hideIncharge":["string"]
         },"columnName":{
             "_id":"データID",
             "created":"作成日時",
@@ -98,8 +99,9 @@
             "inchargeId":["担当ID"],
             "isRojin":"老人であるか",
             "isAvailable":"今期に参加するか",
-            "sheetConfig":[{"_name":"人割表のユーザーごとの設定","day":"n日目","isInvisible":"非表示にするか"}]
-        },"columnOrder":["_id","created","updated","sortId","azusaId","azusaSendName","cellphone","grade","nameLast","nameFirst","nameLastPhonetic","nameFirstPhonetic","inchargeId.0","isRojin","isAvailable","sheetConfig.0.day","sheetConfig.0.isInvisible"],
+            "sheetConfig":[{"_name":"人割表のユーザーごとの設定","day":"n日目","isInvisible":"非表示にするか"}],
+            "hideIncharge":["表示しない人割ID"]
+        },"columnOrder":["_id","created","updated","sortId","azusaId","azusaSendName","cellphone","grade","nameLast","nameFirst","nameLastPhonetic","nameFirstPhonetic","inchargeId.0","isRojin","isAvailable","sheetConfig.0.day","sheetConfig.0.isInvisible","hideIncharge.0"],
         "sortColumn":"sortId","nameColumn":"@name"
     },{
         "_id":"fZBpdfgWyMZdAp3W","created":"2016-07-18T08:00:00.000Z","updated":"2016-07-18T08:00:00.000Z","name":"userGroup","fileInfoId":"QYybMQc3gGZyXBk5",

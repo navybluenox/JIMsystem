@@ -2,9 +2,10 @@ $(() => {
     var pageFun;
     var editing;
     var form;
-    var formNameList = [{"name":"sortId"},{"name":"azusaId"},{"name":"azusaSendName"},{"name":"cellphone"},{"name":"grade"},{"name":"nameLast"},{"name":"nameFirst"},{"name":"nameLastPhonetic"},{"name":"nameFirstPhonetic"},{"name":"backgroundColor"},{"name":"fontColor"},{"name":"inchargeId"},{"name":"isRojin"},{"name":"isAvailable"},{"name":"sheetConfig"}];
+    var formNameList = [{"name":"sortId"},{"name":"azusaId"},{"name":"azusaSendName"},{"name":"cellphone"},{"name":"grade"},{"name":"nameLast"},{"name":"nameFirst"},{"name":"nameLastPhonetic"},{"name":"nameFirstPhonetic"},{"name":"backgroundColor"},{"name":"fontColor"},{"name":"inchargeId"},{"name":"isRojin"},{"name":"isAvailable"},{"name":"sheetConfig"},{"name":"hideIncharge"}];
     var startDay,endDay;
     var isInvisible_value = function(value){return value ? "表示しない" : "表示する";}
+    var hideIncharge_value  = function(value){return value ? "表示しない" : "表示する";}
 
     _val.pageFun.editUser = {
         onload:() => {
@@ -101,10 +102,13 @@ $(() => {
                         }
                     }
                 });
-
-                return server.sendUpdateQueue().then(() => {
-                    pageFun.searchUser();
-                });
+                if(server.hasUpdateQueue()){
+                    return server.sendUpdateQueue().then(() => {
+                        pageFun.searchUser();
+                    });
+                }else{
+                    return Promise.resolve();
+                }
             });
         },searchUser:() => {
             var result = $("#formEditUser_search_result");
@@ -169,6 +173,10 @@ $(() => {
                         var configObj = user.getValue(key).find(obj => obj.day === day);
                         el.val(isInvisible_value(configObj.isInvisible));
                     });
+                }else if(key === "hideIncharge"){
+                    pageFun.refreshHideIncharge(user.getValue("inchargeId").map(id => {
+                        return {"id":id,"value":inArray(user.getValue(key),id)}
+                    }));
                 }else if(inArray(["isRojin","isAvailable"],key)){
                     el.val(user.getValue(key) ? "Yes" : "No");
                 }else{
@@ -192,8 +200,21 @@ $(() => {
                         el = $(el);
                         var day = +el.attr("name").replace(/^day(-?\d+)_isInvisible$/,"$1");
                         setValue[key].push({"day":day,"isInvisible":el.val() === isInvisible_value(true)});
-                });
-                setValue[key].sort((a,b) => a.day - b.day);
+                    });
+                    setValue[key].sort((a,b) => a.day - b.day);
+                }else if(key === "hideIncharge"){
+                    let ids = form.find('[name^="hideIncharge_id_"]').map((i,el) => {
+                        el = $(el);
+                        var id = el.attr("name").replace(/hideIncharge_id_/,"");
+                        return {
+                            "id":id,
+                            "value":el.val() === hideIncharge_value(true)
+                        };
+                    })
+                    .get()
+                    .filter(obj => obj.value)
+                    .map(obj => obj.id);
+                    setValue[key] = ids;
                 }else if(inArray(["isRojin","isAvailable"],key)){
                     setValue[key] = (el.val() === "Yes");
                 }else{
@@ -311,6 +332,37 @@ $(() => {
             }).get();
         },getInchargeName:(incharge) => {
             return incharge.isEndChild() ? incharge.getName() : incharge.getName() + "(" + incharge.getValue("name") + ")";
+        },refreshHideIncharge:(inchargeIds) => {
+            var table = form.find('[name="hideIncharge"]').siblings("div.div-table");
+
+            if(inchargeIds === undefined){
+                inchargeIds = pageFun.getInchargeId()
+                    .filter(obj => obj.status !== "remove")
+                    .map(obj => {
+                        var el = form.find('[name="hideIncharge_id_' + obj.id + '"]');
+                        return {"id":obj.id,"value":el.length !== 0 && el.val() === hideIncharge_value(true)};
+                    });
+
+            }
+            table.children().remove();
+
+            inchargeIds.forEach(obj => {
+                var incharge = _val.server.getDataById(obj.id,"incharge")[0];
+
+                var divTr = $('<div class="div-row"></div>').appendTo(table);
+                divTr.css({"display":"table-row"});
+
+                var divCell1 = $('<div></div>').appendTo(divTr).css({"display":"table-cell","white-space":"pre"});
+                var divCell2 = $('<div></div>').appendTo(divTr).css({"display":"table-cell","white-space":"pre"});
+                divCell1.text(incharge.getName());
+                var button = $('<input type="button" name="hideIncharge_id_' + incharge.getValue("_id") +'" value="表示する">').appendTo(divCell2);
+                button.val(hideIncharge_value(obj.value));
+                button.on("click",e => {
+                    var el = $(e.currentTarget);
+                    el.val(turnValues(el.val(),[hideIncharge_value(true),hideIncharge_value(false)]));
+                });
+            });
+
         },convertColor:type => {
             var el = {},value = {};
             var max,min;

@@ -1,10 +1,11 @@
 var initialize_shifttable,createShiftTableUser,createShiftTableWork;
 (() => {
 
-    var server;
+    var server,config;
 
     initialize_shifttable = obj => {
         if(server === undefined)  server = obj.server;
+        if(config === undefined)  config = obj.config;
     }
 
     createShiftTableUser = (_users,option) => {
@@ -72,12 +73,10 @@ var initialize_shifttable,createShiftTableUser,createShiftTableWork;
                 var users_rojinHeader = gradeList
                     .map(grade => users.find(user => user.getValue("isRojin") && user.getValue("grade") === grade))
                     .filter(user => user !== undefined)
-                    //TODO
                     .filter(user => inArray(_val.config.getValue("content.shiftTable.insertHeader.grade"),user.getValue("grade")));
                 var indexOfHeader = users.filter(function(user){
                     return (
                         _val.config.getValue("content.shiftTable.insertHeader.leaderCode").some(function(incharge){return inArray(user.getValue("inchargeCode"),incharge)}) ||
-                        //_val.config.getValue("content.shiftTable.insertHeader.azusaSendName").some(function(azusaSendName){return user.getValue("azusaSendName") === azusaSendName})
                         users_rojinHeader.findIndex(user_r => user_r.getValue("_id") === user.getValue("_id")) !== -1
                     )
                 }).map(function(user){
@@ -199,7 +198,7 @@ var initialize_shifttable,createShiftTableUser,createShiftTableWork;
                         preContent.push(setDefaultCellSetting({"alignHori":"left","text":user.getValue("nameLast") + " " + user.getValue("nameFirst")}));
                         preContent.push(setDefaultCellSetting({"alignHori":"left","text":user.getValue("azusaSendName")}));
                         preContent.push(setDefaultCellSetting({"alignHori":"left","text":(
-                            user.getValue("isRojin") ? user.getValue("oldIncharge").filter(function(v){return v.display}).map(function(v){return "" + v.nth + v.code}).join("/") : user.getValue("inchargeCode").join("/")
+                            user.getInchargeForDisplay().map(incharge => incharge.isPresentTerm() ? incharge.getValue("code") : incharge.getName()).join("/")
                         )}));
                         sufContent.push(setDefaultCellSetting({"alignHori":"left","text":user.getValue("nameLast") + " " + user.getValue("nameFirst")}));
                         table.push((preContent.concat(ret.content)).concat(sufContent));
@@ -274,9 +273,10 @@ var initialize_shifttable,createShiftTableUser,createShiftTableWork;
                 rowIndex += constValue.sheet.header;
                 result_sheet.workLists = sheetObj.workLists
                     .filter(workList => {
+                        return option.day === "all" || workList.getShiftTableAsData(config.getWorkTime(option.day).start,config.getWorkTime(option.day).end).workNum !== 0;
                         //TODO option.dayによるfilter
                         //value === "all" ||  number - value === 0　で評価
-                        return true;
+                        //return true;
                     })
                     .map(workList => {
                     var result_workList = {
@@ -286,11 +286,29 @@ var initialize_shifttable,createShiftTableUser,createShiftTableWork;
                     };
                     rowIndex += constValue.workList.header;
                     result_workList.details = workList.getNumberDetails()
-                        .filter(detail => {
+                        .map(detail => {
+                            if(option.day === "all")  return detail;
+
+                            var workTime = config.getWorkTime(option.day);
+                            if(detail.end > workTime.start && detail.start < workTime.end){
+                                let detail_result = $.extend({},detail);
+                                if(detail.start < workTime.start){
+                                    detail_result.start = workTime.start;
+                                    detail_result.number.splice(0,detail.start.getDiff(workTime.start,"timeunit"));
+                                }
+                                if(detail.end > workTime.end){
+                                    detail_result.end = workTime.end;
+                                    detail_result.number.splice(-workTime.end.getDiff(detail.end,"timeunit"),detail_result.number.length);
+                                }
+                                return detail_result;
+                            }else{
+                                return null;
+                            }
                             //TODO option.dayによるfilter
                             //value === "all" ||  number - value === 0　で評価
-                            return true;
+                            //return true;
                         })
+                        .filter(v => v !== null)
                         .map((detail,index) => {
                         var result_detail =  {
                             "index":index,
@@ -318,6 +336,13 @@ var initialize_shifttable,createShiftTableUser,createShiftTableWork;
                 });
                 result_sheet.size.height += constValue.sheet.header;
                 return result_sheet;
+            }).filter(sheetObj => {
+                if(sheetObj.workLists.length === 0){
+                    promiseChain = promiseChain.then(() => {
+                        return (new Spreadsheet(option.spreadsheetName,sheetObj.sheetName)).clearSheetData();
+                    });
+                }
+                return sheetObj.workLists.length !== 0;
             });
 
             promiseChain = promiseChain.then(() => {
@@ -441,7 +466,7 @@ var initialize_shifttable,createShiftTableUser,createShiftTableWork;
                         //content
                         var topOffset_contentTable = detailObj.offset.top + constValue.detail.header;
                         var leftOffset_contentTable = detailObj.offset.left + constValue.detail.leftMargin;
-                        var detailSetting = workListObj.datapiece.getShiftTableAsSpreadsheetSetting(detailObj.index,topOffset_contentTable,leftOffset_contentTable);
+                        var detailSetting = workListObj.datapiece.getShiftTableAsSpreadsheetSetting(option.day === "all" ? detailObj.index : config.getWorkTime(option.day),topOffset_contentTable,leftOffset_contentTable);
                         borderSetting = borderSetting.concat(detailSetting.map(obj => obj.border).reduce((curt,prev) => prev.concat(curt),[]));
                         mergeSetting = mergeSetting.concat(detailSetting.map(obj => obj.merge).reduce((curt,prev) => prev.concat(curt),[]));
                         forEachMatrix(detailObj,(x,y,i,j) => {
@@ -481,7 +506,6 @@ var initialize_shifttable,createShiftTableUser,createShiftTableWork;
                         callback(y,j);
                     }                        
                 }
-
             });
             promiseChain = promiseChain.then(function(){
                 console.log("finished updating " + option.spreadsheetName + " completely!!");

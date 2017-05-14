@@ -216,7 +216,7 @@ $(function(){
             .filter(obj => obj.workLists.length !== 0);
             return createShiftTableWork(sheetSettings,{
                 "spreadsheetName":"shiftTablePlace",
-                "day":formCreateShiftTable.find('[name="createShiftTableTable_day"]').val()
+                "day":formCreateShiftTable.find('[name="createShiftTablePlace_day"]').val()
             });
         },createPdfOfShiftTable:function(type){
             var la = new LoadingAlert();

@@ -908,8 +908,8 @@ class SystemConfig extends Datapiece{
         return this.getValue("content.base.openTime").length;
     }
     getWorkTime(day,kind){
-        var localDateObj = this.getValue("content.workAssign.workTime")[day - this.getWorkStartDay()];
         if(kind == "start" || kind == "end"){
+            let localDateObj = this.getValue("content.workAssign.workTime")[day - this.getWorkStartDay()];
             return (new LocalDate(localDateObj[kind])).addDays(day);
         }else{
             return {"start":this.getWorkTime(day,"start"),"end":this.getWorkTime(day,"end")};
@@ -1011,6 +1011,13 @@ class User extends Datapiece{
         getFromData = getFromData === undefined ? false : getFromData;
         if(this._incharge === undefined || getFromData)  this._incharge = Datapiece.getServer().getDataById(this.getValue("inchargeId"),"incharge");
         return isAll ? this._incharge.slice() : this._incharge.filter(incharge => incharge.isPresentTerm());
+    }
+    getInchargeForDisplay(option){
+        option = $.extend({"hideOldInchargeAtNotRojin":true},option === undefined ? {} : option);
+
+        return this.getIncharge(true)
+            .filter(incharge => !option.hideOldInchargeAtNotRojin || this.getValue("isRojin") || incharge.isPresentTerm())
+            .filter(incharge => !incharge.isInvisible() && !inArray(this.getValue("hideIncharge"),incharge.getValue("_id")));
     }
     getBackgroundColor(){
         return !!this.getValue("backgroundColor") ? this.getValue("backgroundColor") : UserGroup.getColorByUserId(this.getValue("_id"),"background");

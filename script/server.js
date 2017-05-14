@@ -353,6 +353,9 @@ var Server = (function(){
                 return finishedQueue;
             });
         }
+        hasUpdateQueue(){
+            return that._pendingQueue.length !== 0;
+        }
         changeData(datapieces){
             if(!Array.isArray(datapieces))  datapieces = [datapieces];
             var that = this;
