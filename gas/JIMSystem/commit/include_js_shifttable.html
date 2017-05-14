@@ -68,11 +68,18 @@ var initialize_shifttable,createShiftTableUser,createShiftTableWork;
                     var value = user.getValue("sheetConfig").find(obj => obj.day === timeInfo.day);
                     return value === undefined || !value.isInvisible;
                 });
+                var gradeList = users.map(user => user.getValue("grade")).filter((v,i,s) => s.indexOf(v) === i);
 
+                var users_rojinHeader = gradeList
+                    .map(grade => users.find(user => user.getValue("isRojin") && user.getValue("grade") === grade))
+                    .filter(user => user !== undefined)
+                    //TODO
+                    .filter(user => inArray(_val.config.getValue("content.shiftTable.insertHeader.grade"),user.getValue("grade")));
                 var indexOfHeader = users.filter(function(user){
                     return (
                         _val.config.getValue("content.shiftTable.insertHeader.leaderCode").some(function(incharge){return inArray(user.getValue("inchargeCode"),incharge)}) ||
-                        _val.config.getValue("content.shiftTable.insertHeader.azusaSendName").some(function(azusaSendName){return user.getValue("azusaSendName") === azusaSendName})
+                        //_val.config.getValue("content.shiftTable.insertHeader.azusaSendName").some(function(azusaSendName){return user.getValue("azusaSendName") === azusaSendName})
+                        users_rojinHeader.findIndex(user_r => user_r.getValue("_id") === user.getValue("_id")) !== -1
                     )
                 }).map(function(user){
                     return users.findIndex(function(u){return u.getValue("_id") === user.getValue("_id")});
