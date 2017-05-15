@@ -467,7 +467,7 @@ var initialize_shifttable,createShiftTableUser,createShiftTableWork;
                         //content
                         var topOffset_contentTable = detailObj.offset.top + constValue.detail.header;
                         var leftOffset_contentTable = detailObj.offset.left + constValue.detail.leftMargin;
-                        var detailSetting = workListObj.datapiece.getShiftTableAsSpreadsheetSetting(option.day === "all" ? detailObj.index : config.getWorkTime(option.day),topOffset_contentTable,leftOffset_contentTable);
+                        var detailSetting = workListObj.datapiece.getShiftTableAsSpreadsheetSetting(option.day === "all" ? detailObj.index : detailObj.value ,topOffset_contentTable,leftOffset_contentTable);
                         borderSetting = borderSetting.concat(detailSetting.map(obj => obj.border).reduce((curt,prev) => prev.concat(curt),[]));
                         mergeSetting = mergeSetting.concat(detailSetting.map(obj => obj.merge).reduce((curt,prev) => prev.concat(curt),[]));
                         forEachMatrix(detailObj,(x,y,i,j) => {
