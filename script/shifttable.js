@@ -16,7 +16,6 @@ var initialize_shifttable,createShiftTableUser,createShiftTableWork;
         var la = new LoadingAlert();
         var version;
         var version_propertyKey =  option.spreadsheetName + "_version_" + _val.config.getValue("content.kind") + _val.config.getValue("content.nth");
-
         Server.handlePropertiesService(version_propertyKey,"script","get")
         .then(function(v){version = (v[version_propertyKey] === undefined ? 0 : +v[version_propertyKey]);})
         .then(function(){
@@ -68,12 +67,15 @@ var initialize_shifttable,createShiftTableUser,createShiftTableWork;
                     var value = user.getValue("sheetConfig").find(obj => obj.day === timeInfo.day);
                     return value === undefined || !value.isInvisible;
                 });
+console.log("users",users)
+var list = users.map(user => user.getValue("_id"));
                 var gradeList = users.map(user => user.getValue("grade")).filter((v,i,s) => s.indexOf(v) === i);
 
                 var users_rojinHeader = gradeList
                     .map(grade => users.find(user => user.getValue("isRojin") && user.getValue("grade") === grade))
                     .filter(user => user !== undefined)
                     .filter(user => inArray(_val.config.getValue("content.shiftTable.insertHeader.grade"),user.getValue("grade")));
+console.log("users_rojinHeader",users_rojinHeader)
                 var indexOfHeader = users.filter(function(user){
                     return (
                         _val.config.getValue("content.shiftTable.insertHeader.leaderCode").some(function(incharge){return inArray(user.getValue("inchargeCode"),incharge)}) ||
@@ -180,6 +182,12 @@ var initialize_shifttable,createShiftTableUser,createShiftTableWork;
                     }
                 })();
 
+console.log("groupUsers",groupUsers)
+groupUsers.forEach(obj => {
+    var ids = obj.user.map(u => u.getValue("_id"));
+    list = list.filter(v => !inArray(ids,v));
+})
+console.log("list",list);
                 //3行目以降
                 groupUsers.forEach(function(obj,groupIndex){
                     var users = obj.user;
