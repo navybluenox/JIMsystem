@@ -80,7 +80,7 @@ function removeSheet(spreadsheet, sheetNames) {
     var result = [];
     sheets.forEach(function (sheet) {
         result.push(sheet.getName());
-        sheet.deleteSheet(sheet);
+        spreadsheet.deleteSheet(sheet);
     });
     return result;
 }

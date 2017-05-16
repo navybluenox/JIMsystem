@@ -190,7 +190,7 @@ $(function(){
                 Incharge.getInchargesInOrder()
             ).map(incharge => {
                 return {
-                    "sheetName":incharge.getValue("code"),
+                    "sheetName":[incharge.getValue("code"),incharge.getValue("name")].join(" "),
                     "workLists":workLists
                         .filter(workList => workList.getValue("leaderInchargeId") === incharge.getValue("_id"))
                         .sort((a,b) => a.getValue("name").charCodeAt() - b.getValue("name").charCodeAt())
