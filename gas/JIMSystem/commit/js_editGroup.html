@@ -163,6 +163,7 @@ $(function(){
                     if(key === "isColorGroup" || key === "isMemberOrderGroup"){
                         el.val(group.getValue(key) ? "Yes" : "No");
                     }else if(key === "member"){
+                        form.find('[name="member_selected"]').children().remove();
                         pageFun.setMemberList();
                         var el = form.find('[name="member_list"]').find(group.getValue("member").map(function(m){
                             return '[value="' + m + '"]'
