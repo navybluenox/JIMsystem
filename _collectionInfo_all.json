@@ -168,6 +168,7 @@
             "name":"string",
             "member":["string"],
             "isColorGroup":"boolean",
+            "colorGroupOrder":"number",
             "isUnitGroup":"boolean",
             "backgroundColor":"string",
             "fontColor":"string"
@@ -178,10 +179,11 @@
             "name":"グループ名",
             "member":["グループメンバーのWorkListID"],
             "isColorGroup":"カラー指定用のグループか",
+            "colorGroupOrder":"カラーグループ用のIndex",
             "isUnitGroup":"業務ユニット指定用のグループか",
             "backgroundColor":"背景色",
             "fontColor":"フォント色"
-        },"columnOrder":["_id","created","updated","name","member.0","isColorGroup","isUnitGroup","backgroundColor","fontColor"],
+        },"columnOrder":["_id","created","updated","name","member.0","isColorGroup","colorGroupOrder","isUnitGroup","backgroundColor","fontColor"],
         "sortColumn":"name","nameColumn":"name"
     },{
         "_id":"eXjsCFLMFMkuaNMc","created":"2016-07-18T08:00:00.000Z","updated":"2016-07-18T08:00:00.000Z","name":"workList","fileInfoId":"g8SCM3eLYtmXiBEU",

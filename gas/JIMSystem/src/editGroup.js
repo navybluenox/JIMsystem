@@ -1,7 +1,7 @@
 $(function(){
     var pageFun;
     var form;
-    var formNameList = [{"name":"name"},{"name":"member"},{"name":"isColorGroup"},{"name":"backgroundColor"},{"name":"fontColor"},{"name":"isUnitGroup","only":"workGroup"},{"name":"isMemberOrderGroup","only":"userGroup"},{"name":"memberOrderWorkListId","only":"userGroup"},{"name":"memberOrderNumber","only":"userGroup"}];
+    var formNameList = [{"name":"name"},{"name":"member"},{"name":"isColorGroup"},{"name":"backgroundColor"},{"name":"fontColor"},{"name":"isUnitGroup","only":"workGroup"},{"name":"isMemberOrderGroup","only":"userGroup"},{"name":"memberOrderWorkListId","only":"userGroup"},{"name":"memberOrderNumber","only":"userGroup"},{"name":"colorGroupOrder","only":"workGroup"}];
     var editing;
     var getCollName = function(){return $("#editGroup_kind").val()};
     _val.pageFun.editGroup = {
