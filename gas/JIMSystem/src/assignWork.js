@@ -239,10 +239,10 @@ $(function(){
                             tableKind === "user" ?
                             (listAll ? WorkList.getAtInterval(start,end) : WorkList.getNotAssignedAtInterval(start,end)) :
                             (listAll ? _val.server.getData("user",undefined,undefined,true) : User.getFreeUsers(start,end))
-                        ).map(function(datapiece){
+                        ).map(function(datapiece,i,s){
                             return (
                                 tableKind === "user" ? {
-                                    "text":datapiece.getValue("nameShort"),
+                                    "text":datapiece.getValue("name"),
                                     "value":datapiece.getValue("_id")                                    
                                 } : {
                                     "text":datapiece.getValue("nameLast") + " " + datapiece.getValue("nameFirst"),
