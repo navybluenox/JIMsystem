@@ -365,8 +365,15 @@ $(function(){
             var dataNameGroup = (kind === "user" ? "userGroup" : (kind === "work" ? "workGroup" : ""));
             var dataNameData = (kind === "work" ? "workList" : kind);
             var groups = _val.server.getData(dataNameGroup).filter(function(group){return group.getValue("isColorGroup")});
-            var assignedDatapieceIds = groups.map(function(group){return group.getValue("member")}).reduce(function(prev,curt){return prev.concat(curt)},[]).filter(function(v,i,s){return i === s.indexOf(v)});
-            var datapieces = _val.server.getData(dataNameData).filter(function(datapiece){return !inArray(assignedDatapieceIds,datapiece.getValue("_id"))});
+            var datapieces;
+
+            if(kind === "work"){
+                let assignedDatapieceIds = groups.map(function(group){return group.getValue("member")}).reduce(function(prev,curt){return prev.concat(curt)},[]).filter(function(v,i,s){return i === s.indexOf(v)});
+                datapieces = _val.server.getData(dataNameData).filter(function(datapiece){return !inArray(assignedDatapieceIds,datapiece.getValue("_id"))});
+            }else if(kind === "user"){
+                datapieces = _val.server.getData(dataNameData).filter(datapiece => datapiece.getValue("backgroundColor") === "");
+            }
+
 
             var thisForm = (kind === "user" ? formUserColorGroup : (kind === "work" ? formWorkColorGroup : null));
             var result = (kind === "user" ? $("#formUserColorGroup_result") : (kind === "work" ? $("#formWorkColorGroup_result") : null));
@@ -376,26 +383,28 @@ $(function(){
             var tbody = result.find("table.tableform tbody");
 
             datapieces.forEach(function(datapiece){
-                var tr = $('<tr><td></td><td><input type="button" value="グループを割り当てる"></td><td>グループを選択：<select></select></td></tr>').appendTo(tbody);
+                var tr = $('<tr><td></td><td>' + (kind === "work" ? '<input type="button" value="グループを割り当てる"></td><td>グループを選択：<select></select>' : '設定はユーザー情報から実行してください') + '</td></tr>').appendTo(tbody);
                 var td0 = tr.children("td").eq(0);
-                var button = tr.children("td").eq(1).children("input");
-                var select = tr.children("td").eq(2).children("select");
                 var text = (kind === "user" ? datapiece.getValue("nameLast") + " " + datapiece.getValue("nameFirst") : (kind === "work" ? datapiece.getValue("name") : ""));
                 td0.text(text);
-                select.append('<option value=""></option>');
-                groups.forEach(function(group){
-                    select.append('<option value="' + group.getValue("_id") + '">' + group.getValue("name") + '</option>')
-                });
-                button.on("click",function(e){
-                    var group = groups.find(function(group){return group.getValue("_id") === select.val()}).copy();
-                    if(group === undefined)  return;
-                    var member = group.getValue("member").slice();
-                    member.push(datapiece.getValue("_id"));
-                    group.setValues({"member":member});
-                    _val.server.changeData(group).sendUpdateQueue().then(function(){
-                        tr.css("display","none");
+                if(kind === "work"){
+                    var button = tr.children("td").eq(1).children("input");
+                    var select = tr.children("td").eq(2).children("select");
+                    select.append('<option value=""></option>');
+                    groups.forEach(function(group){
+                        select.append('<option value="' + group.getValue("_id") + '">' + group.getValue("name") + '</option>')
                     });
-                });
+                    button.on("click",function(e){
+                        var group = groups.find(function(group){return group.getValue("_id") === select.val()}).copy();
+                        if(group === undefined)  return;
+                        var member = group.getValue("member").slice();
+                        member.push(datapiece.getValue("_id"));
+                        group.setValues({"member":member});
+                        _val.server.changeData(group).sendUpdateQueue().then(function(){
+                            tr.css("display","none");
+                        });
+                    });
+                }
             });
             
         },showNotAvailableUser:function(){
