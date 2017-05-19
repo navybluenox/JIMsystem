@@ -242,10 +242,10 @@ $(function(){
                         ).map(function(datapiece){
                             return (
                                 tableKind === "user" ? {
-                                    "text":datapiece.getValue("nameShort"),
+                                    "text":datapiece.getValue("name"),
                                     "value":datapiece.getValue("_id")                                    
                                 } : {
-                                    "text":datapiece.getValue("nameLast") + " " + datapiece.getValue("nameFirst"),
+                                    "text":datapiece.getName(),
                                     "value":datapiece.getValue("_id")
                                 }
                             );
